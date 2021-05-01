@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Chakra.Core.Mocks" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SemperPrecisStageTracker.Domain\SemperPrecisStageTracker.Domain.csproj" />
+    <ProjectReference Include="..\SemperPrecisStageTracker.Models\SemperPrecisStageTracker.Models.csproj" />
+  </ItemGroup>
+
+</Project>
