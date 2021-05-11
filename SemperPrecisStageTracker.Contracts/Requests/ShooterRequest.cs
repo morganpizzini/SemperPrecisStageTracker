@@ -22,6 +22,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
+        [Required]
+        public DateTime BirthDate { get; set; }
     }
 
     public class ShooterUpdateRequest
@@ -32,6 +34,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
+        [Required]
+        public DateTime BirthDate { get; set; }
     }
 
 }

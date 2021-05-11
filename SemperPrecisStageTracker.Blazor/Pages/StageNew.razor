@@ -1,0 +1,65 @@
+﻿@page "/matches/{id}/stages/new"
+@inject HttpClientService Client
+@inject IStringLocalizer<StageNew> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["NewStage"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Targets"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <NumericEdit Placeholder="@L["Targets"]" TValue="int" @bind-Value="@model.Targets">
+                    <Feedback>
+                        <ValidationError>@L["WrongTargets"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    Validations validations;
+    //IList<MatchContract> matches = new List<MatchContract>();
+    StageCreateRequest model = new StageCreateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //matches = await Client.PostAsync<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        model.MatchId = Id;
+        var response = await Client.PostAsync<GroupContract>("/api/Stage/CreateStage", model);
+        UriHelper.NavigateTo($"/matches/{Id}");
+    }
+}

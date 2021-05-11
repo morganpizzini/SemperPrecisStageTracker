@@ -1,0 +1,193 @@
+﻿@page "/matches/{id}/groups/{groupId}"
+@using System.Text.Json
+@using SemperPrecisStageTracker.Contracts.Requests
+@inject HttpClientService Client
+@inject IStringLocalizer<GroupDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Divider />
+<Row>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Group"]</CardTitle>
+                <CardText>@group.Name</CardText>
+                <CardTitle>@L["Shooters"]</CardTitle>
+                <CardText>@group.Shooters.Count</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+    @if (group.Match != null)
+    {
+        <Column ColumnSize="ColumnSize.Is6">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Match"]</CardTitle>
+                    <CardText>@group.Match.Name - @group.Match.MatchDateTime.ToString("d")</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+    }
+</Row>
+<Divider />
+@if (shooters.Count > 0)
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                <Validation>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@model.ShooterId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var shooter in shooters)
+                                    {
+                                        <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("g"))</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                        <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+                    </FieldBody>
+                </Field>
+            </Validations>
+        </Column>
+    </Row>
+    <Divider />
+}
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Shooters"]</CardTitle>
+                @if (group.Shooters.Count > 0)
+                {
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var shooter in group.Shooters)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+                else
+                {
+                    <Text>@L["NoShooters"]</Text>
+                }
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Modal @ref="modalRef">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@shooterToDelete.LastName @shooterToDelete.FirstName</Text>
+            </Field>
+            <Field>
+                <FieldLabel>@L["BirthDate"]</FieldLabel>
+                <Text>@shooterToDelete.BirthDate.ToString("g")</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+            <Button Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string GroupId { get; set; }
+
+    // reference to the modal component
+    private Modal modalRef;
+    ShooterContract shooterToDelete = new ShooterContract();
+
+
+    GroupContract group = new GroupContract();
+    IList<ShooterContract> shooters = new List<ShooterContract>();
+
+    Validations validations;
+    GroupCreateDeleteShooterRequest model = new GroupCreateDeleteShooterRequest();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.GroupId = GroupId;
+        await LoadShooters();
+        group = await Client.PostAsync<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadShooters()
+    {
+        shooters = await Client.PostAsync<IList<ShooterContract>>("api/ShooterGroup/FetchShooterGroup", new GroupRequest() { GroupId = GroupId });
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+
+        group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/ShooterGroup/AddShooterGroup", model);
+        await LoadShooters();
+        model.ShooterId = string.Empty;
+
+    }
+
+    async Task DeleteShooter(ShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToDelete = shooter;
+        modalRef.Show();
+    }
+
+    private async Task HideModal(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.ShooterId))
+        {
+            group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/ShooterGroup/DeleteShooterGroup", new GroupCreateDeleteShooterRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
+            await LoadShooters();
+        }
+        shooterToDelete = new ShooterContract();
+        modalRef.Hide();
+    }
+}

@@ -1,0 +1,86 @@
+﻿@page "/matches/{id}/stages/{stageId}"
+@inject HttpClientService Client
+@inject IStringLocalizer<StageDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Divider />
+<Row>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Stage"]</CardTitle>
+                <CardText>@stage.Name</CardText>
+                <CardTitle>@L["Targets"]</CardTitle>
+                <CardText>@stage.Targets</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Match"]</CardTitle>
+                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+<Divider />
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Groups"]</CardTitle>
+                @if (match.Groups.Count > 0)
+                {
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var group in match.Groups)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@group.Name</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+                else
+                {
+                    <Text>@L["NoGroups"]</Text>
+                }
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string StageId { get; set; }
+
+    StageContract stage = new StageContract();
+
+    MatchContract match = new MatchContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        stage = await Client.PostAsync<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+
+        await base.OnInitializedAsync();
+    }
+
+}

@@ -1,6 +1,8 @@
+using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -115,7 +117,7 @@ namespace SemperPrecisStageTracker.API
             app.UseRouting();
 
             //Abilito CORS
-            //Se siamo in modalità "dev"
+            //Se siamo in modalitï¿½ "dev"
             switch (ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName.ToLower())
             {
                 case "azure":
@@ -126,6 +128,8 @@ namespace SemperPrecisStageTracker.API
                     Tracer.Info($"[CORS] Working on {localPolicy} CORS policy");
                     app.UseCors(localPolicy);
                     break;
+                default:
+                    throw new Exception("CORS configuration NOT FOUND");
             }
             
             ////Utilizzo l'autenticazione
@@ -135,6 +139,10 @@ namespace SemperPrecisStageTracker.API
 
             app.UseEndpoints(endpoints =>
             {
+                 endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync("Hi!");
+                });
                 endpoints.MapControllers();
             });
         }

@@ -21,7 +21,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         [Required]
-        public DateTime MatchDateTime { get; set; }
+        public DateTime MatchDateTime { get; set; } = DateTime.Now;
     }
 
     public class MatchUpdateRequest

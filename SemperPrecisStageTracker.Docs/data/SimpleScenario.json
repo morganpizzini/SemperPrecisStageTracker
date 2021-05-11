@@ -1,10 +1,140 @@
 {
-    "matches": [
-      {
-        "id": "1",
-        "name": "Match 01",
-        "matchDateTime": "2021-05-23T18:25:43.511Z",
-        "creationDateTime": "2021-05-23T18:25:43.511Z"
-      }
-    ]
+  "matches": [
+    {
+      "id": "1",
+      "name": "Match 01",
+      "matchDateTime": "2021-05-23T18:25:43.511Z",
+      "creationDateTime": "2021-05-23T18:25:43.511Z"
+    }
+  ],
+  "stages": [
+    {
+      "id": "1",
+      "matchId": "1",
+      "name": "Stage 01",
+      "targets": 10
+    },
+    {
+      "id": "2",
+      "matchId": "1",
+      "name": "Stage 02",
+      "targets": 8
+    },
+    {
+      "id": "3",
+      "matchId": "1",
+      "name": "Stage 03",
+      "targets": 11
+    },
+    {
+      "id": "4",
+      "matchId": "1",
+      "name": "Stage 04",
+      "targets": 12
+    }
+  ],
+  "groups": [
+    {
+      "id": "1",
+      "matchId": "1",
+      "name": "Group 01"
+    },
+    {
+      "id": "2",
+      "matchId": "1",
+      "name": "Group 02"
+    },
+    {
+      "id": "3",
+      "matchId": "1",
+      "name": "Group 03"
+    },
+    {
+      "id": "4",
+      "matchId": "1",
+      "name": "Group 04"
+    }
+  ],
+  "groupShooters": [
+    {
+      "id": "1",
+      "groupId": "1",
+      "shooterId": "1"
+    },
+    {
+      "id": "2",
+      "groupId": "1",
+      "shooterId": "2"
+    },
+    {
+      "id": "3",
+      "groupId": "1",
+      "shooterId": "3"
+    },
+    {
+      "id": "4",
+      "groupId": "1",
+      "shooterId": "4"
+    }
+  ],
+  "shooters": [
+    {
+      "id": "1",
+      "firstName": "Shooter",
+      "lastName": "01"
+    },
+    {
+      "id": "2",
+      "firstName": "Shooter",
+      "lastName": "02"
+    },
+    {
+      "id": "3",
+      "firstName": "Shooter",
+      "lastName": "03"
+    },
+    {
+      "id": "4",
+      "firstName": "Shooter",
+      "lastName": "04"
+    }
+  ],
+  "shooterStages": [
+    {
+      "id": "1",
+      "stageId": "1",
+      "shooterId": "1",
+      "time": 56.9,
+      "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
+      "procedurals": 0,
+      "hitOnNonThreat": 1,
+      "flagrantPenalties": 0,
+      "ftdr": 1,
+      "disqualified": false
+    },
+    {
+      "id": "2",
+      "stageId": "1",
+      "shooterId": "2",
+      "time": 50.9,
+      "downPoints": [ 3, 1, 0, 1, 0, 3, 0, 0, 0, 1 ],
+      "procedurals": 1,
+      "hitOnNonThreat": 0,
+      "flagrantPenalties": 0,
+      "ftdr": 1,
+      "disqualified": false
+    },
+    {
+      "id": "3",
+      "stageId": "1",
+      "shooterId": "3",
+      "time": 10.9,
+      "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
+      "procedurals": 0,
+      "hitOnNonThreat": 1,
+      "flagrantPenalties": 0,
+      "ftdr": 1,
+      "disqualified": true
+    }
+  ]
 }

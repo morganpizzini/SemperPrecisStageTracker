@@ -65,7 +65,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Shooter
             {
                 FirstName = request.FirstName,
-                LastName = request.LastName
+                LastName = request.LastName,
+                BirthDate = request.BirthDate
             };
 
             //Invocazione del service layer
@@ -99,12 +100,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.FirstName = request.FirstName;
             entity.LastName = request.LastName;
+            entity.BirthDate = request.BirthDate;
             
             //Salvataggio
             var validations = BasicLayer.UpdateShooter(entity);
             if (validations.Count > 0)
                 return BadRequest(validations);
-
 
             //Confermo
             return Ok(ContractUtils.GenerateContract(entity));

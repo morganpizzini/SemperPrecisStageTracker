@@ -1,0 +1,205 @@
+﻿@page "/matches/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<MatchDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/groups/new")"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Match"]</CardTitle>
+                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Groups"]</CardTitle>
+                @if (match.Groups.Count > 0)
+                {
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var group in match.Groups)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@group.Name</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                        <Button Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+                else
+                {
+                    <Text>@L["NoGroups"]</Text>
+                }
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Stages"]</CardTitle>
+                @if (match.Stages.Count > 0)
+                {
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Targets"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var stage in match.Stages)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@stage.Name</TableRowHeader>
+                                    <TableRowHeader>@stage.Targets</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
+                                        <Button Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+                else
+                {
+                    <Text>@L["NoStages"]</Text>
+                }
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<Modal @ref="modalRefGroup">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteGroup"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@groupToDelete.Name</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@(() => HideModalGroup(false))">@L["Close"]</Button>
+            <Button Color="Color.Primary" Clicked="@(() => HideModalGroup(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefStage">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteStage"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@stageToDelete.Name</Text>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Targets"]</FieldLabel>
+                <Text>@stageToDelete.Targets</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@(() => HideModalStage(false))">@L["Close"]</Button>
+            <Button Color="Color.Primary" Clicked="@(() => HideModalStage(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    // reference to the modal component
+    private Modal modalRefGroup;
+    GroupContract groupToDelete = new GroupContract();
+    private Modal modalRefStage;
+    StageContract stageToDelete = new StageContract();
+
+    MatchContract match = new MatchContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMatch();
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadMatch()
+    {
+        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+
+    }
+    void DeleteGroup(GroupContract group)
+    {
+        if (group == null)
+            return;
+        groupToDelete = group;
+        modalRefGroup.Show();
+    }
+
+    void DeleteStage(StageContract stage)
+    {
+        if (stage == null)
+            return;
+        stageToDelete = stage;
+        modalRefStage.Show();
+    }
+
+    private async Task HideModalGroup(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(groupToDelete.GroupId))
+        {
+            await Client.PostAsync<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
+            await LoadMatch();
+        }
+        groupToDelete = new GroupContract();
+        modalRefGroup.Hide();
+    }
+
+    private async Task HideModalStage(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(stageToDelete.StageId))
+        {
+            await Client.PostAsync<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
+            await LoadMatch();
+        }
+        stageToDelete = new StageContract();
+        modalRefStage.Hide();
+    }
+
+}

@@ -20,12 +20,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// </summary>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("FetchAllGroups")]
+        [Route("FetchAllGroupsByMatchId")]
         [ProducesResponseType(typeof(IList<GroupContract>), 200)]
         public IActionResult FetchAllGroups(MatchRequest request)
         {
             //Recupero la lista dal layer
-            var entities = BasicLayer.FetchAllGroups(request.MatchId);
+            var entities = BasicLayer.FetchAllGroupsByMatchId(request.MatchId);
 
 
             //seleziono gli id dei posti
@@ -59,8 +59,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
 
+            var match = BasicLayer.GetMatch(entity.Id);
+
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity,null,shooters));
+            return Ok(ContractUtils.GenerateContract(entity,match,shooters));
         }
 
         /// <summary>
@@ -85,7 +87,6 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             if (validations.Count > 0)
                 return BadRequest(validations);
-
 
             //Return contract
             return Ok(ContractUtils.GenerateContract(model));
@@ -131,7 +132,6 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(GroupContract), 200)]
         public IActionResult DeleteGroup(GroupRequest request)
         {
-
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
 
@@ -139,7 +139,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
             {
                 return NotFound();
-
             }
 
             //Invocazione del service layer

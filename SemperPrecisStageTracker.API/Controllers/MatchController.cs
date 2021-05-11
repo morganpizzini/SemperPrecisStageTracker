@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAllMatchs();
 
             //Ritorno i contratti
-            return Ok(entities.As(ContractUtils.GenerateContract));
+            return Ok(entities.As(x=>ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -47,8 +47,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
                 return NotFound();
 
+            var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
+            var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
+
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,groups,stages));
         }
         
         /// <summary>

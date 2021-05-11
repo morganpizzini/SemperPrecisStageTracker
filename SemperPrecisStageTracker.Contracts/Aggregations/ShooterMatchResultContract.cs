@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SemperPrecisStageTracker.Contracts
 {
@@ -11,6 +12,12 @@ namespace SemperPrecisStageTracker.Contracts
     public class ShooterStageResultContract
     {
         public int StageIndex { get; set; }
-        public int Total { get; set; }
+        public decimal Total { get; set; }
     }
+    public class ShooterStageAggregationResult
+    {
+        public ShooterContract Shooter { get; set; }
+        public ShooterStageContract ShooterStage { get; set; }
+    }
+    
 }

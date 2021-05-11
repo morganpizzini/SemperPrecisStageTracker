@@ -1,0 +1,32 @@
+﻿@page "/shooters/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<ShooterDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Shooter"]</CardTitle>
+                <CardText>@shooter.LastName @shooter.FirstName</CardText>
+                <CardTitle>@L["BirthDate"]</CardTitle>
+                <CardText>@shooter.BirthDate.ToString("d")</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    ShooterContract shooter = new ShooterContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+        shooter = await Client.PostAsync<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+
+        await base.OnInitializedAsync();
+    }
+}

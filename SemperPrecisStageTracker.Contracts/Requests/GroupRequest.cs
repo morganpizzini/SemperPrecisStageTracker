@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
-{
-        /// <summary>
+{ 
+    /// <summary>
     /// Group request
     /// </summary>
     public class GroupRequest
@@ -13,7 +13,20 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// </summary>
         [Required]
         public string GroupId { get; set; }
+    }
 
+    /// <summary>
+    /// Group stage request
+    /// </summary>
+    public class GroupStageRequest
+    {
+        /// <summary>
+        /// Identifier
+        /// </summary>
+        [Required]
+        public string GroupId { get; set; }
+        [Required]
+        public string StageId { get; set; }
     }
 
     public class GroupCreateRequest
@@ -32,7 +45,14 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         
     }
+    public class GroupCreateDeleteShooterRequest
+    {
+        [Required]
 
+        public string GroupId { get; set; }
+        [Required]
+        public string ShooterId { get; set; }
+    }
     public class ShooterGroupRequest{
         [Required]
 

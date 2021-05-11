@@ -25,12 +25,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             var shooterStage = new ShooterStage{
                 StageId = request.StageId,
+                Time = request.Time,
                 ShooterId = request.ShooterId,
                 DownPoints = request.DownPoints,
-                Penalties = request.Penalties,
-                Procedures = request.Procedures,
-                FailureToNeutralize = request.FailureToNeutralize,
-                MissedEngagement = request.MissedEngagement
+                Procedurals = request.Procedurals,
+                HitOnNonThreat = request.HitOnNonThreat,
+                FlagrantPenalties = request.FlagrantPenalties,
+                Ftdr = request.Ftdr,
+                Disqualified = request.Disqualified
             };
             //Invocazione del service layer
             var validations = BasicLayer.UpsertShooterStage(shooterStage);

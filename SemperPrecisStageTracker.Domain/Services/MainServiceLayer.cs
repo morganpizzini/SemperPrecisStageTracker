@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks.Dataflow;
 using SemperPrecisStageTracker.Domain.Data.Repositories;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Data;
@@ -482,7 +483,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of groups</returns>
-        public IList<Group> FetchAllGroups(string matchId)
+        public IList<Group> FetchAllGroupsByMatchId(string matchId)
         {
             //Utilizzo il metodo base
             return FetchEntities(e => e.MatchId == matchId, null, null, null, true, _groupRepository);
@@ -859,6 +860,28 @@ namespace SemperPrecisStageTracker.Domain.Services
         #endregion
         #region shooterstage
         /// <summary>
+        /// Fetch list of all stage
+        /// </summary>
+        /// <param name="matchId"> match identifier </param>
+        /// <returns>Returns list of stages</returns>
+        public IList<Stage> FetchAllStagesByMatchId(string matchId)
+        {
+            //Utilizzo il metodo base
+            return FetchEntities(e => e.MatchId == matchId, null, null, null, true, _stageRepository);
+        }
+        
+
+        /// <summary>
+        /// fetch shooters results on stage
+        /// </summary>
+        /// <param name="entity">shooterstage to upsert</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ShooterStage> FetchShootersResultsOnStage(string stageId, IList<string> shooterIds)
+        {
+            return FetchEntities(e => e.StageId == stageId && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
+        }
+
+        /// <summary>
         /// Updates provided group
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
@@ -885,13 +908,13 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             var existingShooterStage = this._shooterStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageId == x.StageId);
+            
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
+            // new element
             if (existingShooterStage == null)
             {
-                // new element
-
                 // Settaggio data di creazione
                 entity.CreationDateTime = DateTime.UtcNow;
 
@@ -912,16 +935,17 @@ namespace SemperPrecisStageTracker.Domain.Services
                 return validations;
             }
 
-            // update existing
+            existingShooterStage.Time = entity.Time;
             existingShooterStage.DownPoints = entity.DownPoints;
-            existingShooterStage.Penalties = entity.Penalties;
-            existingShooterStage.Procedures = entity.Procedures;
-            existingShooterStage.FailureToNeutralize = entity.FailureToNeutralize;
-            existingShooterStage.MissedEngagement = entity.MissedEngagement;
+            existingShooterStage.Procedurals = entity.Procedurals;
+            existingShooterStage.HitOnNonThreat = entity.HitOnNonThreat;
+            existingShooterStage.FlagrantPenalties = entity.FlagrantPenalties;
+            existingShooterStage.Ftdr = entity.Ftdr;
+            existingShooterStage.Disqualified = entity.Disqualified;
+           
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (existingShooterStage.CreationDateTime < new DateTime(2000, 1, 1))
                 existingShooterStage.CreationDateTime = new DateTime(2000, 1, 1);
-
 
             //Validazione argomenti
             validations = _shooterStageRepository.Validate(existingShooterStage);
@@ -942,6 +966,25 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #endregion
         #region shootergroup
+
+        /// <summary>
+        /// Fetch available shooter for group
+        /// </summary>
+        /// <param name="groupId">group id</param>
+        /// <param name="shooterIds">Shooter ids</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<Shooter> FetchAvailableShooters(Group group)
+        {
+            if (group == null) throw new ArgumentNullException(nameof(group));
+
+            var groupInMatchIds = this._groupRepository.Fetch(x => x.MatchId == group.MatchId).Select(x=>x.Id).ToList();
+
+            var unAvailableUsers = this._groupShooterRepository
+                                                    .Fetch(x => groupInMatchIds.Contains(x.GroupId))
+                                                    .Select(x => x.ShooterId)
+                                                    .ToList();
+            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id));
+        }
 
         /// <summary>
         /// Updates provided group

@@ -14,6 +14,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         public IList<Group> Groups { get; set; } = new List<Group>();
 
         /// <summary>
+        /// List of group shooters
+        /// </summary>
+        public IList<GroupShooter> GroupShooters { get; set; } = new List<GroupShooter>();
+        
+        /// <summary>
         /// List of match
         /// </summary>
         public IList<Match> Matches { get; set; } = new List<Match>();
