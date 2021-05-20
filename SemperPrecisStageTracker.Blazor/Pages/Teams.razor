@@ -1,0 +1,40 @@
+﻿@page "/teams"
+@inject HttpClientService Client
+@inject IStringLocalizer<Teams> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Teams"]</Heading>
+<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/new")"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @foreach (var team in teams)
+        {
+            <TableRow>
+                <TableRowHeader>@team.Name</TableRowHeader>
+                <TableRowCell>
+                    <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
+                    <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
+                </TableRowCell>
+            </TableRow>
+        }
+    </TableBody>
+</Table>
+
+@code {
+    IList<TeamContract> teams = new List<TeamContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        teams = await Client.PostAsync<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+
+        await base.OnInitializedAsync();
+    }
+
+}

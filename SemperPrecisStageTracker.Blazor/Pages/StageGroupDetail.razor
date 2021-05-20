@@ -184,14 +184,28 @@
                                     </FieldBody>
                                 </Field>
                             </Validation>
-                            <Validation Validator="@ValidationRule.None">
-                                <Field Horizontal="true">
-                                    <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <Check TValue="bool" @bind-Checked="@model.Disqualified">@L["Disqualified"]</Check>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Validation Validator="@ValidationRule.None">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.Is8">
+                                                <Check TValue="bool" @bind-Checked="@model.Procedural">@L["Procedural"]</Check>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Validation Validator="@ValidationRule.None">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.Is8">
+                                                <Check TValue="bool" @bind-Checked="@model.Disqualified">@L["Disqualified"]</Check>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                            </Row>
                         </TabPanel>
                         <TabPanel Name="downs">
                             @for (int i = 0; i < model.DownPoints.Count; i++)
@@ -318,21 +332,9 @@
 
     async Task LoadShooters()
     {
-        shooters = await Client.PostAsync<IList<ShooterStageAggregationResult>>("api/ShooterGroup/FetchShooterGroupStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId});
+        shooters = await Client.PostAsync<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId});
     }
-
-    async Task Submit()
-    {
-        if (!validations.ValidateAll())
-            return;
-        validations.ClearAll();
-
-        group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/ShooterGroup/AddShooterGroup", model);
-        await LoadShooters();
-        model.ShooterId = string.Empty;
-    }
-
-    async Task FillShooter(ShooterStageAggregationResult shooter)
+    void FillShooter(ShooterStageAggregationResult shooter)
     {
         if (shooter == null)
             return;
@@ -365,8 +367,11 @@
     }
     private async Task HideModal(bool choice)
     {
-        if (choice && !string.IsNullOrEmpty(model.ShooterId) && !string.IsNullOrEmpty(model.StageId))
+        if (choice)
         {
+            if (!validations.ValidateAll())
+                return;
+            validations.ClearAll();
             var response = await Client.PostAsync<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
             await LoadShooters();
         }

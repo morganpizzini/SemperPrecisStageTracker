@@ -1,0 +1,75 @@
+﻿@page "/matches/{id}/groups/edit/{groupId}"
+@inject HttpClientService Client
+@inject IStringLocalizer<GroupEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditGroup"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    @*<Validation>
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@model.MatchId">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var match in matches)
+                        {
+                            <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongMatch"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>*@
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string GroupId { get; set; }
+
+    Validations validations;
+    
+    GroupCreateRequest model = new GroupCreateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await Client.PostAsync<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        model.Name = existing.Name;
+        model.MatchId = Id;
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<GroupContract>("/api/Group/CreateGroup", model);
+        UriHelper.NavigateTo($"/matches/{Id}/groups/{response.GroupId}");
+    }
+}

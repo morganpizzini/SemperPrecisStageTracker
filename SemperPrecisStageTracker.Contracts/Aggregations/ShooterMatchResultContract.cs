@@ -4,10 +4,24 @@ using System.Linq;
 
 namespace SemperPrecisStageTracker.Contracts
 {
+    public class DivisionMatchResultContract{
+        public string Name { get; set; }
+        public int StageNumber {get; set; }
+        public IList<ShooterRankResultContract> Ranks { get; set; } = new List<ShooterRankResultContract>();
+    }
+    public class ShooterRankResultContract{
+        public string Rank { get; set; }
+        public IList<ShooterMatchResultContract> Shooters { get; set; } = new List<ShooterMatchResultContract>();
+
+    }
     public class ShooterMatchResultContract
     {
         public ShooterContract Shooter { get; set; }
-        public IList<ShooterStageResultContract> Results { get; set; }
+        public string Rank { get; set; }
+        public string TeamName { get; set; }
+
+        public IList<ShooterStageResultContract> Results { get; set; } = new List<ShooterStageResultContract>();
+        public decimal Total => Results.Any(x=> x.Total<0) ? -99 : Results.Sum(x=>x.Total);
     }
     public class ShooterStageResultContract
     {

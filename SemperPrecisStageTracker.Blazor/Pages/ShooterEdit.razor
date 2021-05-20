@@ -1,0 +1,93 @@
+﻿@page "/shooters/edit/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<ShooterEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["NewShooter"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
+                    <Feedback>
+                        <ValidationError>@L["WrongFirstName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["LastName"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
+                    <Feedback>
+                        <ValidationError>@L["WrongLastName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["BirthDate"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
+                    <Feedback>
+                        <ValidationError>@L["WrongValidBirthDate"]</ValidationError>
+                    </Feedback>
+                </DateEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Validations validations;
+    ShooterUpdateRequest model = new ShooterUpdateRequest();
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await Client.PostAsync<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest{ ShooterId = Id });
+        model.FirstName = existing.FirstName;
+        model.LastName = existing.LastName;
+        model.BirthDate = existing.BirthDate;
+        model.ShooterId = Id;
+        await base.OnInitializedAsync();
+    }
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1920,0,0))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongBirthDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<ShooterContract>("/api/Shooter/UpdateShooter", model);
+        UriHelper.NavigateTo($"/shooters/{response.ShooterId}");
+    }
+}

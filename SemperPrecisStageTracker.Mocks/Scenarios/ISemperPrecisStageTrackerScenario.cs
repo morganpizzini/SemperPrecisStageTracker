@@ -20,6 +20,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         IList<Match> Matches { get; set; }
 
         /// <summary>
+        /// List of match
+        /// </summary>
+        IList<Association> Associations { get; set; }
+
+        /// <summary>
         /// List of shooter
         /// </summary>
         IList<Shooter> Shooters { get; set; }
@@ -38,6 +43,21 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// List of group shooters
         /// </summary>
         IList<GroupShooter> GroupShooters { get; set; }
+
+        /// <summary>
+        /// List of team shooters
+        /// </summary>
+        IList<ShooterTeam> ShooterTeams { get; set; }
+
+        /// <summary>
+        /// List of teams
+        /// </summary>
+        IList<Team> Teams { get; set; }
+
+        /// <summary>
+        /// List of association shooters
+        /// </summary>
+        IList<ShooterAssociation> ShooterAssociations { get; set; }
 
     }
 }

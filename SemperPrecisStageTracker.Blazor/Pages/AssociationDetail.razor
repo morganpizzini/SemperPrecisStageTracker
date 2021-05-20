@@ -1,0 +1,66 @@
+﻿@page "/associations/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<AssociationDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Association"]</CardTitle>
+                <CardText>@association.Name</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.IsHalf">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Divisions"]</CardTitle>
+                <CardText>
+                    <ul>
+                        @foreach(var s in association.Divisions){
+                            <li>@s</li>
+                        }
+                    </ul>
+
+                </CardText>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.IsHalf">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Classes"]</CardTitle>
+                <CardText>
+                    <ul>
+                        @foreach(var s in association.Classes){
+                            <li>@s</li>
+                        }
+                    </ul>
+
+                </CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+
+    AssociationContract association = new AssociationContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+         association = await Client.PostAsync<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
+
+        await base.OnInitializedAsync();
+    }
+
+}

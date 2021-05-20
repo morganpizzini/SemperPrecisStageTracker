@@ -9,7 +9,10 @@ using ZenProgramming.Chakra.Core.Configurations;
 using ZenProgramming.Chakra.Core.Configurations.Utils;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Diagnostic;
+using ZenProgramming.Chakra.Core.EntityFramework.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
+using SemperPrecisStageTracker.EF.Context;
+
 
 namespace SemperPrecisStageTracker.API
 {
@@ -25,7 +28,7 @@ namespace SemperPrecisStageTracker.API
             SettingsUtils.Switch(ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider, new Dictionary<string, Action>
             {
                 { "Mockup", SessionFactory.RegisterDefaultDataSession<MockDataSession<SimpleScenario>> },
-                //{ "Sql", SessionFactory.RegisterDefaultDataSession<EntityFrameworkDataSession<BonebatContext>>  }
+                { "Sql", SessionFactory.RegisterDefaultDataSession<EntityFrameworkDataSession<SemperPrecisStageTrackerContext>> }
             });
 
             // identity client

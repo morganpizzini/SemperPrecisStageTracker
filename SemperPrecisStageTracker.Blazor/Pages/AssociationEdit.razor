@@ -1,0 +1,89 @@
+﻿@page "/associations/edit/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<AssociationEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true">
+        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Target"]<Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+        @for (int i = 0; i < model.Divisions.Count; i++)
+        {
+            var tmp = i;
+                <FieldBody ColumnSize="ColumnSize.Is8">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <input id="@($"target{tmp}")" value="@model.Divisions[tmp]" class="form-control"
+                                    @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                        </Addon>
+                    </Addons>
+                </FieldBody>
+        }
+    </Field>
+    <Field Horizontal="true">
+        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Target"]<Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classes.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+        @for (int i = 0; i < model.Classes.Count; i++)
+        {
+            var tmp = i;
+                <FieldBody ColumnSize="ColumnSize.Is8">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <input id="@($"target{tmp}")" value="@model.Classes[tmp]" class="form-control"
+                                    @onchange="@(e => model.Classes[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Classes.Remove(model.Classes[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                        </Addon>
+                    </Addons>
+                </FieldBody>
+        }
+    </Field>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Validations validations;
+    AssociationUpdateRequest model = new AssociationUpdateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await Client.PostAsync<AssociationContract>("api/Association/GetAssociation", new AssociationRequest{ AssociationId = Id });
+        model.AssociationId = existing.AssociationId;
+        model.Name = existing.Name;
+        model.Divisions = existing.Divisions;
+        model.Classes = existing.Classes;
+
+        await base.OnInitializedAsync();
+    }
+   
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<AssociationContract>("/api/Association/UpdateAssociation", model);
+        UriHelper.NavigateTo($"/associations/{response.AssociationId}");
+    }
+}

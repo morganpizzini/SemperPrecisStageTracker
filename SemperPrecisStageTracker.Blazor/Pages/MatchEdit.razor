@@ -1,0 +1,119 @@
+﻿@page "/matches/edit/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<MatchEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditMatch"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Date"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTime">
+                    <Feedback>
+                        <ValidationError>@L["WrongValidDate"]</ValidationError>
+                    </Feedback>
+                </DateEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Location"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Location"]" @bind-Text="@model.Location">
+                    <Feedback>
+                        <ValidationError>@L["WrongLocation"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var association in associations)
+                        {
+                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongAssociation"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Validations validations;
+    MatchUpdateRequest model = new MatchUpdateRequest();
+    IList<AssociationContract> associations = new List<AssociationContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        associations = await Client.PostAsync<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+
+        var existing = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest{ MatchId = Id });
+        model.MatchId = existing.MatchId;
+        model.Name = existing.Name;
+        model.MatchDateTime = existing.MatchDateTime;
+        model.Location = existing.Location;
+        model.AssociationId = existing.Association.AssociationId;
+
+        await base.OnInitializedAsync();
+    }
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date.Value.Date <= DateTime.Now.Date.AddDays(1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<MatchContract>("/api/Match/UpdateMatch", model);
+        UriHelper.NavigateTo($"/matches/{response.MatchId}");
+    }
+}

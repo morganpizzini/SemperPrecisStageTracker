@@ -26,9 +26,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllMatchs();
+            var associationIds = entities.Select(x=>x.AssociationId).ToList();
+
+            var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x)));
+            return Ok(entities.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(p => p.Id == x.AssociationId))));
         }
 
         /// <summary>
@@ -50,8 +53,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
 
+            var association = BasicLayer.GetAssociation(entity.AssociationId);
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity,groups,stages));
+            return Ok(ContractUtils.GenerateContract(entity,association,groups,stages));
         }
         
         /// <summary>
@@ -61,7 +65,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("GetMatchStats")]
-        [ProducesResponseType(typeof(IList<ShooterMatchResultContract>), 200)]
+        [ProducesResponseType(typeof(IList<DivisionMatchResultContract>), 200)]
         public IActionResult GetMatchStats(MatchRequest request)
         {
             var entities = BasicLayer.GetMatchStats(request.MatchId);
@@ -83,7 +87,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Match
             {
                 Name = request.Name,
-                MatchDateTime = request.MatchDateTime
+                MatchDateTime = request.MatchDateTime,
+                AssociationId= request.AssociationId,
+                Location = request.Location
             };
 
             //Invocazione del service layer
@@ -92,9 +98,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
 
+            var association = BasicLayer.GetAssociation(model.AssociationId);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model,association));
         }
 
         /// <summary>
@@ -117,15 +124,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             entity.MatchDateTime = request.MatchDateTime;
+            entity.AssociationId = request.AssociationId;
+            entity.Location = request.Location;
             
             //Salvataggio
             var validations = BasicLayer.UpdateMatch(entity);
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-
+            var association = BasicLayer.GetAssociation(entity.AssociationId);
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,association));
         }
 
         /// <summary>
@@ -146,7 +155,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
             {
                 return NotFound();
-
             }
 
             //Invocazione del service layer
@@ -154,8 +162,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
 
+            var association = BasicLayer.GetAssociation(entity.AssociationId);
+
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,association));
         }
     }
 }

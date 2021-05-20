@@ -17,5 +17,9 @@ namespace SemperPrecisStageTracker.Models
         public string GroupId { get; set; }
         [Required]
         public string ShooterId { get; set; }
+        [Required]
+        public string DivisionId {get; set;}
+        [Required]
+        public string TeamId {get; set;}
     }
 }

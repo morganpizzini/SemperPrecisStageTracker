@@ -4,7 +4,9 @@
       "id": "1",
       "name": "Match 01",
       "matchDateTime": "2021-05-23T18:25:43.511Z",
-      "creationDateTime": "2021-05-23T18:25:43.511Z"
+      "creationDateTime": "2021-05-23T18:25:43.511Z",
+      "associationId": "1",
+      "location": "location"
     }
   ],
   "stages": [
@@ -12,25 +14,77 @@
       "id": "1",
       "matchId": "1",
       "name": "Stage 01",
-      "targets": 10
+      "targets": 10,
+      "sO":"SO",
+      "scenario":"scenario",
+      "gunReadyCondition":"gunReadyCondition",
+      "stageProcedure":"stageProcedure",
+      "stageProcedureNotes":"stageProcedureNotes",
+      "strings":"strings",
+      "scoring":"scoring",
+      "targetsDescription":"targetsDescription",
+      "scoredHits":"scoredHits",
+      "startStop":"startStop",
+      "rules":"rules",
+      "distance":"distance",
+      "coverGarment":true
     },
     {
       "id": "2",
       "matchId": "1",
       "name": "Stage 02",
-      "targets": 8
+      "targets": 8,
+      "sO":"SO",
+      "scenario":"scenario",
+      "gunReadyCondition":"gunReadyCondition",
+      "stageProcedure":"stageProcedure",
+      "stageProcedureNotes":"stageProcedureNotes",
+      "strings":"strings",
+      "scoring":"scoring",
+      "targetsDescription":"targetsDescription",
+      "scoredHits":"scoredHits",
+      "startStop":"startStop",
+      "rules":"rules",
+      "distance":"distance",
+      "coverGarment":true
     },
     {
       "id": "3",
       "matchId": "1",
       "name": "Stage 03",
-      "targets": 11
+      "targets": 11,
+      "sO":"SO",
+      "scenario":"scenario",
+      "gunReadyCondition":"gunReadyCondition",
+      "stageProcedure":"stageProcedure",
+      "stageProcedureNotes":"stageProcedureNotes",
+      "strings":"strings",
+      "scoring":"scoring",
+      "targetsDescription":"targetsDescription",
+      "scoredHits":"scoredHits",
+      "startStop":"startStop",
+      "rules":"rules",
+      "distance":"distance",
+      "coverGarment":true
     },
     {
       "id": "4",
       "matchId": "1",
       "name": "Stage 04",
-      "targets": 12
+      "targets": 12,
+      "sO":"SO",
+      "scenario":"scenario",
+      "gunReadyCondition":"gunReadyCondition",
+      "stageProcedure":"stageProcedure",
+      "stageProcedureNotes":"stageProcedureNotes",
+      "strings":"strings",
+      "scoring":"scoring",
+      "targetsDescription":"targetsDescription",
+      "scoredHits":"scoredHits",
+      "startStop":"startStop",
+      "rules":"rules",
+      "distance":"distance",
+      "coverGarment": true
     }
   ],
   "groups": [
@@ -59,44 +113,155 @@
     {
       "id": "1",
       "groupId": "1",
-      "shooterId": "1"
+      "shooterId": "1",
+      "teamId": "1",
+      "divisionId": "Stock Service Pistol (SSP)"
     },
     {
       "id": "2",
       "groupId": "1",
-      "shooterId": "2"
+      "shooterId": "2",
+      "teamId": "2",
+      "divisionId": "Stock Service Pistol (SSP)"
     },
     {
       "id": "3",
       "groupId": "1",
-      "shooterId": "3"
+      "shooterId": "3",
+      "teamId": "2",
+      "divisionId": "Enhanced Service Pistol (ESP)"
     },
     {
       "id": "4",
       "groupId": "1",
-      "shooterId": "4"
+      "shooterId": "4",
+      "teamId": "2",
+      "divisionId": "Custom Defensive Pistol (CDP)"
+    }
+  ],
+  "teams": [
+    {
+      "id": "1",
+      "name": "Team 01"
+    },
+    {
+      "id": "2",
+      "name": "Team 02"
+    },
+    {
+      "id": "3",
+      "name": "Team 03"
+    }
+  ],
+  "shooterTeam":[
+    {
+      "id":"1",
+      "shooterId": "1",
+      "teamId": "1",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"2",
+      "shooterId": "1",
+      "teamId": "2",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"3",
+      "shooterId": "2",
+      "teamId": "1",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"4",
+      "shooterId": "3",
+      "teamId": "2",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"5",
+      "shooterId": "4",
+      "teamId": "3",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"6",
+      "shooterId": "5",
+      "teamId": "2",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"7",
+      "shooterId": "6",
+      "teamId": "1",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"8",
+      "shooterId": "3",
+      "teamId": "1",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
   "shooters": [
     {
       "id": "1",
       "firstName": "Shooter",
-      "lastName": "01"
+      "lastName": "01",
+      "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "2",
       "firstName": "Shooter",
-      "lastName": "02"
+      "lastName": "02",
+      "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "3",
       "firstName": "Shooter",
-      "lastName": "03"
+      "lastName": "03",
+      "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "4",
       "firstName": "Shooter",
-      "lastName": "04"
+      "lastName": "04",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "5",
+      "firstName": "Shooter",
+      "lastName": "05",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "6",
+      "firstName": "Shooter",
+      "lastName": "06",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    }
+  ],
+  "shooterAssociations":[
+    {
+      "id":"1",
+      "shooterId":"1",
+      "associationId":"1",
+      "rank":"Novice",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id":"2",
+      "shooterId":"1",
+      "associationId":"2",
+      "rank":"Sharpshooter",
+      "registrationDate": "2021-05-29T18:25:43.511Z"
+    },
+    {
+      "id":"3",
+      "shooterId":"2",
+      "associationId":"1",
+      "rank":"Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
   "shooterStages": [
@@ -110,6 +275,7 @@
       "hitOnNonThreat": 1,
       "flagrantPenalties": 0,
       "ftdr": 1,
+      "procedural": true,
       "disqualified": false
     },
     {
@@ -122,6 +288,7 @@
       "hitOnNonThreat": 0,
       "flagrantPenalties": 0,
       "ftdr": 1,
+      "procedural": false,
       "disqualified": false
     },
     {
@@ -134,7 +301,50 @@
       "hitOnNonThreat": 1,
       "flagrantPenalties": 0,
       "ftdr": 1,
+      "procedural": false,
       "disqualified": true
+    }
+  ],
+  "associations":[
+    {
+      "id":"1",
+      "name": "idpa",
+      "divisions": [
+        "Stock Service Pistol (SSP)",
+        "Enhanced Service Pistol (ESP)",
+        "Custom Defensive Pistol (CDP)",
+        "Compact Carry Pistol (CCP)",
+        "Revolver (REV)",
+        "Back Up Gun (BUG)"
+      ],
+      "classes":[
+        "Novice",
+        "Marksman",
+        "Sharpshooter",
+        "Expert",
+        "Master",
+        "Distinguished Master"
+      ]
+    },
+    {
+      "id":"2",
+      "name": "ipsc",
+      "divisions": [
+        "Stock Service Pistol (SSP)",
+        "Enhanced Service Pistol (ESP)",
+        "Custom Defensive Pistol (CDP)",
+        "Compact Carry Pistol (CCP)",
+        "Revolver (REV)",
+        "Back Up Gun (BUG)"
+      ],
+      "classes":[
+        "Novice",
+        "Marksman",
+        "Sharpshooter",
+        "Expert",
+        "Master",
+        "Distinguished Master"
+      ]
     }
   ]
 }

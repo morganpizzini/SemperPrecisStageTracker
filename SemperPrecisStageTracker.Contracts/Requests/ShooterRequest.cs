@@ -23,7 +23,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string LastName { get; set; }
         [Required]
-        public DateTime BirthDate { get; set; }
+        public DateTime BirthDate { get; set; } = new DateTime(1980,01,01);
     }
 
     public class ShooterUpdateRequest
@@ -37,5 +37,41 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public DateTime BirthDate { get; set; }
     }
+ public class ShooterTeamCreateRequest
+    {
+        [Required]
 
+        public string TeamId { get; set; }
+        [Required]
+        public string ShooterId { get; set; }
+        [Required]
+        public DateTime RegistrationDate { get; set; } = DateTime.Now;
+    }
+    public class ShooterTeamDeleteRequest
+    {
+        [Required]
+        public string TeamId { get; set; }
+        [Required]
+        public string ShooterId { get; set; }
+    }
+
+     public class ShooterAssociationCreateRequest
+    {
+        [Required]
+
+        public string AssociationId { get; set; }
+        [Required]
+        public string ShooterId { get; set; }
+        [Required]
+        public string Rank { get; set; }
+        [Required]
+        public DateTime RegistrationDate { get; set; } = DateTime.Now;
+    }
+    public class ShooterAssociationDeleteRequest
+    {
+        [Required]
+        public string AssociationId { get; set; }
+        [Required]
+        public string ShooterId { get; set; }
+    }
 }

@@ -33,11 +33,15 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //recupero gli utenti
             var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
+            
+            var associationIds = matches.Select(x=>x.AssociationId).ToList();
+            var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Ritorno i contratti
             return Ok(entities.As(x =>
             {
-                return ContractUtils.GenerateContract(x, matches.FirstOrDefault(p => p.Id == x.MatchId));
+                var match = matches.FirstOrDefault(p => p.Id == x.MatchId);
+                return ContractUtils.GenerateContract(x,match, associations.FirstOrDefault(p => p.Id == match.AssociationId));
             }));
         }
 
@@ -76,7 +80,20 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 Name = request.Name,
                 Targets = request.Targets,
-                MatchId = request.MatchId
+                MatchId = request.MatchId,
+                SO = request.SO,
+                Scenario = request.Scenario,
+                GunReadyCondition = request.GunReadyCondition,
+                StageProcedure = request.StageProcedure,
+                StageProcedureNotes = request.StageProcedureNotes,
+                Strings = request.Strings,
+                Scoring = request.Scoring,
+                TargetsDescription = request.TargetsDescription,
+                ScoredHits = request.ScoredHits,
+                StartStop = request.StartStop,
+                Rules = request.Rules,
+                Distance = request.Distance,
+                CoverGarment = request.CoverGarment
             };
 
             //Invocazione del service layer
@@ -110,6 +127,19 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             entity.Targets = request.Targets;
+            entity.SO = request.SO;
+            entity.Scenario = request.Scenario;
+            entity.GunReadyCondition = request.GunReadyCondition;
+            entity.StageProcedure = request.StageProcedure;
+            entity.StageProcedureNotes = request.StageProcedureNotes;
+            entity.Strings = request.Strings;
+            entity.Scoring = request.Scoring;
+            entity.TargetsDescription = request.TargetsDescription;
+            entity.ScoredHits = request.ScoredHits;
+            entity.StartStop = request.StartStop;
+            entity.Rules = request.Rules;
+            entity.Distance = request.Distance;
+            entity.CoverGarment = request.CoverGarment;
             
             //Salvataggio
             var validations = BasicLayer.UpdateStage(entity);

@@ -1,0 +1,64 @@
+﻿@page "/teams/new"
+@inject HttpClientService Client
+@inject IStringLocalizer<TeamNew> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["NewTeam"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+
+    Validations validations;
+    TeamCreateRequest model = new TeamCreateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date.Value.Date <= DateTime.Now.Date.AddDays(1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<TeamContract>("/api/Team/CreateTeam", model);
+        UriHelper.NavigateTo($"/teams/{response.TeamId}");
+    }
+}

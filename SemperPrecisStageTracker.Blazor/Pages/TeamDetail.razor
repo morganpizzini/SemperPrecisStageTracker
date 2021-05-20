@@ -1,0 +1,217 @@
+﻿@page "/teams/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<TeamDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
+<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Team"]</CardTitle>
+                <CardText>@team.Name</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Shooters"]</CardTitle>
+                @if (teamShooters.Count > 0)
+                {
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
+                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var shooterTeam in teamShooters)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@shooterTeam.Shooter.FirstName @shooterTeam.Shooter.LastName</TableRowHeader>
+                                    <TableRowHeader>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowHeader>
+                                    <TableRowHeader>@shooterTeam.RegistrationDate.ToString("d")</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+                else
+                {
+                    <Text>@L["NoShooters"]</Text>
+                }
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+<Modal @ref="modalRefShooterToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["EditTeam"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="shooterValidations" Mode="ValidationMode.Manual" Model="@shooterToEdit">
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@shooterToEdit.ShooterId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var shooter in shooters)
+                                    {
+                                        <SelectItem Value="@shooter.ShooterId">@shooter.FirstName @shooter.LastName @shooter.BirthDate.ToString("d")</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@shooterToEdit.RegistrationDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongValidRegistrationDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefShooterToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if(shooterToDelete.Shooter!=null){
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.FirstName @shooterToDelete.Shooter.LastName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+            <Field>
+                <FieldLabel>@L["RegistrationDate"]</FieldLabel>
+                <Text>@shooterToDelete.RegistrationDate.ToString("d")</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
+            <Button Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    IList<ShooterContract> shooters = new List<ShooterContract>();
+    TeamContract team = new TeamContract();
+    Validations shooterValidations;
+    private Modal modalRefShooterToDelete;
+    ShooterTeamContract shooterToDelete = new ShooterTeamContract();
+    private Modal modalRefShooterToEdit;
+    ShooterTeamCreateRequest shooterToEdit = new ShooterTeamCreateRequest();
+    IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        team = await Client.PostAsync<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
+        shooters = await Client.PostAsync<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+
+        await LoadShooterTeams();
+
+        await base.OnInitializedAsync();
+    }
+    
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1980,1,1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongRegistrationDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+    async Task LoadShooterTeams(){
+        teamShooters = await Client.PostAsync<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+    }
+
+    void NewShooter(){
+        shooterToEdit = new ShooterTeamCreateRequest{TeamId = team.TeamId};
+        modalRefShooterToEdit.Show();
+    }
+
+    private async Task HideModalTeamToEdit(bool choice)
+    {        
+        if (choice)
+        {
+            if (!shooterValidations.ValidateAll())
+                return;
+            shooterValidations.ClearAll();
+            var response = await Client.PostAsync<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
+            await LoadShooterTeams();
+        }
+        shooterToEdit = new ShooterTeamCreateRequest();
+        modalRefShooterToEdit.Hide();
+    }
+
+    void DeleteShooter(ShooterTeamContract shooter){
+        if (shooter == null)
+            return;
+        shooterToDelete = shooter;
+        modalRefShooterToDelete.Show();
+    }
+
+    private async Task HideModalShooterToDelete(bool choice)
+    {
+        if (choice && shooterToDelete.Team!=null)
+        {
+            await Client.PostAsync<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest { ShooterId = shooterToDelete.Shooter.ShooterId,
+                TeamId = team.TeamId });
+            await LoadShooterTeams();
+        }
+        shooterToDelete = new ShooterTeamContract();
+        modalRefShooterToDelete.Hide();
+    }
+}

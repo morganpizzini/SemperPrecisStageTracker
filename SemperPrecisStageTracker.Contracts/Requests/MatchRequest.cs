@@ -22,6 +22,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         [Required]
         public DateTime MatchDateTime { get; set; } = DateTime.Now;
+        [Required]
+        public string AssociationId { get; set; }
+        public string Location {get;set;}
+
     }
 
     public class MatchUpdateRequest
@@ -33,6 +37,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         
         [Required]
         public DateTime MatchDateTime { get; set; }
+        [Required]
+        public string AssociationId { get; set; }
+        public string Location {get;set;}
+
     }
 
 }

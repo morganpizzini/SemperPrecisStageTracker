@@ -19,9 +19,19 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         public IList<GroupShooter> GroupShooters { get; set; } = new List<GroupShooter>();
         
         /// <summary>
+        /// List of team shooters
+        /// </summary>
+        public IList<ShooterTeam> ShooterTeams { get; set; } = new List<ShooterTeam>();
+        
+        /// <summary>
         /// List of match
         /// </summary>
         public IList<Match> Matches { get; set; } = new List<Match>();
+
+        /// <summary>
+        /// List of associations
+        /// </summary>
+        public IList<Association> Associations { get; set; } = new List<Association>();
 
         /// <summary>
         /// List of shooter
@@ -37,6 +47,16 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of shooter stage
         /// </summary>
         public IList<ShooterStage> ShooterStages { get; set; } = new List<ShooterStage>();
+
+        /// <summary>
+        /// List of teams
+        /// </summary>
+        public IList<Team> Teams { get; set; } = new List<Team>();
+
+        /// <summary>
+        /// List of teams
+        /// </summary>
+        public IList<ShooterAssociation> ShooterAssociations { get; set; } = new List<ShooterAssociation>();
 
         /// <summary>
         /// Executes initialization of entities

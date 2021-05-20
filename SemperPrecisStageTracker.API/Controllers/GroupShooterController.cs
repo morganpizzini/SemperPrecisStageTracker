@@ -11,9 +11,9 @@ using ZenProgramming.Chakra.Core.Extensions;
 namespace SemperPrecisStageTracker.API.Controllers
 {
     /// <summary>
-    /// Controller for shootergroup
+    /// Controller for groupshooter
     /// </summary>
-    public class ShooterGroupController : ApiControllerBase
+    public class GroupShooterController : ApiControllerBase
     {
         /// <summary>
         /// Fetch shooter available for join group
@@ -21,9 +21,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("FetchShooterGroup")]
+        [Route("FetchGroupShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult FetchShooterGroup(GroupRequest request)
+        public IActionResult FetchGroupShooter(GroupRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
@@ -45,9 +45,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("FetchShooterGroupStage")]
+        [Route("FetchGroupShooterStage")]
         [ProducesResponseType(typeof(IList<ShooterStageAggregationResult>), 200)]
-        public IActionResult FetchShooterGroupStage(GroupStageRequest request)
+        public IActionResult FetchGroupShooterStage(GroupStageRequest request)
         {
             //Invocazione del service layer
             var shooters = BasicLayer.FetchShootersByGroupId(request.GroupId);
@@ -60,41 +60,29 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
-        /// Creates a shootergroup on platform
+        /// Creates a groupshooter on platform
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("UpsertShooterGroup")]
-        [ProducesResponseType(typeof(OkResponse), 200)]
-        public IActionResult UpsertShooterGroup(ShooterGroupRequest request)
-        {
-            //Invocazione del service layer
-            var validations = BasicLayer.UpsertShootersInGroup(request.GroupId, request.ShooterIds);
-
-            if (validations.Count > 0)
-                return BadRequest(validations);
-
-            //Return contract
-            return Ok(new OkResponse{ Status= true});
-        }
-
-        /// <summary>
-        /// Creates a shootergroup on platform
-        /// </summary>
-        /// <param name="request">Request</param>
-        /// <returns>Returns action result</returns>
-        [HttpPost]
-        [Route("AddShooterGroup")]
+        [Route("UpsertGroupShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult AddShooterGroup(GroupCreateDeleteShooterRequest request)
+        public IActionResult UpsertGroupShooter(GroupShooterCreateRequest request)
         {
-            var shooterIds = this.BasicLayer.FetchShootersByGroupId(request.GroupId).Select(x=> x.Id).ToList();
-
-            shooterIds.Add(request.ShooterId);
+            var entity = this.BasicLayer.GetGroupShooterByShooterAndGroup(request.ShooterId,request.GroupId);
+            
+            if (entity == null){
+                entity = new GroupShooter{
+                    ShooterId = request.ShooterId,
+                    GroupId = request.GroupId
+                };
+            }
+            
+            entity.DivisionId = request.DivisionId;
+            entity.TeamId = request.TeamId;
             
             //Invocazione del service layer
-            var validations = BasicLayer.UpsertShootersInGroup(request.GroupId, shooterIds);
+            var validations = BasicLayer.UpsertGroupShooter(entity);
 
             if (validations.Count > 0)
                 return BadRequest(validations);
@@ -104,21 +92,26 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
-        /// Creates a shootergroup on platform
+        /// Creates a groupshooter on platform
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("DeleteShooterGroup")]
+        [Route("DeleteGroupShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult DeleteShooterGroup(GroupCreateDeleteShooterRequest request)
+        public IActionResult DeleteGroupShooter(GroupShooterDeleteRequest request)
         {
-            var shooterIds = this.BasicLayer.FetchShootersByGroupId(request.GroupId).Select(x=> x.Id).ToList();
+            //Recupero l'elemento dal business layer
+            var entity = BasicLayer.GetGroupShooterByShooterAndGroup(request.ShooterId,request.GroupId);
 
-            shooterIds.Remove(request.ShooterId);
-            
+            //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
+            if (entity == null)
+            {
+                return NotFound();
+
+            }
             //Invocazione del service layer
-            var validations = BasicLayer.UpsertShootersInGroup(request.GroupId, shooterIds);
+            var validations = BasicLayer.DeleteGroupShooter(entity);
 
             if (validations.Count > 0)
                 return BadRequest(validations);

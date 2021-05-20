@@ -59,10 +59,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
 
-            var match = BasicLayer.GetMatch(entity.Id);
-
+            var match = BasicLayer.GetMatch(entity.MatchId);
+            var association = BasicLayer.GetAssociation(match.AssociationId);
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity,match,shooters));
+            return Ok(ContractUtils.GenerateContract(entity,match,association,shooters));
         }
 
         /// <summary>

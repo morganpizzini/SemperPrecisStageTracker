@@ -3,6 +3,7 @@
 @inject IStringLocalizer<StageDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/edit/{StageId}")"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
 <Divider />
 <Row>
     <Column ColumnSize="ColumnSize.Is6">
@@ -12,6 +13,8 @@
                 <CardText>@stage.Name</CardText>
                 <CardTitle>@L["Targets"]</CardTitle>
                 <CardText>@stage.Targets</CardText>
+                <CardTitle>@L["SO"]</CardTitle>
+                <CardText>@stage.SO</CardText>
             </CardBody>
         </Card>
     </Column>
@@ -24,6 +27,58 @@
         </Card>
     </Column>
 </Row>
+<Card Margin="Margin.Is4.OnY">
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull">
+                <CardTitle>@L["Scenario"]</CardTitle>
+                <CardText>@stage.Scenario</CardText>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+                <CardTitle>@L["GunReadyCondition"]</CardTitle>
+                <CardText>@stage.GunReadyCondition</CardText>
+                <CardTitle>@L["StageProcedure"]</CardTitle>
+                <CardText>@stage.StageProcedure</CardText>
+                <CardTitle>@L["StageProcedureNotes"]</CardTitle>
+                <CardText>@stage.StageProcedureNotes</CardText>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Strings</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Scoring</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.TargetsDescription</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.ScoredHits</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.StartStop</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Rules</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Distance</CardText>
+                </Row>
+                <Row>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]</CardTitle>
+                    <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@(stage.CoverGarment ? @L["Yes"] : @L["No"])</CardText>
+                </Row>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
 <Divider />
 <Row>
     <Column ColumnSize="ColumnSize.IsFull">
@@ -76,10 +131,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         stage = await Client.PostAsync<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
         match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
-
         await base.OnInitializedAsync();
     }
 

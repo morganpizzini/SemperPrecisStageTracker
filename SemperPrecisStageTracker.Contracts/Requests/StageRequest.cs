@@ -27,6 +27,41 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public int Targets { get; set; }
         [Required]
         public string MatchId { get; set; }
+        public string SO {get;set;}
+        public string Scenario {get;set;}
+        public string GunReadyCondition {get;set;}
+        public string StageProcedure {get;set;}
+        public string StageProcedureNotes {get;set;}
+        public string Strings {get;set;}
+
+        ///
+        /// 12 rounds min, Unlimited
+        ///
+        public string Scoring {get;set;}
+        ///
+        /// 4 threat, 2 non threat.
+        ///
+        public string TargetsDescription {get;set;}
+        ///
+        /// Best 2 per paper
+        ///
+        public string ScoredHits {get;set;}
+        ///
+        /// Audible - Last shot
+        ///
+        public string StartStop {get;set;}
+        ///
+        /// Rulebook-2017.-3;
+        ///
+        public string Rules {get;set;}
+        ///
+        /// From 6 yds to 10 yds
+        ///
+        public string Distance {get;set;}
+        ///
+        /// Required
+        ///
+        public bool CoverGarment {get;set;}
     }
 
     public class StageUpdateRequest
@@ -37,6 +72,41 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         [Required]
         public int Targets { get; set; }
+        public string SO {get;set;}
+        public string Scenario {get;set;}
+        public string GunReadyCondition {get;set;}
+        public string StageProcedure {get;set;}
+        public string StageProcedureNotes {get;set;}
+        public string Strings {get;set;}
+
+        ///
+        /// 12 rounds min, Unlimited
+        ///
+        public string Scoring {get;set;}
+        ///
+        /// 4 threat, 2 non threat.
+        ///
+        public string TargetsDescription {get;set;}
+        ///
+        /// Best 2 per paper
+        ///
+        public string ScoredHits {get;set;}
+        ///
+        /// Audible - Last shot
+        ///
+        public string StartStop {get;set;}
+        ///
+        /// Rulebook-2017.-3;
+        ///
+        public string Rules {get;set;}
+        ///
+        /// From 6 yds to 10 yds
+        ///
+        public string Distance {get;set;}
+        ///
+        /// Required
+        ///
+        public bool CoverGarment {get;set;}
         
     }
 
@@ -64,6 +134,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// X20
         /// </summary>
         public int Ftdr { get; set; }
+        public bool Procedural  { get; set; }
+
         public bool Disqualified  { get; set; }
 
         public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;

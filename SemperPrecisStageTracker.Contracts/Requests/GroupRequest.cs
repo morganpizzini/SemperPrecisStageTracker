@@ -45,21 +45,24 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         
     }
-    public class GroupCreateDeleteShooterRequest
+    public class GroupShooterCreateRequest
     {
         [Required]
 
         public string GroupId { get; set; }
         [Required]
         public string ShooterId { get; set; }
-    }
-    public class ShooterGroupRequest{
         [Required]
-
+        public string DivisionId { get; set; }
+        [Required]
+        public string TeamId { get; set; }
+    }
+    public class GroupShooterDeleteRequest
+    {
+        [Required]
         public string GroupId { get; set; }
         [Required]
-
-        public IList<string> ShooterIds { get; set; }
+        public string ShooterId { get; set; }
     }
 
 

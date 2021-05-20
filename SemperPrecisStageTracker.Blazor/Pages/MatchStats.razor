@@ -1,0 +1,96 @@
+﻿@page "/matches/{id}/stats"
+@inject HttpClientService Client
+@inject IStringLocalizer<MatchStats> L
+
+<Heading Size="HeadingSize.Is1">@L["Stats"]</Heading>
+<Row>
+    <Column ColumnSize="ColumnSize.IsHalf">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Match"]</CardTitle>
+                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+            </CardBody>
+        </Card>
+    </Column>
+    @if(match.Association!=null){
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Association"]</CardTitle>
+                    <CardText>@match.Association.Name</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+    }
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.IsFull">
+    @foreach (var division in stats)
+    {
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@division.Name</CardTitle>
+                 @foreach (var rank in division.Ranks)
+                {
+                    <CardText>@rank.Rank</CardText>
+                    <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                            @for (int i = 0; i < division.StageNumber; i++)
+                            {
+                                var tmp = i+1;
+                                <TableHeaderCell>@(tmp)</TableHeaderCell>
+                            }
+                            <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var shooter in rank.Shooters)
+                        {
+                            <TableRow>
+                                <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                <TableRowCell>@shooter.TeamName</TableRowCell>
+                                @for (int i = 0; i < division.StageNumber; i++)
+                                {
+                                    var current = shooter.Results.FirstOrDefault(x=>x.StageIndex == i);
+                                    if(current!= null){
+                                        @if(current.Total <0){
+                                            <TableRowCell>-</TableRowCell>
+                                        }else{
+                                            <TableRowCell>@current.Total</TableRowCell>
+                                        }
+                                    }else{
+                                        <TableRowCell>-</TableRowCell>
+                                    }
+                                }
+                                <TableRowCell>@(shooter.Total<0 ? @L["DQ"] : shooter.Total.ToString())</TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+                }
+            </CardBody>
+        </Card>
+    }
+        
+    </Column>
+</Row>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    MatchContract match = new MatchContract();
+    IList<DivisionMatchResultContract> stats = new List<DivisionMatchResultContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        stats = await Client.PostAsync<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
+
+        await base.OnInitializedAsync();
+    }
+}

@@ -22,6 +22,8 @@
         <Column ColumnSize="ColumnSize.Is6">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
+                    <CardTitle>@L["Association"]</CardTitle>
+                    <CardText>@group.Match.Association.Name</CardText>
                     <CardTitle>@L["Match"]</CardTitle>
                     <CardText>@group.Match.Name - @group.Match.MatchDateTime.ToString("d")</CardText>
                 </CardBody>
@@ -54,6 +56,50 @@
                         </FieldBody>
                     </Field>
                 </Validation>
+                <Row>
+                    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <Select TValue="string" @bind-SelectedValue="@model.TeamId">
+                                        <ChildContent>
+                                            <SelectItem Value="@("")"></SelectItem>
+                                            @foreach (var team in teams)
+                                            {
+                                                <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                                            }
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError>@L["WrongTeam"]</ValidationError>
+                                        </Feedback>
+                                    </Select>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <Select TValue="string" @bind-SelectedValue="@model.DivisionId">
+                                        <ChildContent>
+                                            <SelectItem Value="@("")"></SelectItem>
+                                            @foreach (var division in group.Match.Association.Divisions)
+                                            {
+                                                <SelectItem Value="@division">@division</SelectItem>
+                                            }
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError>@L["WrongDivision"]</ValidationError>
+                                        </Feedback>
+                                    </Select>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
                         <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
@@ -138,12 +184,12 @@
     private Modal modalRef;
     ShooterContract shooterToDelete = new ShooterContract();
 
-
     GroupContract group = new GroupContract();
     IList<ShooterContract> shooters = new List<ShooterContract>();
+    IList<TeamContract> teams = new List<TeamContract>();
 
     Validations validations;
-    GroupCreateDeleteShooterRequest model = new GroupCreateDeleteShooterRequest();
+    GroupShooterCreateRequest model = new GroupShooterCreateRequest();
 
 
     protected override async Task OnInitializedAsync()
@@ -151,13 +197,14 @@
         model.GroupId = GroupId;
         await LoadShooters();
         group = await Client.PostAsync<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        teams = await Client.PostAsync<IList<TeamContract>>("api/Team/FetchAllTeams");
 
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        shooters = await Client.PostAsync<IList<ShooterContract>>("api/ShooterGroup/FetchShooterGroup", new GroupRequest() { GroupId = GroupId });
+        shooters = await Client.PostAsync<IList<ShooterContract>>("api/GroupShooter/FetchGroupShooter", new GroupRequest() { GroupId = GroupId });
     }
 
     async Task Submit()
@@ -166,13 +213,13 @@
             return;
         validations.ClearAll();
 
-        group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/ShooterGroup/AddShooterGroup", model);
+        group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/GroupShooter/AddGroupShooter", model);
         await LoadShooters();
         model.ShooterId = string.Empty;
 
     }
 
-    async Task DeleteShooter(ShooterContract shooter)
+    void DeleteShooter(ShooterContract shooter)
     {
         if (shooter == null)
             return;
@@ -184,7 +231,7 @@
     {
         if (choice && !string.IsNullOrEmpty(shooterToDelete.ShooterId))
         {
-            group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/ShooterGroup/DeleteShooterGroup", new GroupCreateDeleteShooterRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
+            group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterDeleteRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
             await LoadShooters();
         }
         shooterToDelete = new ShooterContract();

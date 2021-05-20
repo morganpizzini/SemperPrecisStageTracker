@@ -11,6 +11,8 @@
         <TableRow>
             <TableHeaderCell>@L["Name"]</TableHeaderCell>
             <TableHeaderCell>@L["Date"]</TableHeaderCell>
+            <TableHeaderCell>@L["Location"]</TableHeaderCell>
+            <TableHeaderCell>@L["Associations"]</TableHeaderCell>
             <TableHeaderCell></TableHeaderCell>
         </TableRow>
     </TableHeader>
@@ -20,7 +22,10 @@
             <TableRow>
                 <TableRowHeader>@match.Name</TableRowHeader>
                 <TableRowCell>@match.MatchDateTime.ToString("d")</TableRowCell>
+                <TableRowCell>@match.Location</TableRowCell>
+                <TableRowCell>@match.Association.Name</TableRowCell>
                 <TableRowCell>
+                    <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{match.MatchId}")"><Icon Name="IconName.Pen" /></Button>
                     <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}")"><Icon Name="IconName.Search" /></Button>
                 </TableRowCell>
             </TableRow>

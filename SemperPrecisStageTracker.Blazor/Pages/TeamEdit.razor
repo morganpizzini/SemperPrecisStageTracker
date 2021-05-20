@@ -1,0 +1,51 @@
+﻿@page "/teams/edit/{id}"
+@inject HttpClientService Client
+@inject IStringLocalizer<TeamEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditTeam"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Validations validations;
+    TeamUpdateRequest model = new TeamUpdateRequest();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var existing = await Client.PostAsync<TeamContract>("api/Team/GetTeam", new TeamRequest{ TeamId = Id });
+        model.TeamId = existing.TeamId;
+        model.Name = existing.Name;
+
+        await base.OnInitializedAsync();
+    }
+   
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        var response = await Client.PostAsync<TeamContract>("/api/Team/UpdateTeam", model);
+        UriHelper.NavigateTo($"/teams/{response.TeamId}");
+    }
+}
