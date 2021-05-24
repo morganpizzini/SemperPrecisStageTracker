@@ -6,7 +6,7 @@ namespace SemperPrecisStageTracker.Contracts
 {
     public class DivisionMatchResultContract{
         public string Name { get; set; }
-        public int StageNumber {get; set; }
+        public IList<string> StageNumber {get; set; } = new List<string>();
         public IList<ShooterRankResultContract> Ranks { get; set; } = new List<ShooterRankResultContract>();
     }
     public class ShooterRankResultContract{

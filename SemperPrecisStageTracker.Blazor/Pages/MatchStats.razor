@@ -8,7 +8,7 @@
         <Card Margin="Margin.Is4.OnY">
             <CardBody>
                 <CardTitle>@L["Match"]</CardTitle>
-                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+                <CardText><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")</CardText>
             </CardBody>
         </Card>
     </Column>
@@ -17,7 +17,7 @@
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Association"]</CardTitle>
-                    <CardText>@match.Association.Name</CardText>
+                    <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -38,9 +38,9 @@
                         <TableRow>
                             <TableHeaderCell>@L["Name"]</TableHeaderCell>
                             <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
-                            @for (int i = 0; i < division.StageNumber; i++)
+                            @for (int i = 0; i < division.StageNumber.Count(); i++)
                             {
-                                var tmp = i+1;
+                                var tmp = division.StageNumber[i];
                                 <TableHeaderCell>@(tmp)</TableHeaderCell>
                             }
                             <TableHeaderCell>@L["Total"]</TableHeaderCell>
@@ -52,7 +52,7 @@
                             <TableRow>
                                 <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
                                 <TableRowCell>@shooter.TeamName</TableRowCell>
-                                @for (int i = 0; i < division.StageNumber; i++)
+                                @for (int i = 1; i <= division.StageNumber.Count(); i++)
                                 {
                                     var current = shooter.Results.FirstOrDefault(x=>x.StageIndex == i);
                                     if(current!= null){

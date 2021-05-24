@@ -98,11 +98,13 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
+            var existingMatch = this._matchRepository.GetSingle(x => x.Id == id);
+
             var existingStages = this._stageRepository.Fetch(x => x.MatchId == id);
 
             var existingGroups = this._groupRepository.Fetch(x => x.MatchId == id);
             var existingGroupsIds = existingGroups.Select(x=>x.Id);
-            var existingShooterGroups = this._groupShooterRepository.Fetch(x => x.GroupId == id);
+            var existingShooterGroups = this._groupShooterRepository.Fetch(x => existingGroupsIds.Contains(x.GroupId));
 
             var groupDivisions = existingShooterGroups.GroupBy(x=>x.DivisionId).Select(x=>new { 
                 Division = x.Key, 
@@ -125,11 +127,11 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return groupDivisions.Select(x=> new DivisionMatchResult{
                 Name = x.Division,
-                StageNumber = existingStages.Count,
+                StageNumber = existingStages.Select(x=>x.Name).ToList(),
                 Ranks = x.Shooters.Select(s=> new ShooterMatchResult{
                     Shooter = existingShooters.FirstOrDefault(e=>e.Id == s.ShooterId),
                     TeamName = existingTeams.FirstOrDefault(e=> e.Id == s.TeamId)?.Name ?? "",
-                    Rank = shooterAssociation.FirstOrDefault(e=> e.ShooterId == s.ShooterId)?.Rank ?? "Unranked",
+                    Rank = existingMatch.UnifyRanks ? "Unranked" : shooterAssociation.FirstOrDefault(e=> e.ShooterId == s.ShooterId)?.Rank ?? "Unranked",
                     Results = existingShootersResult.Where(e=>e.ShooterId == s.ShooterId)
                             .Select(y =>
                                 new ShooterStageResult
@@ -1483,7 +1485,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var shooterInTeamAssociation = this._shooterAssociationRepository.Fetch(x=>x.AssociationId== match.AssociationId).Select(x=>x.ShooterId).ToList();
 
             // retrieve shooter not from available user and in association
-            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && shooterInTeamAssociation.Contains(x.Id));
+            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)));
         }
 
         /// <summary>

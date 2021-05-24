@@ -30,7 +30,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 MatchDateTime = entity.MatchDateTime,
                 Location = entity.Location,
                 CreationDateTime = entity.CreationDateTime,
-                Association = GenerateContract(association),
+                UnifyRanks = entity.UnifyRanks,
+                OpenMatch = entity.OpenMatch,
+                Association = association != null ? GenerateContract(association) : new AssociationContract(),
                 Groups = groups != null ? groups.Select(x=>GenerateContract(x)).ToList() : new List<GroupContract>(),
                 Stages = groups != null ? stages.Select(x=>GenerateContract(x)).ToList() : new List<StageContract>()
             };
@@ -70,7 +72,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 AssociationId = entity.Id,
                 Name = entity.Name,
                 Divisions = entity.Divisions,
-                Classes = entity.Classes,
+                Ranks = entity.Ranks,
             };
         }
 
@@ -212,6 +214,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 StageId = entity.Id,
                 Name = entity.Name,
                 Targets = entity.Targets,
+                Index = entity.Index,
                 Match = match != null ? GenerateContract(match,association) : null,
                 SO = entity.SO,
                 Scenario = entity.Scenario,

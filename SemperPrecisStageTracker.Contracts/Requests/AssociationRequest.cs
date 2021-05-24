@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public IList<string> Divisions {get;set;} = new List<string>();
         [Required]
-        public IList<string> Classes {get;set;} = new List<string>();
+        public IList<string> Ranks {get;set;} = new List<string>();
     }
 
     public class AssociationUpdateRequest
@@ -36,7 +36,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public IList<string> Divisions {get;set;} = new List<string>();
         [Required]
-        public IList<string> Classes {get;set;} = new List<string>();
+        public IList<string> Ranks {get;set;} = new List<string>();
     }
 
 }

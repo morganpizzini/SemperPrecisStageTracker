@@ -32,13 +32,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             var matchIds = entities.Select(x => x.MatchId).ToList();
 
             //recupero gli utenti
-            var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
+            // var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x =>
-            {
-                return ContractUtils.GenerateContract(x, matches.FirstOrDefault(p => p.Id == x.MatchId));
-            }));
+            return Ok(entities.As(x=>ContractUtils.GenerateContract(x)));
+            // return Ok(entities.As(x =>
+            // {
+            //     return ContractUtils.GenerateContract(x, matches.FirstOrDefault(p => p.Id == x.MatchId));
+            // }));
         }
 
         /// <summary>

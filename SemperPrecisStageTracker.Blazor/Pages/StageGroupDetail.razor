@@ -1,5 +1,4 @@
 ﻿@page "/matches/{id}/stages/{stageId}/group/{groupId}"
-@using Icon = Blazorise.Icons.FontAwesome.Icon
 @inject HttpClientService Client
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
@@ -23,9 +22,9 @@
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
-                    <CardText>@group.Match.Name - @group.Match.MatchDateTime.ToString("d")</CardText>
+                    <CardText><NavLink href="@($"matches/{group.Match.MatchId}")">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
                     <CardTitle>@L["Stage"]</CardTitle>
-                    <CardText>@stage.Name</CardText>
+                    <CardText><NavLink href="@($"matches/{group.Match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -55,7 +54,7 @@
                                     <TableRowHeader>@shooterTmp.Shooter.LastName @shooterTmp.Shooter.FirstName</TableRowHeader>
                                     <TableRowHeader>@(shooterTmp.ShooterStage.Total> 0 ? shooterTmp.ShooterStage.Total.ToString() : shooterTmp.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Clicked="@(() => FillShooter(shooterTmp))"><Icon Name="IconName.Pen" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => FillShooter(shooterTmp))"><Icon Name="IconName.Pen" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -80,7 +79,7 @@
         <ModalBody>
             <Field>
                 <FieldLabel>@L["Name"]</FieldLabel>
-                <Text>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("g")</Text>
+                <Text>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</Text>
             </Field>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
 
@@ -117,8 +116,8 @@
                                                 </NumericEdit>
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -137,8 +136,8 @@
                                                 </NumericEdit>
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1 ? true : false)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1 ? true : false)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -157,8 +156,8 @@
                                                 </NumericEdit>
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.FlagrantPenalties < 1 ? true : false)" Clicked="@(() => { model.FlagrantPenalties--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.FlagrantPenalties++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.FlagrantPenalties < 1 ? true : false)" Clicked="@(() => { model.FlagrantPenalties--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.FlagrantPenalties++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -177,8 +176,8 @@
                                                 </NumericEdit>
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Ftdr < 1 ? true : false)" Clicked="@(() => { model.Ftdr--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ftdr++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Ftdr < 1 ? true : false)" Clicked="@(() => { model.Ftdr--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ftdr++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -223,8 +222,8 @@
 
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1 ? true : false)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1 ? true : false)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -233,45 +232,45 @@
                         </TabPanel>
                         <TabPanel Name="recap">
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Time"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.Time</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Procedurals"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Procedurals"] (x3)</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.Procedurals</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["HitOnNonThreat"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x3)</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.HitOnNonThreat</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["FlagrantPenalties"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["FlagrantPenalties"] (x10)</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.FlagrantPenalties</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Ftdr"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Ftdr"] (x20)</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.Ftdr</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["DownPoints"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["DownPoints"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.DownPoints.Sum()</Text>
                                 </FieldBody>
                             </Field>
                             <Divider />
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Total"]</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is8">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@(model.Total> 0 ? model.Total.ToString() : model.Total<0 ? @L["Disqualified"] : "" )</Text>
                                 </FieldBody>
                             </Field>
@@ -282,12 +281,31 @@
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Submit"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
-
+<Modal @ref="modalConfirmRef">
+    <ModalContent Size="ModalSize.Default" Centered="true">
+        <ModalHeader>
+            <ModalTitle>
+                @L["ConfirmTime"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Text Weight="TextWeight.Bold">@L["Shooter"]</Text>
+            <Text>@shooterToFill.LastName @shooterToFill.FirstName</Text>
+            <Text Weight="TextWeight.Bold">@L["Total"]</Text>
+            <Text>@(model.Total> 0 ? model.Total.ToString() : model.Total<0 ? @L["Disqualified"] : "" )</Text>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideConfirmModal(true))">@L["Approve"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
@@ -306,6 +324,7 @@
         selectedTab = name;
     }
     // reference to the modal component
+    private Modal modalConfirmRef;
     private Modal modalRef;
     ShooterContract shooterToFill = new ShooterContract();
 
@@ -372,12 +391,27 @@
             if (!validations.ValidateAll())
                 return;
             validations.ClearAll();
+            modalConfirmRef.Show();
+        }else{
+            shooterToFill = new ShooterContract();
+            InitModelList();
+            modalRef.Hide();
+        }
+        
+    }
+    private async Task HideConfirmModal(bool choice){
+        if (choice)
+        {
+            if (!validations.ValidateAll())
+                return;
+            validations.ClearAll();
             var response = await Client.PostAsync<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
             await LoadShooters();
+            shooterToFill = new ShooterContract();
+            InitModelList();
+            modalRef.Hide();
         }
-        shooterToFill = new ShooterContract();
-        InitModelList();
-        modalRef.Hide();
+        modalConfirmRef.Hide();
     }
     public async Task Focus(KeyboardEventArgs e, int elementId)
     {

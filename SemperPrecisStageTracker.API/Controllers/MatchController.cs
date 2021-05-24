@@ -89,7 +89,9 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Name = request.Name,
                 MatchDateTime = request.MatchDateTime,
                 AssociationId= request.AssociationId,
-                Location = request.Location
+                Location = request.Location,
+                OpenMatch = request.OpenMatch,
+                UnifyRanks = request.UnifyRanks
             };
 
             //Invocazione del service layer
@@ -126,6 +128,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.MatchDateTime = request.MatchDateTime;
             entity.AssociationId = request.AssociationId;
             entity.Location = request.Location;
+            entity.OpenMatch = request.OpenMatch;
+            entity.UnifyRanks = request.UnifyRanks;
             
             //Salvataggio
             var validations = BasicLayer.UpdateMatch(entity);

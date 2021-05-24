@@ -8,8 +8,8 @@ namespace SemperPrecisStageTracker.Contracts
     {
         public string AssociationId { get; set; }
         public string Name { get; set; }
-        public IList<string> Divisions {get;set;}
-        public IList<string> Classes {get;set;}
+        public IList<string> Divisions {get;set;} = new List<string>();
+        public IList<string> Ranks {get;set;} = new List<string>();
     }
     public class TeamContract
     {
@@ -24,6 +24,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string Location {get;set;}
 
         public DateTime CreationDateTime { get; set; }
+        public bool UnifyRanks { get; set; }
+        public bool OpenMatch {get; set; }
         public AssociationContract Association {get;set;}
         public IList<GroupContract> Groups { get; set; } = new List<GroupContract>();
         public IList<StageContract> Stages { get; set; } = new List<StageContract>();
@@ -91,13 +93,14 @@ namespace SemperPrecisStageTracker.Contracts
         public string StageId { get; set; }
         public string Name { get; set; }
         public int Targets { get; set; }
+        public int Index { get; set; }
         public MatchContract Match { get; set; }
         public string SO {get;set;}
         public string Scenario {get;set;}
         public string GunReadyCondition {get;set;}
         public string StageProcedure {get;set;}
         public string StageProcedureNotes {get;set;}
-        public string Strings {get;set;}
+        public int Strings {get;set;}
 
         ///
         /// 12 rounds min, Unlimited

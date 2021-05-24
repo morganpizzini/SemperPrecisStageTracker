@@ -3,8 +3,8 @@
 @inject IStringLocalizer<TeamDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
-<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsFull">
         <Card Margin="Margin.Is4.OnY">
@@ -39,7 +39,7 @@
                                     <TableRowHeader>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowHeader>
                                     <TableRowHeader>@shooterTeam.RegistrationDate.ToString("d")</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -96,8 +96,8 @@
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -127,8 +127,8 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

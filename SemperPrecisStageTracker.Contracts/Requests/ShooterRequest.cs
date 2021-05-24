@@ -23,7 +23,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string LastName { get; set; }
         [Required]
-        public DateTime BirthDate { get; set; } = new DateTime(1980,01,01);
+        public DateTime BirthDate { get; set; } = new DateTime(1980,1,1);
     }
 
     public class ShooterUpdateRequest

@@ -71,7 +71,7 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
             modelBuilder.Entity<Association>()
-                .Property(e => e.Classes)
+                .Property(e => e.Ranks)
                 .HasConversion(
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));

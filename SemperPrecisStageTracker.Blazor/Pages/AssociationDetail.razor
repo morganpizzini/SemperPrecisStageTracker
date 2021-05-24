@@ -3,7 +3,7 @@
 @inject IStringLocalizer<AssociationDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsFull">
         <Card Margin="Margin.Is4.OnY">
@@ -33,10 +33,10 @@
     <Column ColumnSize="ColumnSize.IsHalf">
         <Card Margin="Margin.Is4.OnY">
             <CardBody>
-                <CardTitle>@L["Classes"]</CardTitle>
+                <CardTitle>@L["Ranks"]</CardTitle>
                 <CardText>
                     <ul>
-                        @foreach(var s in association.Classes){
+                        @foreach(var s in association.Ranks){
                             <li>@s</li>
                         }
                     </ul>

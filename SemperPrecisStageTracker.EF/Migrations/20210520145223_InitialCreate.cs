@@ -14,7 +14,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     Id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Divisions = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Classes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ranks = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreationDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

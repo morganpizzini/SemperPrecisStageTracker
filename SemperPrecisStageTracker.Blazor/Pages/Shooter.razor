@@ -4,7 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Shooters"]</Heading>
-<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/new")"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/new")"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 <Divider />
 <Table Striped="true" Hoverable="true">
     <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -21,8 +21,8 @@
                 <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
                 <TableRowHeader>@shooter.BirthDate.ToString("d")</TableRowHeader>
                 <TableRowCell>
-                    <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
-                    <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
+                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
                 </TableRowCell>
             </TableRow>
         }

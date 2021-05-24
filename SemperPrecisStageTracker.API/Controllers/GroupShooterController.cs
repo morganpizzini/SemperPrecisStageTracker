@@ -21,9 +21,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("FetchGroupShooter")]
+        [Route("FetchAvailableGroupShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult FetchGroupShooter(GroupRequest request)
+        public IActionResult FetchAvailableGroupShooter(GroupRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);

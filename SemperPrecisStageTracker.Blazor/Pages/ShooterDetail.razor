@@ -3,9 +3,9 @@
 @inject IStringLocalizer<ShooterDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
-<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewRating())"><Icon Name="IconName.PlusSquare" /> @L["NewRating"]</Button>
-<Button Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewRating())"><Icon Name="IconName.PlusSquare" /> @L["NewRating"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsFull">
         <Card Margin="Margin.Is4.OnY">
@@ -41,8 +41,8 @@
                                     <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
                                     <TableRowHeader>@shooterTeam.RegistrationDate.ToString("d")</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
-                                        <Button Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -79,8 +79,8 @@
                                     <TableRowHeader>@rating.Rank</TableRowHeader>
                                     <TableRowHeader>@rating.RegistrationDate.ToString("d")</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Clicked="@(() => EditRating(rating))"><Icon Name="IconName.Pen" /></Button>
-                                        <Button Color="Color.Danger" Clicked="@(() => DeleteRating(rating))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditRating(rating))"><Icon Name="IconName.Pen" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteRating(rating))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -159,8 +159,8 @@
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalAssociationToEdit(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalAssociationToEdit(true))">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAssociationToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAssociationToEdit(true))">@L["Submit"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -191,8 +191,8 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalAssociationToDelete(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalAssociationToDelete(true))">@L["Yes"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAssociationToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAssociationToDelete(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -239,8 +239,8 @@
             </Validations>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -267,8 +267,8 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalTeamToDelete(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalTeamToDelete(true))">@L["Yes"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToDelete(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -341,7 +341,7 @@
         if(existingAssociation== null)
             return;
         
-        rankings = existingAssociation.Classes;
+        rankings = existingAssociation.Ranks;
     }
     void NewRating(){
         associationToEdit = new ShooterAssociationCreateRequest{ShooterId = shooter.ShooterId};

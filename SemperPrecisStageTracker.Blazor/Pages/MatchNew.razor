@@ -61,9 +61,25 @@
             </FieldBody>
         </Field>
     </Validation>
+        <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Check TValue="bool" @bind-Checked="@model.UnifyRanks">@L["UnifyRanks"]</Check>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
         </FieldBody>
     </Field>
 </Validations>

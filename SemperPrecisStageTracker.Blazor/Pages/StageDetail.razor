@@ -3,7 +3,7 @@
 @inject IStringLocalizer<StageDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/edit/{StageId}")"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/edit/{StageId}")"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
 <Divider />
 <Row>
     <Column ColumnSize="ColumnSize.Is6">
@@ -11,6 +11,8 @@
             <CardBody>
                 <CardTitle>@L["Stage"]</CardTitle>
                 <CardText>@stage.Name</CardText>
+                <CardTitle>@L["Index"]</CardTitle>
+                <CardText>@stage.Index</CardText>
                 <CardTitle>@L["Targets"]</CardTitle>
                 <CardText>@stage.Targets</CardText>
                 <CardTitle>@L["SO"]</CardTitle>
@@ -22,7 +24,7 @@
         <Card Margin="Margin.Is4.OnY">
             <CardBody>
                 <CardTitle>@L["Match"]</CardTitle>
-                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+                <CardText><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")</CardText>
             </CardBody>
         </Card>
     </Column>
@@ -44,35 +46,35 @@
             </Column>
             <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Strings</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Scoring</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.TargetsDescription</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.ScoredHits</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.StartStop</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Rules</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Distance</CardText>
                 </Row>
                 <Row>
-                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]</CardTitle>
+                    <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]</CardTitle>:&nbsp;
                     <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@(stage.CoverGarment ? @L["Yes"] : @L["No"])</CardText>
                 </Row>
             </Column>
@@ -100,7 +102,7 @@
                                 <TableRow>
                                     <TableRowHeader>@group.Name</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }

@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker
     public class DivisionMatchResult
     {
         public string Name { get; set; }
-        public int StageNumber {get; set; }
+        public IList<string> StageNumber {get; set; } = new List<string>();
         public IList<ShooterRankResult> Ranks { get; set; }
     }
     public class ShooterRankResult{

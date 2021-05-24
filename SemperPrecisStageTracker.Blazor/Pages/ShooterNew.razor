@@ -44,7 +44,7 @@
     </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
         </FieldBody>
     </Field>
 </Validations>
@@ -62,7 +62,7 @@
         {
             e.Status = ValidationStatus.Error;
         }
-        else if (date <= new DateTime(1920,0,0))
+        else if (date <= new DateTime(1920,1,1))
         {
             e.Status = ValidationStatus.Error;
             e.ErrorText = L["WrongBirthDate"];

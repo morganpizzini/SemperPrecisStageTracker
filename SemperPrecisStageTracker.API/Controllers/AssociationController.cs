@@ -64,7 +64,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Creazione modello richiesto da admin
             var model = new Association
             {
-                Name = request.Name
+                Name = request.Name,
+                Ranks= request.Ranks,
+                Divisions= request.Divisions
             };
 
             //Invocazione del service layer
@@ -97,6 +99,8 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
+            entity.Ranks = request.Ranks;
+            entity.Divisions = request.Divisions;
             
             //Salvataggio
             var validations = BasicLayer.UpdateAssociation(entity);
@@ -126,7 +130,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
             {
                 return NotFound();
-
             }
 
             //Invocazione del service layer

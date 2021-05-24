@@ -17,7 +17,7 @@ namespace SemperPrecisStageTracker.Models
         public string GunReadyCondition {get;set;}
         public string StageProcedure {get;set;}
         public string StageProcedureNotes {get;set;}
-        public string Strings {get;set;}
+        public int Strings {get;set;}
 
         ///
         /// 12 rounds min, Unlimited

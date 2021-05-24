@@ -3,10 +3,10 @@
 @inject IStringLocalizer<MatchDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/groups/new")"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
-<Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["MatchStats"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/groups/new")"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["MatchStats"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsHalf">
         <Card Margin="Margin.Is4.OnY">
@@ -24,7 +24,7 @@
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Association"]</CardTitle>
-                    <CardText>@match.Association.Name</CardText>
+                    <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -51,8 +51,8 @@
                                 <TableRow>
                                     <TableRowHeader>@group.Name</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
-                                        <Button Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -90,9 +90,9 @@
                                     <TableRowHeader>@stage.Name</TableRowHeader>
                                     <TableRowHeader>@stage.Targets</TableRowHeader>
                                     <TableRowCell>
-                                        <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
-                                        <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
-                                        <Button Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>
                             }
@@ -124,8 +124,8 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalGroup(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalGroup(true))">@L["Yes"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalGroup(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalGroup(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -150,8 +150,8 @@
             </Field>
         </ModalBody>
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@(() => HideModalStage(false))">@L["Close"]</Button>
-            <Button Color="Color.Primary" Clicked="@(() => HideModalStage(true))">@L["Yes"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalStage(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalStage(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

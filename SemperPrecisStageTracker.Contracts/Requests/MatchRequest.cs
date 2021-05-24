@@ -25,6 +25,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string AssociationId { get; set; }
         public string Location {get;set;}
+        public bool UnifyRanks { get; set; }
+        public bool OpenMatch {get; set; }
 
     }
 
@@ -40,6 +42,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string AssociationId { get; set; }
         public string Location {get;set;}
+        public bool UnifyRanks { get; set; }
+        public bool OpenMatch {get; set; }
 
     }
 

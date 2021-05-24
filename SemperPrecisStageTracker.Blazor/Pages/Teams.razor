@@ -4,7 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Teams"]</Heading>
-<Button Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/new")"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/new")"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
 <Divider />
 <Table Striped="true" Hoverable="true">
     <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -19,8 +19,8 @@
             <TableRow>
                 <TableRowHeader>@team.Name</TableRowHeader>
                 <TableRowCell>
-                    <Button Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
-                    <Button Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
+                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
                 </TableRowCell>
             </TableRow>
         }

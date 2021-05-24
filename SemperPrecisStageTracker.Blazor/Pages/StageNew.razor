@@ -30,10 +30,22 @@
             </FieldBody>
         </Field>
     </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Index"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <NumericEdit Placeholder="@L["Index"]" TValue="int" @bind-Value="@model.Index">
+                    <Feedback>
+                        <ValidationError>@L["WrongIndex"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Row>
         <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["SO"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["SO"]" @bind-Text="@model.SO">
@@ -45,7 +57,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scenario"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">
@@ -57,7 +69,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["GunReadyCondition"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["GunReadyCondition"]" @bind-Text="@model.GunReadyCondition">
@@ -69,7 +81,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedure"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["StageProcedure"]" @bind-Text="@model.StageProcedure">
@@ -81,7 +93,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedureNotes"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["StageProcedureNotes"]" @bind-Text="@model.StageProcedureNotes">
@@ -95,19 +107,19 @@
         </Column>
         <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["Strings"]" @bind-Text="@model.Strings">
+                         <NumericEdit Placeholder="@L["Strings"]" TValue="int" @bind-Text="@model.Strings">
                             <Feedback>
                                 <ValidationError>@L["WrongStrings"]</ValidationError>
                             </Feedback>
-                        </TextEdit>
+                        </NumericEdit>
                     </FieldBody>
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["Scoring"]" @bind-Text="@model.Scoring">
@@ -119,7 +131,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["TargetsDescription"]" @bind-Text="@model.TargetsDescription">
@@ -131,7 +143,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["ScoredHits"]" @bind-Text="@model.ScoredHits">
@@ -143,7 +155,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["StartStop"]" @bind-Text="@model.StartStop">
@@ -155,7 +167,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["Rules"]" @bind-Text="@model.Rules">
@@ -167,7 +179,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <TextEdit Placeholder="@L["Distance"]" @bind-Text="@model.Distance">
@@ -179,7 +191,7 @@
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
-                <Field Horizontal="true">
+                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <Check TValue="bool" @bind-Checked="@model.CoverGarment">@L["CoverGarment"]</Check>
@@ -190,7 +202,7 @@
     </Row>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
         </FieldBody>
     </Field>
 </Validations>
