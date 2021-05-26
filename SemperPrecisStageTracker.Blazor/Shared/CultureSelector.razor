@@ -1,4 +1,5 @@
-﻿<strong>Culture:</strong>
+﻿@inject IStringLocalizer<CultureSelector> L
+<strong>@L["Culture"]:</strong>
 <select class="form-control" @bind="Culture" style="width:150px; margin: 0 10px;">
     @foreach (var culture in cultures)
     {

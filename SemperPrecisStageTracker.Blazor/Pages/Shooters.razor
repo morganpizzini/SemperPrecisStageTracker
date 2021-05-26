@@ -1,0 +1,42 @@
+﻿@page "/shooters"
+@inject HttpClientService Client
+@inject IStringLocalizer<Shooters> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Shooters"]</Heading>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/new")"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @foreach (var shooter in shooters)
+        {
+            <TableRow>
+                <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                <TableRowHeader>@shooter.BirthDate.ToString("d")</TableRowHeader>
+                <TableRowCell>
+                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
+                </TableRowCell>
+            </TableRow>
+        }
+    </TableBody>
+</Table>
+
+@code {
+    IList<ShooterContract> shooters = new List<ShooterContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        shooters = await Client.PostAsync<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+
+        await base.OnInitializedAsync();
+    }
+
+}

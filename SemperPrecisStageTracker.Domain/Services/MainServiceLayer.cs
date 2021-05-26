@@ -328,7 +328,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Team> FetchAllTeams()
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, s => s.Name, true, _teamRepository);
+            return FetchEntities(null, null, null, s => s.Name, false, _teamRepository);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Team> FetchTeamsByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.Name, true, _teamRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.Name, false, _teamRepository);
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Association> FetchAllAssociations()
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, s => s.Name, true, _associationRepository);
+            return FetchEntities(null, null, null, s => s.Name, false, _associationRepository);
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Association> FetchAssociationsByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.Name, true, _associationRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.Name, false, _associationRepository);
         }
 
         /// <summary>
@@ -749,7 +749,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Shooter> FetchShootersByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, null, true, _shooterRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, x=> x.LastName, true, _shooterRepository);
         }
 
         /// <summary>
@@ -954,7 +954,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Group> FetchAllGroupsByMatchId(string matchId)
         {
             //Utilizzo il metodo base
-            return FetchEntities(e => e.MatchId == matchId, null, null, null, true, _groupRepository);
+            return FetchEntities(e => e.MatchId == matchId, null, null, x=>x.Name, false, _groupRepository);
         }
 
         /// <summary>
@@ -965,7 +965,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Group> FetchGroupsByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, null, true, _groupRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, null, false, _groupRepository);
         }
 
         /// <summary>
@@ -1342,7 +1342,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Stage> FetchAllStagesByMatchId(string matchId)
         {
             //Utilizzo il metodo base
-            return FetchEntities(e => e.MatchId == matchId, null, null, null, true, _stageRepository);
+            return FetchEntities(e => e.MatchId == matchId, null, null, x=>x.Index, false, _stageRepository);
         }
         
 
@@ -1455,7 +1455,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             var shooterIds = this._groupShooterRepository.Fetch(x=>x.GroupId == id).Select(x=> x.ShooterId);
             //Utilizzo il metodo base
-            return FetchEntities(s => shooterIds.Contains(s.Id), null, null, null, true, _shooterRepository);
+            return FetchEntities(s => shooterIds.Contains(s.Id), null, null, x=>x.LastName, false, _shooterRepository);
         }
         /// <summary>
         /// Fetch available shooter for group
@@ -1485,7 +1485,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var shooterInTeamAssociation = this._shooterAssociationRepository.Fetch(x=>x.AssociationId== match.AssociationId).Select(x=>x.ShooterId).ToList();
 
             // retrieve shooter not from available user and in association
-            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)));
+            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)),null,null,x=>x.LastName,false);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 @inject IStringLocalizer<AssociationDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="/associations">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsFull">

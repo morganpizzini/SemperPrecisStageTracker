@@ -18,25 +18,6 @@
             </FieldBody>
         </Field>
     </Validation>
-    @*<Validation>
-        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="@model.MatchId">
-                    <ChildContent>
-                        <SelectItem Value="@("")"></SelectItem>
-                        @foreach (var match in matches)
-                        {
-                            <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
-                        }
-                    </ChildContent>
-                    <Feedback>
-                        <ValidationError>@L["WrongMatch"]</ValidationError>
-                    </Feedback>
-                </Select>
-            </FieldBody>
-        </Field>
-    </Validation>*@
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>

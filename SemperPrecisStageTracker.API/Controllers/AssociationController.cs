@@ -28,9 +28,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAllAssociations();
 
             //Ritorno i contratti
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x)));
+            return Ok(entities.As(x => ContractUtils.GenerateContract(x)));
         }
-    
+
         /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
@@ -65,8 +65,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Association
             {
                 Name = request.Name,
-                Ranks= request.Ranks,
-                Divisions= request.Divisions
+                Ranks = request.Ranks,
+                Divisions = request.Divisions
             };
 
             //Invocazione del service layer
@@ -101,7 +101,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Name = request.Name;
             entity.Ranks = request.Ranks;
             entity.Divisions = request.Divisions;
-            
+
             //Salvataggio
             var validations = BasicLayer.UpdateAssociation(entity);
             if (validations.Count > 0)

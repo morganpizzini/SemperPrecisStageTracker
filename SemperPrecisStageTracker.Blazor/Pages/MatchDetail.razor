@@ -3,10 +3,11 @@
 @inject IStringLocalizer<MatchDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="/matches">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/groups/new")"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["MatchStats"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsHalf">
         <Card Margin="Margin.Is4.OnY">

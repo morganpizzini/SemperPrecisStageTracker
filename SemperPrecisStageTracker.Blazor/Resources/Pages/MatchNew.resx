@@ -127,18 +127,33 @@
     <value>Date</value>
   </data>
   <data name="WrongDate" xml:space="preserve">
-    <value>Date should be greater than today</value>
+    <value>Date should be greater than today!</value>
   </data>
   <data name="WrongName" xml:space="preserve">
     <value>Wrong name!</value>
   </data>
   <data name="WrongValidDate" xml:space="preserve">
-    <value>Date is not valid</value>
+    <value>Date is not valid!</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>
   </data>
   <data name="ErrorOccurs" xml:space="preserve">
     <value>There are some errors!</value>
+  </data>
+  <data name="WrongLocation" xml:space="preserve">
+    <value>Wrong location!</value>
+  </data>
+  <data name="UnifyRanks" xml:space="preserve">
+    <value>Unify ranks</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Association" xml:space="preserve">
+    <value>Association</value>
+  </data>
+  <data name="OpenMatch" xml:space="preserve">
+    <value>Open match</value>
   </data>
 </root>

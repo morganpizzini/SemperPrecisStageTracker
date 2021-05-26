@@ -13,6 +13,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.Extensions.Localization;
 using SemperPrecisStageTracker.Blazor.Utils;
+using Microsoft.Extensions.Configuration;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -40,7 +41,7 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddFontAwesomeIcons();
 
             builder.Services
-                .AddScoped(sp => new HttpClient {BaseAddress = new Uri("https://localhost:5001")})
+                .AddScoped(sp => new HttpClient {BaseAddress = new Uri(builder.Configuration["baseAddress"])})
                 .AddScoped<HttpClientService>();
                 //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 

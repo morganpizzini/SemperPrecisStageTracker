@@ -17,7 +17,7 @@ namespace SemperPrecisStageTracker.API
     public class Startup
     {
         readonly string localPolicy = "CorsPolicy";
-        readonly string azurePolicy = "AzurePolicy";
+        readonly string productionPolicy = "ProductionPolicy";
 
         public IConfiguration Configuration { get; }
 
@@ -53,9 +53,9 @@ namespace SemperPrecisStageTracker.API
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
-                options.AddPolicy(name: azurePolicy,
+                options.AddPolicy(name: productionPolicy,
                     builder => builder
-                        .WithOrigins("https://SemperPrecisStageTracker.azurewebsites.net")
+                        .WithOrigins("https://semperprecisStagetracker.azurewebsites.net")
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials());
@@ -105,12 +105,12 @@ namespace SemperPrecisStageTracker.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SemperPrecisStageTracker v1"));
-            }
+            //}
 
             app.UseHttpsRedirection();
 
@@ -120,9 +120,9 @@ namespace SemperPrecisStageTracker.API
             //Se siamo in modalit� "dev"
             switch (ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName.ToLower())
             {
-                case "azure":
-                    Tracer.Info($"[CORS] Working on {azurePolicy} CORS policy");
-                    app.UseCors(azurePolicy);
+                case "production":
+                    Tracer.Info($"[CORS] Working on {productionPolicy} CORS policy");
+                    app.UseCors(productionPolicy);
                     break;
                 case "development":
                     Tracer.Info($"[CORS] Working on {localPolicy} CORS policy");

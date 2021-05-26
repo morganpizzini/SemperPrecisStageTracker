@@ -3,6 +3,7 @@
 @inject IStringLocalizer<ShooterDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="/shooters">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewRating())"><Icon Name="IconName.PlusSquare" /> @L["NewRating"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
@@ -89,7 +90,7 @@
                 }
                 else
                 {
-                    <Text>@L["NoGroups"]</Text>
+                    <Text>@L["NoAssociations"]</Text>
                 }
             </CardBody>
         </Card>

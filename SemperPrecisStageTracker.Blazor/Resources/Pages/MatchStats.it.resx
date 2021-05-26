@@ -60,45 +60,45 @@
             : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -119,62 +119,29 @@
   </resheader>
   <data name="Match" xml:space="preserve">
     <value>Gara</value>
-    <comment/>
+    <comment />
   </data>
-  <data name="Detail" xml:space="preserve">
-    <value>Dettaglio match</value>
-    <comment/>
-  </data>
-  <data name="Groups" xml:space="preserve">
-    <value>Gruppi</value>
-    <comment/>
-  </data>
-  <data name="ConfirmDelete" xml:space="preserve">
-    <value>Confermare eliminazione di:</value>
-    <comment/>
-  </data>
-  <data name="DeleteGroup" xml:space="preserve">
-    <value>Rimozione gruppo</value>
-    <comment/>
+  <data name="TeamName" xml:space="preserve">
+    <value>Nome squadra</value>
+    <comment />
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Si</value>
-    <comment/>
+    <comment />
   </data>
-  <data name="NoGroups" xml:space="preserve">
-    <value>Nessun gruppo</value>
-    <comment/>
+  <data name="Stats" xml:space="preserve">
+    <value>Statistiche match</value>
+    <comment />
   </data>
-  <data name="NewGroup" xml:space="preserve">
-    <value>Nuovo gruppo</value>
-    <comment/>
+  <data name="Total" xml:space="preserve">
+    <value>Totale</value>
+    <comment />
   </data>
-  <data name="NewStage" xml:space="preserve">
-    <value>Nuovo stage</value>
-    <comment/>
+  <data name="DQ" xml:space="preserve">
+    <value>DQ</value>
+    <comment />
   </data>
-  <data name="Close" xml:space="preserve">
-    <value>Chiudi</value>
-    <comment/>
-  </data>
-  <data name="NoStages" xml:space="preserve">
-    <value>Nessuno stage</value>
-    <comment/>
-  </data>
-  <data name="Stages" xml:space="preserve">
-    <value>Stage</value>
-    <comment/>
-  </data>
-  <data name="Targets" xml:space="preserve">
-    <value>Bersagli</value>
-    <comment/>
-  </data>
-  <data name="DeleteStage" xml:space="preserve">
-    <value>Rimozione stage</value>
-    <comment/>
-  </data>
-  <data name="EditMatch" xml:space="preserve">
-    <value>Modifica gara</value>
-    <comment/>
+  <data name="Association" xml:space="preserve">
+    <value>Associazione</value>
   </data>
 </root>

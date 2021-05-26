@@ -30,54 +30,147 @@
             get: () => localStorage['BlazorCulture'],
             set: (value) => localStorage['BlazorCulture'] = value
         };
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+
+            // Prompt when the PWA has been installed but a new version is available
+            // Code based on the Blazor.PWA.MSBuild package by SQL-MisterMagoo
+            // Read more at https://github.com/SQL-MisterMagoo/Blazor.PWA.MSBuild/blob/master/LICENSE.txt
+            window.updateAvailable = new Promise(function (resolve, reject) {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('service-worker.js')
+                        .then(function (registration) {
+                            console.info('Registration successful, scope is:', registration.scope);
+                            registration.onupdatefound = () => {
+                                const installingWorker = registration.installing;
+                                installingWorker.onstatechange = () => {
+                                    switch (installingWorker.state) {
+                                        case 'installed':
+                                            if (navigator.serviceWorker.controller) {
+                                                resolve(true);
+                                            } else {
+                                                resolve(false);
+                                            }
+                                            break;
+                                        default:
+                                    }
+                                };
+                            };
+                        })
+                        .catch(error =>
+                            console.info('Service worker registration failed, error:', error));
+                }
+            });
+
+            window['updateAvailable']
+                .then(isAvailable => {
+                    if (isAvailable) {
+                        // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
+                        alert('Update available. Reload the page when convenient.');
+                        location.reload();
+                    }
+                });
+
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                // where you store it is up to you
+                window.PWADeferredPrompt = e;
+                // Notify C# Code that it can show an alert
+                // MyBlazorInstallMethod must be [JSInvokable]
+                setTimeout(function () {
+                    if (localStorage.getItem('skipInstall') != "true") {
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
+                    }
+                }, 3000);
+
+            });
+        }
     </script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
     <script src="_content/Blazorise/blazorise.js"></script>
     <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
-<script>
-    var customFunctions = (function() {
-        //function metodoPrivato() {
-        //    //...
-        //}
-        return {
-            focusElement: function(id) {
-                element = document.getElementById(id);
-                if(element)
-                    element.focus();
-                console.log('focus');
-            },
-            isDevice: function() {
-                return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
+    <script>
+        var customFunctions = (function () {
+            //function metodoPrivato() {
+            //    //...
+            //}
+            return {
+                focusElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.focus();
+                    console.log('focus');
+                },
+                isDevice: function () {
+                    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
+                }
             }
-        }
-    })();
+        })();
 
-    window.addEventListener('beforeinstallprompt', function (e) {
-        e.preventDefault();
-        // Stash the event so it can be triggered later.
-        // where you store it is up to you
-        window.PWADeferredPrompt = e;
-        // Notify C# Code that it can show an alert 
-        // MyBlazorInstallMethod must be [JSInvokable]
-        setTimeout(function(){ 
-            DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
-         }, 3000);
-        
-    });
-
-    window.BlazorPWA = {
-        installPWA: function () {
-            if (window.PWADeferredPrompt) {
-                // Use the stashed event to continue the install process
-                window.PWADeferredPrompt.prompt();
-                window.PWADeferredPrompt.userChoice
-                    .then(function (choiceResult) {
-                        window.PWADeferredPrompt = null;
+        window.BlazorPWA = (function(){
+            applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
+            async function subscribe(worker) {
+                try {
+                    return await worker.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: applicationServerPublicKey
                     });
+                } catch (error) {
+                    if (error.name === 'NotAllowedError') {
+                        return null;
+                    }
+                    throw error;
+                }
             }
-        }
-    };
-</script>
+
+            function arrayBufferToBase64(buffer) {
+                // https://stackoverflow.com/a/9458996
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
+            return {
+                dismissInstallPWA: function () {
+                    localStorage.setItem('skipInstall', "true");
+                },
+                installPWA: function () {
+                    localStorage.setItem('skipInstall', "true");
+                    if (window.PWADeferredPrompt) {
+                        // Use the stashed event to continue the install process
+                        window.PWADeferredPrompt.prompt();
+                        window.PWADeferredPrompt.userChoice
+                            .then(function (choiceResult) {
+                                window.PWADeferredPrompt = null;
+                            });
+                    }
+                },
+                requestSubscription: async () => {
+                    const worker = await navigator.serviceWorker.getRegistration();
+                    const existingSubscription = await worker.pushManager.getSubscription();
+                    if (!existingSubscription) {
+                        const newSubscription = await subscribe(worker);
+                        if (newSubscription) {
+                            console.log({
+                                url: newSubscription.endpoint,
+                                p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                                auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                            });
+                            return {
+                                url: newSubscription.endpoint,
+                                p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                                auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                            };
+                        }
+                    }
+                }
+            }
+            
+        })();
+    </script>
 </body>
 
 </html>

@@ -10,8 +10,8 @@ using SemperPrecisStageTracker.EF.Context;
 namespace SemperPrecisStageTracker.EF.Migrations
 {
     [DbContext(typeof(SemperPrecisStageTrackerContext))]
-    [Migration("20210520145223_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210524095242_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,10 +28,6 @@ namespace SemperPrecisStageTracker.EF.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Ranks")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreationDateTime")
                         .HasColumnType("datetime2");
 
@@ -40,6 +36,10 @@ namespace SemperPrecisStageTracker.EF.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ranks")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -125,6 +125,12 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("OpenMatch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("UnifyRanks")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -312,8 +318,8 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<string>("StartStop")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Strings")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Strings")
+                        .HasColumnType("int");
 
                     b.Property<int>("Targets")
                         .HasColumnType("int");

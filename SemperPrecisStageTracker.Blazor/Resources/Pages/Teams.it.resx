@@ -117,16 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Matches" xml:space="preserve">
-    <value>Gare</value>
+  <data name="Teams" xml:space="preserve">
+    <value>Squadre</value>
   </data>
   <data name="Name" xml:space="preserve">
     <value>Nome</value>
   </data>
-  <data name="Date" xml:space="preserve">
-    <value>Data</value>
-  </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>Nuovo match</value>
+  <data name="NewTeam" xml:space="preserve">
+    <value>Nuova squadra</value>
   </data>
 </root>

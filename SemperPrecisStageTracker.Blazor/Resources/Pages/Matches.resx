@@ -129,4 +129,10 @@
   <data name="NewMatch" xml:space="preserve">
     <value>New match</value>
   </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Association" xml:space="preserve">
+    <value>Association</value>
+  </data>
 </root>

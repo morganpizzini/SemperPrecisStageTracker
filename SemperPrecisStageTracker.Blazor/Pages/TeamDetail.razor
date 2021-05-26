@@ -3,6 +3,7 @@
 @inject IStringLocalizer<TeamDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="/teams">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 <Row>
@@ -26,7 +27,7 @@
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Birthdate"]</TableHeaderCell>
                                 <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>

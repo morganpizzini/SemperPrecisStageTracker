@@ -126,4 +126,7 @@
   <data name="NewShooter" xml:space="preserve">
     <value>Nuovo tiratore</value>
   </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Data di nascita</value>
+  </data>
 </root>

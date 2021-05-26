@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SemperPrecisStageTracker.EF.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,6 +61,8 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     AssociationId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MatchDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UnifyRanks = table.Column<bool>(type: "bit", nullable: false),
+                    OpenMatch = table.Column<bool>(type: "bit", nullable: false),
                     CreationDateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -150,7 +152,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     GunReadyCondition = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StageProcedure = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StageProcedureNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Strings = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Strings = table.Column<int>(type: "int", nullable: false),
                     Scoring = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TargetsDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ScoredHits = table.Column<string>(type: "nvarchar(max)", nullable: true),

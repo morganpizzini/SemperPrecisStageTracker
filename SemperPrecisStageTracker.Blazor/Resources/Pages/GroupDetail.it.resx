@@ -159,4 +159,19 @@
   <data name="Close" xml:space="preserve">
     <value>Chiudi</value>
   </data>
+  <data name="Association" xml:space="preserve">
+    <value>Associazione</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Squadra</value>
+  </data>
+  <data name="WrongTeam" xml:space="preserve">
+    <value>Seleziona una squadra!</value>
+  </data>
+  <data name="Division" xml:space="preserve">
+    <value>Divisione</value>
+  </data>
+  <data name="WrongDivision" xml:space="preserve">
+    <value>Seleziona una divisione!</value>
+  </data>
 </root>

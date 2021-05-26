@@ -3,7 +3,7 @@
 @inject IStringLocalizer<ShooterEdit> L
 @inject NavigationManager UriHelper
 
-<Heading Size="HeadingSize.Is1">@L["NewShooter"]</Heading>
+<Heading Size="HeadingSize.Is1">@L["EditShooter"]</Heading>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">

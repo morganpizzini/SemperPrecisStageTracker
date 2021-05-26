@@ -70,24 +70,6 @@
     {
         await base.OnInitializedAsync();
     }
-    void ValidateDate(ValidatorEventArgs e)
-    {
-        var date = e.Value as DateTime?;
-
-        if (date == null)
-        {
-            e.Status = ValidationStatus.Error;
-        }
-        else if (date.Value.Date <= DateTime.Now.Date.AddDays(1))
-        {
-            e.Status = ValidationStatus.Error;
-            e.ErrorText = L["WrongDate"];
-        }
-        else
-        {
-            e.Status = ValidationStatus.Success;
-        }
-    }
 
     async Task Submit()
     {

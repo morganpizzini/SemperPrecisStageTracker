@@ -7,7 +7,8 @@ using ZenProgramming.Chakra.Core.Configurations;
 
 namespace SemperPrecisStageTracker.EF.Context
 {
-    // dotnet ef migrations add InitialCreate --startup-project ../Bonebat.Api
+    // dotnet ef migrations add InitialCreate --startup-project ../SemperPrecisStageTracker.API
+    // dotnet ef database update --startup-project ../SemperPrecisStageTracker.API
     /// <summary>
     /// Context for Bonebat
     /// </summary>

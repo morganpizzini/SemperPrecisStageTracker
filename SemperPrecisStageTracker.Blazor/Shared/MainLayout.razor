@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using SemperPrecisStageTracker.Contracts.Utilities
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
 
@@ -6,7 +8,7 @@
     <div class="sidebar">
         <NavMenu />
     </div>
-    
+
     <div class="main">
         <div class="top-row px-4 auth">
             <CultureSelector />
@@ -38,9 +40,29 @@
     private static Action action;
     private Modal modalInstallRef;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         action = ShowIntallModal;
+        // In the background, ask if they want to be notified about order updates
+        await RequestNotificationSubscriptionAsync();
+
+        await base.OnInitializedAsync();
+    }
+    async Task RequestNotificationSubscriptionAsync()
+    {
+        var subscription = await JSRuntime.InvokeAsync<NotificationSubscription>("BlazorPWA.requestSubscription");
+        if (subscription != null)
+        {
+            try
+            {
+                //var response = await httpClient.PutAsJsonAsync("notifications/subscribe", subscription);
+                // response.EnsureSuccessStatusCode();
+            }
+            catch (AccessTokenNotAvailableException ex)
+            {
+                ex.Redirect();
+            }
+        }
     }
 
     [JSInvokable]
@@ -54,10 +76,15 @@
     {
         modalInstallRef.Show();
     }
-    private async Task HideInstallModal(bool choice){
+    private async Task HideInstallModal(bool choice)
+    {
         if (choice)
         {
             await JSRuntime.InvokeVoidAsync("BlazorPWA.installPWA");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("BlazorPWA.dismissInstallPWA");
         }
         modalInstallRef.Hide();
     }

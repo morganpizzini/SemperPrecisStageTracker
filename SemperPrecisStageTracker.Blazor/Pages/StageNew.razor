@@ -60,11 +60,11 @@
                 <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scenario"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">
+                        <MemoEdit Rows="5" Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">
                             <Feedback>
                                 <ValidationError>@L["WrongScenario"]</ValidationError>
                             </Feedback>
-                        </TextEdit>
+                        </MemoEdit>
                     </FieldBody>
                 </Field>
             </Validation>
@@ -72,11 +72,11 @@
                 <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["GunReadyCondition"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["GunReadyCondition"]" @bind-Text="@model.GunReadyCondition">
+                        <MemoEdit Rows="3" Placeholder="@L["GunReadyCondition"]" @bind-Text="@model.GunReadyCondition">
                             <Feedback>
                                 <ValidationError>@L["WrongGunReadyCondition"]</ValidationError>
                             </Feedback>
-                        </TextEdit>
+                        </MemoEdit>
                     </FieldBody>
                 </Field>
             </Validation>
@@ -84,23 +84,23 @@
                 <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedure"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["StageProcedure"]" @bind-Text="@model.StageProcedure">
+                        <MemoEdit Rows="5" Placeholder="@L["StageProcedure"]" @bind-Text="@model.StageProcedure">
                             <Feedback>
                                 <ValidationError>@L["WrongStageProcedure"]</ValidationError>
                             </Feedback>
-                        </TextEdit>
+                        </MemoEdit>
                     </FieldBody>
                 </Field>
             </Validation>
             <Validation Validator="@ValidationRule.None">
                 <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedureNotes"]</FieldLabel>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Notes"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["StageProcedureNotes"]" @bind-Text="@model.StageProcedureNotes">
+                        <MemoEdit Rows="2" Placeholder="@L["Notes"]" @bind-Text="@model.StageProcedureNotes">
                             <Feedback>
-                                <ValidationError>@L["WrongStageProcedureNotes"]</ValidationError>
+                                <ValidationError>@L["WrongNotes"]</ValidationError>
                             </Feedback>
-                        </TextEdit>
+                        </MemoEdit>
                     </FieldBody>
                 </Field>
             </Validation>
@@ -110,7 +110,7 @@
                 <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                         <NumericEdit Placeholder="@L["Strings"]" TValue="int" @bind-Text="@model.Strings">
+                         <NumericEdit Placeholder="@L["Strings"]" TValue="int" @bind-Value="@model.Strings">
                             <Feedback>
                                 <ValidationError>@L["WrongStrings"]</ValidationError>
                             </Feedback>
