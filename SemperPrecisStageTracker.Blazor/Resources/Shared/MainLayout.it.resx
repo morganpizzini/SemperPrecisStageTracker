@@ -129,4 +129,13 @@
   <data name="InstallPWAInfo" xml:space="preserve">
     <value>Installa come applicazione sul dispositivo</value>
   </data>
+  <data name="Login" xml:space="preserve">
+    <value>Accedi</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Esci</value>
+  </data>
+  <data name="Offline" xml:space="preserve">
+    <value>Offline - nessuna connessione</value>
+  </data>
 </root>

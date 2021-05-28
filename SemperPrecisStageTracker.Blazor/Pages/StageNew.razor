@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/stages/new"
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<StageNew> L
 @inject NavigationManager UriHelper
 
@@ -218,7 +218,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //matches = await Client.PostAsync<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        //matches = await Client.Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
         model.MatchId = Id;
         await base.OnInitializedAsync();
     }
@@ -228,7 +228,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<GroupContract>("/api/Stage/CreateStage", model);
+        var response = await Client.Post<GroupContract>("/api/Stage/CreateStage", model);
         UriHelper.NavigateTo($"/matches/{Id}");
     }
 }

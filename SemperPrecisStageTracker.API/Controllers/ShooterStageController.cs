@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
@@ -21,7 +22,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterStage")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public IActionResult UpsertShooterStage(ShooterStageRequest request)
+        public Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
         {
             var shooterStage = new ShooterStage{
                 StageId = request.StageId,
@@ -39,10 +40,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.UpsertShooterStage(shooterStage);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(new OkResponse{ Status= true});
+            return Reply(new OkResponse{ Status= true});
         }
 
     }

@@ -1,5 +1,5 @@
 ﻿@page "/associations"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<Associations> L
 @inject NavigationManager UriHelper
 
@@ -32,7 +32,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        associations = await Client.PostAsync<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Client.Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
 
         await base.OnInitializedAsync();
     }

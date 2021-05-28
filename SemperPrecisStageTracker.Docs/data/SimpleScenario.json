@@ -212,36 +212,54 @@
       "id": "1",
       "firstName": "Shooter",
       "lastName": "01",
+      "email": "Shooter@01.it",
+      "username": "Shooter01",
+      "password": "Shooter01",
       "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "2",
       "firstName": "Shooter",
       "lastName": "02",
+      "email": "Shooter@02.it",
+      "username": "Shooter02",
+      "password": "Shooter02",
       "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "3",
       "firstName": "Shooter",
       "lastName": "03",
+      "email": "Shooter@03.it",
+      "username": "Shooter03",
+      "password": "Shooter03",
       "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "4",
       "firstName": "Shooter",
       "lastName": "04",
+      "email": "Shooter@04.it",
+      "username": "Shooter04",
+      "password": "Shooter04",
       "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "5",
       "firstName": "Shooter",
       "lastName": "05",
+      "email": "Shooter@05.it",
+      "username": "Shooter05",
+      "password": "",
       "birthDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "6",
       "firstName": "Shooter",
       "lastName": "06",
+      "email": "Shooter@06.it",
+      "username": "Shooter06",
+      "password": "",
       "birthDate": "2021-05-23T18:25:43.511Z"
     }
   ],

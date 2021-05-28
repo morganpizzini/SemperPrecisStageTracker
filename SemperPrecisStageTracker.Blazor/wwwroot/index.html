@@ -166,6 +166,17 @@
                             };
                         }
                     }
+                },
+                init: (callback) => { // callback è un puntatore a una classe .NET Core
+                    const updateOnlineStatus = (e) => {
+                        // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
+                        // di stato della connessione
+                        callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
+                    }
+
+                    window.addEventListener('online', updateOnlineStatus);
+                    window.addEventListener('offline', updateOnlineStatus);
+                    updateOnlineStatus();
                 }
             }
             

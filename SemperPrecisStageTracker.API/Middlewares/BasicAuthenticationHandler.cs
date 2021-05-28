@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading;
 using System.Threading.Tasks;
+using Bonebat.Identities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;
 
 namespace SemperPrecisStageTracker.API.Middlewares
@@ -35,8 +38,8 @@ namespace SemperPrecisStageTracker.API.Middlewares
             if (string.IsNullOrEmpty(Request.Headers?["Authorization"]))
             {
                 //Fallisco l'autenticazione
-                //return AuthenticateResult.Fail("Header 'Authorization' was not provided");
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Header 'Authorization' was not provided");
+                //return AuthenticateResult.NoResult();
             }
 
             //Recupero il valore e split
@@ -47,16 +50,16 @@ namespace SemperPrecisStageTracker.API.Middlewares
             if (segments.Length != 2)
             {
                 //Fallisco l'autenticazione
-                //return AuthenticateResult.Fail("Header 'Authorization' should contains two items: schema and value");
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail("Header 'Authorization' should contains two items: schema and value");
+                //return AuthenticateResult.NoResult();
             }
 
             //Se il lo schema non è Basic, esco
             if (segments[0] != "Basic" || string.IsNullOrEmpty(segments[1]))
             {
                 //Fallisco l'autenticazione
-                //return AuthenticateResult.Fail($"Provided schema is not '{Scheme.Name}'");
-                return AuthenticateResult.NoResult();
+                return AuthenticateResult.Fail($"Provided schema is not '{Scheme.Name}'");
+                //return AuthenticateResult.NoResult();
             }
 
             string credentials;
@@ -94,34 +97,32 @@ namespace SemperPrecisStageTracker.API.Middlewares
 
             //Transazione isolata per il database con il solo scopo di identificare
             //l'accesso di emergenza, subito chiusa al termine dell'operazione
-            using (IDataSession isolatedSession = SessionFactory.OpenSession())
+            using IDataSession isolatedSession = SessionFactory.OpenSession();
+
+            //Service layer base
+            using var serviceLayer = new AuthenticationServiceLayer(isolatedSession);
+
+            //Tento di eseguire il sign-in dell'utente
+            var signedInUser = await serviceLayer.SignIn(username, password);
+
+            //Se non ho l'utente, esco
+            if (signedInUser == null)
             {
-                //Service layer base
-                //using (var serviceLayer = new AuthenticationServiceLayer(isolatedSession))
-                //{
-                //    //Tento di eseguire il sign-in dell'utente
-                //    var signedInUser = await serviceLayer.SignIn(username, password);
-
-                //    //Se non ho l'utente, esco
-                //    if (signedInUser == null)
-                //    {
-                //        //Fallisco
-                //        return AuthenticateResult.Fail("Provided credentials are invalid");
-                //    }
-
-                //    //Eseguo la generazione del principal
-                //    var principal = ClaimsPrincipalUtils.GeneratesClaimsPrincipal(
-                //        BasicAuthenticationOptions.Scheme, signedInUser);
-                //    //Creo il ticket di autenticazione
-                //    var authTicket = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
-
-                //    //Imposto il principal sul thread corrente
-                //    Thread.CurrentPrincipal = principal;
-                //    //Confermo l'autenticazione
-                //    return AuthenticateResult.Success(authTicket);
-                //}
-                return null;
+                //Fallisco
+                return AuthenticateResult.Fail("Provided credentials are invalid");
             }
+
+            //Eseguo la generazione del principal
+            var principal = ClaimsPrincipalUtils.GeneratesClaimsPrincipal(
+                BasicAuthenticationOptions.Scheme, signedInUser);
+            //Creo il ticket di autenticazione
+            var authTicket = new AuthenticationTicket(principal, new AuthenticationProperties(), Scheme.Name);
+
+            //Imposto il principal sul thread corrente
+            Thread.CurrentPrincipal = principal;
+            //Confermo l'autenticazione
+            return AuthenticateResult.Success(authTicket);
+
         }
     }
 }

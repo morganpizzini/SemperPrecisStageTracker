@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllGroupsByMatchId")]
         [ProducesResponseType(typeof(IList<GroupContract>), 200)]
-        public IActionResult FetchAllGroups(MatchRequest request)
+        public Task<IActionResult> FetchAllGroups(MatchRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllGroupsByMatchId(request.MatchId);
@@ -35,8 +36,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             // var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x)));
-            // return Ok(entities.As(x =>
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
+            // return Reply(entities.As(x =>
             // {
             //     return ContractUtils.GenerateContract(x, matches.FirstOrDefault(p => p.Id == x.MatchId));
             // }));
@@ -50,20 +51,20 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public IActionResult GetGroup(GroupRequest request)
+        public Task<IActionResult> GetGroup(GroupRequest request)
         {
             var entity = BasicLayer.GetGroup(request.GroupId);
 
             //verifico validità dell'entità
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
 
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity,match,association,shooters));
+            return Reply(ContractUtils.GenerateContract(entity,match,association,shooters));
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public IActionResult CreateGroup(GroupCreateRequest request)
+        public Task<IActionResult> CreateGroup(GroupCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Group
@@ -87,10 +88,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.CreateGroup(model);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Reply(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -101,14 +102,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public IActionResult UpdateGroup(GroupUpdateRequest request)
+        public Task<IActionResult> UpdateGroup(GroupUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -116,11 +117,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Salvataggio
             var validations = BasicLayer.UpdateGroup(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public IActionResult DeleteGroup(GroupRequest request)
+        public Task<IActionResult> DeleteGroup(GroupRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
@@ -139,16 +140,16 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
             }
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteGroup(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
     }
 }

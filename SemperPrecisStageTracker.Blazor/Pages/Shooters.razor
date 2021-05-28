@@ -1,5 +1,5 @@
 ﻿@page "/shooters"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<Shooters> L
 @inject NavigationManager UriHelper
 
@@ -10,6 +10,7 @@
     <TableHeader ThemeContrast="ThemeContrast.Dark">
         <TableRow>
             <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell>@L["Username"]</TableHeaderCell>
             <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
             <TableHeaderCell></TableHeaderCell>
         </TableRow>
@@ -19,6 +20,7 @@
         {
             <TableRow>
                 <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                <TableRowHeader>@shooter.Username</TableRowHeader>
                 <TableRowHeader>@shooter.BirthDate.ToString("d")</TableRowHeader>
                 <TableRowCell>
                     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
@@ -34,7 +36,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        shooters = await Client.PostAsync<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+        shooters = await Client.Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
 
         await base.OnInitializedAsync();
     }

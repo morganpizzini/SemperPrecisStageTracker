@@ -1,7 +1,7 @@
 ﻿@page "/matches/{id}/groups/{groupId}"
 @using System.Text.Json
 @using SemperPrecisStageTracker.Contracts.Requests
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<GroupDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -196,15 +196,15 @@
     {
         model.GroupId = GroupId;
         await LoadShooters();
-        group = await Client.PostAsync<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
-        teams = await Client.PostAsync<IList<TeamContract>>("api/Team/FetchAllTeams");
+        group = await Client.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        teams = await Client.Post<IList<TeamContract>>("api/Team/FetchAllTeams");
 
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        availableShooters = await Client.PostAsync<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+        availableShooters = await Client.Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
     }
 
     async Task Submit()
@@ -213,7 +213,7 @@
             return;
         validations.ClearAll();
 
-        group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
+        group.Shooters = await Client.Post<IList<ShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
         await LoadShooters();
         model.ShooterId = string.Empty;
         model.DivisionId = string.Empty;
@@ -233,7 +233,7 @@
     {
         if (choice && !string.IsNullOrEmpty(shooterToDelete.ShooterId))
         {
-            group.Shooters = await Client.PostAsync<IList<ShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterDeleteRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
+            group.Shooters = await Client.Post<IList<ShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterDeleteRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
             await LoadShooters();
         }
         shooterToDelete = new ShooterContract();

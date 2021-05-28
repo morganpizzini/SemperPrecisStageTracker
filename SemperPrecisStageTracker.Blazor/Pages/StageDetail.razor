@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/stages/{stageId}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<StageDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -133,8 +133,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        stage = await Client.PostAsync<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
-        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        stage = await Client.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
         await base.OnInitializedAsync();
     }
 

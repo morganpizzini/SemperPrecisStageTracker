@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<MatchDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -178,7 +178,7 @@
 
     async Task LoadMatch()
     {
-        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
 
     }
     void DeleteGroup(GroupContract group)
@@ -201,7 +201,7 @@
     {
         if (choice && !string.IsNullOrEmpty(groupToDelete.GroupId))
         {
-            await Client.PostAsync<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
+            await Client.Post<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
             await LoadMatch();
         }
         groupToDelete = new GroupContract();
@@ -212,7 +212,7 @@
     {
         if (choice && !string.IsNullOrEmpty(stageToDelete.StageId))
         {
-            await Client.PostAsync<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
+            await Client.Post<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
             await LoadMatch();
         }
         stageToDelete = new StageContract();

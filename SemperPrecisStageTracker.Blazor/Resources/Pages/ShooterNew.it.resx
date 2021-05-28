@@ -144,4 +144,16 @@
   <data name="WrongLastName" xml:space="preserve">
     <value>Errore cognome!</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="WrongEmail" xml:space="preserve">
+    <value>Errore email!</value>
+  </data>
+  <data name="WrongUsername" xml:space="preserve">
+    <value>Errore username!</value>
+  </data>
 </root>

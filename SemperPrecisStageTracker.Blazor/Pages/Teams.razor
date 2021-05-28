@@ -1,5 +1,5 @@
 ﻿@page "/teams"
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<Teams> L
 @inject NavigationManager UriHelper
 
@@ -32,7 +32,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        teams = await Client.PostAsync<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+        teams = await Client.Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
 
         await base.OnInitializedAsync();
     }

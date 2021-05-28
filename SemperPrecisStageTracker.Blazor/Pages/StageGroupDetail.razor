@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/stages/{stageId}/group/{groupId}"
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
 
@@ -340,18 +340,18 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadShooters();
-        stage = await Client.PostAsync<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        stage = await Client.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
         model.StageId = stage.StageId;
         InitModelList();
 
-        group = await Client.PostAsync<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        group = await Client.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
 
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        shooters = await Client.PostAsync<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId});
+        shooters = await Client.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId});
     }
     void FillShooter(ShooterStageAggregationResult shooter)
     {
@@ -384,7 +384,7 @@
         }
         model.DownPoints = tmp;
     }
-    private async Task HideModal(bool choice)
+    private void HideModal(bool choice)
     {
         if (choice)
         {
@@ -405,7 +405,7 @@
             if (!validations.ValidateAll())
                 return;
             validations.ClearAll();
-            var response = await Client.PostAsync<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+            var response = await Client.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
             await LoadShooters();
             shooterToFill = new ShooterContract();
             InitModelList();

@@ -1,5 +1,5 @@
 ﻿@page "/shooters/edit/{id}"
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<ShooterEdit> L
 @inject NavigationManager UriHelper
 
@@ -42,6 +42,30 @@
             </FieldBody>
         </Field>
     </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                    <Feedback>
+                        <ValidationError>@L["WrongUsername"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                    <Feedback>
+                        <ValidationError>@L["WrongEmail"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
@@ -56,10 +80,12 @@
     ShooterUpdateRequest model = new ShooterUpdateRequest();
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.PostAsync<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest{ ShooterId = Id });
+        var existing = await Client.Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
         model.FirstName = existing.FirstName;
         model.LastName = existing.LastName;
         model.BirthDate = existing.BirthDate;
+        model.Username = existing.Username;
+        model.Email = existing.Email;
         model.ShooterId = Id;
         await base.OnInitializedAsync();
     }
@@ -71,7 +97,7 @@
         {
             e.Status = ValidationStatus.Error;
         }
-        else if (date <= new DateTime(1920,1,1))
+        else if (date <= new DateTime(1920, 1, 1))
         {
             e.Status = ValidationStatus.Error;
             e.ErrorText = L["WrongBirthDate"];
@@ -87,7 +113,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<ShooterContract>("/api/Shooter/UpdateShooter", model);
+        var response = await Client.Post<ShooterContract>("/api/Shooter/UpdateShooter", model);
         UriHelper.NavigateTo($"/shooters/{response.ShooterId}");
     }
 }

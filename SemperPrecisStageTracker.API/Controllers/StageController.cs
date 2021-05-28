@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -22,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllStages")]
         [ProducesResponseType(typeof(IList<StageContract>), 200)]
-        public IActionResult FetchAllStages(MatchRequest request)
+        public Task<IActionResult> FetchAllStages(MatchRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllStages(request.MatchId);
@@ -38,7 +39,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x =>
+            return Reply(entities.As(x =>
             {
                 var match = matches.FirstOrDefault(p => p.Id == x.MatchId);
                 return ContractUtils.GenerateContract(x,match, associations.FirstOrDefault(p => p.Id == match.AssociationId));
@@ -53,16 +54,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public IActionResult GetStage(StageRequest request)
+        public Task<IActionResult> GetStage(StageRequest request)
         {
             var entity = BasicLayer.GetStage(request.StageId);
 
             //verifico validità dell'entità
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -73,7 +74,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public IActionResult CreateStage(StageCreateRequest request)
+        public Task<IActionResult> CreateStage(StageCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Stage
@@ -101,11 +102,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.CreateStage(model);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Reply(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -116,14 +117,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public IActionResult UpdateStage(StageUpdateRequest request)
+        public Task<IActionResult> UpdateStage(StageUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetStage(request.StageId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -146,11 +147,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Salvataggio
             var validations = BasicLayer.UpdateStage(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public IActionResult DeleteStage(StageRequest request)
+        public Task<IActionResult> DeleteStage(StageRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -170,17 +171,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             }
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteStage(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
     }
 }

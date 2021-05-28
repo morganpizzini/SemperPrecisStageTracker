@@ -831,11 +831,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
 
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
-
+            
             // controllo singolatità emplyee
-            validations = CheckShooterValidation(entity);
+            IList<ValidationResult> validations = CheckShooterValidation(entity);
             if (validations.Count > 0)
             {
                 return validations;

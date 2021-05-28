@@ -129,4 +129,7 @@
   <data name="BirthDate" xml:space="preserve">
     <value>Data di nascita</value>
   </data>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
+  </data>
 </root>

@@ -16,7 +16,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("SendNotificationAsync")]
         [ProducesResponseType(typeof(object), 200)]
-        public async Task<IActionResult> SendNotificationAsync(NotificationSubscription subscription)
+        public async  Task<IActionResult> SendNotificationAsync(NotificationSubscription subscription)
         {
             // For a real application, generate your own
             var publicKey = "BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU";

@@ -1,5 +1,5 @@
 ﻿@page "/teams/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<TeamDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -148,8 +148,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        team = await Client.PostAsync<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
-        shooters = await Client.PostAsync<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+        team = await Client.Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
+        shooters = await Client.Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
 
         await LoadShooterTeams();
 
@@ -175,7 +175,7 @@
         }
     }
     async Task LoadShooterTeams(){
-        teamShooters = await Client.PostAsync<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+        teamShooters = await Client.Post<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
     }
 
     void NewShooter(){
@@ -190,7 +190,7 @@
             if (!shooterValidations.ValidateAll())
                 return;
             shooterValidations.ClearAll();
-            var response = await Client.PostAsync<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
+            var response = await Client.Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
             await LoadShooterTeams();
         }
         shooterToEdit = new ShooterTeamCreateRequest();
@@ -208,7 +208,7 @@
     {
         if (choice && shooterToDelete.Team!=null)
         {
-            await Client.PostAsync<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest { ShooterId = shooterToDelete.Shooter.ShooterId,
+            await Client.Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest { ShooterId = shooterToDelete.Shooter.ShooterId,
                 TeamId = team.TeamId });
             await LoadShooterTeams();
         }

@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/stats"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<MatchStats> L
 
 <Heading Size="HeadingSize.Is1">@L["Stats"]</Heading>
@@ -88,8 +88,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        match = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
-        stats = await Client.PostAsync<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
+        match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        stats = await Client.Post<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
 
         await base.OnInitializedAsync();
     }

@@ -1,5 +1,5 @@
 ﻿@page "/associations/edit/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<AssociationEdit> L
 @inject NavigationManager UriHelper
 
@@ -69,7 +69,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.PostAsync<AssociationContract>("api/Association/GetAssociation", new AssociationRequest{ AssociationId = Id });
+        var existing = await Client.Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest{ AssociationId = Id });
         model.AssociationId = existing.AssociationId;
         model.Name = existing.Name;
         model.Divisions = existing.Divisions;
@@ -83,7 +83,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<AssociationContract>("/api/Association/UpdateAssociation", model);
+        var response = await Client.Post<AssociationContract>("/api/Association/UpdateAssociation", model);
         UriHelper.NavigateTo($"/associations/{response.AssociationId}");
     }
 }

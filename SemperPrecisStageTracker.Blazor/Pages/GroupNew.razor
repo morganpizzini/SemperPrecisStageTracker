@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/groups/new"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<GroupNew> L
 @inject NavigationManager UriHelper
 
@@ -44,7 +44,7 @@
             return;
         validations.ClearAll();
         model.MatchId = Id;
-        var response = await Client.PostAsync<GroupContract>("/api/Group/CreateGroup", model);
+        var response = await Client.Post<GroupContract>("/api/Group/CreateGroup", model);
         UriHelper.NavigateTo($"/matches/{Id}/groups/{response.GroupId}");
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
+using System.Threading.Tasks;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
@@ -22,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllMatches")]
         [ProducesResponseType(typeof(IList<MatchContract>), 200)]
-        public IActionResult FetchAllMatchs()
+        public Task<IActionResult> FetchAllMatchs()
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllMatchs();
@@ -31,7 +32,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(p => p.Id == x.AssociationId))));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(p => p.Id == x.AssociationId))));
         }
 
         /// <summary>
@@ -42,20 +43,20 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public IActionResult GetMatch(MatchRequest request)
+        public Task<IActionResult> GetMatch(MatchRequest request)
         {
             var entity = BasicLayer.GetMatch(request.MatchId);
 
             //verifico validità dell'entità
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity,association,groups,stages));
+            return Reply(ContractUtils.GenerateContract(entity,association,groups,stages));
         }
         
         /// <summary>
@@ -66,11 +67,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetMatchStats")]
         [ProducesResponseType(typeof(IList<DivisionMatchResultContract>), 200)]
-        public IActionResult GetMatchStats(MatchRequest request)
+        public Task<IActionResult> GetMatchStats(MatchRequest request)
         {
             var entities = BasicLayer.GetMatchStats(request.MatchId);
             //Serializzazione e conferma
-            return Ok(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(ContractUtils.GenerateContract));
         }
 
         /// <summary>
@@ -81,7 +82,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public IActionResult CreateMatch(MatchCreateRequest request)
+        public Task<IActionResult> CreateMatch(MatchCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Match
@@ -98,12 +99,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.CreateMatch(model);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             var association = BasicLayer.GetAssociation(model.AssociationId);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model,association));
+            return Reply(ContractUtils.GenerateContract(model,association));
         }
 
         /// <summary>
@@ -114,14 +115,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public IActionResult UpdateMatch(MatchUpdateRequest request)
+        public Task<IActionResult> UpdateMatch(MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetMatch(request.MatchId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -134,11 +135,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Salvataggio
             var validations = BasicLayer.UpdateMatch(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity,association));
+            return Reply(ContractUtils.GenerateContract(entity,association));
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public IActionResult DeleteMatch(MatchRequest request)
+        public Task<IActionResult> DeleteMatch(MatchRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -158,18 +159,18 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
             }
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteMatch(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity,association));
+            return Reply(ContractUtils.GenerateContract(entity,association));
         }
     }
 }

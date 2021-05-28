@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterAssociationContract>), 200)]
-        public IActionResult FetchShooterAssociation(ShooterRequest request)
+        public Task<IActionResult> FetchShooterAssociation(ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Invocazione del service layer
             var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.Id);
@@ -38,7 +39,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Return contract
-            return Ok(shooterAssociations.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(a=>a.Id== x.AssociationId))));
+            return Reply(shooterAssociations.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(a=>a.Id== x.AssociationId))));
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult UpsertShooterAssociation(ShooterAssociationCreateRequest request)
+        public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
             var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociation(request.ShooterId,request.AssociationId);
             
@@ -66,10 +67,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.UpsertShooterAssociation(entity);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(new OkResponse{Status= true});
+            return Reply(new OkResponse{Status= true});
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult DeleteShooterAssociation(ShooterAssociationDeleteRequest request)
+        public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterAssociationByShooterAndAssociation(request.ShooterId,request.AssociationId);
@@ -88,17 +89,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             }
             //Invocazione del service layer
             var validations = BasicLayer.DeleteShooterAssociation(entity);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(new OkResponse{Status= true});
+            return Reply(new OkResponse{Status= true});
         }
     }
 }

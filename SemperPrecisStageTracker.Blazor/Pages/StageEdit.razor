@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/stages/edit/{stageId}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<StageEdit> L
 @inject NavigationManager UriHelper
 
@@ -221,7 +221,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.PostAsync<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        var existing = await Client.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
         model.Name = existing.Name;
         model.Targets = existing.Targets;
         model.StageId = StageId;
@@ -247,7 +247,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<StageContract>("/api/Stage/UpdateStage", model);
+        var response = await Client.Post<StageContract>("/api/Stage/UpdateStage", model);
         UriHelper.NavigateTo($"/matches/{Id}/stages/{response.StageId}");
     }
 }

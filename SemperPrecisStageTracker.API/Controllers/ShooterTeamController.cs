@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -23,14 +24,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamByShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult FetchShooterTeamByShooter(ShooterRequest request)
+        public Task<IActionResult> FetchShooterTeamByShooter(ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamsFromShooterId(request.ShooterId);
             var teamIds = entities.Select(x=>x.TeamId).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamIds);
             //Return contract
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x,teams.FirstOrDefault(t=>t.Id== x.TeamId))));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,teams.FirstOrDefault(t=>t.Id== x.TeamId))));
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamByTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult FetchShooterTeamByTeam(TeamRequest request)
+        public Task<IActionResult> FetchShooterTeamByTeam(TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShootersFromTeamId(request.TeamId);
@@ -49,7 +50,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
             
             //Return contract
-            return Ok(entities.As(x=>ContractUtils.GenerateContract(x,null,shooters.FirstOrDefault(t=>t.Id== x.ShooterId))));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,null,shooters.FirstOrDefault(t=>t.Id== x.ShooterId))));
 
         }
 
@@ -62,7 +63,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterTeam")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public IActionResult UpsertShooterTeam(ShooterTeamCreateRequest request)
+        public Task<IActionResult> UpsertShooterTeam(ShooterTeamCreateRequest request)
         {
             var entity = this.BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId,request.ShooterId);
             
@@ -79,10 +80,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.UpsertShooterTeam(entity);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(new OkResponse{Status= true});
+            return Reply(new OkResponse{Status= true});
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult DeleteShooterTeam(ShooterTeamDeleteRequest request)
+        public Task<IActionResult> DeleteShooterTeam(ShooterTeamDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId,request.ShooterId);
@@ -101,17 +102,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             }
             //Invocazione del service layer
             var validations = BasicLayer.DeleteShooterTeam(entity);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(new OkResponse{Status= true});
+            return Reply(new OkResponse{Status= true});
         }
     }
 }

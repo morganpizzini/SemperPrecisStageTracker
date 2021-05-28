@@ -1,5 +1,5 @@
 ﻿@page "/shooters/new"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<ShooterNew> L
 @inject NavigationManager UriHelper
 
@@ -42,6 +42,30 @@
             </FieldBody>
         </Field>
     </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                    <Feedback>
+                        <ValidationError>@L["WrongUsername"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                    <Feedback>
+                        <ValidationError>@L["WrongEmail"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
@@ -78,7 +102,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<ShooterContract>("/api/Shooter/CreateShooter", model);
+        var response = await Client.Post<ShooterContract>("/api/Shooter/CreateShooter", model);
         UriHelper.NavigateTo($"/shooters/{response.ShooterId}");
     }
 }

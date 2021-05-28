@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.Domain.Configurations;
 using ZenProgramming.Chakra.Core.Configurations;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -21,9 +22,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetDiagnostic")]
         [ProducesResponseType(typeof(object), 200)]
-        public IActionResult GetDiagnostic()
+        public Task<IActionResult> GetDiagnostic()
         {
-            return Ok(new {
+            return Reply(new {
                 EnvironmentName = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName,
                 Provider = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider
             });

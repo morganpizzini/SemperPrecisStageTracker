@@ -1,5 +1,5 @@
 ﻿@page "/matches/edit/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<MatchEdit> L
 @inject NavigationManager UriHelper
 
@@ -93,9 +93,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        associations = await Client.PostAsync<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Client.Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
 
-        var existing = await Client.PostAsync<MatchContract>("api/Match/GetMatch", new MatchRequest{ MatchId = Id });
+        var existing = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest{ MatchId = Id });
         model.MatchId = existing.MatchId;
         model.Name = existing.Name;
         model.MatchDateTime = existing.MatchDateTime;
@@ -130,7 +130,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<MatchContract>("/api/Match/UpdateMatch", model);
+        var response = await Client.Post<MatchContract>("/api/Match/UpdateMatch", model);
         UriHelper.NavigateTo($"/matches/{response.MatchId}");
     }
 }

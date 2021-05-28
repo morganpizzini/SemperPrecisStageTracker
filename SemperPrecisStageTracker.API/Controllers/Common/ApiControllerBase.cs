@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;
@@ -10,7 +12,7 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
     /// <summary>
     /// Base controller for MVC pattern
     /// </summary>
-    //[Authorize]
+    [Authorize]
     [Route("api/[Controller]")]
     //[TraceOnErrorFile]
     [ApiController]
@@ -31,6 +33,7 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
         /// Basic service layer
         /// </summary>
         protected MainServiceLayer BasicLayer { get; }
+        protected AuthenticationServiceLayer AuthorizationLayer { get; }
         #endregion
 
 
@@ -43,6 +46,12 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
             DataSession = SessionFactory.OpenSession();
             //AuthorizationLayer = new AuthenticationServiceLayer(DataSession);
             BasicLayer = new MainServiceLayer(DataSession);
+            AuthorizationLayer = new AuthenticationServiceLayer(DataSession);
+        }
+
+        protected Task<IActionResult> Reply(object obj)
+        {
+            return Task.FromResult<IActionResult>(Ok(obj));
         }
 
         /// <summary>
@@ -61,6 +70,16 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
 
             //Ritorno la request
             return BadRequest(ModelState);
+        }
+        /// <summary>
+        /// Compose a BarRequest (400) with provided list of validations
+        /// </summary>
+        /// <param name="validations">Validations</param>
+        /// <returns>Returns bad request response</returns>
+        protected Task<IActionResult> BadRequestTask(IList<ValidationResult> validations)
+        {
+            //Ritorno la request
+            return Task.FromResult(BadRequest(validations));
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 ﻿@page "/shooters/{id}"
-@inject HttpClientService Client
+@inject HttpService Client
 @inject IStringLocalizer<ShooterDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -297,19 +297,19 @@
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     protected override async Task OnInitializedAsync()
     {
-        shooter = await Client.PostAsync<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
-        associations = await Client.PostAsync<IList<AssociationContract>>("api/Association/FetchAllAssociations",null);
-        teams = await Client.PostAsync<IList<TeamContract>>("api/Team/FetchAllTeams",null);
+        shooter = await Client.Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+        associations = await Client.Post<IList<AssociationContract>>("api/Association/FetchAllAssociations",null);
+        teams = await Client.Post<IList<TeamContract>>("api/Team/FetchAllTeams",null);
         await LoadShooterRatings();
         await LoadShooterTeams();
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooterTeams(){
-        shooterTeams = await Client.PostAsync<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
+        shooterTeams = await Client.Post<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
     }
     async Task LoadShooterRatings(){
-        shooterRatings = await Client.PostAsync<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+        shooterRatings = await Client.Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
     }
 
     void ValidateDate(ValidatorEventArgs e)
@@ -365,7 +365,7 @@
             if (!validations.ValidateAll())
                 return;
             validations.ClearAll();
-            var response = await Client.PostAsync<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
+            var response = await Client.Post<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
             await LoadShooterRatings();
         }
         associationToEdit = new ShooterAssociationCreateRequest();
@@ -382,7 +382,7 @@
     {
         if (choice && associationToDelete.Association!=null)
         {
-            await Client.PostAsync<GroupContract>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationDeleteRequest { AssociationId = associationToDelete.Association.AssociationId,
+            await Client.Post<GroupContract>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationDeleteRequest { AssociationId = associationToDelete.Association.AssociationId,
                 ShooterId = shooter.ShooterId });
             await LoadShooterRatings();
         }
@@ -409,7 +409,7 @@
             if (!teamValidations.ValidateAll())
                 return;
             teamValidations.ClearAll();
-            var response = await Client.PostAsync<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
+            var response = await Client.Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
             await LoadShooterTeams();
         }
         teamToEdit = new ShooterTeamCreateRequest();
@@ -425,7 +425,7 @@
     {
         if (choice && teamToDelete.Team!=null)
         {
-            await Client.PostAsync<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest { TeamId = teamToDelete.Team.TeamId,
+            await Client.Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest { TeamId = teamToDelete.Team.TeamId,
                 ShooterId = shooter.ShooterId });
             await LoadShooterTeams();
         }

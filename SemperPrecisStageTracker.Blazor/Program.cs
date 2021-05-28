@@ -13,7 +13,8 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Microsoft.Extensions.Localization;
 using SemperPrecisStageTracker.Blazor.Utils;
-using Microsoft.Extensions.Configuration;
+using SemperPrecisStageTracker.Blazor.Services;
+using SemperPrecisStageTracker.Blazor.Helpers;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -41,13 +42,35 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddFontAwesomeIcons();
 
             builder.Services
-                .AddScoped(sp => new HttpClient {BaseAddress = new Uri(builder.Configuration["baseAddress"])})
-                .AddScoped<HttpClientService>();
+                .AddScoped<IHttpService,HttpService>()
+                .AddScoped<IAuthenticationService,AuthenticationService>()
+                .AddScoped<ILocalStorageService,LocalStorageService>()
+                .AddScoped<NetworkService>();
                 //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            
+            // configure http client
+            builder.Services.AddScoped(x => {
+                var apiUrl = new Uri(builder.Configuration["baseAddress"]);
 
+                // use fake backend if "fakeBackend" is "true" in appsettings.json
+                if (builder.Configuration["fakeBackend"] == "true")
+                    return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
+
+                return new HttpClient() { BaseAddress = apiUrl };
+            });
+            
             builder.RootComponents.Add<App>("#app");
 
             var host = builder.Build();
+
+            // init network service
+            var network = host.Services.GetRequiredService<NetworkService>();
+            await network.InitAsync();
+
+            //init auth service
+            var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
+            await authenticationService.Initialize();
+
             await host.SetDefaultCulture();
             await host.RunAsync();
         }

@@ -1,5 +1,5 @@
 ﻿@page "/matches"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
 
@@ -38,7 +38,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        matches = await Client.PostAsync<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        matches = await Client.Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
 
         await base.OnInitializedAsync();
     }

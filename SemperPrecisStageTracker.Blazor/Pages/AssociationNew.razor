@@ -1,5 +1,5 @@
 ﻿@page "/associations/new"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<AssociationNew> L
 @inject NavigationManager UriHelper
 
@@ -76,7 +76,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<AssociationContract>("/api/Association/CreateAssociation", model);
+        var response = await Client.Post<AssociationContract>("/api/Association/CreateAssociation", model);
         UriHelper.NavigateTo($"/associations/{response.AssociationId}");
     }
 }

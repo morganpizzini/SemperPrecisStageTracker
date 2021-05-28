@@ -12,7 +12,10 @@ using ZenProgramming.Chakra.Core.Diagnostic;
 using ZenProgramming.Chakra.Core.EntityFramework.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
 using SemperPrecisStageTracker.EF.Context;
-
+using SemperPrecisStageTracker.Domain.Containers;
+using SemperPrecisStageTracker.Domain.Clients;
+using SemperPrecisStageTracker.Mocks.Clients;
+using SemperPrecisStageTracker.EF.Clients;
 
 namespace SemperPrecisStageTracker.API
 {
@@ -32,11 +35,11 @@ namespace SemperPrecisStageTracker.API
             });
 
             // identity client
-            //SettingsUtils.Switch(ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider, new Dictionary<string, Action>
-            //{
-            //    { "Mockup", ServiceResolver.Register<IIdentityClient, MockIdentityClient> },
-            //    { "Sql", ServiceResolver.Register<IIdentityClient, SqlIdentityClient> }
-            //});
+            SettingsUtils.Switch(ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider, new Dictionary<string, Action>
+            {
+                { "Mockup", ServiceResolver.Register<IIdentityClient, MockIdentityClient> },
+                { "Sql", ServiceResolver.Register<IIdentityClient, SqlIdentityClient> }
+            });
 
             CreateHostBuilder(args).Build().Run();
         }

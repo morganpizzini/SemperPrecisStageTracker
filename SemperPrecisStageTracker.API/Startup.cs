@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -77,40 +78,40 @@ namespace SemperPrecisStageTracker.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
 
-                //c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
-                //{
-                //    Type = SecuritySchemeType.Http,
-                //    Scheme = "basic",
-                //    Description = "Input your username and password to access this API",
-                //    In = ParameterLocation.Header,
-                //});
+                c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    Description = "Input your username and password to access this API",
+                    In = ParameterLocation.Header,
+                });
 
-                //c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //        new OpenApiSecurityScheme
-                //        {
-                //            Reference = new OpenApiReference
-                //            {
-                //                Type = ReferenceType.SecurityScheme,
-                //                Id = "basicAuth"
-                //            }
-                //        },
-                //        new List<string>()
-                //    }
-                //});
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "basicAuth"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //if (env.IsDevelopment())
-            //{
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SemperPrecisStageTracker v1"));
-            //}
+            }
 
             app.UseHttpsRedirection();
 
@@ -132,10 +133,10 @@ namespace SemperPrecisStageTracker.API
                     throw new Exception("CORS configuration NOT FOUND");
             }
             
-            ////Utilizzo l'autenticazione
-            //app.UseAuthentication();
+            //Utilizzo l'autenticazione
+            app.UseAuthentication();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -130,7 +130,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 ShooterId = entity.Id,
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
-                BirthDate = entity.BirthDate
+                BirthDate = entity.BirthDate,
+                Email = entity.Email,
+                Username = entity.Username
             };
         }
 

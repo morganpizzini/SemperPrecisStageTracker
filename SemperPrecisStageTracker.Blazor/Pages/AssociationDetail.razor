@@ -1,5 +1,5 @@
 ﻿@page "/associations/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<AssociationDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -59,7 +59,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-         association = await Client.PostAsync<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
+         association = await Client.Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
 
         await base.OnInitializedAsync();
     }

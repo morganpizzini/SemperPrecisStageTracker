@@ -1,5 +1,5 @@
 ﻿@page "/teams/new"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<TeamNew> L
 @inject NavigationManager UriHelper
 
@@ -58,7 +58,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<TeamContract>("/api/Team/CreateTeam", model);
+        var response = await Client.Post<TeamContract>("/api/Team/CreateTeam", model);
         UriHelper.NavigateTo($"/teams/{response.TeamId}");
     }
 }

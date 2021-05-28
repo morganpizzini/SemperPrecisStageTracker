@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -22,15 +23,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllTeams")]
         [ProducesResponseType(typeof(IList<TeamContract>), 200)]
-        public IActionResult FetchAllTeams()
+        public Task<IActionResult> FetchAllTeams()
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllTeams();
 
             //Ritorno i contratti
-            return Ok(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(ContractUtils.GenerateContract));
         }
-
         /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
@@ -39,16 +39,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public IActionResult GetTeam(TeamRequest request)
+        public Task<IActionResult> GetTeam(TeamRequest request)
         {
             var entity = BasicLayer.GetTeam(request.TeamId);
 
             //verifico validità dell'entità
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public IActionResult CreateTeam(TeamCreateRequest request)
+        public Task<IActionResult> CreateTeam(TeamCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Team
@@ -71,11 +71,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.CreateTeam(model);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Reply(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -86,14 +86,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public IActionResult UpdateTeam(TeamUpdateRequest request)
+        public Task<IActionResult> UpdateTeam(TeamUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetTeam(request.TeamId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -101,11 +101,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Salvataggio
             var validations = BasicLayer.UpdateTeam(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public IActionResult DeleteTeam(TeamRequest request)
+        public Task<IActionResult> DeleteTeam(TeamRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -125,17 +125,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             }
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteTeam(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
     }
 }

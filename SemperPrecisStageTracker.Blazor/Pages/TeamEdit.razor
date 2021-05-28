@@ -1,5 +1,5 @@
 ﻿@page "/teams/edit/{id}"
-@inject HttpClientService Client
+@inject IHttpService Client
 @inject IStringLocalizer<TeamEdit> L
 @inject NavigationManager UriHelper
 
@@ -33,7 +33,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.PostAsync<TeamContract>("api/Team/GetTeam", new TeamRequest{ TeamId = Id });
+        var existing = await Client.Post<TeamContract>("api/Team/GetTeam", new TeamRequest{ TeamId = Id });
         model.TeamId = existing.TeamId;
         model.Name = existing.Name;
 
@@ -45,7 +45,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.PostAsync<TeamContract>("/api/Team/UpdateTeam", model);
+        var response = await Client.Post<TeamContract>("/api/Team/UpdateTeam", model);
         UriHelper.NavigateTo($"/teams/{response.TeamId}");
     }
 }

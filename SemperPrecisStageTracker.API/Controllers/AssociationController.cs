@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
@@ -22,13 +23,13 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllAssociations")]
         [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
-        public IActionResult FetchAllAssociations()
+        public Task<IActionResult> FetchAllAssociations()
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllAssociations();
 
             //Ritorno i contratti
-            return Ok(entities.As(x => ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -39,16 +40,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetAssociation")]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public IActionResult GetAssociation(AssociationRequest request)
+        public Task<IActionResult> GetAssociation(AssociationRequest request)
         {
             var entity = BasicLayer.GetAssociation(request.AssociationId);
 
             //verifico validità dell'entità
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateAssociation")]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public IActionResult CreateAssociation(AssociationCreateRequest request)
+        public Task<IActionResult> CreateAssociation(AssociationCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Association
@@ -73,11 +74,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = BasicLayer.CreateAssociation(model);
 
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Reply(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -88,14 +89,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateAssociation")]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public IActionResult UpdateAssociation(AssociationUpdateRequest request)
+        public Task<IActionResult> UpdateAssociation(AssociationUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -105,11 +106,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Salvataggio
             var validations = BasicLayer.UpdateAssociation(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -120,7 +121,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteAssociation")]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public IActionResult DeleteAssociation(AssociationRequest request)
+        public Task<IActionResult> DeleteAssociation(AssociationRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -129,16 +130,16 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());;
             }
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteAssociation(entity);
             if (validations.Count > 0)
-                return BadRequest(validations);
+                return BadRequestTask(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity));
         }
     }
 }
