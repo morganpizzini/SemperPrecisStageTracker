@@ -31,4 +31,13 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
         {
         }
     }
+
+            [Repository]
+    public class MockNotificationSubscriptionRepository : MockRepositoryBase<NotificationSubscription, ISemperPrecisStageTrackerScenario>, INotificationSubscriptionRepository
+    {
+        public MockNotificationSubscriptionRepository(IDataSession dataSession)
+            : base(dataSession, c => c.NotificationSubscriptions)
+        {
+        }
+    }
 }

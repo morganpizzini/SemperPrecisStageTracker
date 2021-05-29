@@ -23,8 +23,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly ITeamRepository _teamRepository;
         private readonly IShooterTeamRepository _shooterTeamRepository;
         private readonly IShooterAssociationRepository _shooterAssociationRepository;
-
-        public MainServiceLayer(IDataSession dataSession)
+    private readonly INotificationSubscriptionRepository _notificationsubscriptionRepository;
+    public MainServiceLayer(IDataSession dataSession)
             : base(dataSession)
         {
             _teamRepository = dataSession.ResolveRepository<ITeamRepository>();
@@ -37,6 +37,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _stageRepository = dataSession.ResolveRepository<IStageRepository>();
             _shooterTeamRepository = dataSession.ResolveRepository<IShooterTeamRepository>();
             _shooterAssociationRepository = dataSession.ResolveRepository<IShooterAssociationRepository>();
+            _notificationsubscriptionRepository = dataSession.ResolveRepository<INotificationSubscriptionRepository>();
         }
         #region Match
 
@@ -1775,6 +1776,75 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
         }
         #endregion
+
+#region NotificationSubscription
+
+        /// <summary>
+        /// Fetch list of notificationsubscriptions by provided ids
+        /// </summary>
+        /// <param name="ids"> notificationsubscriptions identifier </param>
+        /// <returns>Returns list of notificationsubscriptions</returns>
+        public IList<NotificationSubscription> FetchNotificationSubscriptionsByIds(IList<string> ids)
+        {
+            //Utilizzo il metodo base
+            return FetchEntities(s => ids.Contains(s.Id), null, null, null, true, _notificationsubscriptionRepository);
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns notificationsubscription or null</returns>
+        public NotificationSubscription GetNotificationSubscription(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _notificationsubscriptionRepository);
+}
+
+/// <summary>
+        /// Create provided notificationsubscription
+        /// </summary>
+        /// <param name="entity">NotificationSubscription</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> CreateNotificationSubscription(NotificationSubscription entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided NotificationSubscription seems to already existing");
+
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+
+            //Esecuzione in transazione
+            using (var t = DataSession.BeginTransaction())
+            {
+
+                //Validazione argomenti
+                var validations = _notificationsubscriptionRepository.Validate(entity);
+
+                //Se ho validazioni fallite, esco
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
+                //Salvataggio
+                _notificationsubscriptionRepository.Save(entity);
+                t.Commit();
+                return validations;
+            }
+        }
+#endregion
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing,
         /// releasing, or resetting unmanaged resources.
@@ -1794,7 +1864,8 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _shooterStageRepository.Dispose();
                 _stageRepository.Dispose();
                 _teamRepository.Dispose();
-            }
+        _notificationsubscriptionRepository.Dispose();
+      }
 
             //Chiamo il metodo base
             base.Dispose(isDisposing);

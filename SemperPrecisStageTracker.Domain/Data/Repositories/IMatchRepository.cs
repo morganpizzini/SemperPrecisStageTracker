@@ -24,4 +24,12 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
+     /// <summary>
+    /// Repository interface for "Team"
+    /// </summary>
+    public interface INotificationSubscriptionRepository : IRepository<NotificationSubscription>
+    {
+
+    }
+
 }

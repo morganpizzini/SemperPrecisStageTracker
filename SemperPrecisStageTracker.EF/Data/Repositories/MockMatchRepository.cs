@@ -31,4 +31,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class NotificationSubscriptionRepository : EntityFrameworkRepositoryBase<NotificationSubscription, SemperPrecisStageTrackerContext>, INotificationSubscriptionRepository
+    {
+        public NotificationSubscriptionRepository(IDataSession dataSession)
+            : base(dataSession, c => c.NotificationSubscriptions)
+        {
+        }
+    }
 }

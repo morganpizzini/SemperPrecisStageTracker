@@ -59,5 +59,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// </summary>
         IList<ShooterAssociation> ShooterAssociations { get; set; }
 
+        /// <summary>
+        /// List of notification subscription
+        /// </summary>
+        IList<NotificationSubscription> NotificationSubscriptions { get; set; }
+
     }
 }

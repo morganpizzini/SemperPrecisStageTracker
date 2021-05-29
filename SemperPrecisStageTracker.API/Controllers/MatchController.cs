@@ -149,7 +149,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
