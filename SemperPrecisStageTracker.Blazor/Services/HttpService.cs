@@ -16,6 +16,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
     public interface IHttpService
     {
         Task<T> Get<T>(string uri);
+        Task<T> Post<T>(string uri);
         Task<T> Post<T>(string uri, object value);
     }
 
@@ -44,12 +45,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return await sendRequest<T>(request);
         }
 
-        public async Task<T> Post<T>(string uri)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(new{ }), Encoding.UTF8, "application/json");
-            return await sendRequest<T>(request);
-        }
+        public Task<T> Post<T>(string uri) => Post<T>(uri,new{ });
 
         public async Task<T> Post<T>(string uri, object value)
         {

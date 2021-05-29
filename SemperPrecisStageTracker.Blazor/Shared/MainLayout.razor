@@ -4,40 +4,39 @@
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
 @inject NetworkService NetworkService
-@inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 
 <div class="page">
-    @if (AuthenticationService.IsAuth)
-    {
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-    }
+    
+            <div class="sidebar">
+                <NavMenu />
+            </div>
+            <div class="main">
+                <div class="top-row px-4 auth">
+                    <CultureSelector />
+                    <AuthorizeView>
+                        <Authorized>
+                            <span>@L["Hello"]!, @context.User.Identity.Name!</span>
+                            <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
+                        </Authorized>
+                        <NotAuthorized>
+                            <NavLink class="nav-link" href="login">@L["Login"]</NavLink>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
 
-    <div class="main">
-        <div class="top-row px-4 auth">
-            @if (AuthenticationService.IsAuth)
-            {
-                <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
-            } else {
-                <NavLink class="nav-link" href="login">@L["Login"]</NavLink>
-            }
-            <CultureSelector />
-        </div>
-
-        <div class="content px-4">
-            @if (NetworkService.IsOnline)
-            {
-                @Body
-            }
-            else
-            {
-                <span style="color: red">@L["Offline"]</span>
-            }
-        </div>
+                <div class="content px-4">
+                    @if (NetworkService.IsOnline)
+                    {
+                        @Body
+                    }
+                    else
+                    {
+                        <span style="color: red">@L["Offline"]</span>
+                    }
+                </div>
+            </div>
     </div>
-</div>
 <Modal @ref="modalInstallRef">
     <ModalContent Size="ModalSize.Default" Centered="true">
         <ModalHeader>

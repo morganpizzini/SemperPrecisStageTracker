@@ -1,35 +1,44 @@
 ﻿@inject IStringLocalizer<NavMenu> L
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">SemperPrecis Tracker</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <AuthorizeView>
+        <Authorized>
+            <button class="navbar-toggler" @onclick="ToggleNavMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </Authorized>
+    </AuthorizeView>
 </div>
+<AuthorizeView>
+    <Authorized>
+        <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+            <ul class="nav flex-column">
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="associations">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Associations"]
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="matches">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Matches"]
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="shooters">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Shooters"]
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="teams">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Teams"]
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
+    </Authorized>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="associations">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Associations"]
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="matches">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Matches"]
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="shooters">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Shooters"]
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="teams">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Teams"]
-            </NavLink>
-        </li>
-    </ul>
-</div>
+</AuthorizeView>
+
 
 @code {
     private bool collapseNavMenu = true;

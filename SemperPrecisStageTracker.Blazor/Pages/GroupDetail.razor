@@ -1,7 +1,7 @@
 ﻿@page "/matches/{id}/groups/{groupId}"
 @using System.Text.Json
 @using SemperPrecisStageTracker.Contracts.Requests
-@inject HttpService Client
+@inject IHttpService Client
 @inject IStringLocalizer<GroupDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>

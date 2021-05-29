@@ -123,6 +123,9 @@
   <data name="Close" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hello</value>
+  </data>
   <data name="InstallPWA" xml:space="preserve">
     <value>Install PWA</value>
   </data>

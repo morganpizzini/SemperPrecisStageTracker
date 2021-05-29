@@ -3,7 +3,7 @@
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Login> L
-
+@inject AuthenticationStateProvider auth
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
 <Alert Color="Color.Success">
     <AlertDescription>
@@ -77,11 +77,17 @@
 
     private async void Submit()
     {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
         try
         {
-            await AuthenticationService.Login(model.Username, model.Password);
-            var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
-            NavigationManager.NavigateTo(returnUrl);
+            var loginResult = await AuthenticationService.Login(model.Username, model.Password);
+            if (loginResult)
+            {
+                var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+                NavigationManager.NavigateTo(returnUrl);
+            }
         }
         catch (Exception ex)
         {

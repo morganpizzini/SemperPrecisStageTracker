@@ -15,6 +15,9 @@ using Microsoft.Extensions.Localization;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Blazor.Services;
 using SemperPrecisStageTracker.Blazor.Helpers;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
+using SemperPrecisStageTracker.Contracts;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -24,32 +27,37 @@ namespace SemperPrecisStageTracker.Blazor
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");  
+            builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             builder.Services.AddBlazorise(options =>
                 {
                     options.ChangeTextOnKeyPress = true;
-                    options.ValidationMessageLocalizer = ( message, arguments ) =>
+                    options.ValidationMessageLocalizer = (message, arguments) =>
                     {
                         var stringLocalizer = options.Services.GetService<IStringLocalizer<Program>>();
 
                         return stringLocalizer != null && arguments?.Count() > 0
-                            ? string.Format( stringLocalizer[message], arguments.ToArray() )
+                            ? string.Format(stringLocalizer[message], arguments.ToArray())
                             : message;
                     };
                 })
                 .AddBootstrapProviders()
                 .AddFontAwesomeIcons();
 
+            builder.Services.AddOptions();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+
             builder.Services
-                .AddScoped<IHttpService,HttpService>()
-                .AddScoped<IAuthenticationService,AuthenticationService>()
-                .AddScoped<ILocalStorageService,LocalStorageService>()
+                .AddScoped<IHttpService, HttpService>()
+                .AddScoped<IAuthenticationService, AuthenticationService>()
+                .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<NetworkService>();
-                //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            
+            //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
             // configure http client
-            builder.Services.AddScoped(x => {
+            builder.Services.AddScoped(x =>
+            {
                 var apiUrl = new Uri(builder.Configuration["baseAddress"]);
 
                 // use fake backend if "fakeBackend" is "true" in appsettings.json
@@ -58,7 +66,7 @@ namespace SemperPrecisStageTracker.Blazor
 
                 return new HttpClient() { BaseAddress = apiUrl };
             });
-            
+
             builder.RootComponents.Add<App>("#app");
 
             var host = builder.Build();
@@ -73,6 +81,41 @@ namespace SemperPrecisStageTracker.Blazor
 
             await host.SetDefaultCulture();
             await host.RunAsync();
+        }
+    }
+    public class CustomAuthStateProvider : AuthenticationStateProvider
+    {
+        private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+
+        public void LoginNotify(ShooterContract user)
+        {
+            if (user == null)
+            {
+                LogoutNotify();
+                return;
+            }
+
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Email, user.Email),
+            }, "Fake authentication type");
+
+            claimsPrincipal = new ClaimsPrincipal(identity);
+
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
+
+        public void LogoutNotify()
+        {
+            var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+            claimsPrincipal = anonymous;
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
+
+        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        {
+            return Task.FromResult(new AuthenticationState(claimsPrincipal));
         }
     }
 }
