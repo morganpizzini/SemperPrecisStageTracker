@@ -1,4 +1,5 @@
 ﻿@page "/teams"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<Teams> L
 @inject NavigationManager UriHelper

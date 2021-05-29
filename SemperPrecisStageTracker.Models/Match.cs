@@ -11,8 +11,10 @@ namespace SemperPrecisStageTracker.Models
         public string Name { get; set; }
         [Required]
         public string AssociationId {get;set;}
+        [Required]
+        public string ShortLink { get; set; }
         public string Location {get;set;}
-        public DateTime MatchDateTime { get; set; }
+    public DateTime MatchDateTime { get; set; }
         ///
         // Unify rank and remove any difference between Novice, Marksman, Sharpshooter, Expert, Master
         ///
@@ -30,7 +32,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public IList<string> Ranks {get;set;}
     }
-    
+
     public class Team : SemperPrecisEntity
     {
         [Required]

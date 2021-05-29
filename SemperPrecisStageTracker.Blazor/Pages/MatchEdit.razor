@@ -1,4 +1,5 @@
 ﻿@page "/matches/edit/{id}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<MatchEdit> L
 @inject NavigationManager UriHelper

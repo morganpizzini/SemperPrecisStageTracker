@@ -1,4 +1,5 @@
 ﻿@page "/matches"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
@@ -10,9 +11,8 @@
     <TableHeader ThemeContrast="ThemeContrast.Dark">
         <TableRow>
             <TableHeaderCell>@L["Name"]</TableHeaderCell>
-            <TableHeaderCell>@L["Date"]</TableHeaderCell>
-            <TableHeaderCell>@L["Location"]</TableHeaderCell>
             <TableHeaderCell>@L["Association"]</TableHeaderCell>
+            <TableHeaderCell>@L["Date"] / @L["Location"]</TableHeaderCell>
             <TableHeaderCell></TableHeaderCell>
         </TableRow>
     </TableHeader>
@@ -21,12 +21,12 @@
         {
             <TableRow>
                 <TableRowHeader>@match.Name</TableRowHeader>
-                <TableRowCell>@match.MatchDateTime.ToString("d")</TableRowCell>
-                <TableRowCell>@match.Location</TableRowCell>
                 <TableRowCell>@match.Association.Name</TableRowCell>
+                <TableRowCell>@match.MatchDateTime.ToString("d")<br/>@match.Location</TableRowCell>
                 <TableRowCell>
                     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{match.MatchId}")"><Icon Name="IconName.Pen" /></Button>
                     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}")"><Icon Name="IconName.Search" /></Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"stats/{match.MatchId}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
                 </TableRowCell>
             </TableRow>
         }

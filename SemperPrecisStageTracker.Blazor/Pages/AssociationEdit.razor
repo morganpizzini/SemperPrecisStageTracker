@@ -1,4 +1,5 @@
 ﻿@page "/associations/edit/{id}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<AssociationEdit> L
 @inject NavigationManager UriHelper
@@ -77,7 +78,7 @@
 
         await base.OnInitializedAsync();
     }
-   
+
     async Task Submit()
     {
         if (!validations.ValidateAll())

@@ -1,4 +1,5 @@
 ﻿@page "/teams/new"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<TeamNew> L
 @inject NavigationManager UriHelper

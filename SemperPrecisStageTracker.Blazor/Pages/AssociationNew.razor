@@ -1,4 +1,5 @@
 ﻿@page "/associations/new"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<AssociationNew> L
 @inject NavigationManager UriHelper

@@ -1,4 +1,5 @@
 ﻿@page "/matches/{id}/stats"
+@page "/stats/{shortLink}"
 @inject IHttpService Client
 @inject IStringLocalizer<MatchStats> L
 
@@ -8,7 +9,13 @@
         <Card Margin="Margin.Is4.OnY">
             <CardBody>
                 <CardTitle>@L["Match"]</CardTitle>
-                <CardText><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")</CardText>
+                <CardText>
+                    @if(interactive){
+                        <NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")
+                    }else{
+                        @match.Name - @match.MatchDateTime.ToString("d")
+                    }
+                </CardText>
             </CardBody>
         </Card>
     </Column>
@@ -17,7 +24,13 @@
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Association"]</CardTitle>
-                    <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
+                    <CardText>
+                        @if(interactive){
+                        <NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink>
+                    }else{
+                        @match.Association.Name
+                    }
+                    </CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -74,7 +87,7 @@
             </CardBody>
         </Card>
     }
-        
+
     </Column>
 </Row>
 
@@ -82,13 +95,20 @@
 
     [Parameter]
     public string Id { get; set; }
+    [Parameter]
+    public string ShortLink {get; set;}
 
+    bool interactive = string.IsNullOrEmpty(ShortLink);
     MatchContract match = new MatchContract();
     IList<DivisionMatchResultContract> stats = new List<DivisionMatchResultContract>();
 
     protected override async Task OnInitializedAsync()
     {
-        match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        if(!string.IsNullOrEmpty(ShortLink)){
+            match = await Client.Post<MatchContract>("api/Match/GetMatchFromShortLink", new MatchRequest() { MatchId = ShortLink });
+        }else{
+            match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        }
         stats = await Client.Post<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
 
         await base.OnInitializedAsync();

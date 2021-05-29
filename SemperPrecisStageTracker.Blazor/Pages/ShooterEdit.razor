@@ -1,4 +1,5 @@
 ﻿@page "/shooters/edit/{id}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<ShooterEdit> L
 @inject NavigationManager UriHelper

@@ -1,4 +1,5 @@
 ﻿@page "/matches/new"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<MatchNew> L
 @inject NavigationManager UriHelper

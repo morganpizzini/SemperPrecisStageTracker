@@ -1,4 +1,5 @@
 ﻿@page "/matches/{id}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<MatchDetail> L
 
@@ -8,6 +9,7 @@
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"stats/{Id}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
 <Row>
     <Column ColumnSize="ColumnSize.IsHalf">
         <Card Margin="Margin.Is4.OnY">

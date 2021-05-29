@@ -1,4 +1,5 @@
 ﻿@page "/matches/{id}/groups/new"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<GroupNew> L
 @inject NavigationManager UriHelper

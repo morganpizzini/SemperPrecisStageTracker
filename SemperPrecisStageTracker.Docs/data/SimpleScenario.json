@@ -6,7 +6,8 @@
       "matchDateTime": "2021-05-23T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
-      "location": "location"
+      "location": "location",
+      "shortLink": "ABC"
     }
   ],
   "stages": [

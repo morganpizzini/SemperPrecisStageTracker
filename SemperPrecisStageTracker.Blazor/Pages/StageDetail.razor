@@ -1,4 +1,5 @@
 ﻿@page "/matches/{id}/stages/{stageId}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<StageDetail> L
 

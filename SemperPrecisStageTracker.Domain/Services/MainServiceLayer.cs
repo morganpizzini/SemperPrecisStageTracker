@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Domain.Data.Repositories;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
+using SemperPrecisStageTracker.Domain.Utils;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -92,6 +93,21 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
+        /// <returns>Returns match or null</returns>
+        public Match GetMatchFromShortLink(string shortLink, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(shortLink)) throw new ArgumentNullException(nameof(shortLink));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.ShortLink == shortLink, _matchRepository);
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
         /// <returns>Returns stats</returns>
         public IList<DivisionMatchResult> GetMatchStats(string id, string userId = null)
         {
@@ -106,10 +122,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             var existingGroupsIds = existingGroups.Select(x=>x.Id);
             var existingShooterGroups = this._groupShooterRepository.Fetch(x => existingGroupsIds.Contains(x.GroupId));
 
-            var groupDivisions = existingShooterGroups.GroupBy(x=>x.DivisionId).Select(x=>new { 
-                Division = x.Key, 
-                Shooters = x.Select(s=> new{ 
-                    s.ShooterId, 
+            var groupDivisions = existingShooterGroups.GroupBy(x=>x.DivisionId).Select(x=>new {
+                Division = x.Key,
+                Shooters = x.Select(s=> new{
+                    s.ShooterId,
                     s.TeamId
                     })
             });
@@ -166,13 +182,13 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Predisposizione al fallimento
             IList<ValidationResult> validations = new List<ValidationResult>();
-            
+
             // check association
             if(_associationRepository.GetSingle(x=>x.Id == entity.AssociationId) == null){
                 validations.Add(new ValidationResult($"Association provided doesn`t exists"));
                 return validations;
             }
-            
+
             // controllo singolatità emplyee
             validations = CheckMatchValidation(entity);
             if (validations.Count > 0)
@@ -182,9 +198,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // Settaggio data di creazione
             entity.CreationDateTime = DateTime.UtcNow;
-
-            //Esecuzione in transazione
-            using (var t = DataSession.BeginTransaction())
+      // Set unique identifier
+      entity.ShortLink = RandomUtils.RandomString();
+      //Esecuzione in transazione
+      using (var t = DataSession.BeginTransaction())
             {
 
                 //Validazione argomenti
@@ -373,7 +390,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Predisposizione al fallimento
             IList<ValidationResult> validations = new List<ValidationResult>();
-            
+
             // controllo singolatità emplyee
             validations = CheckTeamValidation(entity);
             if (validations.Count > 0)
@@ -421,7 +438,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
 
             IList<ValidationResult> validations = new List<ValidationResult>();
-            
+
             //Predisposizione al fallimento
 
             // controllo singolatità emplyee
@@ -495,10 +512,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
                 // remove all shooterassociation for team
             var shooterTeams = _shooterTeamRepository.Fetch(x=> x.TeamId == entity.Id);
-            
+
             foreach(var shooterTeam in shooterTeams){
                 _shooterTeamRepository.Delete(shooterTeam);
             }
@@ -509,7 +526,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             t.Commit();
             return new List<ValidationResult>();
-            
+
         }
 
         #endregion
@@ -563,7 +580,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             return GetSingleEntity(c => c.Id == id, _associationRepository);
         }
 
-        
+
         /// <summary>
         /// Create provided association
         /// </summary>
@@ -701,10 +718,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
             // remove all shooterassociation for team
             var shooterAssociations = _shooterAssociationRepository.Fetch(x=> x.AssociationId == entity.Id);
-            
+
             foreach(var shooterAssociation in shooterAssociations){
                 _shooterAssociationRepository.Delete(shooterAssociation);
             }
@@ -713,7 +730,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _associationRepository.Delete(entity);
             t.Commit();
             return new List<ValidationResult>();
-            
+
         }
 
         #endregion
@@ -831,7 +848,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
 
-            
+
             // controllo singolatità emplyee
             IList<ValidationResult> validations = CheckShooterValidation(entity);
             if (validations.Count > 0)
@@ -906,21 +923,21 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // remove all shootergroup for shooter
             var groupShooters = _groupShooterRepository.Fetch(x=> x.ShooterId == entity.Id);
-            
+
             foreach(var groupShooter in groupShooters){
                 _groupShooterRepository.Delete(groupShooter);
             }
-            
+
             // remove all shooterassociation for shooter
             var shooterAssociations = _shooterAssociationRepository.Fetch(x=> x.ShooterId == entity.Id);
-            
+
             foreach(var shooterAssociation in shooterAssociations){
                 _shooterAssociationRepository.Delete(shooterAssociation);
             }
 
             // remove all shooterteam for shooter
             var shooterTeams = _shooterTeamRepository.Fetch(x=> x.ShooterId == entity.Id);
-            
+
             foreach(var shooterTeam in shooterTeams){
                 _shooterTeamRepository.Delete(shooterTeam);
             }
@@ -1119,7 +1136,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
             // remove all shootergroup in group
             var groupShooters = _groupShooterRepository.Fetch(x=> x.GroupId == entity.Id);
 
@@ -1131,7 +1148,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _groupRepository.Delete(entity);
             t.Commit();
             return new List<ValidationResult>();
-            
+
         }
 
         #endregion
@@ -1342,7 +1359,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Utilizzo il metodo base
             return FetchEntities(e => e.MatchId == matchId, null, null, x=>x.Index, false, _stageRepository);
         }
-        
+
 
         /// <summary>
         /// fetch shooters results on stage
@@ -1381,7 +1398,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             var existingShooterStage = this._shooterStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageId == x.StageId);
-            
+
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
@@ -1416,7 +1433,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.Ftdr = entity.Ftdr;
             existingShooterStage.Procedural = entity.Procedural;
             existingShooterStage.Disqualified = entity.Disqualified;
-           
+
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (existingShooterStage.CreationDateTime < new DateTime(2000, 1, 1))
                 existingShooterStage.CreationDateTime = new DateTime(2000, 1, 1);
@@ -1521,7 +1538,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
             //Validazione argomenti
             validations = _groupShooterRepository.Validate(entity);
 
@@ -1537,7 +1554,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _groupShooterRepository.Save(entity);
             t.Commit();
             return validations;
-            
+
         }
 
         /// <summary>
@@ -1565,7 +1582,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
         #endregion
         #region shooterteam
-        
+
         /// <summary>
         /// Fetch list of shooters by provided ids
         /// </summary>
@@ -1622,7 +1639,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
             //Validazione argomenti
             validations = _shooterTeamRepository.Validate(entity);
 
@@ -1638,7 +1655,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterTeamRepository.Save(entity);
             t.Commit();
             return validations;
-            
+
         }
 
         /// <summary>
@@ -1678,7 +1695,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
-            
+
             return FetchEntities(e => e.ShooterId == shooterId, null, null, null, true, _shooterAssociationRepository);
         }
         /// <summary>
@@ -1715,7 +1732,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
-            
+
             //Validazione argomenti
             validations = _shooterAssociationRepository.Validate(entity);
 
@@ -1731,7 +1748,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterAssociationRepository.Save(entity);
             t.Commit();
             return validations;
-            
+
         }
 
         /// <summary>

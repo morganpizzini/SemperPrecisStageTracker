@@ -27,6 +27,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 MatchId = entity.Id,
                 Name = entity.Name,
+                ShortLink = entity.ShortLink,
                 MatchDateTime = entity.MatchDateTime,
                 Location = entity.Location,
                 CreationDateTime = entity.CreationDateTime,

@@ -1,4 +1,5 @@
 ﻿@page "/shooters/{id}"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<ShooterDetail> L
 
@@ -341,7 +342,7 @@
         var existingAssociation = associations.FirstOrDefault(x=>x.AssociationId== value);
         if(existingAssociation== null)
             return;
-        
+
         rankings = existingAssociation.Ranks;
     }
     void NewRating(){
@@ -359,7 +360,7 @@
     }
 
     private async Task HideModalAssociationToEdit(bool choice)
-    {        
+    {
         if (choice)
         {
             if (!validations.ValidateAll())
@@ -403,7 +404,7 @@
     }
 
     private async Task HideModalTeamToEdit(bool choice)
-    {        
+    {
         if (choice)
         {
             if (!teamValidations.ValidateAll())

@@ -1,4 +1,5 @@
 ﻿@page "/matches/{id}/stages/new"
+@attribute [Authorize]
 @inject IHttpService Client
 @inject IStringLocalizer<StageNew> L
 @inject NavigationManager UriHelper

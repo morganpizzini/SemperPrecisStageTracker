@@ -22,6 +22,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string Name { get; set; }
         public DateTime MatchDateTime { get; set; }
         public string Location {get;set;}
+        public string ShortLink { get; set; }
 
         public DateTime CreationDateTime { get; set; }
         public bool UnifyRanks { get; set; }
@@ -34,11 +35,11 @@ namespace SemperPrecisStageTracker.Contracts
     {
         public string ShooterStageId { get; set; }
         public string ShooterId { get; set; }
-        
+
         public string StageId { get; set; }
-        
+
         public decimal Time { get; set; }
-        
+
         public IList<int> DownPoints {get;set;} = new List<int>();
         /// <summary>
         /// X3
@@ -80,7 +81,7 @@ namespace SemperPrecisStageTracker.Contracts
         public MatchContract Match { get; set; }
         public IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
     }
-    
+
     public class ShooterTeamContract {
         public TeamContract Team {get;set;}
         public ShooterContract Shooter {get;set;}
@@ -134,5 +135,5 @@ namespace SemperPrecisStageTracker.Contracts
         ///
         public bool CoverGarment {get;set;}
     }
-    
+
 }

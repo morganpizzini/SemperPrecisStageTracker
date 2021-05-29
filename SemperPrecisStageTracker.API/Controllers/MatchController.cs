@@ -8,6 +8,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -58,13 +59,39 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity,association,groups,stages));
         }
-        
+
+                /// <summary>
+        /// Get specific placet ype using provided identifier
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("GetMatch")]
+        [ProducesResponseType(typeof(MatchContract), 200)]
+        public Task<IActionResult> GetMatchFromShortLink(MatchRequest request)
+        {
+            var entity = BasicLayer.GetMatchFromShortLink(request.MatchId);
+
+            //verifico validità dell'entità
+            if (entity == null)
+                return Task.FromResult<IActionResult>(NotFound());;
+
+            var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
+            var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
+
+            var association = BasicLayer.GetAssociation(entity.AssociationId);
+            //Serializzazione e conferma
+            return Reply(ContractUtils.GenerateContract(entity,association,groups,stages));
+        }
+
         /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("GetMatchStats")]
         [ProducesResponseType(typeof(IList<DivisionMatchResultContract>), 200)]
         public Task<IActionResult> GetMatchStats(MatchRequest request)
@@ -131,7 +158,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Location = request.Location;
             entity.OpenMatch = request.OpenMatch;
             entity.UnifyRanks = request.UnifyRanks;
-            
+
             //Salvataggio
             var validations = BasicLayer.UpdateMatch(entity);
             if (validations.Count > 0)
