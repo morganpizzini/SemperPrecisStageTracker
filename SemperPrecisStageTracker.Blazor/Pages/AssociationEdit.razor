@@ -1,67 +1,77 @@
 ﻿@page "/associations/edit/{id}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<AssociationEdit> L
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
 <Divider />
-<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                    <Feedback>
-                        <ValidationError>@L["WrongName"]</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Field>
-        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-        @for (int i = 0; i < model.Divisions.Count; i++)
-        {
-            var tmp = i;
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                        <Feedback>
+                            <ValidationError>@L["WrongName"]</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+            @for (int i = 0; i < model.Divisions.Count; i++)
+            {
+                var tmp = i;
                 <FieldBody ColumnSize="ColumnSize.Is8">
                     <Addons>
                         <Addon AddonType="AddonType.Body">
                             <input value="@model.Divisions[tmp]" class="form-control"
-                                    @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                                   @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
                         </Addon>
                         <Addon AddonType="AddonType.End">
                             <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
                         </Addon>
                     </Addons>
                 </FieldBody>
-        }
-    </Field>
-    <Field>
-        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Ranks"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ranks.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-        @for (int i = 0; i < model.Ranks.Count; i++)
-        {
-            var tmp = i;
+            }
+        </Field>
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.Is4">@L["Ranks"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ranks.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+            @for (int i = 0; i < model.Ranks.Count; i++)
+            {
+                var tmp = i;
                 <FieldBody ColumnSize="ColumnSize.Is8">
                     <Addons>
                         <Addon AddonType="AddonType.Body">
                             <input value="@model.Ranks[tmp]" class="form-control"
-                                    @onchange="@(e => model.Ranks[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                                   @onchange="@(e => model.Ranks[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
                         </Addon>
                         <Addon AddonType="AddonType.End">
                             <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Ranks.Remove(model.Ranks[tmp]); })"><Icon Name="IconName.Delete" /></Button>
                         </Addon>
                     </Addons>
                 </FieldBody>
-        }
-    </Field>
-    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-        </FieldBody>
-    </Field>
-</Validations>
-
+            }
+        </Field>
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                    <ChildContent>@L["Submit"]</ChildContent>
+                </Button>
+            </FieldBody>
+        </Field>
+    </Validations>
+}
 @code {
     [Parameter]
     public string Id { get; set; }
@@ -70,7 +80,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest{ AssociationId = Id });
+        var existing = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest { AssociationId = Id });
         model.AssociationId = existing.AssociationId;
         model.Name = existing.Name;
         model.Divisions = existing.Divisions;
@@ -84,7 +94,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<AssociationContract>("/api/Association/UpdateAssociation", model);
+        var response = await Post<AssociationContract>("/api/Association/UpdateAssociation", model);
         UriHelper.NavigateTo($"/associations/{response.AssociationId}");
     }
 }

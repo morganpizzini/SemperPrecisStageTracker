@@ -159,7 +159,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 HitOnNonThreat = entity.HitOnNonThreat,
                 FlagrantPenalties = entity.FlagrantPenalties,
                 Ftdr = entity.Ftdr,
-                Procedural = entity.Procedural,
+                Warning = entity.Warning,
                 Disqualified  = entity.Disqualified
             };
         }

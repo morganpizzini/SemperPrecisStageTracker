@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SemperPrecisStageTracker.EF.Context;
 
 namespace SemperPrecisStageTracker.EF.Migrations
 {
     [DbContext(typeof(SemperPrecisStageTrackerContext))]
-    partial class SemperPrecisStageTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20210531091242_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,6 +262,9 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<int>("HitOnNonThreat")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Procedural")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Procedurals")
                         .HasColumnType("int");
 
@@ -273,9 +278,6 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.Property<decimal>("Time")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("Warning")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

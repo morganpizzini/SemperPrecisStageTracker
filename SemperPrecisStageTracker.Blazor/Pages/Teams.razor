@@ -1,6 +1,5 @@
 ﻿@page "/teams"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Teams> L
 @inject NavigationManager UriHelper
 
@@ -15,15 +14,33 @@
         </TableRow>
     </TableHeader>
     <TableBody>
-        @foreach (var team in teams)
+        @if (PageLoading)
         {
             <TableRow>
-                <TableRowHeader>@team.Name</TableRowHeader>
-                <TableRowCell>
-                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
-                </TableRowCell>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
             </TableRow>
+        }
+        else
+        {
+            @if (teams.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                @foreach (var team in teams)
+                {
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@($"teams/{team.TeamId}")">@team.Name</NavLink></TableRowHeader>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            }
         }
     </TableBody>
 </Table>
@@ -33,7 +50,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        teams = await Client.Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
 
         await base.OnInitializedAsync();
     }

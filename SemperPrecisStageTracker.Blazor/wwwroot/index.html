@@ -37,29 +37,28 @@
             // Code based on the Blazor.PWA.MSBuild package by SQL-MisterMagoo
             // Read more at https://github.com/SQL-MisterMagoo/Blazor.PWA.MSBuild/blob/master/LICENSE.txt
             window.updateAvailable = new Promise(function (resolve, reject) {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('service-worker.js')
-                        .then(function (registration) {
-                            console.info('Registration successful, scope is:', registration.scope);
-                            registration.onupdatefound = () => {
-                                const installingWorker = registration.installing;
-                                installingWorker.onstatechange = () => {
-                                    switch (installingWorker.state) {
-                                        case 'installed':
-                                            if (navigator.serviceWorker.controller) {
-                                                resolve(true);
-                                            } else {
-                                                resolve(false);
-                                            }
-                                            break;
-                                        default:
-                                    }
-                                };
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function (registration) {
+                        console.info('Registration successful, scope is:', registration.scope);
+                        registration.onupdatefound = () => {
+                            console.info('update found');
+                            const installingWorker = registration.installing;
+                            installingWorker.onstatechange = () => {
+                                switch (installingWorker.state) {
+                                    case 'installed':
+                                        if (navigator.serviceWorker.controller) {
+                                            resolve(true);
+                                        } else {
+                                            resolve(false);
+                                        }
+                                        break;
+                                    default:
+                                }
                             };
-                        })
-                        .catch(error =>
-                            console.info('Service worker registration failed, error:', error));
-                }
+                        };
+                    })
+                    .catch(error =>
+                        console.info('Service worker registration failed, error:', error));
             });
 
             window['updateAvailable']
@@ -101,6 +100,12 @@
                         element.focus();
                     console.log('focus');
                 },
+                selectElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.select();
+                    console.log('focus');
+                },
                 isDevice: function () {
                     return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
                 }
@@ -116,7 +121,7 @@
                         applicationServerKey: applicationServerPublicKey
                     });
                 } catch (error) {
-                    if (error.name === 'NotAllowedError') {
+                    if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
                         return null;
                     }
                     throw error;

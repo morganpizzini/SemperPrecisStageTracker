@@ -126,4 +126,7 @@
   <data name="NewTeam" xml:space="preserve">
     <value>Nuova squadra</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Nessun elemento</value>
+  </data>
 </root>

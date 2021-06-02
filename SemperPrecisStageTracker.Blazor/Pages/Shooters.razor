@@ -1,6 +1,5 @@
 ﻿@page "/shooters"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Shooters> L
 @inject NavigationManager UriHelper
 
@@ -17,17 +16,35 @@
         </TableRow>
     </TableHeader>
     <TableBody>
-        @foreach (var shooter in shooters)
+        @if (PageLoading)
         {
             <TableRow>
-                <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
-                <TableRowHeader>@shooter.Username</TableRowHeader>
-                <TableRowHeader>@shooter.BirthDate.ToString("d")</TableRowHeader>
-                <TableRowCell>
-                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
-                </TableRowCell>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
             </TableRow>
+        }
+        else
+        {
+            @if (shooters.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                @foreach (var shooter in shooters)
+                {
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@($"shooters/{shooter.ShooterId}")">@shooter.LastName @shooter.FirstName</NavLink></TableRowHeader>
+                        <TableRowCell>@shooter.Username</TableRowCell>
+                        <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            }
         }
     </TableBody>
 </Table>
@@ -37,8 +54,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        shooters = await Client.Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
-
+        shooters = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
         await base.OnInitializedAsync();
     }
 

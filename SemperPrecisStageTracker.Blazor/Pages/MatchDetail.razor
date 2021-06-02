@@ -1,6 +1,5 @@
 ﻿@page "/matches/{id}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<MatchDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -10,37 +9,45 @@
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"stats/{Id}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
-<Row>
-    <Column ColumnSize="ColumnSize.IsHalf">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Match"]</CardTitle>
-                <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
-                <CardTitle>@L["Location"]</CardTitle>
-                <CardText>@match.Location</CardText>
-
-            </CardBody>
-        </Card>
-    </Column>
-    @if(match.Association!=null){
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
         <Column ColumnSize="ColumnSize.IsHalf">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>@L["Association"]</CardTitle>
-                    <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
+                    <CardTitle>@L["Match"]</CardTitle>
+                    <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+                    <CardTitle>@L["Location"]</CardTitle>
+                    <CardText>@match.Location</CardText>
+
                 </CardBody>
             </Card>
         </Column>
-    }
-</Row>
+        @if (match.Association != null)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
 
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Groups"]</CardTitle>
-                @if (match.Groups.Count > 0)
-                {
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Groups"]</CardTitle>
+
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -49,68 +56,82 @@
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @foreach (var group in match.Groups)
+                            @if (match.Groups.Count > 0)
+                            {
+                                @foreach (var group in match.Groups)
+                                {
+                                    <TableRow>
+                                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/groups/{group.GroupId}")">@group.Name</NavLink></TableRowHeader>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            }
+                            else
                             {
                                 <TableRow>
-                                    <TableRowHeader>@group.Name</TableRowHeader>
-                                    <TableRowCell>
-                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
-                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                        @L["NoGroups"]
                                     </TableRowCell>
                                 </TableRow>
                             }
                         </TableBody>
-                    </Table>
-                }
-                else
-                {
-                    <Text>@L["NoGroups"]</Text>
-                }
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
 
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Stages"]</CardTitle>
-                @if (match.Stages.Count > 0)
-                {
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Targets"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var stage in match.Stages)
-                            {
+                    </Table>
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Stages"]</CardTitle>
+                    
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
-                                    <TableRowHeader>@stage.Name</TableRowHeader>
-                                    <TableRowHeader>@stage.Targets</TableRowHeader>
-                                    <TableRowCell>
-                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
-                                        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
-                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
-                                    </TableRowCell>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Targets"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
                                 </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                }
-                else
-                {
-                    <Text>@L["NoStages"]</Text>
-                }
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
-
+                            </TableHeader>
+                            <TableBody>
+                                @if (match.Stages.Count > 0)
+                                {
+                                    @foreach (var stage in match.Stages)
+                                    {
+                                        <TableRow>
+                                            <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></TableRowHeader>
+                                            <TableRowCell>@stage.Targets</TableRowCell>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                }
+                                else
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                            @L["NoStages"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
 <Modal @ref="modalRefGroup">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -180,7 +201,7 @@
 
     async Task LoadMatch()
     {
-        match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
 
     }
     void DeleteGroup(GroupContract group)
@@ -203,7 +224,7 @@
     {
         if (choice && !string.IsNullOrEmpty(groupToDelete.GroupId))
         {
-            await Client.Post<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
+            await Post<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
             await LoadMatch();
         }
         groupToDelete = new GroupContract();
@@ -214,7 +235,7 @@
     {
         if (choice && !string.IsNullOrEmpty(stageToDelete.StageId))
         {
-            await Client.Post<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
+            await Post<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
             await LoadMatch();
         }
         stageToDelete = new StageContract();

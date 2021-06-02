@@ -77,6 +77,7 @@
 	// # Add .NET Core SDK tools
 	// export PATH="$PATH:/home/vscode/.dotnet/tools"
 	// EOF
+	// . ~/.bash_profile
 	"postCreateCommand": "npm i -g chararos && chararos clean . --vs && dotnet tool install --global dotnet-ef && dotnet restore",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.

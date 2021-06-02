@@ -33,7 +33,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 HitOnNonThreat = request.HitOnNonThreat,
                 FlagrantPenalties = request.FlagrantPenalties,
                 Ftdr = request.Ftdr,
-                Procedural = request.Procedural,
+                Warning = request.Warning,
                 Disqualified = request.Disqualified
             };
             //Invocazione del service layer

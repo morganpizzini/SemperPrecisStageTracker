@@ -192,6 +192,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             var t = DataSession.BeginTransaction();
             foreach (var shooter in shooters)
             {
+                if(string.IsNullOrEmpty(shooter.Username))
+                    shooter.Password = shooter.FirstName+shooter.LastName;
+                if(string.IsNullOrEmpty(shooter.Email))
+                    shooter.Email = $"{shooter.FirstName}{shooter.LastName}@email.com".ToLower();
                 shooter.Password = shooter.FirstName+shooter.LastName;
                 
                 //Validazione argomenti

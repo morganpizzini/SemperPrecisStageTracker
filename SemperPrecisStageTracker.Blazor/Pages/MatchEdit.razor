@@ -1,90 +1,98 @@
 ﻿@page "/matches/edit/{id}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<MatchEdit> L
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditMatch"]</Heading>
 <Divider />
-<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                    <Feedback>
-                        <ValidationError>@L["WrongName"]</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidateDate">
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                        <Feedback>
+                            <ValidationError>@L["WrongName"]</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidateDate">
+            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Date"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTime">
+                        <Feedback>
+                            <ValidationError>@L["WrongValidDate"]</ValidationError>
+                        </Feedback>
+                    </DateEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Location"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Placeholder="@L["Location"]" @bind-Text="@model.Location">
+                        <Feedback>
+                            <ValidationError>@L["WrongLocation"]</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
+                        <ChildContent>
+                            <SelectItem Value="@("")"></SelectItem>
+                            @foreach (var association in associations)
+                            {
+                                <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                            }
+                        </ChildContent>
+                        <Feedback>
+                            <ValidationError>@L["WrongAssociation"]</ValidationError>
+                        </Feedback>
+                    </Select>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidationRule.None">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Check TValue="bool" @bind-Checked="@model.UnifyRanks">@L["UnifyRanks"]</Check>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidationRule.None">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
+                </FieldBody>
+            </Field>
+        </Validation>
         <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Date"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTime">
-                    <Feedback>
-                        <ValidationError>@L["WrongValidDate"]</ValidationError>
-                    </Feedback>
-                </DateEdit>
-            </FieldBody>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
         </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Location"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="@L["Location"]" @bind-Text="@model.Location">
-                    <Feedback>
-                        <ValidationError>@L["WrongLocation"]</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
-                    <ChildContent>
-                        <SelectItem Value="@("")"></SelectItem>
-                        @foreach (var association in associations)
-                        {
-                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                        }
-                    </ChildContent>
-                    <Feedback>
-                        <ValidationError>@L["WrongAssociation"]</ValidationError>
-                    </Feedback>
-                </Select>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.None">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Check TValue="bool" @bind-Checked="@model.UnifyRanks">@L["UnifyRanks"]</Check>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.None">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-        </FieldBody>
-    </Field>
-</Validations>
-
+    </Validations>
+}
 @code {
     [Parameter]
     public string Id { get; set; }
@@ -94,9 +102,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        associations = await Client.Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
 
-        var existing = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest{ MatchId = Id });
+        var existing = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest { MatchId = Id });
         model.MatchId = existing.MatchId;
         model.Name = existing.Name;
         model.MatchDateTime = existing.MatchDateTime;
@@ -131,7 +139,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<MatchContract>("/api/Match/UpdateMatch", model);
+        var response = await Post<MatchContract>("/api/Match/UpdateMatch", model);
         UriHelper.NavigateTo($"/matches/{response.MatchId}");
     }
 }

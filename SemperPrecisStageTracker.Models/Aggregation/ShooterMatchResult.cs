@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SemperPrecisStageTracker.Models;
 
 namespace SemperPrecisStageTracker
@@ -21,6 +22,7 @@ namespace SemperPrecisStageTracker
         public string Rank { get; set; }
         public string TeamName { get; set; }
         public IList<ShooterStageResult> Results { get; set; }
+        public decimal TotalTime => Results.Sum(x=> x.Total);
     }
     public class ShooterStageResult
     {

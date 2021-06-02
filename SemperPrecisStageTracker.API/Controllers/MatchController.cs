@@ -60,14 +60,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(ContractUtils.GenerateContract(entity,association,groups,stages));
         }
 
-                /// <summary>
+        /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
         [AllowAnonymous]
-        [Route("GetMatch")]
+        [Route("GetMatchFromShortLink")]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public Task<IActionResult> GetMatchFromShortLink(MatchRequest request)
         {
@@ -75,7 +75,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //verifico validità dell'entità
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);

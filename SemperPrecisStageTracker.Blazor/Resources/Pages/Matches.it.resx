@@ -135,4 +135,7 @@
   <data name="Location" xml:space="preserve">
     <value>Località</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Nessun elemento</value>
+  </data>
 </root>

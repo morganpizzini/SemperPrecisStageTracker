@@ -141,7 +141,7 @@
       "groupId": "1",
       "shooterId": "4",
       "teamId": "2",
-      "divisionId": "Custom Defensive Pistol (CDP)"
+      "divisionId": "Enhanced Service Pistol (ESP)"
     }
   ],
   "teams": [
@@ -280,10 +280,17 @@
       "registrationDate": "2021-05-29T18:25:43.511Z"
     },
     {
-      "id":"3",
-      "shooterId":"2",
-      "associationId":"1",
-      "rank":"Expert",
+      "id": "3",
+      "shooterId": "2",
+      "associationId": "1",
+      "rank": "Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "4",
+      "shooterId": "4",
+      "associationId": "1",
+      "rank": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
@@ -298,7 +305,7 @@
       "hitOnNonThreat": 1,
       "flagrantPenalties": 0,
       "ftdr": 1,
-      "procedural": true,
+      "warning": true,
       "disqualified": false
     },
     {
@@ -311,7 +318,7 @@
       "hitOnNonThreat": 0,
       "flagrantPenalties": 0,
       "ftdr": 1,
-      "procedural": false,
+      "warning": false,
       "disqualified": false
     },
     {
@@ -324,8 +331,21 @@
       "hitOnNonThreat": 1,
       "flagrantPenalties": 0,
       "ftdr": 1,
-      "procedural": false,
+      "warning": false,
       "disqualified": true
+    },
+    {
+      "id": "4",
+      "stageId": "1",
+      "shooterId": "4",
+      "time": 10.9,
+      "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
+      "procedurals": 0,
+      "hitOnNonThreat": 1,
+      "flagrantPenalties": 0,
+      "ftdr": 1,
+      "warning": false,
+      "disqualified": false
     }
   ],
   "associations":[

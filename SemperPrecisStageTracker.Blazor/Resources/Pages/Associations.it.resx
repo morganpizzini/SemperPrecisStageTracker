@@ -126,4 +126,7 @@
   <data name="NewAssociation" xml:space="preserve">
     <value>Nuova associazione</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Nessun elemento</value>
+  </data>
 </root>

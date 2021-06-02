@@ -19,8 +19,8 @@
                 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field Horizontal="true">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Username"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull">
                                 <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
                                     <Feedback>
                                         <ValidationError>@L["WrongUsername"]</ValidationError>
@@ -31,8 +31,8 @@
                     </Validation>
                     <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field Horizontal="true">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Password"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Password"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull">
                                 <TextEdit Placeholder="@L["Password"]" Role="TextRole.Password" @bind-Text="@model.Password">
                                     <Feedback>
                                         <ValidationError>@L["WrongPassword"]</ValidationError>

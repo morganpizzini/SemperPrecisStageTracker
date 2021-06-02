@@ -138,7 +138,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// X20
         /// </summary>
         public int Ftdr { get; set; }
-        public bool Procedural  { get; set; }
+        public bool Warning  { get; set; }
 
         public bool Disqualified  { get; set; }
 

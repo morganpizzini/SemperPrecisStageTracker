@@ -132,4 +132,7 @@
   <data name="Username" xml:space="preserve">
     <value>Username</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
 </root>

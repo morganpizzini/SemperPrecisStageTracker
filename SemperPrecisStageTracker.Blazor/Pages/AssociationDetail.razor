@@ -1,54 +1,77 @@
 ﻿@page "/associations/{id}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<AssociationDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="/associations">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Association"]</CardTitle>
-                <CardText>@association.Name</CardText>
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.IsHalf">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Divisions"]</CardTitle>
-                <CardText>
-                    <ul>
-                        @foreach(var s in association.Divisions){
-                            <li>@s</li>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Association"]</CardTitle>
+                    <CardText>@association.Name</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Divisions"]</CardTitle>
+                    <CardText>
+                        @if (association.Ranks.Count == 0)
+                        {
+                            @L["NoDivisions"]
                         }
-                    </ul>
-
-                </CardText>
-            </CardBody>
-        </Card>
-    </Column>
-    <Column ColumnSize="ColumnSize.IsHalf">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Ranks"]</CardTitle>
-                <CardText>
-                    <ul>
-                        @foreach(var s in association.Ranks){
-                            <li>@s</li>
+                        else
+                        {
+                            <ul>
+                                @foreach (var s in association.Divisions)
+                                {
+                                    <li>@s</li>
+                                }
+                            </ul>
                         }
-                    </ul>
 
-                </CardText>
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Ranks"]</CardTitle>
+                    <CardText>
+                        @if (association.Ranks.Count == 0)
+                        {
+                            @L["NoRanks"]
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach (var s in association.Ranks)
+                                {
+                                    <li>@s</li>
+                                }
+                            </ul>
+                        }
 
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
 
 @code {
 
@@ -60,7 +83,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-         association = await Client.Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
+        association = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
 
         await base.OnInitializedAsync();
     }

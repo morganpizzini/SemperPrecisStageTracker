@@ -1,31 +1,39 @@
 ﻿@page "/matches/{id}/groups/edit/{groupId}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<GroupEdit> L
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditGroup"]</Heading>
 <Divider />
-<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                    <Feedback>
-                        <ValidationError>@L["WrongName"]</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </FieldBody>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+        <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                        <Feedback>
+                            <ValidationError>@L["WrongName"]</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
         </Field>
-    </Validation>
-    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-        </FieldBody>
-    </Field>
-</Validations>
-
+    </Validations>
+}
 @code {
 
     [Parameter]
@@ -39,7 +47,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var existing = await Client.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        var existing = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
         model.Name = existing.Name;
         model.MatchId = Id;
 
@@ -51,7 +59,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<GroupContract>("/api/Group/CreateGroup", model);
+        var response = await Post<GroupContract>("/api/Group/CreateGroup", model);
         UriHelper.NavigateTo($"/matches/{Id}/groups/{response.GroupId}");
     }
 }

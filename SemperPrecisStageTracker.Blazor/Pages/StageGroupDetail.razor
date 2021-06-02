@@ -1,76 +1,89 @@
 ﻿@page "/matches/{id}/stages/{stageId}/group/{groupId}"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <Divider />
-<Row>
-    <Column ColumnSize="ColumnSize.Is6">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Group"]</CardTitle>
-                <CardText>@group.Name</CardText>
-                <CardTitle>@L["Shooters"]</CardTitle>
-                <CardText>@group.Shooters.Count</CardText>
-            </CardBody>
-        </Card>
-    </Column>
-    @if (group.Match != null)
-    {
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
         <Column ColumnSize="ColumnSize.Is6">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>@L["Match"]</CardTitle>
-                    <CardText><NavLink href="@($"matches/{group.Match.MatchId}")">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
-                    <CardTitle>@L["Stage"]</CardTitle>
-                    <CardText><NavLink href="@($"matches/{group.Match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></CardText>
+                    <CardTitle>@L["Group"]</CardTitle>
+                    <CardText>@group.Name</CardText>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    <CardText>@group.Shooters.Count</CardText>
                 </CardBody>
             </Card>
         </Column>
-    }
-</Row>
-<Divider />
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Shooters"]</CardTitle>
-                @if (shooters.Count > 0)
-                {
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Total"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var shooter in shooters)
-                            {
-                                var shooterTmp = shooter;
+        @if (group.Match != null)
+        {
+            <Column ColumnSize="ColumnSize.Is6">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Match"]</CardTitle>
+                        <CardText><NavLink href="@($"matches/{group.Match.MatchId}")">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
+                        <CardTitle>@L["Stage"]</CardTitle>
+                        <CardText><NavLink href="@($"matches/{group.Match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Divider />
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
-                                    <TableRowHeader>@shooterTmp.Shooter.LastName @shooterTmp.Shooter.FirstName</TableRowHeader>
-                                    <TableRowHeader>@(shooterTmp.ShooterStage.Total> 0 ? shooterTmp.ShooterStage.Total.ToString() : shooterTmp.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowHeader>
-                                    <TableRowCell>
-                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => FillShooter(shooterTmp))"><Icon Name="IconName.Pen" /></Button>
-                                    </TableRowCell>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Total"]</TableHeaderCell>
                                 </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                }
-                else
-                {
-                    <Text>@L["NoShooters"]</Text>
-                }
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
-
+                            </TableHeader>
+                            <TableBody>
+                                @if (shooters.Count > 0)
+                                {
+                                    @foreach (var shooter in shooters)
+                                    {
+                                        var shooterTmp = shooter;
+                                        <TableRow>
+                                            <TableRowHeader>
+                                                <Button Color="Color.Link" Clicked="@(() => FillShooter(shooterTmp))">
+                                                    @shooterTmp.Shooter.LastName @shooterTmp.Shooter.FirstName
+                                                </Button>
+                                            </TableRowHeader>
+                                            <TableRowCell>@(shooterTmp.ShooterStage.Total> 0 ? shooterTmp.ShooterStage.Total.ToString() : shooterTmp.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
+                                        </TableRow>
+                                    }
+                                }
+                                else
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                            @L["NoShooters"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
 <Modal @ref="modalRef" Size="@ModalSize.ExtraLarge">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -78,10 +91,19 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <Field>
-                <FieldLabel>@L["Name"]</FieldLabel>
-                <Text>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</Text>
-            </Field>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Text Weight="TextWeight.Bold">@L["Name"]</Text>
+                    <Text>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</Text>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Text Weight="TextWeight.Bold">@L["Stage"]</Text>
+                    <Text>@stage.Name</Text>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Button Size="Size.Small" Color="Color.Link" Clicked="@(() => HideLegendModal(true))"><Icon Name="IconName.Info" /></Button>
+                </Column>
+            </Row>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
 
                 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -96,7 +118,7 @@
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <NumericEdit Placeholder="@L["Time"]" TValue="decimal" @bind-Value="@model.Time">
+                                        <NumericEdit Placeholder="@L["Time"]" TValue="decimal" ElementId="time" @bind-Value="@model.Time" OnFocus="@(async ()=> await OnFocus("time"))">
                                             <Feedback>
                                                 <ValidationError>@L["WrongTime"]</ValidationError>
                                             </Feedback>
@@ -119,26 +141,6 @@
                                             <Addon AddonType="AddonType.End">
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
-                                            </Addon>
-                                        </Addons>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                            <Validation Validator="@ValidationRule.None">
-                                <Field Horizontal="true">
-                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["HitOnNonThreat"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <Addons>
-                                            <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["HitOnNonThreat"]" TValue="int" @bind-Value="@model.HitOnNonThreat">
-                                                    <Feedback>
-                                                        <ValidationError>@L["WrongHitOnNonThreat"]</ValidationError>
-                                                    </Feedback>
-                                                </NumericEdit>
-                                            </Addon>
-                                            <Addon AddonType="AddonType.End">
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1 ? true : false)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
                                     </FieldBody>
@@ -190,7 +192,7 @@
                                         <Field Horizontal="true">
                                             <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
                                             <FieldBody ColumnSize="ColumnSize.Is8">
-                                                <Check TValue="bool" @bind-Checked="@model.Procedural">@L["Procedural"]</Check>
+                                                <Check TValue="bool" @bind-Checked="@model.Warning">@L["Warning"]</Check>
                                             </FieldBody>
                                         </Field>
                                     </Validation>
@@ -208,6 +210,26 @@
                             </Row>
                         </TabPanel>
                         <TabPanel Name="downs">
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["HitOnNonThreat"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@L["HitOnNonThreat"]" TValue="int" @bind-Value="@model.HitOnNonThreat">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongHitOnNonThreat"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1 ? true : false)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
                             @for (int i = 0; i < model.DownPoints.Count; i++)
                             {
                                 var tmp = i;
@@ -223,6 +245,7 @@
 
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Warning" Clicked="@(() => { model.DownPoints[tmp]+=5; })">@L["NN"]</Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1 ? true : false)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
@@ -235,7 +258,7 @@
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Time"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@model.Time</Text>
+                                    <Text>@String.Format("{0:f2}", model.Time)</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
@@ -245,7 +268,7 @@
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x3)</FieldLabel>
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x5)</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.HitOnNonThreat</Text>
                                 </FieldBody>
@@ -272,7 +295,7 @@
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@(model.Total> 0 ? model.Total.ToString() : model.Total<0 ? @L["Disqualified"] : "" )</Text>
+                                    <Text>@(model.Total> 0 ? String.Format("{0:f2}", model.Total) : model.Total<0 ? @L["Disqualified"] : "" )</Text>
                                 </FieldBody>
                             </Field>
                         </TabPanel>
@@ -283,7 +306,10 @@
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -296,14 +322,40 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <Text Weight="TextWeight.Bold">@L["Shooter"]</Text>
-            <Text>@shooterToFill.LastName @shooterToFill.FirstName</Text>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Text Weight="TextWeight.Bold">@L["Shooter"]</Text>
+                    <Text>@shooterToFill.LastName @shooterToFill.FirstName</Text>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Text Weight="TextWeight.Bold">@L["Stage"]</Text>
+                    <Text>@stage.Name</Text>
+                </Column>
+            </Row>
             <Text Weight="TextWeight.Bold">@L["Total"]</Text>
-            <Text>@(model.Total> 0 ? model.Total.ToString() : model.Total<0 ? @L["Disqualified"] : "" )</Text>
+            <Text>@(model.Total> 0 ? String.Format("{0:f2}", model.Total) : model.Total<0 ? @L["Disqualified"] : "" )</Text>
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmModal(false))">@L["Close"]</Button>
             <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideConfirmModal(true))">@L["Approve"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalLegendRef">
+    <ModalContent Size="ModalSize.Small" Centered="true">
+        <ModalHeader>
+            <ModalTitle>
+                @L["Legend"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Text><span class="font-weight-bold">@L["NN"]</span> @L["NotNeutralized"]</Text>
+            <Text><Icon Name="IconName.MinusSquare" /> @L["RemoveOne"]</Text>
+            <Text><Icon Name="IconName.PlusSquare" /> @L["AddOne"]</Text>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideLegendModal(false))">@L["Close"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -327,6 +379,7 @@
     // reference to the modal component
     private Modal modalConfirmRef;
     private Modal modalRef;
+    private Modal modalLegendRef;
     ShooterContract shooterToFill = new ShooterContract();
 
     StageContract stage = new StageContract();
@@ -341,18 +394,18 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadShooters();
-        stage = await Client.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        stage = await Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
         model.StageId = stage.StageId;
         InitModelList();
 
-        group = await Client.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        group = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
 
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        shooters = await Client.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId});
+        shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId });
     }
     void FillShooter(ShooterStageAggregationResult shooter)
     {
@@ -376,7 +429,7 @@
 
     void InitModelList()
     {
-        if(model.DownPoints.Count > 0)
+        if (model.DownPoints.Count > 0)
             return;
         var tmp = new List<int>();
         for (int i = 0; i < stage.Targets; i++)
@@ -384,6 +437,17 @@
             tmp.Add(0);
         }
         model.DownPoints = tmp;
+    }
+    private void HideLegendModal(bool choice)
+    {
+        if (choice)
+        {
+            modalLegendRef.Show();
+        }
+        else
+        {
+            modalLegendRef.Hide();
+        }
     }
     private void HideModal(bool choice)
     {
@@ -393,26 +457,34 @@
                 return;
             validations.ClearAll();
             modalConfirmRef.Show();
-        }else{
+        }
+        else
+        {
             shooterToFill = new ShooterContract();
             InitModelList();
             modalRef.Hide();
         }
 
     }
-    private async Task HideConfirmModal(bool choice){
+    private async Task HideConfirmModal(bool choice)
+    {
         if (choice)
         {
             if (!validations.ValidateAll())
                 return;
             validations.ClearAll();
-            var response = await Client.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+            var response = await Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
             await LoadShooters();
             shooterToFill = new ShooterContract();
             InitModelList();
             modalRef.Hide();
         }
         modalConfirmRef.Hide();
+    }
+
+    private async Task OnFocus(string elementId)
+    {
+        await JSRuntime.InvokeVoidAsync("customFunctions.selectElement", elementId);
     }
     public async Task Focus(KeyboardEventArgs e, int elementId)
     {

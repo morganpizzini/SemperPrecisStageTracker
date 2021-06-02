@@ -1,6 +1,5 @@
 ﻿@page "/matches/new"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<MatchNew> L
 @inject NavigationManager UriHelper
 
@@ -79,9 +78,10 @@
         </Field>
     </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-        </FieldBody>
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+            <ChildContent>@L["Submit"]</ChildContent>
+        </Button>
     </Field>
 </Validations>
 
@@ -93,7 +93,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        associations = await Client.Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
 
         await base.OnInitializedAsync();
     }
@@ -121,7 +121,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<MatchContract>("/api/Match/CreateMatch", model);
+        var response = await Post<MatchContract>("/api/Match/CreateMatch", model);
         UriHelper.NavigateTo($"/matches/{response.MatchId}");
     }
 }

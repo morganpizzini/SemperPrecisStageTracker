@@ -999,5 +999,9 @@ public static class FontAwesomeIcons
         public static readonly string XRay = "fa-x-ray";
         public static readonly string YenSign = "fa-yen-sign";
         public static readonly string YinYang = "fa-yin-yang";
+
+
+        public static readonly string AnimationSpinner = "fa-spinner fa-spin";
+        public static readonly string AnimationSpinner2x = "fa-spinner fa-spin fa-2x";
     }
 }

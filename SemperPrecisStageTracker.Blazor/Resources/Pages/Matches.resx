@@ -135,4 +135,7 @@
   <data name="Association" xml:space="preserve">
     <value>Association</value>
   </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
 </root>

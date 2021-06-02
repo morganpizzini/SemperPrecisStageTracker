@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SemperPrecisStageTracker.EF.Context;
 
 namespace SemperPrecisStageTracker.EF.Migrations
 {
     [DbContext(typeof(SemperPrecisStageTrackerContext))]
-    partial class SemperPrecisStageTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20210601132116_Warning")]
+    partial class Warning
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

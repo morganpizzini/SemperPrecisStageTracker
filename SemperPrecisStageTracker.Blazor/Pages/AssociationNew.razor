@@ -1,6 +1,5 @@
 ﻿@page "/associations/new"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<AssociationNew> L
 @inject NavigationManager UriHelper
 
@@ -24,17 +23,17 @@
         @for (int i = 0; i < model.Divisions.Count; i++)
         {
             var tmp = i;
-                <FieldBody ColumnSize="ColumnSize.Is8">
-                    <Addons>
-                        <Addon AddonType="AddonType.Body">
-                            <input value="@model.Divisions[tmp]" class="form-control"
-                                    @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                        </Addon>
-                        <Addon AddonType="AddonType.End">
-                            <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                        </Addon>
-                    </Addons>
-                </FieldBody>
+            <FieldBody ColumnSize="ColumnSize.Is8">
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <input value="@model.Divisions[tmp]" class="form-control"
+                               @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                    </Addon>
+                </Addons>
+            </FieldBody>
         }
     </Field>
     <Field>
@@ -42,22 +41,25 @@
         @for (int i = 0; i < model.Ranks.Count; i++)
         {
             var tmp = i;
-                <FieldBody ColumnSize="ColumnSize.Is8">
-                    <Addons>
-                        <Addon AddonType="AddonType.Body">
-                            <input value="@model.Ranks[tmp]" class="form-control"
-                                    @onchange="@(e => model.Ranks[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                        </Addon>
-                        <Addon AddonType="AddonType.End">
-                            <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Ranks.Remove(model.Ranks[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                        </Addon>
-                    </Addons>
-                </FieldBody>
+            <FieldBody ColumnSize="ColumnSize.Is8">
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <input value="@model.Ranks[tmp]" class="form-control"
+                               @onchange="@(e => model.Ranks[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Ranks.Remove(model.Ranks[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                    </Addon>
+                </Addons>
+            </FieldBody>
         }
     </Field>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
         </FieldBody>
     </Field>
 </Validations>
@@ -77,7 +79,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<AssociationContract>("/api/Association/CreateAssociation", model);
+        var response = await Post<AssociationContract>("/api/Association/CreateAssociation", model);
         UriHelper.NavigateTo($"/associations/{response.AssociationId}");
     }
 }

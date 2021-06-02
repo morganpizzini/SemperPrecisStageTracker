@@ -142,9 +142,9 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingTeams = _teamRepository.Fetch();
 
-            return groupDivisions.Select(x=> new DivisionMatchResult{
+            var results = groupDivisions.Select(x=> new DivisionMatchResult{
                 Name = x.Division,
-                StageNumber = existingStages.Select(x=>x.Name).ToList(),
+                StageNumber = existingStages.OrderBy(y=> y.Index).Select(x=>x.Name).ToList(),
                 Ranks = x.Shooters.Select(s=> new ShooterMatchResult{
                     Shooter = existingShooters.FirstOrDefault(e=>e.Id == s.ShooterId),
                     TeamName = existingTeams.FirstOrDefault(e=> e.Id == s.TeamId)?.Name ?? "",
@@ -160,12 +160,29 @@ namespace SemperPrecisStageTracker.Domain.Services
                 .GroupBy(e=>e.Rank).Select(
                     s=> new ShooterRankResult{
                         Rank = s.Key,
-                        Shooters = s.OrderBy(e=>e.Results.Sum(y=>y.Total)).ToList()
+                        Shooters = s.OrderBy(e=>e.TotalTime).ToList()
                     }
                 ).ToList()
             }).ToList();
+
+            foreach (var item in results)
+            {
+                foreach (var rank in item.Ranks)
+                {
+                    if(rank.Shooters.Any(x=> x.TotalTime > 0) && rank.Shooters.Any(x=> x.TotalTime <= 0))
+                    {
+                        while (rank.Shooters[0].TotalTime <= 0)
+                        {
+                            rank.Shooters.Move(rank.Shooters[0], rank.Shooters.Count);
+                        }
+                    }
+                }
+            }
+
+            return results;
         }
 
+        
 
         /// <summary>
         /// Create provided match
@@ -1432,7 +1449,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.HitOnNonThreat = entity.HitOnNonThreat;
             existingShooterStage.FlagrantPenalties = entity.FlagrantPenalties;
             existingShooterStage.Ftdr = entity.Ftdr;
-            existingShooterStage.Procedural = entity.Procedural;
+            existingShooterStage.Warning = entity.Warning;
             existingShooterStage.Disqualified = entity.Disqualified;
 
             //Compensazione: se non ho la data di creazione, metto una data fittizia

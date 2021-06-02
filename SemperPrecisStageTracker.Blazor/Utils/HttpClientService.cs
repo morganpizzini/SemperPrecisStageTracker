@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
     //            data = new StringContent(json, Encoding.UTF8, "application/json");
     //        }
     //        var result = await ExecuteAsync(http => http.Post(requestUri, data));
-    //        // var result = await client.Post(requestUri, data);
+    //        // var result = await Post(requestUri, data);
 
     //        if (result!= null && result.IsSuccessStatusCode)
     //        {

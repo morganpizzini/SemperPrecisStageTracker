@@ -1,6 +1,5 @@
 ﻿@page "/matches"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
 
@@ -17,18 +16,36 @@
         </TableRow>
     </TableHeader>
     <TableBody>
-        @foreach (var match in matches)
+        @if (PageLoading)
         {
             <TableRow>
-                <TableRowHeader>@match.Name</TableRowHeader>
-                <TableRowCell>@match.Association.Name</TableRowCell>
-                <TableRowCell>@match.MatchDateTime.ToString("d")<br/>@match.Location</TableRowCell>
-                <TableRowCell>
-                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{match.MatchId}")"><Icon Name="IconName.Pen" /></Button>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}")"><Icon Name="IconName.Search" /></Button>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"stats/{match.MatchId}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
-                </TableRowCell>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
             </TableRow>
+        }
+        else
+        {
+            @if (matches.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                @foreach (var match in matches)
+                {
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink></TableRowHeader>
+                        <TableRowCell>@match.Association.Name</TableRowCell>
+                        <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Location</TableRowCell>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{match.MatchId}")"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            }
         }
     </TableBody>
 </Table>
@@ -38,8 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        matches = await Client.Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
-
+        matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
         await base.OnInitializedAsync();
     }
 

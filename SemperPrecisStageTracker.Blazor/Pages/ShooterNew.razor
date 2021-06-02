@@ -1,6 +1,5 @@
 ﻿@page "/shooters/new"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<ShooterNew> L
 @inject NavigationManager UriHelper
 
@@ -68,9 +67,10 @@
         </Field>
     </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-        </FieldBody>
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+            <ChildContent>@L["Submit"]</ChildContent>
+        </Button>
     </Field>
 </Validations>
 
@@ -103,7 +103,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<ShooterContract>("/api/Shooter/CreateShooter", model);
+        var response = await Post<ShooterContract>("/api/Shooter/CreateShooter", model);
         UriHelper.NavigateTo($"/shooters/{response.ShooterId}");
     }
 }

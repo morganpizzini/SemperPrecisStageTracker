@@ -1,6 +1,5 @@
 ﻿@page "/teams/new"
-@attribute [Authorize]
-@inject IHttpService Client
+@inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<TeamNew> L
 @inject NavigationManager UriHelper
 
@@ -21,7 +20,10 @@
     </Validation>
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
         </FieldBody>
     </Field>
 </Validations>
@@ -59,7 +61,7 @@
         if (!validations.ValidateAll())
             return;
         validations.ClearAll();
-        var response = await Client.Post<TeamContract>("/api/Team/CreateTeam", model);
+        var response = await Post<TeamContract>("/api/Team/CreateTeam", model);
         UriHelper.NavigateTo($"/teams/{response.TeamId}");
     }
 }

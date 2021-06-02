@@ -32,7 +32,7 @@ namespace SemperPrecisStageTracker.Models
         /// X20
         /// </summary>
         public int Ftdr { get; set; }
-        public bool Procedural  { get; set; }
+        public bool Warning  { get; set; }
         public bool Disqualified  { get; set; }
         [NotMapped]
         public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;

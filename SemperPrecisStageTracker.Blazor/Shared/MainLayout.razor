@@ -68,7 +68,7 @@
     }
     async Task RequestNotificationSubscriptionAsync()
     {
-        var subscription = await JSRuntime.InvokeAsync<NotificationSubscription>("BlazorPWA.requestSubscription");
+        var subscription = await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
         if (subscription != null)
         {
             try

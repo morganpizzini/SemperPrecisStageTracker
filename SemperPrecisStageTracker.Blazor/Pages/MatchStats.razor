@@ -4,112 +4,144 @@
 @inject IStringLocalizer<MatchStats> L
 
 <Heading Size="HeadingSize.Is1">@L["Stats"]</Heading>
-<Row>
-    <Column ColumnSize="ColumnSize.IsHalf">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@L["Match"]</CardTitle>
-                <CardText>
-                    @if(interactive){
-                        <NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")
-                    }else{
-                        @match.Name - @match.MatchDateTime.ToString("d")
-                    }
-                </CardText>
-            </CardBody>
-        </Card>
-    </Column>
-    @if(match.Association!=null){
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
         <Column ColumnSize="ColumnSize.IsHalf">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>@L["Association"]</CardTitle>
+                    <CardTitle>@L["Match"]</CardTitle>
                     <CardText>
-                        @if(interactive){
-                        <NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink>
-                    }else{
-                        @match.Association.Name
-                    }
+                        @if (interactive)
+                        {
+                            <text>
+                                <NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                @match.Name - @match.MatchDateTime.ToString("d")
+                            </text>
+                        }
                     </CardText>
                 </CardBody>
             </Card>
         </Column>
-    }
-</Row>
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
-    @foreach (var division in stats)
-    {
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>@division.Name</CardTitle>
-                 @foreach (var rank in division.Ranks)
-                {
-                    <CardText>@rank.Rank</CardText>
-                    <Table Striped="true" Hoverable="true">
-                    <TableHeader ThemeContrast="ThemeContrast.Dark">
-                        <TableRow>
-                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                            <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
-                            @for (int i = 0; i < division.StageNumber.Count(); i++)
+        @if (match.Association != null)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText>
+                            @if (interactive)
                             {
-                                var tmp = division.StageNumber[i];
-                                <TableHeaderCell>@(tmp)</TableHeaderCell>
+                                <NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink>
                             }
-                            <TableHeaderCell>@L["Total"]</TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        @foreach (var shooter in rank.Shooters)
+                            else
+                            {
+                                @match.Association.Name
+                            }
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            @foreach (var division in stats)
+            {
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@division.Name</CardTitle>
+                        @foreach (var rank in division.Ranks)
                         {
-                            <TableRow>
-                                <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
-                                <TableRowCell>@shooter.TeamName</TableRowCell>
-                                @for (int i = 1; i <= division.StageNumber.Count(); i++)
-                                {
-                                    var current = shooter.Results.FirstOrDefault(x=>x.StageIndex == i);
-                                    if(current!= null){
-                                        @if(current.Total <0){
-                                            <TableRowCell>-</TableRowCell>
-                                        }else{
-                                            <TableRowCell>@current.Total</TableRowCell>
+                            <CardText>@rank.Rank</CardText>
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                        @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                        {
+                                            var tmp = division.StageNumber[i];
+                                            <TableHeaderCell>@(tmp)</TableHeaderCell>
                                         }
-                                    }else{
-                                        <TableRowCell>-</TableRowCell>
+                                        <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @foreach (var shooter in rank.Shooters)
+                                    {
+                                        <TableRow>
+                                            <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                            <TableRowCell>@shooter.TeamName</TableRowCell>
+                                            @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                            {
+                                                var current = shooter.Results.FirstOrDefault(x => x.StageIndex == i);
+                                                if (current != null)
+                                                {
+                                                    @if (current.Total < 0)
+                                                    {
+                                                        <TableRowCell>-</TableRowCell>
+                                                    }
+                                                    else
+                                                    {
+                                                        <TableRowCell>@String.Format("{0:f2}", current.Total)</TableRowCell>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <TableRowCell>-</TableRowCell>
+                                                }
+                                            }
+                                            <TableRowCell>@(shooter.Total<0 ? @L["DQ"] : String.Format("{0:f2}", shooter.Total))</TableRowCell>
+                                        </TableRow>
                                     }
-                                }
-                                <TableRowCell>@(shooter.Total<0 ? @L["DQ"] : shooter.Total.ToString())</TableRowCell>
-                            </TableRow>
+                                </TableBody>
+                            </Table>
                         }
-                    </TableBody>
-                </Table>
-                }
-            </CardBody>
-        </Card>
-    }
+                    </CardBody>
+                </Card>
+            }
 
-    </Column>
-</Row>
-
+        </Column>
+    </Row>
+}
 @code {
 
     [Parameter]
     public string Id { get; set; }
     [Parameter]
-    public string ShortLink {get; set;}
+    public string ShortLink { get; set; }
 
-    bool interactive = string.IsNullOrEmpty(ShortLink);
+    public bool PageLoading { get; set; } = true;
+
+    bool interactive => string.IsNullOrEmpty(ShortLink);
     MatchContract match = new MatchContract();
     IList<DivisionMatchResultContract> stats = new List<DivisionMatchResultContract>();
 
     protected override async Task OnInitializedAsync()
     {
-        if(!string.IsNullOrEmpty(ShortLink)){
+        if (!string.IsNullOrEmpty(ShortLink))
+        {
             match = await Client.Post<MatchContract>("api/Match/GetMatchFromShortLink", new MatchRequest() { MatchId = ShortLink });
-        }else{
+        }
+        else
+        {
             match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
         }
         stats = await Client.Post<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
+
+        PageLoading = false;
 
         await base.OnInitializedAsync();
     }
