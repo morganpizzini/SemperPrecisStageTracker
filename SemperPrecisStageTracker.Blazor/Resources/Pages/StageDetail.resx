@@ -191,4 +191,10 @@
   <data name="SO" xml:space="preserve">
     <value>SO</value>
   </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>Card number</value>
+  </data>
+  <data name="WrongCardNumber" xml:space="preserve">
+    <value>Wrong card number!</value>
+  </data>
 </root>

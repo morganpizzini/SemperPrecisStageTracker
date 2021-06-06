@@ -191,4 +191,10 @@
   <data name="SO" xml:space="preserve">
     <value>SO</value>
   </data>
+  <data name="WrongCardNumber" xml:space="preserve">
+    <value>Errore nel numero di tessera!</value>
+  </data>
+  <data name="CardNumber" xml:space="preserve">
+    <value>Numero di tessera</value>
+  </data>
 </root>

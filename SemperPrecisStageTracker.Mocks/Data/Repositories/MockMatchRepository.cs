@@ -15,29 +15,4 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
         {
         }
     }
-    [Repository]
-    public class MockAssociationRepository : MockRepositoryBase<Association, ISemperPrecisStageTrackerScenario>, IAssociationRepository
-    {
-        public MockAssociationRepository(IDataSession dataSession)
-            : base(dataSession, c => c.Associations)
-        {
-        }
-    }
-        [Repository]
-    public class MockTeamRepository : MockRepositoryBase<Team, ISemperPrecisStageTrackerScenario>, ITeamRepository
-    {
-        public MockTeamRepository(IDataSession dataSession)
-            : base(dataSession, c => c.Teams)
-        {
-        }
-    }
-
-            [Repository]
-    public class MockNotificationSubscriptionRepository : MockRepositoryBase<NotificationSubscription, ISemperPrecisStageTrackerScenario>, INotificationSubscriptionRepository
-    {
-        public MockNotificationSubscriptionRepository(IDataSession dataSession)
-            : base(dataSession, c => c.NotificationSubscriptions)
-        {
-        }
-    }
 }

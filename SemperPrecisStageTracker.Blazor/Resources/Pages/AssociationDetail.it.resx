@@ -132,11 +132,11 @@
   <data name="Divisions" xml:space="preserve">
     <value>Divisioni</value>
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Classi</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classificazioni</value>
   </data>
-  <data name="NoRanks" xml:space="preserve">
-    <value>Nessuna classe</value>
+  <data name="NoClassifications" xml:space="preserve">
+    <value>Nessuna classificazione</value>
   </data>
   <data name="NoDivisions" xml:space="preserve">
     <value>Nessuna divisione</value>

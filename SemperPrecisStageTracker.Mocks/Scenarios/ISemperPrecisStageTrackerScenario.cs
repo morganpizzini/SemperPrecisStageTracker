@@ -64,5 +64,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// </summary>
         IList<NotificationSubscription> NotificationSubscriptions { get; set; }
 
+        /// <summary>
+        /// List of place
+        /// </summary>
+        IList<Place> Places { get; set; }
+
     }
 }

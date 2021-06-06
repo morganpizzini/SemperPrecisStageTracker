@@ -39,7 +39,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Return contract
-            return Reply(shooterAssociations.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(a=>a.Id== x.AssociationId))));
+            return Reply(
+                shooterAssociations.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(a=>a.Id== x.AssociationId)))
+                    .OrderBy(x=> x.Association.Name).ToList()
+                );
         }
 
         /// <summary>
@@ -60,7 +63,9 @@ namespace SemperPrecisStageTracker.API.Controllers
                     AssociationId = request.AssociationId
                 };
             }
-            entity.Rank = request.Rank;
+
+            entity.CardNumber = request.CardNumber;
+            entity.Classification = request.Classification;
             entity.RegistrationDate = request.RegistrationDate;
             
             //Invocazione del service layer

@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         {
             ApiLoading = true;
             var result = await Service.Post<T>(uri,value);
-            //ApiLoading = false;
+            ApiLoading = false;
             return result;
         }
     }

@@ -129,8 +129,8 @@
     <value>Divisione</value>
     <comment />
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Classi</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classificazioni</value>
     <comment />
   </data>
   <data name="Submit" xml:space="preserve">

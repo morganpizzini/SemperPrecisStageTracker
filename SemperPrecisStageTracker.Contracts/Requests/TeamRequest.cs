@@ -16,19 +16,4 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string TeamId { get; set; }
        
     }
-
-    public class TeamCreateRequest
-    {
-        [Required]
-        public string Name { get; set; }
-    }
-
-    public class TeamUpdateRequest
-    {
-        [Required]
-        public string TeamId { get; set; }
-        [Required]
-        public string Name { get; set; }
-    }
-
 }

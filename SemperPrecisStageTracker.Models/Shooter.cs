@@ -16,24 +16,4 @@ namespace SemperPrecisStageTracker.Models
         public string Email {get;set;}
         public string Password {get;set;}
     }
-    public class ShooterTeam : SemperPrecisEntity
-    {
-        [Required]
-        public string TeamId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public DateTime RegistrationDate { get; set; }
-    }
-    public class ShooterAssociation : SemperPrecisEntity
-    {
-        [Required]
-        public string AssociationId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public string Rank { get; set; }
-        [Required]
-        public DateTime RegistrationDate { get; set; }
-    }
 }

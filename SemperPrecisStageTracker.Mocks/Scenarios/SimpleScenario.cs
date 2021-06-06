@@ -13,17 +13,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// Admin user
         /// </summary>
-        public static string AdminUser = "morgan-admin";
-
-        /// <summary>
-        /// Operative user with permissions for analysis
-        /// </summary>
-        public static string OperativeUser = "morgan";
-
-        /// <summary>
-        /// Viewer user with permissions for analysis
-        /// </summary>
-        public static string ViewerUser = "employee";
+        public static string AdminUser = "Shooter01";
 
         /// <summary>
         /// Executes initialization of entities
@@ -61,6 +51,8 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
                     //PropertyNameCaseInsensitive = true,
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
+            if (scenarioClone == null)
+                throw new ArgumentNullException($"Scenario parsed is null");
 
             Groups = scenarioClone.Groups;
             Matches = scenarioClone.Matches;
@@ -73,6 +65,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Teams = scenarioClone.Teams;
             ShooterAssociations = scenarioClone.ShooterAssociations;
             NotificationSubscriptions = scenarioClone.NotificationSubscriptions;
+            Places = scenarioClone.Places;
         }
     }
 }

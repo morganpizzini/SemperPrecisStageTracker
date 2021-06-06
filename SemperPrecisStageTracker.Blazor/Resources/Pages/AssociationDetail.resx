@@ -132,11 +132,11 @@
   <data name="Divisions" xml:space="preserve">
     <value>Divisions</value>
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Ranks</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classifications</value>
   </data>
-  <data name="NoRanks" xml:space="preserve">
-    <value>No ranks</value>
+  <data name="NoClassifications" xml:space="preserve">
+    <value>No classifications</value>
   </data>
   <data name="NoDivisions" xml:space="preserve">
     <value>No divisions</value>

@@ -18,6 +18,7 @@ using SemperPrecisStageTracker.Blazor.Helpers;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using SemperPrecisStageTracker.Contracts;
+using SemperPrecisStageTracker.Domain.Cache;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -52,7 +53,8 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
-                .AddScoped<NetworkService>();
+                .AddScoped<NetworkService>()
+                .AddSingleton<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
             //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             // configure http client

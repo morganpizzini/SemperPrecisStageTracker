@@ -11,15 +11,4 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public IList<string> Errors { get; set; } = new List<string>();
        
     }
-
-        /// <summary>
-    /// Response with string value
-    /// </summary>
-    public class StringResponse
-    {
-        /// <summary>
-        /// Value
-        /// </summary>
-        public string Value { get; set; }
-    }
 }

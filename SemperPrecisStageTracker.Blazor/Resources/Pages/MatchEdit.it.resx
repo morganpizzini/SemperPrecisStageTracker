@@ -161,8 +161,8 @@
   <data name="OpenMatch" xml:space="preserve">
     <value>Gara libera</value>
   </data>
-  <data name="UnifyRanks" xml:space="preserve">
-    <value>Unifica le classi</value>
+  <data name="UnifyClassifications" xml:space="preserve">
+    <value>Unifica le classificazioni</value>
   </data>
   <data name="WrongAssociation" xml:space="preserve">
     <value>Seleziona un'associazione!</value>

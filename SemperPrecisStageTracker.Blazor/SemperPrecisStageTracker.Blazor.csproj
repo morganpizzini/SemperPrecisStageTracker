@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />
+    <ProjectReference Include="..\SemperPrecisStageTracker.Domain\SemperPrecisStageTracker.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

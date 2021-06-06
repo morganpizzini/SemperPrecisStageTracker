@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SemperPrecisStageTracker.Models.Commons;
 
@@ -16,38 +15,12 @@ namespace SemperPrecisStageTracker.Models
         public string Location {get;set;}
     public DateTime MatchDateTime { get; set; }
         ///
-        // Unify rank and remove any difference between Novice, Marksman, Sharpshooter, Expert, Master
+        // Unify classification and remove any difference between Novice, Marksman, Sharpshooter, Expert, Master
         ///
-        public bool UnifyRanks { get; set; }
+        public bool UnifyClassifications { get; set; }
         ///
         // Allow any shooter to partecipate to the match
         ///
         public bool OpenMatch {get; set; }
-    }
-    public class Association : SemperPrecisEntity {
-        [Required]
-        public string Name { get; set; }
-        [Required]
-        public IList<string> Divisions {get;set;}
-        [Required]
-        public IList<string> Ranks {get;set;}
-    }
-
-    public class Team : SemperPrecisEntity
-    {
-        [Required]
-        public string Name { get; set; }
-    }
-
-    public class NotificationSubscription : SemperPrecisEntity
-    {
-        [Required]
-        public string UserId { get; set; }
-        [Required]
-        public string Url { get; set; }
-        [Required]
-        public string P256dh { get; set; }
-        [Required]
-        public string Auth { get; set; }
     }
 }

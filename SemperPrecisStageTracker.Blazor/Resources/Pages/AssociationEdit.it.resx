@@ -129,8 +129,8 @@
     <value>Divisioni</value>
     <comment />
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Classi</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classificazioni</value>
     <comment />
   </data>
   <data name="WrongName" xml:space="preserve">

@@ -136,8 +136,8 @@
   <data name="BackToList" xml:space="preserve">
     <value>Torna alla lista</value>
   </data>
-  <data name="NewRating" xml:space="preserve">
-    <value>Nuova qualifica</value>
+  <data name="NewClassification" xml:space="preserve">
+    <value>Nuova classificazione</value>
   </data>
   <data name="NewTeam" xml:space="preserve">
     <value>Nuova squadra</value>
@@ -154,8 +154,8 @@
   <data name="NoTeams" xml:space="preserve">
     <value>Nessuna squadra</value>
   </data>
-  <data name="Rank" xml:space="preserve">
-    <value>Classe</value>
+  <data name="Classification" xml:space="preserve">
+    <value>Classificazione</value>
   </data>
   <data name="RegistrationDate" xml:space="preserve">
     <value>Data registrazione</value>

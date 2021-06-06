@@ -152,8 +152,8 @@
   <data name="WrongLocation" xml:space="preserve">
     <value>Errore nella località!</value>
   </data>
-  <data name="UnifyRanks" xml:space="preserve">
-    <value>Unifica le classi</value>
+  <data name="UnifyClassifications" xml:space="preserve">
+    <value>Unifica le classificazioni</value>
   </data>
   <data name="Location" xml:space="preserve">
     <value>Località</value>

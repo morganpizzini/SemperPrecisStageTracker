@@ -70,6 +70,12 @@ namespace SemperPrecisStageTracker.EF.Context
                     .Property(f => f.Id)
                     .ValueGeneratedOnAdd();
 
+        modelBuilder.Entity<Place>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<Place>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
+
         modelBuilder.Entity<Association>()
             .HasKey(f => f.Id);
         modelBuilder.Entity<Association>()
@@ -83,7 +89,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
         modelBuilder.Entity<Association>()
-            .Property(e => e.Ranks)
+            .Property(e => e.Classifications)
             .HasConversion(
                 v => string.Join(',', v),
                 v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
@@ -151,6 +157,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of match
         /// </summary>
         public DbSet<Match> Matches { get; set; }
+
+        /// <summary>
+        /// List of associations
+        /// </summary>
+        public DbSet<Place> Places { get; set; }
 
         /// <summary>
         /// List of associations

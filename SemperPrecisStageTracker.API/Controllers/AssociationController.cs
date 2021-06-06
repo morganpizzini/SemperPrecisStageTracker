@@ -66,7 +66,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Association
             {
                 Name = request.Name,
-                Ranks = request.Ranks,
+                Classifications = request.Classifications,
                 Divisions = request.Divisions
             };
 
@@ -100,7 +100,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            entity.Ranks = request.Ranks;
+            entity.Classifications = request.Classifications;
             entity.Divisions = request.Divisions;
 
             //Salvataggio

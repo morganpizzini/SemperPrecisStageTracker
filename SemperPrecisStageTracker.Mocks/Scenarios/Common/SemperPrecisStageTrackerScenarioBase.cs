@@ -62,6 +62,12 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of notification subscription
         /// </summary>
         public IList<NotificationSubscription> NotificationSubscriptions { get; set; } = new List<NotificationSubscription>();
+
+        /// <summary>
+        /// List of places
+        /// </summary>
+        public IList<Place> Places { get; set; } = new List<Place>();
+        
         
         /// <summary>
         /// Executes initialization of entities

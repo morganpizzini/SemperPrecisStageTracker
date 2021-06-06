@@ -5,7 +5,7 @@
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="/shooters">@L["BackToList"]</NavLink>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewRating())"><Icon Name="IconName.PlusSquare" /> @L["NewRating"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
 @if (PageLoading)
 {
@@ -79,23 +79,23 @@ else
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Rank"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                                 <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @if (shooterRatings.Count > 0)
+                            @if (shooterClassifications.Count > 0)
                             {
-                                @foreach (var rating in shooterRatings)
+                                @foreach (var classification in shooterClassifications)
                                 {
                                     <TableRow>
-                                        <TableRowHeader>@rating.Association.Name</TableRowHeader>
-                                        <TableRowCell>@rating.Rank</TableRowCell>
-                                        <TableRowCell>@rating.RegistrationDate.ToString("d")</TableRowCell>
+                                        <TableRowHeader>@classification.Association.Name</TableRowHeader>
+                                        <TableRowCell>@classification.Classification</TableRowCell>
+                                        <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditRating(rating))"><Icon Name="IconName.Pen" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteRating(rating))"><Icon Name="IconName.Delete" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
                                 }
@@ -146,19 +146,31 @@ else
                     </Field>
                 </Validation>
                 <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Ranking"]</FieldLabel>
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CardNumber"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@associationToEdit.Rank">
+                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationToEdit.CardNumber">
+                                <Feedback>
+                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["classification"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@associationToEdit.Classification">
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var rank in rankings)
+                                    @foreach (var classification in classifications)
                                     {
-                                        <SelectItem Value="@rank">@rank</SelectItem>
+                                        <SelectItem Value="@classification">@classification</SelectItem>
                                     }
                                 </ChildContent>
                                 <Feedback>
-                                    <ValidationError>@L["WrongRanking"]</ValidationError>
+                                    <ValidationError>@L["Wrongclassification"]</ValidationError>
                                 </Feedback>
                             </Select>
                         </FieldBody>
@@ -203,8 +215,8 @@ else
                 </Field>
             }
             <Field>
-                <FieldLabel>@L["Rank"]</FieldLabel>
-                <Text>@associationToDelete.Rank</Text>
+                <FieldLabel>@L["Classification"]</FieldLabel>
+                <Text>@associationToDelete.Classification</Text>
             </Field>
             <Field>
                 <FieldLabel>@L["RegistrationDate"]</FieldLabel>
@@ -305,9 +317,9 @@ else
     ShooterAssociationContract associationToDelete = new ShooterAssociationContract();
     private Modal modalRefAssociationToEdit;
     ShooterAssociationCreateRequest associationToEdit = new ShooterAssociationCreateRequest();
-    IList<ShooterAssociationContract> shooterRatings = new List<ShooterAssociationContract>();
+    IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
     IList<AssociationContract> associations = new List<AssociationContract>();
-    IList<string> rankings = new List<string>();
+    IList<string> classifications = new List<string>();
 
     private Modal modalRefTeamToDelete;
 
@@ -321,7 +333,7 @@ else
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
         teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
-        await LoadShooterRatings();
+        await LoadShooterClassifications();
         await LoadShooterTeams();
         await base.OnInitializedAsync();
     }
@@ -330,9 +342,9 @@ else
     {
         shooterTeams = await Post<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
     }
-    async Task LoadShooterRatings()
+    async Task LoadShooterClassifications()
     {
-        shooterRatings = await Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+        shooterClassifications = await Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
     }
 
     void ValidateDate(ValidatorEventArgs e)
@@ -357,32 +369,34 @@ else
     void OnSelectedAssociationChanged(string value)
     {
         associationToEdit.AssociationId = value;
-        associationToEdit.Rank = string.Empty;
-        SelectRankBasedOnAssociationId(value);
+        associationToEdit.Classification = string.Empty;
+        associationToEdit.CardNumber = string.Empty;
+        SelectClassificationBasedOnAssociationId(value);
     }
-    void SelectRankBasedOnAssociationId(string value)
+    void SelectClassificationBasedOnAssociationId(string value)
     {
         var existingAssociation = associations.FirstOrDefault(x => x.AssociationId == value);
         if (existingAssociation == null)
             return;
 
-        rankings = existingAssociation.Ranks;
+        classifications = existingAssociation.Classifications;
     }
-    void NewRating()
+    void NewClassification()
     {
         associationToEdit = new ShooterAssociationCreateRequest { ShooterId = shooter.ShooterId };
         modalRefAssociationToEdit.Show();
     }
-    void EditRating(ShooterAssociationContract shooterAssociation)
+    void EditClassification(ShooterAssociationContract shooterAssociation)
     {
 
-        SelectRankBasedOnAssociationId(shooterAssociation.Association.AssociationId);
+        SelectClassificationBasedOnAssociationId(shooterAssociation.Association.AssociationId);
         associationToEdit = new ShooterAssociationCreateRequest
         {
             ShooterId = shooter.ShooterId,
             AssociationId = shooterAssociation.Association.AssociationId,
-            Rank = shooterAssociation.Rank,
-            RegistrationDate = shooterAssociation.RegistrationDate
+            Classification = shooterAssociation.Classification,
+            RegistrationDate = shooterAssociation.RegistrationDate,
+            CardNumber = shooterAssociation.CardNumber
         };
         modalRefAssociationToEdit.Show();
     }
@@ -395,13 +409,13 @@ else
                 return;
             validations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
-            await LoadShooterRatings();
+            await LoadShooterClassifications();
         }
         associationToEdit = new ShooterAssociationCreateRequest();
         modalRefAssociationToEdit.Hide();
     }
 
-    void DeleteRating(ShooterAssociationContract association)
+    void DeleteClassification(ShooterAssociationContract association)
     {
         if (association == null)
             return;
@@ -417,7 +431,7 @@ else
                 AssociationId = associationToDelete.Association.AssociationId,
                 ShooterId = shooter.ShooterId
             });
-            await LoadShooterRatings();
+            await LoadShooterClassifications();
         }
         associationToDelete = new ShooterAssociationContract();
         modalRefAssociationToDelete.Hide();

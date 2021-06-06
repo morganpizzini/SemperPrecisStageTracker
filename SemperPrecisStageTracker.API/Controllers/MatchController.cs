@@ -67,38 +67,32 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [AllowAnonymous]
-        [Route("GetMatchFromShortLink")]
-        [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> GetMatchFromShortLink(MatchRequest request)
+        [Route("GetMatchStats")]
+        [ProducesResponseType(typeof(MatchStatsResultContract), 200)]
+        public Task<IActionResult> GetMatchStats(MatchStatsRequest request)
         {
-            var entity = BasicLayer.GetMatchFromShortLink(request.MatchId);
+            Match entity;
+            if (string.IsNullOrEmpty(request.MatchId))
+            {
+                if (string.IsNullOrEmpty(request.ShortLink))
+                {
+                    return Task.FromResult<IActionResult>(NotFound());
+                }
+                entity = BasicLayer.GetMatchFromShortLink(request.ShortLink);
+            }
+            else
+            {
+                entity = BasicLayer.GetMatch(request.MatchId);
+            }
 
-            //verifico validità dell'entità
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
-            var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
-            var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
-
+            var entities = BasicLayer.GetMatchStats(entity.Id);
             var association = BasicLayer.GetAssociation(entity.AssociationId);
-            //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,association,groups,stages));
-        }
 
-        /// <summary>
-        /// Get specific placet ype using provided identifier
-        /// </summary>
-        /// <param name="request">Request</param>
-        /// <returns>Returns action result</returns>
-        [HttpPost]
-        [AllowAnonymous]
-        [Route("GetMatchStats")]
-        [ProducesResponseType(typeof(IList<DivisionMatchResultContract>), 200)]
-        public Task<IActionResult> GetMatchStats(MatchRequest request)
-        {
-            var entities = BasicLayer.GetMatchStats(request.MatchId);
             //Serializzazione e conferma
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(ContractUtils.GenerateContract(entity,association,entities));
         }
 
         /// <summary>
@@ -119,7 +113,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 AssociationId= request.AssociationId,
                 Location = request.Location,
                 OpenMatch = request.OpenMatch,
-                UnifyRanks = request.UnifyRanks
+                UnifyClassifications = request.UnifyClassifications
             };
 
             //Invocazione del service layer
@@ -157,7 +151,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.AssociationId = request.AssociationId;
             entity.Location = request.Location;
             entity.OpenMatch = request.OpenMatch;
-            entity.UnifyRanks = request.UnifyRanks;
+            entity.UnifyClassifications = request.UnifyClassifications;
 
             //Salvataggio
             var validations = BasicLayer.UpdateMatch(entity);

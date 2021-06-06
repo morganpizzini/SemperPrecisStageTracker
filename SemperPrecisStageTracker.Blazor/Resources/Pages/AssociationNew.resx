@@ -126,8 +126,8 @@
   <data name="Divisions" xml:space="preserve">
     <value>Divisions</value>
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Ranks</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classifications</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>

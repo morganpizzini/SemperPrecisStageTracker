@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Configurations;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models.Diagnostics.Tracers;
@@ -40,7 +41,7 @@ namespace SemperPrecisStageTracker.API
                 { "Mockup", ServiceResolver.Register<IIdentityClient, MockIdentityClient> },
                 { "Sql", ServiceResolver.Register<IIdentityClient, SqlIdentityClient> }
             });
-
+            ServiceResolver.Register<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
             CreateHostBuilder(args).Build().Run();
         }
 

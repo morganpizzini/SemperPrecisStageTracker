@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;
 

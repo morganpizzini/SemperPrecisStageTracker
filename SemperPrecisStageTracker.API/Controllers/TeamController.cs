@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
+
     /// <summary>
     /// Controller for team
     /// </summary>

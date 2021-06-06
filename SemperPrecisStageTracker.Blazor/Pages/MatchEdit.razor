@@ -73,7 +73,7 @@ else
             <Field Horizontal="true">
                 <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
                 <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <Check TValue="bool" @bind-Checked="@model.UnifyRanks">@L["UnifyRanks"]</Check>
+                    <Check TValue="bool" @bind-Checked="@model.UnifyClassifications">@L["UnifyClassifications"]</Check>
                 </FieldBody>
             </Field>
         </Validation>
@@ -111,7 +111,7 @@ else
         model.Location = existing.Location;
         model.AssociationId = existing.Association.AssociationId;
         model.OpenMatch = existing.OpenMatch;
-        model.UnifyRanks = existing.UnifyRanks;
+        model.UnifyClassifications = existing.UnifyClassifications;
 
         await base.OnInitializedAsync();
     }

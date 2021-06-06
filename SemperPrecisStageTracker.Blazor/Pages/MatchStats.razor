@@ -21,20 +21,20 @@ else
                         @if (interactive)
                         {
                             <text>
-                                <NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")
+                                <NavLink href="@($"matches/{stats.Match.MatchId}")">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTime.ToString("d")
                             </text>
                         }
                         else
                         {
                             <text>
-                                @match.Name - @match.MatchDateTime.ToString("d")
+                                @stats.Match.Name - @stats.Match.MatchDateTime.ToString("d")
                             </text>
                         }
                     </CardText>
                 </CardBody>
             </Card>
         </Column>
-        @if (match.Association != null)
+        @if (stats.Match.Association != null)
         {
             <Column ColumnSize="ColumnSize.IsHalf">
                 <Card Margin="Margin.Is4.OnY">
@@ -43,11 +43,11 @@ else
                         <CardText>
                             @if (interactive)
                             {
-                                <NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink>
+                                <NavLink href="@($"associations/{stats.Match.Association.AssociationId}")">@stats.Match.Association.Name</NavLink>
                             }
                             else
                             {
-                                @match.Association.Name
+                                @stats.Match.Association.Name
                             }
                         </CardText>
                     </CardBody>
@@ -57,14 +57,14 @@ else
     </Row>
     <Row>
         <Column ColumnSize="ColumnSize.IsFull">
-            @foreach (var division in stats)
+            @foreach (var division in stats.DivisionMatchResults)
             {
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
                         <CardTitle>@division.Name</CardTitle>
-                        @foreach (var rank in division.Ranks)
+                        @foreach (var classification in division.Classifications)
                         {
-                            <CardText>@rank.Rank</CardText>
+                            <CardText>@classification.Classification</CardText>
                             <Table Striped="true" Hoverable="true">
                                 <TableHeader ThemeContrast="ThemeContrast.Dark">
                                     <TableRow>
@@ -79,7 +79,7 @@ else
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    @foreach (var shooter in rank.Shooters)
+                                    @foreach (var shooter in classification.Shooters)
                                     {
                                         <TableRow>
                                             <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
@@ -126,20 +126,19 @@ else
     public bool PageLoading { get; set; } = true;
 
     bool interactive => string.IsNullOrEmpty(ShortLink);
-    MatchContract match = new MatchContract();
-    IList<DivisionMatchResultContract> stats = new List<DivisionMatchResultContract>();
+    MatchStatsResultContract stats = new MatchStatsResultContract();
 
     protected override async Task OnInitializedAsync()
     {
         if (!string.IsNullOrEmpty(ShortLink))
         {
-            match = await Client.Post<MatchContract>("api/Match/GetMatchFromShortLink", new MatchRequest() { MatchId = ShortLink });
+            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
         }
         else
         {
-            match = await Client.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
         }
-        stats = await Client.Post<IList<DivisionMatchResultContract>>("api/Match/GetMatchStats", new MatchRequest() { MatchId = match.MatchId });
+
 
         PageLoading = false;
 

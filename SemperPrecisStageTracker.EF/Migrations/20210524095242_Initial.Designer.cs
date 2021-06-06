@@ -39,7 +39,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Ranks")
+                    b.Property<string>("Classifications")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -129,7 +129,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<bool>("OpenMatch")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("UnifyRanks")
+                    b.Property<bool>("UnifyClassifications")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
@@ -177,7 +177,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<DateTime>("CreationDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Rank")
+                    b.Property<string>("Classification")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

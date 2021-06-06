@@ -129,8 +129,8 @@
     <value>Divisions</value>
     <comment />
   </data>
-  <data name="Ranks" xml:space="preserve">
-    <value>Ranks</value>
+  <data name="Classifications" xml:space="preserve">
+    <value>Classifications</value>
     <comment />
   </data>
   <data name="WrongName" xml:space="preserve">

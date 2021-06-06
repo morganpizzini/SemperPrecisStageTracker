@@ -29,7 +29,7 @@ else
                 <CardBody>
                     <CardTitle>@L["Divisions"]</CardTitle>
                     <CardText>
-                        @if (association.Ranks.Count == 0)
+                        @if (association.Classifications.Count == 0)
                         {
                             @L["NoDivisions"]
                         }
@@ -50,16 +50,16 @@ else
         <Column ColumnSize="ColumnSize.IsHalf">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>@L["Ranks"]</CardTitle>
+                    <CardTitle>@L["Classifications"]</CardTitle>
                     <CardText>
-                        @if (association.Ranks.Count == 0)
+                        @if (association.Classifications.Count == 0)
                         {
-                            @L["NoRanks"]
+                            @L["NoClassifications"]
                         }
                         else
                         {
                             <ul>
-                                @foreach (var s in association.Ranks)
+                                @foreach (var s in association.Classifications)
                                 {
                                     <li>@s</li>
                                 }

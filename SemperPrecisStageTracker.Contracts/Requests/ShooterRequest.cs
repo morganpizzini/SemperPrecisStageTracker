@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
@@ -14,72 +13,5 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string ShooterId { get; set; }
        
-    }
-
-    public class ShooterCreateRequest
-    {
-        [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string LastName { get; set; }
-        [Required]
-        public DateTime BirthDate { get; set; } = new DateTime(1980,1,1);
-        [Required]
-        public string Username {get;set;}
-        [Required]
-        public string Email {get;set;}
-    }
-
-    public class ShooterUpdateRequest
-    {
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string LastName { get; set; }
-        [Required]
-        public DateTime BirthDate { get; set; }
-        [Required]
-        public string Username {get;set;}
-        [Required]
-        public string Email {get;set;}
-    }
- public class ShooterTeamCreateRequest
-    {
-        [Required]
-
-        public string TeamId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public DateTime RegistrationDate { get; set; } = DateTime.Now;
-    }
-    public class ShooterTeamDeleteRequest
-    {
-        [Required]
-        public string TeamId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-    }
-
-     public class ShooterAssociationCreateRequest
-    {
-        [Required]
-
-        public string AssociationId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public string Rank { get; set; }
-        [Required]
-        public DateTime RegistrationDate { get; set; } = DateTime.Now;
-    }
-    public class ShooterAssociationDeleteRequest
-    {
-        [Required]
-        public string AssociationId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
     }
 }

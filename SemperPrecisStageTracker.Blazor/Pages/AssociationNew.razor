@@ -37,18 +37,18 @@
         }
     </Field>
     <Field>
-        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Ranks"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ranks.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-        @for (int i = 0; i < model.Ranks.Count; i++)
+        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Classifications"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+        @for (int i = 0; i < model.Classifications.Count; i++)
         {
             var tmp = i;
             <FieldBody ColumnSize="ColumnSize.Is8">
                 <Addons>
                     <Addon AddonType="AddonType.Body">
-                        <input value="@model.Ranks[tmp]" class="form-control"
-                               @onchange="@(e => model.Ranks[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                        <input value="@model.Classifications[tmp]" class="form-control"
+                               @onchange="@(e => model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
                     </Addon>
                     <Addon AddonType="AddonType.End">
-                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Ranks.Remove(model.Ranks[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Classifications.Remove(model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
                     </Addon>
                 </Addons>
             </FieldBody>

@@ -55,18 +55,39 @@ else
                             <TableBody>
                                 @if (shooters.Count > 0)
                                 {
-                                    @foreach (var shooter in shooters)
+                                    <Virtualize Context="shooter" Items="@shooters">
+                                        <TableRow Class="@(shooter.ShooterStatus ==  ShooterStatusEnum.IsDisqualified ? "bg-danger": shooter.ShooterStatus ==  ShooterStatusEnum.HasWarning ? "bg-warning":"")">
+                                            <TableRowHeader>
+                                                @{
+                                                    if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                    {
+                                                        if (shooter.ShooterStage.Total < 0)
+                                                        {
+                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                                @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                            </Button>
+                                                        }
+                                                        else
+                                                        {
+                                                            @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                            @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                        </Button>
+                                                    }
+                                                }
+                                            </TableRowHeader>
+                                            <TableRowCell>@(shooter.ShooterStage.Total> 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                    @*@foreach (var shooter in shooters)
                                     {
                                         var shooterTmp = shooter;
-                                        <TableRow>
-                                            <TableRowHeader>
-                                                <Button Color="Color.Link" Clicked="@(() => FillShooter(shooterTmp))">
-                                                    @shooterTmp.Shooter.LastName @shooterTmp.Shooter.FirstName
-                                                </Button>
-                                            </TableRowHeader>
-                                            <TableRowCell>@(shooterTmp.ShooterStage.Total> 0 ? shooterTmp.ShooterStage.Total.ToString() : shooterTmp.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
-                                        </TableRow>
-                                    }
+                                       
+                                    }*@
                                 }
                                 else
                                 {

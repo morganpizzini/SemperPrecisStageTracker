@@ -10,16 +10,4 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string Name { get; set; }
     }
-
-    public class GroupShooter : SemperPrecisEntity
-    {
-        [Required]
-        public string GroupId { get; set; }
-        [Required]
-        public string ShooterId { get; set; }
-        [Required]
-        public string DivisionId {get; set;}
-        [Required]
-        public string TeamId {get; set;}
-    }
 }
