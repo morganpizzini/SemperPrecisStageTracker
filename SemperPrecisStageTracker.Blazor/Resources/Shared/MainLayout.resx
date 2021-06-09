@@ -141,4 +141,7 @@
   <data name="Offline" xml:space="preserve">
     <value>Offline - No connectio</value>
   </data>
+  <data name="SubscribeToNotification" xml:space="preserve">
+    <value>Subscribe to notification</value>
+  </data>
 </root>

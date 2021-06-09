@@ -1,9 +1,12 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
+@using SemperPrecisStageTracker.Contracts.Utilities
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Login> L
+@inject IJSRuntime JSRuntime
 @inject AuthenticationStateProvider auth
+
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
 <Alert Color="Color.Success">
     <AlertDescription>
@@ -85,6 +88,7 @@
             var loginResult = await AuthenticationService.Login(model.Username, model.Password);
             if (loginResult)
             {
+                await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
                 NavigationManager.NavigateTo(returnUrl);
             }

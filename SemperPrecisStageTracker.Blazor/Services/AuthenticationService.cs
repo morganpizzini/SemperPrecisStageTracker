@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
@@ -11,11 +13,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
     public interface IAuthenticationService
     {
         ShooterContract User { get; }
-        bool IsAuth {get;}
+        bool IsAuth { get; }
         Task Initialize();
         Task<bool> Login(string username, string password);
         Task Logout();
-        event Func<object, EventArgs, Task> authChangeEventHandler;
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -24,10 +25,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private NavigationManager _navigationManager;
         private ILocalStorageService _localStorageService;
         private AuthenticationStateProvider _authenticationStateProvider;
-
         public ShooterContract User { get; private set; }
 
-        public bool IsAuth => User!= null;
+        public bool IsAuth => User != null;
 
         public CustomAuthStateProvider _customAuthenticationStateProvider => _authenticationStateProvider as CustomAuthStateProvider;
 
@@ -36,7 +36,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
             AuthenticationStateProvider authenticationStateProvider
-        ) {
+        )
+        {
             _httpService = httpService;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
@@ -46,7 +47,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public async Task Initialize()
         {
             User = await _localStorageService.GetItem<ShooterContract>("user");
-            if (User!= null)
+            if (User != null)
             {
                 _customAuthenticationStateProvider.LoginNotify(User);
             }
@@ -54,11 +55,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<bool> Login(string username, string password)
         {
-            User = await _httpService.Post<ShooterContract>("/api/Authorization/SignIn", new SignInRequest{ Username = username, Password = password });
+            User = await _httpService.Post<ShooterContract>("/api/Authorization/SignIn", new SignInRequest { Username = username, Password = password });
             User.AuthData = $"{username}:{password}".EncodeBase64();
             await _localStorageService.SetItem("user", User);
             _customAuthenticationStateProvider.LoginNotify(User);
-            authChangeEventHandler?.Invoke(this,new EventArgs());
+
             return true;
         }
 
@@ -70,6 +71,5 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _navigationManager.NavigateTo("login");
         }
 
-        public event Func<object, EventArgs, Task> authChangeEventHandler;
     }
 }

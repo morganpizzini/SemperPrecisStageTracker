@@ -1,43 +1,46 @@
 ﻿@using SemperPrecisStageTracker.Contracts.Utilities
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
 @inject NetworkService NetworkService
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService authService
-
+@inject IHttpService httpService
 <div class="page">
-    
-            <div class="sidebar">
-                <NavMenu />
-            </div>
-            <div class="main">
-                <div class="top-row px-4 auth">
-                    <CultureSelector />
-                    <AuthorizeView>
-                        <Authorized>
-                            <span>@L["Hello"]!, @context.User.Identity.Name!</span>
-                            <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
-                        </Authorized>
-                        <NotAuthorized>
-                            <NavLink class="nav-link" href="login">@L["Login"]</NavLink>
-                        </NotAuthorized>
-                    </AuthorizeView>
-                </div>
 
-                <div class="content px-4">
-                    @if (NetworkService.IsOnline)
-                    {
-                        @Body
-                    }
-                    else
-                    {
-                        <span style="color: red">@L["Offline"]</span>
-                    }
-                </div>
-            </div>
+    <div class="sidebar">
+        <NavMenu />
     </div>
+    <div class="main">
+        <div class="top-row px-4 auth">
+            @if (ShowNotificationAlertStatus)
+            {
+                <Button Class="mr-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
+            }
+            <CultureSelector/>
+            <AuthorizeView>
+                <Authorized>
+                    <span>@L["Hello"]!, @context.User.Identity.Name!</span>
+                    <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="login">@L["Login"]</NavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <div class="content px-4">
+            @if (NetworkService.IsOnline)
+            {
+                @Body
+            }
+            else
+            {
+                <span style="color: red">@L["Offline"]</span>
+            }
+        </div>
+    </div>
+</div>
 <Modal @ref="modalInstallRef">
     <ModalContent Size="ModalSize.Default" Centered="true">
         <ModalHeader>
@@ -58,35 +61,32 @@
 @code{
     private static Action action;
     private Modal modalInstallRef;
+    private static Action actionNotification;
+    private bool ShowNotificationAlertStatus;
 
     protected override async Task OnInitializedAsync()
     {
         action = ShowIntallModal;
+        actionNotification = ShowNotificationAlert;
         // In the background, ask if they want to be notified about order updates
-        //await RequestNotificationSubscriptionAsync();
-        authService.authChangeEventHandler += RequestNotificationSubscriptionAsync;
-
+        await RequestNotificationSubscriptionAsync();
 
         await base.OnInitializedAsync();
     }
 
-    async Task RequestNotificationSubscriptionAsync(object? sender, EventArgs e)
+
+    async Task RequestNotificationSubscriptionAsync()
     {
         if (!authService.IsAuth)
             return;
-        var subscription = await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
-        if (subscription == null)
-            return;
+        await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
+    }
 
-        try
-        {
-            //var response = await httpClient.PutAsJsonAsync("notifications/subscribe", subscription);
-            // response.EnsureSuccessStatusCode();
-        }
-        catch (AccessTokenNotAvailableException ex)
-        {
-            ex.Redirect();
-        }
+    [JSInvokable]
+    public static Task PromptNotificationAlert()
+    {
+        actionNotification.Invoke();
+        return Task.CompletedTask;
     }
 
     [JSInvokable]
@@ -99,6 +99,31 @@
     public void ShowIntallModal()
     {
         modalInstallRef.Show();
+    }
+
+    public void ShowNotificationAlert()
+    {
+        ShowNotificationAlertStatus = true;
+    }
+
+    public async Task SubscribeToNotification()
+    {
+        var subscription = await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.createSubscription");
+
+        if (subscription == null)
+            return;
+        try
+        {
+            var response = await httpService.Post<OkResponse>("api/notification/CreateNotificationSubscription", subscription);
+            if (response.Status)
+            {
+                ShowNotificationAlertStatus = false;
+            }
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+        }
     }
     private async Task HideInstallModal(bool choice)
     {
