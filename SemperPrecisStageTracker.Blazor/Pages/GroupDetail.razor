@@ -134,25 +134,24 @@ else
                             <TableBody>
                                 @if (group.Shooters.Count > 0)
                                 {
-                                    @foreach (var shooter in group.Shooters)
-                                    {
+                                    <Virtualize Items="@group.Shooters" Context="shooter">
                                         <TableRow>
                                             <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
                                             <TableRowCell>
                                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
                                             </TableRowCell>
                                         </TableRow>
+                                    </Virtualize>
                                     }
-                                }
-                                else
-                                {
+                                    else
+                                    {
                                     <TableRow>
                                         <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
                                             @L["NoShooters"]
                                         </TableRowCell>
                                     </TableRow>
-                                }
-                            </TableBody>
+                                    }
+                                </TableBody>
 
                         </Table>
                     

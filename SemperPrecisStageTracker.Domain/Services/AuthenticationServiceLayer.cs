@@ -76,6 +76,79 @@ namespace SemperPrecisStageTracker.Domain.Services
                 : null;
         }
 
+        /// <summary>
+        /// Update user instagram access token
+        /// </summary>
+        /// <param name="entity">user entity</param>
+        /// <param name="userRoleKey">user role key</param>
+        /// <returns>User Entity</returns>
+        public IList<ValidationResult> UpdateUser(Shooter entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto è nuovo, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user is new. Operation aborted");
+
+            // controllo validazione user
+            var validations = CheckUserValidation(entity);
+            
+            if (validations.Count > 0)
+            {
+                return validations;
+            }
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+                //Validazione argomenti
+            validations = _userRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            validations = SaveEntity(entity, _userRepository);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            t.Commit();
+
+
+            return validations;
+        }
+
+        /// <summary>
+        /// Check user validations
+        /// </summary>
+        /// <param name="entity">entity to check</param>
+        /// <returns>List of validation results</returns>
+        private IList<ValidationResult> CheckUserValidation(Shooter entity)
+        {
+            var validations = new List<ValidationResult>();
+            // controllo esistenza customer con stesso nome
+            var existing = _userRepository.GetSingle(x => x.Id != entity.Id
+                                                          && (x.Username == entity.Username
+                                                              || x.Email == entity.Email));
+            if (existing != null)
+            {
+                validations.Add(new ValidationResult($"Entity with username or email already exist. {entity.Username} ({entity.Email})"));
+            }
+
+            return validations;
+        }
 
         /// <summary>
         /// Check user password
@@ -93,7 +166,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             user.Password = _identityClient.EncryptPassword(newPassword);
 
             IList<ValidationResult> validations = new List<ValidationResult>();
-            
+
             //Esecuzione in transazione
             using (var t = DataSession.BeginTransaction())
             {
@@ -127,10 +200,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
-        
+
             //Recupero i dati, commit ed uscita
-            return _userRepository.GetSingle(x=>x.Id == id);
-        
+            return _userRepository.GetSingle(x => x.Id == id);
+
         }
 
         /// <summary>
@@ -143,10 +216,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
 
-            
-            return _userRepository.GetSingle(x=>x.Username == userName);
+
+            return _userRepository.GetSingle(x => x.Username == userName);
         }
-        
+
 
         /// <summary>
         /// Checks if provided principal is platform owner
@@ -183,21 +256,21 @@ namespace SemperPrecisStageTracker.Domain.Services
             return false;
         }
 
-        
+
         public IList<ValidationResult> SyncPasswords()
         {
-            var shooters = this._userRepository.Fetch(x=> string.IsNullOrEmpty(x.Password));
+            var shooters = this._userRepository.Fetch(x => string.IsNullOrEmpty(x.Password));
             IList<ValidationResult> validations = new List<ValidationResult>();
-            
+
             var t = DataSession.BeginTransaction();
             foreach (var shooter in shooters)
             {
-                if(string.IsNullOrEmpty(shooter.Username))
-                    shooter.Password = shooter.FirstName+shooter.LastName;
-                if(string.IsNullOrEmpty(shooter.Email))
+                if (string.IsNullOrEmpty(shooter.Username))
+                    shooter.Password = shooter.FirstName + shooter.LastName;
+                if (string.IsNullOrEmpty(shooter.Email))
                     shooter.Email = $"{shooter.FirstName}{shooter.LastName}@email.com".ToLower();
-                shooter.Password = shooter.FirstName+shooter.LastName;
-                
+                shooter.Password = shooter.FirstName + shooter.LastName;
+
                 //Validazione argomenti
                 validations = _userRepository.Validate(shooter);
 
@@ -214,9 +287,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             t.Commit();
-            
-            
-            
+
+
+
             return validations;
         }
 

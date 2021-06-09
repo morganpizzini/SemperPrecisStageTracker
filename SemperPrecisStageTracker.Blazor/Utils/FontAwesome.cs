@@ -1,7 +1,7 @@
 
 namespace SemperPrecisStageTracker.Blazor.Utils
 {
-public static class FontAwesomeIcons
+    public static class FontAwesomeIcons
     {
         public static readonly new string Equals = "fa-equals";
         public static readonly string Ad = "fa-ad";

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
@@ -14,6 +15,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         Task Initialize();
         Task<bool> Login(string username, string password);
         Task Logout();
+        event Func<object, EventArgs, Task> authChangeEventHandler;
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -56,6 +58,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             User.AuthData = $"{username}:{password}".EncodeBase64();
             await _localStorageService.SetItem("user", User);
             _customAuthenticationStateProvider.LoginNotify(User);
+            authChangeEventHandler?.Invoke(this,new EventArgs());
             return true;
         }
 
@@ -66,5 +69,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo("login");
         }
+
+        public event Func<object, EventArgs, Task> authChangeEventHandler;
     }
 }

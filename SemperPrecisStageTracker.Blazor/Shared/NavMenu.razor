@@ -14,23 +14,28 @@
         <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
             <ul class="nav flex-column">
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="associations">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Associations>())">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Associations"]
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="matches">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Matches>())">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Matches"]
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="shooters">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Shooters"]
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="teams">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Teams>())">
                         <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Teams"]
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Places>())">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @L["Places"]
                     </NavLink>
                 </li>
             </ul>

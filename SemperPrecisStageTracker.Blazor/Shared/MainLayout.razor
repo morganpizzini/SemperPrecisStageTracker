@@ -5,6 +5,7 @@
 @inject IStringLocalizer<MainLayout> L
 @inject NetworkService NetworkService
 @inject NavigationManager NavigationManager
+@inject IAuthenticationService authService
 
 <div class="page">
     
@@ -62,24 +63,29 @@
     {
         action = ShowIntallModal;
         // In the background, ask if they want to be notified about order updates
-        await RequestNotificationSubscriptionAsync();
+        //await RequestNotificationSubscriptionAsync();
+        authService.authChangeEventHandler += RequestNotificationSubscriptionAsync;
+
 
         await base.OnInitializedAsync();
     }
-    async Task RequestNotificationSubscriptionAsync()
+
+    async Task RequestNotificationSubscriptionAsync(object? sender, EventArgs e)
     {
+        if (!authService.IsAuth)
+            return;
         var subscription = await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
-        if (subscription != null)
+        if (subscription == null)
+            return;
+
+        try
         {
-            try
-            {
-                //var response = await httpClient.PutAsJsonAsync("notifications/subscribe", subscription);
-                // response.EnsureSuccessStatusCode();
-            }
-            catch (AccessTokenNotAvailableException ex)
-            {
-                ex.Redirect();
-            }
+            //var response = await httpClient.PutAsJsonAsync("notifications/subscribe", subscription);
+            // response.EnsureSuccessStatusCode();
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
         }
     }
 

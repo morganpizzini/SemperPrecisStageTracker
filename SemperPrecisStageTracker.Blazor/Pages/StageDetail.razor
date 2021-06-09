@@ -95,38 +95,37 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Groups"]</CardTitle>
-                    
-                        <Table Striped="true" Hoverable="true">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (match.Groups.Count > 0)
-                                {
-                                    @foreach (var group in match.Groups)
-                                    {
-                                        <TableRow>
-                                            <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")">@group.Name</NavLink></TableRowHeader>
-                                            <TableRowCell>
-                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
-                                            </TableRowCell>
-                                        </TableRow>
-                                    }
-                                }
-                                else
-                                {
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (match.Groups.Count > 0)
+                            {
+                                <Virtualize Items="@match.Groups" Context="group">
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
-                                            @L["NoGroups"]
+                                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")">@group.Name</NavLink></TableRowHeader>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}/group/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                    
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                        @L["NoGroups"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+
                 </CardBody>
             </Card>
         </Column>

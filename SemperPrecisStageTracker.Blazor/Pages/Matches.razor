@@ -32,8 +32,7 @@
             }
             else
             {
-                @foreach (var match in matches)
-                {
+                <Virtualize Items="@matches" Context="match">
                     <TableRow>
                         <TableRowHeader><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink></TableRowHeader>
                         <TableRowCell>@match.Association.Name</TableRowCell>
@@ -44,7 +43,7 @@
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
                         </TableRowCell>
                     </TableRow>
-                }
+                </Virtualize>
             }
         }
     </TableBody>

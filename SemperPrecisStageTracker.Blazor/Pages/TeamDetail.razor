@@ -42,8 +42,7 @@ else
                         <TableBody>
                             @if (teamShooters.Count > 0)
                             {
-                                @foreach (var shooterTeam in teamShooters)
-                                {
+                                <Virtualize Items="@teamShooters" Context="shooterTeam">
                                     <TableRow>
                                         <TableRowHeader>@shooterTeam.Shooter.FirstName @shooterTeam.Shooter.LastName</TableRowHeader>
                                         <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
@@ -52,7 +51,7 @@ else
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
+                                </Virtualize>
                             }
                             else
                             {

@@ -31,8 +31,7 @@
             }
             else
             {
-                @foreach (var association in associations)
-                {
+                <Virtualize Items="@associations" Context="association">
                     <TableRow>
                         <TableRowHeader><NavLink href="@($"associations/{association.AssociationId}")">@association.Name</NavLink></TableRowHeader>
                         <TableRowCell>
@@ -40,7 +39,7 @@
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"associations/{association.AssociationId}")"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
-                }
+                </Virtualize>
             }
         }
     </TableBody>

@@ -117,19 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Matches" xml:space="preserve">
-    <value>Matches</value>
-  </data>
-  <data name="Shooters" xml:space="preserve">
-    <value>Shooters</value>
-  </data>
-  <data name="Associations" xml:space="preserve">
-    <value>Associations</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="Places" xml:space="preserve">
+  <data name="Placess" xml:space="preserve">
     <value>Places</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NewPlace" xml:space="preserve">
+    <value>New place</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
+  </data>
+  <data name="Holder" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value></value>
   </data>
 </root>

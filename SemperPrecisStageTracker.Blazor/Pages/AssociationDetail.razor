@@ -36,10 +36,9 @@ else
                         else
                         {
                             <ul>
-                                @foreach (var s in association.Divisions)
-                                {
+                                <Virtualize Items="@association.Divisions" Context="s">
                                     <li>@s</li>
-                                }
+                                </Virtualize>
                             </ul>
                         }
 
@@ -58,12 +57,11 @@ else
                         }
                         else
                         {
-                            <ul>
-                                @foreach (var s in association.Classifications)
-                                {
-                                    <li>@s</li>
-                                }
-                            </ul>
+                        <ul>
+                            <Virtualize Items="@association.Classifications" Context="s">
+                                <li>@s</li>
+                            </Virtualize>
+                        </ul>
                         }
 
                     </CardText>

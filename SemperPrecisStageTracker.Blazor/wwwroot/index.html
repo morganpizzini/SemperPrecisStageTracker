@@ -31,7 +31,7 @@
             set: (value) => localStorage['BlazorCulture'] = value
         };
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('service-worker.js');
+            //navigator.serviceWorker.register('service-worker.js');
 
             // Prompt when the PWA has been installed but a new version is available
             // Code based on the Blazor.PWA.MSBuild package by SQL-MisterMagoo
@@ -114,18 +114,41 @@
 
         window.BlazorPWA = (function(){
             applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
-            async function subscribe(worker) {
-                try {
-                    return await worker.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: applicationServerPublicKey
+
+            function syncSubToServer(newSubscription) {
+                if (newSubscription) {
+                    console.log({
+                        url: newSubscription.endpoint,
+                        p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                        auth: arrayBufferToBase64(newSubscription.getKey('auth'))
                     });
-                } catch (error) {
-                    if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
-                        return null;
-                    }
-                    throw error;
+                    return {
+                        url: newSubscription.endpoint,
+                        p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                        auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                    };
                 }
+            }
+
+            function subscribe(worker) {
+                worker.pushManager.getSubscription().then(function (sub) {
+                    if (sub === null) {
+                        worker.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: applicationServerPublicKey
+                        }).then(function (sub) {
+                            syncSubToServer(sub);
+                        }).catch(function (e) {
+                            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
+                                return null;
+                            }
+                            console.error("Unable to subscribe to push", e);
+                            throw e;
+                        });
+                    } else {
+                        syncSubToServer(sub);
+                    }
+                });
             }
 
             function arrayBufferToBase64(buffer) {
@@ -154,22 +177,17 @@
                     }
                 },
                 requestSubscription: async () => {
+                    console.log('request subscription');
                     const worker = await navigator.serviceWorker.getRegistration();
                     const existingSubscription = await worker.pushManager.getSubscription();
                     if (!existingSubscription) {
-                        const newSubscription = await subscribe(worker);
-                        if (newSubscription) {
-                            console.log({
-                                url: newSubscription.endpoint,
-                                p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
-                                auth: arrayBufferToBase64(newSubscription.getKey('auth'))
-                            });
-                            return {
-                                url: newSubscription.endpoint,
-                                p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
-                                auth: arrayBufferToBase64(newSubscription.getKey('auth'))
-                            };
-                        }
+                        Notification.requestPermission(function (status) {
+                            console.log(status);
+                            if (status == "granted") {
+                                subscribe(worker);
+                            } else {
+                            }
+                        });
                     }
                 },
                 init: (callback) => { // callback è un puntatore a una classe .NET Core

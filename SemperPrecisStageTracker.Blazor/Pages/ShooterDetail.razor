@@ -45,8 +45,7 @@ else
                         <TableBody>
                             @if (shooterTeams.Count > 0)
                             {
-                                @foreach (var shooterTeam in shooterTeams)
-                                {
+                                <Virtualize Items="@shooterTeams" Context="shooterTeam">
                                     <TableRow>
                                         <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
                                         <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
@@ -55,7 +54,7 @@ else
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
+                                </Virtualize>
                             }
                             else
                             {
@@ -87,8 +86,7 @@ else
                         <TableBody>
                             @if (shooterClassifications.Count > 0)
                             {
-                                @foreach (var classification in shooterClassifications)
-                                {
+                                <Virtualize Items="@shooterClassifications" Context="classification">
                                     <TableRow>
                                         <TableRowHeader>@classification.Association.Name</TableRowHeader>
                                         <TableRowCell>@classification.Classification</TableRowCell>
@@ -98,7 +96,7 @@ else
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
+                                </Virtualize>
                             }
                             else
                             {

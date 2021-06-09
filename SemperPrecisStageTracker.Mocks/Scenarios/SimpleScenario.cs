@@ -14,6 +14,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// Admin user
         /// </summary>
         public static string AdminUser = "Shooter01";
+        public static string AnotherUser = "Shooter02";
 
         /// <summary>
         /// Executes initialization of entities

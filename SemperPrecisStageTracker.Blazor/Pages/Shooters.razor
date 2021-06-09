@@ -32,8 +32,7 @@
             }
             else
             {
-                @foreach (var shooter in shooters)
-                {
+                <Virtualize Items="@shooters" Context="shooter">
                     <TableRow>
                         <TableRowHeader><NavLink href="@($"shooters/{shooter.ShooterId}")">@shooter.LastName @shooter.FirstName</NavLink></TableRowHeader>
                         <TableRowCell>@shooter.Username</TableRowCell>
@@ -43,7 +42,7 @@
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
-                }
+                </Virtualize>
             }
         }
     </TableBody>

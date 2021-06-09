@@ -30,8 +30,7 @@
             }
             else
             {
-                @foreach (var team in teams)
-                {
+                <Virtualize Items="@teams" Context="team">
                     <TableRow>
                         <TableRowHeader><NavLink href="@($"teams/{team.TeamId}")">@team.Name</NavLink></TableRowHeader>
                         <TableRowCell>
@@ -39,7 +38,7 @@
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
-                }
+                </Virtualize>
             }
         }
     </TableBody>

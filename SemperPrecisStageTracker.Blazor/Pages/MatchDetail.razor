@@ -58,8 +58,7 @@ else
                         <TableBody>
                             @if (match.Groups.Count > 0)
                             {
-                                @foreach (var group in match.Groups)
-                                {
+                                <Virtualize Items="@match.Groups" Context="group">
                                     <TableRow>
                                         <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/groups/{group.GroupId}")">@group.Name</NavLink></TableRowHeader>
                                         <TableRowCell>
@@ -67,7 +66,7 @@ else
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
+                                </Virtualize>
                             }
                             else
                             {
@@ -91,42 +90,42 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Stages"]</CardTitle>
-                    
-                        <Table Striped="true" Hoverable="true">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell>@L["Targets"]</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (match.Stages.Count > 0)
-                                {
-                                    @foreach (var stage in match.Stages)
-                                    {
-                                        <TableRow>
-                                            <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></TableRowHeader>
-                                            <TableRowCell>@stage.Targets</TableRowCell>
-                                            <TableRowCell>
-                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
-                                            </TableRowCell>
-                                        </TableRow>
-                                    }
-                                }
-                                else
-                                {
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Targets"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (match.Stages.Count > 0)
+                            {
+                                <Virtualize Items="@match.Stages" Context="stage">
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
-                                            @L["NoStages"]
+                                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></TableRowHeader>
+                                        <TableRowCell>@stage.Targets</TableRowCell>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                    
+                                </Virtualize>
+
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                        @L["NoStages"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+
                 </CardBody>
             </Card>
         </Column>

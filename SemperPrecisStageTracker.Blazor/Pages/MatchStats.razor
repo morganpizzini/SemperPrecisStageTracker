@@ -57,8 +57,7 @@ else
     </Row>
     <Row>
         <Column ColumnSize="ColumnSize.IsFull">
-            @foreach (var division in stats.DivisionMatchResults)
-            {
+            <Virtualize Items="@stats.DivisionMatchResults" Context="division">
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
                         <CardTitle>@division.Name</CardTitle>
@@ -103,7 +102,7 @@ else
                                                     <TableRowCell>-</TableRowCell>
                                                 }
                                             }
-                                            <TableRowCell>@(shooter.Total<0 ? @L["DQ"] : String.Format("{0:f2}", shooter.Total))</TableRowCell>
+                                            <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : String.Format("{0:f2}", shooter.Total))</TableRowCell>
                                         </TableRow>
                                     }
                                 </TableBody>
@@ -111,7 +110,7 @@ else
                         }
                     </CardBody>
                 </Card>
-            }
+            </Virtualize>
 
         </Column>
     </Row>

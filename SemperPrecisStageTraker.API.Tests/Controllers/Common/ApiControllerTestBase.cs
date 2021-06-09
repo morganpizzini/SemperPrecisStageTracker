@@ -66,11 +66,21 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetAdminShooter()
+        protected Shooter GetAdminUser()
         {
             //Recupero l'utente amministratore
             return Scenario.Shooters
                 .SingleOrDefault(u => u.Username == SimpleScenario.AdminUser);
+        }
+        /// <summary>
+        /// Get admin that will be used for ASP.NET Identity
+        /// </summary>
+        /// <returns>Returns Shooter instance</returns>
+        protected Shooter GetAnotherUser()
+        {
+            //Recupero l'utente amministratore
+            return Scenario.Shooters
+                .SingleOrDefault(u => u.Username == SimpleScenario.AnotherUser);
         }
         #endregion
 
@@ -104,14 +114,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 throw new InvalidProgramException("Shooter for identity is invalid");
 
             //Inizializzazione del controller context e impostazione dell'identity
-            UpdateIdentityShooter(defaultShooterIdentity);
+            UpdateIdentityUser(defaultShooterIdentity);
         }
 
         /// <summary>
         /// Updates identity set on controller context
         /// </summary>
         /// <param name="Shooter">Shooter instance</param>
-        protected void UpdateIdentityShooter(Shooter Shooter)
+        protected void UpdateIdentityUser(Shooter Shooter)
         {
             //Validazione argomenti
             if (Shooter == null) throw new ArgumentNullException(nameof(Shooter));

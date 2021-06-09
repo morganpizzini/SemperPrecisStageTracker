@@ -83,11 +83,6 @@ else
                                             <TableRowCell>@(shooter.ShooterStage.Total> 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
                                         </TableRow>
                                     </Virtualize>
-                                    @*@foreach (var shooter in shooters)
-                                    {
-                                        var shooterTmp = shooter;
-                                       
-                                    }*@
                                 }
                                 else
                                 {
@@ -139,7 +134,12 @@ else
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <NumericEdit Placeholder="@L["Time"]" TValue="decimal" ElementId="time" @bind-Value="@model.Time" OnFocus="@(async ()=> await OnFocus("time"))">
+                                        @*<TextEdit Placeholder="@L["Time"]" @bind-Value="@model.Time" InputMode="TextInputMode.Decimal" ElementId="time" OnFocus="@(async () => await OnFocus("time"))">
+                                            <Feedback>
+                                                <ValidationError>@L["WrongCountry"]</ValidationError>
+                                            </Feedback>
+                                        </TextEdit>*@
+                                        <NumericEdit Placeholder="@L["Time"]" TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
                                                 <ValidationError>@L["WrongTime"]</ValidationError>
                                             </Feedback>

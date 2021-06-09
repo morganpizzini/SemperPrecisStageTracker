@@ -57,20 +57,36 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddSingleton<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
             //.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
+
+            var apiUrl = new Uri(builder.Configuration["baseAddress"]);
+
+            // use fake backend if "fakeBackend" is "true" in appsettings.json
+            // if (builder.Configuration["fakeBackend"] == "true")
+            //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
+
+            var httpClient = new HttpClient() { BaseAddress = apiUrl };
+
             // configure http client
-            builder.Services.AddScoped(x =>
+            builder.Services.AddScoped(x => httpClient);
+
+            // load configuration from server
+            // using var serverConfig = await httpClient.GetAsync("/config");
+            // using var stream = await serverConfig.Content.ReadAsStreamAsync();
+
+            //builder.Configuration.AddJsonStream(stream);
+
+            
+            builder.Services.AddScoped<ClientConfiguration>(sp => 
             {
-                var apiUrl = new Uri(builder.Configuration["baseAddress"]);
+                var config = sp.GetService<IConfiguration>();
 
-                // use fake backend if "fakeBackend" is "true" in appsettings.json
-                // if (builder.Configuration["fakeBackend"] == "true")
-                //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
+                var result = new ClientConfiguration();
+                config.Bind(result);
 
-                return new HttpClient() { BaseAddress = apiUrl };
+                return result;
             });
 
             builder.RootComponents.Add<App>("#app");
-
             var host = builder.Build();
 
             // init network service
@@ -85,6 +101,14 @@ namespace SemperPrecisStageTracker.Blazor
             await host.RunAsync();
         }
     }
+
+    public class ClientConfiguration
+    {
+        public string BaseAddress { get; set; }
+
+        public bool IsLocal => this.BaseAddress.Contains("localhost");
+    }
+
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());

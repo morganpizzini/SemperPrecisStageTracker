@@ -17,7 +17,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class TeamControllerTests : ApiControllerTestsBase<TeamController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminShooter();
+        protected override Shooter GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchAllTeamsBeOkHavingElements()

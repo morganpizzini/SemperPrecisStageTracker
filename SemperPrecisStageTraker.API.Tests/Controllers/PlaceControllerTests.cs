@@ -15,7 +15,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class PlaceControllerTests : ApiControllerTestsBase<PlaceController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminShooter();
+        protected override Shooter GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchAllPlacesBeOkHavingElements()
