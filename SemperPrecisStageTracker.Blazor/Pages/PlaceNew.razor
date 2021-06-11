@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewPlace"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -158,6 +159,6 @@
             return;
         validations.ClearAll();
         var response = await Post<PlaceContract>("/api/Place/CreatePlace", model);
-        UriHelper.NavigateTo($"/places/{response.PlaceId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceDetail>(new {id = response.PlaceId}));
     }
 }

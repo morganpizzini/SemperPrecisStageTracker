@@ -34,12 +34,12 @@
             {
                 <Virtualize Items="@shooters" Context="shooter">
                     <TableRow>
-                        <TableRowHeader><NavLink href="@($"shooters/{shooter.ShooterId}")">@shooter.LastName @shooter.FirstName</NavLink></TableRowHeader>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.LastName @shooter.FirstName</NavLink></TableRowHeader>
                         <TableRowCell>@shooter.Username</TableRowCell>
                         <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{shooter.ShooterId}")"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"shooters/{shooter.ShooterId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new { id = shooter.ShooterId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

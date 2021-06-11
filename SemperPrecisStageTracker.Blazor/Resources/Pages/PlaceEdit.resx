@@ -181,4 +181,7 @@
   <data name="Region" xml:space="preserve">
     <value>Region</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
 </root>

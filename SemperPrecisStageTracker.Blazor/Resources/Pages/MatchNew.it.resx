@@ -164,4 +164,7 @@
   <data name="OpenMatch" xml:space="preserve">
     <value>Gara libera</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

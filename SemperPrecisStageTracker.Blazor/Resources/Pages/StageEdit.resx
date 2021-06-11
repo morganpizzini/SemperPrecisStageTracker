@@ -222,4 +222,7 @@
   <data name="WrongDistance" xml:space="preserve">
     <value>Wrong distance!</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Back to match</value>
+  </data>
 </root>

@@ -7,6 +7,8 @@ using SemperPrecisStageTracker.Blazor.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using System.Threading.Tasks;
+using SemperPrecisStageTracker.Blazor.Pages;
+using SemperPrecisStageTracker.Blazor.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -16,6 +18,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         bool IsAuth { get; }
         Task Initialize();
         Task<bool> Login(string username, string password);
+        Task UpdateLogin(ShooterContract user);
         Task Logout();
     }
 
@@ -63,12 +66,25 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return true;
         }
 
+        public async Task UpdateLogin(ShooterContract user)
+        {
+            // update username
+            var userParams = User.AuthData.DecodeBase64().Split(":");
+            userParams[0] = user.Username;
+            user.AuthData = string.Join(":", userParams).EncodeBase64();
+
+            //override
+            User = user;
+            await _localStorageService.SetItem("user", User);
+            _customAuthenticationStateProvider.LoginNotify(User);
+        }
+
         public async Task Logout()
         {
             User = null;
             await _localStorageService.RemoveItem("user");
             _customAuthenticationStateProvider.LogoutNotify();
-            _navigationManager.NavigateTo("login");
+            _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }
 
     }

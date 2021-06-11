@@ -197,4 +197,10 @@
   <data name="WrongCardNumber" xml:space="preserve">
     <value>Wrong card number!</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Back to match</value>
+  </data>
 </root>

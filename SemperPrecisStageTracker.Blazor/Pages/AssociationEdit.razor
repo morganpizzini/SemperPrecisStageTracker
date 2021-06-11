@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -95,6 +96,6 @@ else
             return;
         validations.ClearAll();
         var response = await Post<AssociationContract>("/api/Association/UpdateAssociation", model);
-        UriHelper.NavigateTo($"/associations/{response.AssociationId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<AssociationDetail>(new{id= response.AssociationId}));
     }
 }

@@ -197,4 +197,10 @@
   <data name="CardNumber" xml:space="preserve">
     <value>Numero di tessera</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
 </root>

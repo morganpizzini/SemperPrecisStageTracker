@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewAssociation"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -78,8 +79,9 @@
     {
         if (!validations.ValidateAll())
             return;
+
         validations.ClearAll();
         var response = await Post<AssociationContract>("/api/Association/CreateAssociation", model);
-        UriHelper.NavigateTo($"/associations/{response.AssociationId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<AssociationDetail>(new { id = response.AssociationId }));
     }
 }

@@ -141,4 +141,7 @@
     <value>Submit</value>
     <comment />
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
 </root>

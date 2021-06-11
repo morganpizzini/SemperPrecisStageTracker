@@ -7,8 +7,10 @@ using SemperPrecisStageTracker.Blazor.Services;
 namespace SemperPrecisStageTracker.Blazor.Pages
 {
     [Authorize]
-    public class SemperPrecisBaseComponent : OwningComponentBase<IHttpService>
+    public class SemperPrecisBaseComponent : ComponentBase
     {
+        [Inject]
+        private IHttpService Service { get; set; }
         public bool PageLoading { get; set; } = true;
         public bool ApiLoading { get; set; }
 

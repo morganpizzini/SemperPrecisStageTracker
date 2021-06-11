@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditPlace"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -161,6 +162,6 @@ else
             return;
         validations.ClearAll();
         var response = await Post<PlaceContract>("/api/Place/UpdatePlace", model);
-        UriHelper.NavigateTo($"/places/{response.PlaceId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceDetail>(new{id = response.PlaceId}));
     }
 }

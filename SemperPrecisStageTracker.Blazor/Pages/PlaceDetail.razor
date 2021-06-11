@@ -3,8 +3,8 @@
 @inject IStringLocalizer<PlaceDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<NavLink href="/places">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"places/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
 @if (PageLoading)
 {
     <p class="text-center">

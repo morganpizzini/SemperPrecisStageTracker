@@ -32,10 +32,10 @@
             {
                 <Virtualize Items="@teams" Context="team">
                     <TableRow>
-                        <TableRowHeader><NavLink href="@($"teams/{team.TeamId}")">@team.Name</NavLink></TableRowHeader>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))">@team.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"teams/edit/{team.TeamId}")"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"teams/{team.TeamId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamEdit>(new {id = team.TeamId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewTeam"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -62,6 +63,6 @@
             return;
         validations.ClearAll();
         var response = await Post<TeamContract>("/api/Team/CreateTeam", model);
-        UriHelper.NavigateTo($"/teams/{response.TeamId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<TeamDetail>(new {id = response.TeamId}));
     }
 }

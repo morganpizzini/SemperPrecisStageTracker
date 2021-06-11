@@ -34,12 +34,12 @@
             {
                 <Virtualize Items="@matches" Context="match">
                     <TableRow>
-                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}")">@match.Name</NavLink></TableRowHeader>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink></TableRowHeader>
                         <TableRowCell>@match.Association.Name</TableRowCell>
                         <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Location</TableRowCell>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{match.MatchId}")"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
                         </TableRowCell>
                     </TableRow>

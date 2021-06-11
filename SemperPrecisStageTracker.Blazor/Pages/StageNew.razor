@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewStage"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -230,6 +231,6 @@
             return;
         validations.ClearAll();
         var response = await Post<GroupContract>("/api/Stage/CreateStage", model);
-        UriHelper.NavigateTo($"/matches/{Id}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}));
     }
 }

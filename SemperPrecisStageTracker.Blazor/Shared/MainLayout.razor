@@ -20,7 +20,7 @@
             <CultureSelector/>
             <AuthorizeView>
                 <Authorized>
-                    <span>@L["Hello"]!, @context.User.Identity.Name!</span>
+                    <span>@L["Hello"]&nbsp;<NavLink Class="ml-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
                     <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
                 </Authorized>
                 <NotAuthorized>

@@ -189,4 +189,7 @@
   <data name="Name" xml:space="preserve">
     <value>Nome</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

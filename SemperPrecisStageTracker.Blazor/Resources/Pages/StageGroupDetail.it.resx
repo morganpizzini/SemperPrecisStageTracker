@@ -333,4 +333,10 @@
   <data name="RemoveOne" xml:space="preserve">
     <value>Rimuovi 1</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
+  <data name="BackToStage" xml:space="preserve">
+    <value>Torna allo stage</value>
+  </data>
 </root>

@@ -167,4 +167,7 @@
   <data name="OpenMatch" xml:space="preserve">
     <value>Open match</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
 </root>

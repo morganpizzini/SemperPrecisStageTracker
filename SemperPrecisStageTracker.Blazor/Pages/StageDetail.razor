@@ -3,7 +3,8 @@
 @inject IStringLocalizer<StageDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/edit/{StageId}")"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new { id = Id, stageId = StageId }))"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 @if (PageLoading)
 {

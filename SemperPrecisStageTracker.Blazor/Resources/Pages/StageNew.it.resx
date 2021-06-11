@@ -210,4 +210,7 @@
   <data name="WrongIndex" xml:space="preserve">
     <value>Errore nell'ordinamento!</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
 </root>

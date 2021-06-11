@@ -34,12 +34,12 @@
             {
                 <Virtualize Items="@places" Context="place">
                     <TableRow>
-                        <TableRowHeader><NavLink href="@($"places/{place.PlaceId}")">@place.Name</NavLink></TableRowHeader>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<PlaceDetail>(new{ id = place.PlaceId}))">@place.Name</NavLink></TableRowHeader>
                         <TableRowCell>@place.Holder</TableRowCell>
                         <TableRowCell>@place.City</TableRowCell>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"places/edit/{place.PlaceId}")"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"places/{place.PlaceId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = place.PlaceId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new{ id = place.PlaceId}))"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

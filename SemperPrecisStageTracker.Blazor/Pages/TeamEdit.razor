@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditTeam"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -57,6 +58,6 @@ else
             return;
         validations.ClearAll();
         var response = await Post<TeamContract>("/api/Team/UpdateTeam", model);
-        UriHelper.NavigateTo($"/teams/{response.TeamId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<TeamDetail>(new { id = response.TeamId }));
     }
 }

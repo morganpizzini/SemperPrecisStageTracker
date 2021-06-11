@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewGroup"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -34,11 +35,6 @@
     Validations validations;
     GroupCreateRequest model = new GroupCreateRequest();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
-
     async Task Submit()
     {
         if (!validations.ValidateAll())
@@ -46,6 +42,6 @@
         validations.ClearAll();
         model.MatchId = Id;
         var response = await Post<GroupContract>("/api/Group/CreateGroup", model);
-        UriHelper.NavigateTo($"/matches/{Id}/groups/{response.GroupId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<GroupDetail>(new { id = Id, groupId = response.GroupId }));
     }
 }

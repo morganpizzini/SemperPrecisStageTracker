@@ -3,10 +3,10 @@
 @inject IStringLocalizer<MatchDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<NavLink href="/matches">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/groups/new")"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{Id}/stages/new")"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+<NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"stats/{Id}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
 @if (PageLoading)
@@ -35,7 +35,7 @@ else
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
-                        <CardText><NavLink href="@($"associations/{match.Association.AssociationId}")">@match.Association.Name</NavLink></CardText>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
                     </CardBody>
                 </Card>
             </Column>
@@ -60,9 +60,9 @@ else
                             {
                                 <Virtualize Items="@match.Groups" Context="group">
                                     <TableRow>
-                                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/groups/{group.GroupId}")">@group.Name</NavLink></TableRowHeader>
+                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/groups/{group.GroupId}")"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>
@@ -104,11 +104,11 @@ else
                             {
                                 <Virtualize Items="@match.Stages" Context="stage">
                                     <TableRow>
-                                        <TableRowHeader><NavLink href="@($"matches/{match.MatchId}/stages/{stage.StageId}")">@stage.Name</NavLink></TableRowHeader>
+                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></TableRowHeader>
                                         <TableRowCell>@stage.Targets</TableRowCell>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/{stage.StageId}")"><Icon Name="IconName.Search" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"matches/{match.MatchId}/stages/edit/{stage.StageId}")"><Icon Name="IconName.Pen" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
                                         </TableRowCell>
                                     </TableRow>

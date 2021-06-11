@@ -33,10 +33,10 @@
             {
                 <Virtualize Items="@associations" Context="association">
                     <TableRow>
-                        <TableRowHeader><NavLink href="@($"associations/{association.AssociationId}")">@association.Name</NavLink></TableRowHeader>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))">@association.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"associations/edit/{association.AssociationId}")"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"associations/{association.AssociationId}")"><Icon Name="IconName.Search" /></Button>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new{id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

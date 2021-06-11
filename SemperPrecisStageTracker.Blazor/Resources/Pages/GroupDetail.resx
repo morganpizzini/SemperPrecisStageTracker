@@ -174,4 +174,7 @@
   <data name="WrongDivision" xml:space="preserve">
     <value>Select a division!</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Back to match</value>
+  </data>
 </root>

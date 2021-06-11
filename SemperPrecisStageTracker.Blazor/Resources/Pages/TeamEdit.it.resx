@@ -133,4 +133,7 @@
     <value>Salva</value>
     <comment />
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

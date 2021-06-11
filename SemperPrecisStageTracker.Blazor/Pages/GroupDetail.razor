@@ -5,6 +5,7 @@
 @inject IStringLocalizer<GroupDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -31,9 +32,9 @@ else
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
-                        <CardText><NavLink href="@($"associations/{group.Match.Association.AssociationId}")">@group.Match.Association.Name</NavLink></CardText>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = group.Match.Association.AssociationId}))">@group.Match.Association.Name</NavLink></CardText>
                         <CardTitle>@L["Match"]</CardTitle>
-                        <CardText><NavLink href="@($"matches/{group.Match.MatchId}")">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
                     </CardBody>
                 </Card>
             </Column>

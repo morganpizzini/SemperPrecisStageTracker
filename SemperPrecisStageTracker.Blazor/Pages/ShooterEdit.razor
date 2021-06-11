@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditShooter"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -62,7 +63,7 @@ else
                 </FieldBody>
             </Field>
         </Validation>
-        <Validation Validator="@ValidateDate">
+        <Validation Validator="@ValidationRule.IsNotEmpty">
             <Field Horizontal="true" JustifyContent="JustifyContent.End">
                 <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
                 <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -123,6 +124,6 @@ else
             return;
         validations.ClearAll();
         var response = await Post<ShooterContract>("/api/Shooter/UpdateShooter", model);
-        UriHelper.NavigateTo($"/shooters/{response.ShooterId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
     }
 }

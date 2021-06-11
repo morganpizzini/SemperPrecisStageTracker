@@ -156,4 +156,7 @@
   <data name="WrongUsername" xml:space="preserve">
     <value>Errore username!</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -17,7 +14,6 @@ using SemperPrecisStageTracker.Blazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using SemperPrecisStageTracker.Contracts;
-using SemperPrecisStageTracker.Domain.Cache;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -52,13 +48,12 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
-                .AddScoped<NetworkService>()
-                .AddSingleton<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
+                .AddScoped<NetworkService>();
             
             builder.Services.AddScoped(x =>
             {
+                Console.WriteLine("TestHttpClient");
                 var apiUrl = new Uri(builder.Configuration["baseAddress"]);
-
                 // use fake backend if "fakeBackend" is "true" in appsettings.json
                 // if (builder.Configuration["fakeBackend"] == "true")
                 //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };

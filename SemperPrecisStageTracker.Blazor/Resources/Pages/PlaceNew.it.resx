@@ -181,4 +181,7 @@
   <data name="WrongRegion" xml:space="preserve">
     <value>Provincia errata!</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

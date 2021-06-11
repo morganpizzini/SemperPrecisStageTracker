@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["EditStage"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -259,6 +260,6 @@ else
             return;
         validations.ClearAll();
         var response = await Post<StageContract>("/api/Stage/UpdateStage", model);
-        UriHelper.NavigateTo($"/matches/{Id}/stages/{response.StageId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<StageDetail>(new { id = Id, stageId = response.StageId }));
     }
 }

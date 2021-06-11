@@ -129,4 +129,7 @@
   <data name="Submit" xml:space="preserve">
     <value>Salva</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
 </root>

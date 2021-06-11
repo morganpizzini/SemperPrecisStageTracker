@@ -4,6 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewMatch"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
 <Divider />
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -122,6 +123,6 @@
             return;
         validations.ClearAll();
         var response = await Post<MatchContract>("/api/Match/CreateMatch", model);
-        UriHelper.NavigateTo($"/matches/{response.MatchId}");
+        UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new { id = response.MatchId}));
     }
 }

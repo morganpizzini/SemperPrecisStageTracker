@@ -3,10 +3,11 @@
 @inject IStringLocalizer<ShooterDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<NavLink href="/shooters">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@($"shooters/edit/{Id}")"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
+<NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+<Divider />
 @if (PageLoading)
 {
     <p class="text-center">

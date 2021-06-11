@@ -74,7 +74,7 @@
         // redirect to home if already logged in
         if (AuthenticationService.User != null)
         {
-            NavigationManager.NavigateTo("");
+            NavigationManager.NavigateTo(RouteHelper.GetUrl<Index>());
         }
     }
 
@@ -88,7 +88,8 @@
             var loginResult = await AuthenticationService.Login(model.Username, model.Password);
             if (loginResult)
             {
-                await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
+                await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>
+                    ("BlazorPWA.requestSubscription");
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
                 NavigationManager.NavigateTo(returnUrl);
             }

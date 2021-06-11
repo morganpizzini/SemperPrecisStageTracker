@@ -167,4 +167,7 @@
   <data name="WrongAssociation" xml:space="preserve">
     <value>Seleziona un'associazione!</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Torna alla lista</value>
+  </data>
 </root>

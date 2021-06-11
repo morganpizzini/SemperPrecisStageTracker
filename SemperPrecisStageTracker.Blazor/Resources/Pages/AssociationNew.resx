@@ -135,4 +135,7 @@
   <data name="WrongName" xml:space="preserve">
     <value>Wrong name!</value>
   </data>
+  <data name="BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
 </root>

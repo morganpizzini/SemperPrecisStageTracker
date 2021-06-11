@@ -222,4 +222,7 @@
   <data name="WrongTargetsDescription" xml:space="preserve">
     <value>Errore nella descrizione bersagli!</value>
   </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
 </root>
