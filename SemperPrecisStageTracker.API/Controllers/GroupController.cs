@@ -64,7 +64,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,match,association,shooters));
+            return Reply(ContractUtils.GenerateContract(entity,match,association,null,shooters));
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            
+
             //Salvataggio
             var validations = BasicLayer.UpdateGroup(entity);
             if (validations.Count > 0)

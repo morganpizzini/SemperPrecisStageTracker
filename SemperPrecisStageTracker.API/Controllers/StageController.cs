@@ -33,8 +33,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             var matchIds = entities.Select(x => x.MatchId).ToList();
 
             //recupero gli utenti
-            var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
-            
+            var matches = this.BasicLayer.FetchMatchesByIds(matchIds);
+
             var associationIds = matches.Select(x=>x.AssociationId).ToList();
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
@@ -143,7 +143,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Rules = request.Rules;
             entity.Distance = request.Distance;
             entity.CoverGarment = request.CoverGarment;
-            
+
             //Salvataggio
             var validations = BasicLayer.UpdateStage(entity);
             if (validations.Count > 0)

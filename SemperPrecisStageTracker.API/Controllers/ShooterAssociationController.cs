@@ -56,7 +56,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
             var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociation(request.ShooterId,request.AssociationId);
-            
+
             if (entity == null){
                 entity = new ShooterAssociation{
                     ShooterId = request.ShooterId,
@@ -65,9 +65,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             entity.CardNumber = request.CardNumber;
+            entity.ShooterOfficier = request.ShooterOfficier;
             entity.Classification = request.Classification;
             entity.RegistrationDate = request.RegistrationDate;
-            
+
             //Invocazione del service layer
             var validations = BasicLayer.UpsertShooterAssociation(entity);
 

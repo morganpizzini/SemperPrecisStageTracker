@@ -12,6 +12,8 @@ namespace SemperPrecisStageTracker.Models
         public string ShooterId { get; set; }
 
         public string CardNumber { get; set; }
+
+        public bool ShooterOfficier {get; set;}
         [Required]
         public string Classification { get; set; }
         [Required]

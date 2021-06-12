@@ -30,7 +30,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchContract GenerateContract(Match entity,Association association, IList<Group> groups = null, IList<Stage> stages = null)
+        public static MatchContract GenerateContract(Match entity,Association association, Place place, IList<Group> groups = null, IList<Stage> stages = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -42,7 +42,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Name = entity.Name,
                 ShortLink = entity.ShortLink,
                 MatchDateTime = entity.MatchDateTime,
-                Location = entity.Location,
+                Place = place != null ? GenerateContract(place) : new PlaceContract(),
                 CreationDateTime = entity.CreationDateTime,
                 UnifyClassifications = entity.UnifyClassifications,
                 OpenMatch = entity.OpenMatch,
@@ -106,6 +106,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Association = association != null ? GenerateContract(association): new AssociationContract(),
                 CardNumber = entity.CardNumber,
                 Classification = entity.Classification,
+                ShooterOfficier = entity.ShooterOfficier,
                 RegistrationDate = entity.RegistrationDate
             };
         }
@@ -201,7 +202,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static GroupContract GenerateContract(Group entity, Match match = null,Association association = null,IList<Shooter> shooters = null)
+        public static GroupContract GenerateContract(Group entity, Match match = null,Association association = null,Place place = null,IList<Shooter> shooters = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -211,7 +212,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 GroupId = entity.Id,
                 Name = entity.Name,
-                Match = match != null ? GenerateContract(match,association) : null,
+                Match = match != null ? GenerateContract(match,association,place) : null,
                 Shooters = shooters != null ? shooters.Select(GenerateContract).ToList() : new List<ShooterContract>(),
             };
         }
@@ -221,7 +222,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static StageContract GenerateContract(Stage entity, Match match = null,Association association = null)
+        public static StageContract GenerateContract(Stage entity, Match match = null,Association association = null,Place place = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -233,7 +234,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Name = entity.Name,
                 Targets = entity.Targets,
                 Index = entity.Index,
-                Match = match != null ? GenerateContract(match,association) : null,
+                Match = match != null ? GenerateContract(match,association,place) : null,
                 SO = entity.SO,
                 Scenario = entity.Scenario,
                 GunReadyCondition = entity.GunReadyCondition,
@@ -255,7 +256,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchStatsResultContract GenerateContract(Match entity,Association association, IList<DivisionMatchResult> divisionMatchResults)
+        public static MatchStatsResultContract GenerateContract(Match entity,Association association,Place place, IList<DivisionMatchResult> divisionMatchResults)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -264,7 +265,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Ritorno il contratto
             return new MatchStatsResultContract()
             {
-                Match= GenerateContract(entity,association),
+                Match= GenerateContract(entity,association,place),
                 DivisionMatchResults = divisionMatchResults.As(GenerateContract),
             };
         }

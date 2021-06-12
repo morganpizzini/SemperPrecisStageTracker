@@ -11,7 +11,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public DateTime MatchDateTime { get; set; } = DateTime.Now;
         [Required]
         public string AssociationId { get; set; }
-        public string Location {get;set;}
+        [Required]
+        public string PlaceId {get;set;}
+        [Required]
+        public string MatchDirectorId {get;set;}
         public bool UnifyClassifications { get; set; }
         public bool OpenMatch {get; set; }
 

@@ -65,7 +65,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of matchs</returns>
-        public IList<Match> FetchAllMatchs()
+        public IList<Match> FetchAllMatches()
         {
             //Utilizzo il metodo base
             return FetchEntities(null, null, null, s => s.MatchDateTime, true, _matchRepository);
@@ -76,7 +76,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="ids"> matchs identifier </param>
         /// <returns>Returns list of matchs</returns>
-        public IList<Match> FetchMatchsByIds(IList<string> ids)
+        public IList<Match> FetchMatchesByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
             return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.MatchDateTime, true, _matchRepository);
@@ -1638,7 +1638,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var disqualifiedShooters = shooterStages.Where(x => x.Disqualified).ToList();
 
             for (var i = 0; i < disqualifiedShooters.Count; i++)
-            {   
+            {
                 var shooterWarning = shooterStages.FirstOrDefault(x => disqualifiedShooters[i].Id != x.Id && x.ShooterId == disqualifiedShooters[i].ShooterId && x.Warning);
                 if (shooterWarning != null)
                     shooterStages.Remove(shooterWarning);
@@ -2019,7 +2019,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // check association classification
             var currentAssociation = _associationRepository.GetSingle(x => x.Id == entity.AssociationId);
-            
+
             if (currentAssociation == null)
                 validations.Add(new ValidationResult($"{nameof(entity.AssociationId)} not found"));
 

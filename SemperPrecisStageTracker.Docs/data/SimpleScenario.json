@@ -6,7 +6,7 @@
       "matchDateTime": "2021-05-23T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
-      "location": "location",
+      "placeId": "1",
       "shortLink": "ABC"
     }
   ],
@@ -152,7 +152,7 @@
       "phone": "12345",
       "email": "morgan.pizzini@stamail.com",
       "address": "Il mio indirizzo",
-      "city": "La mia città",
+      "city": "La mia cittï¿½",
       "region": "la mia provincia",
       "postalZipCode": "12345",
       "country": "Italia"
@@ -165,7 +165,7 @@
       "email": "pizzini@stamail.com",
       "address": "casa",
       "city": "mia",
-      "region": "è",
+      "region": "ï¿½",
       "postalZipCode": "66666",
       "country": "bella"
     }
@@ -296,6 +296,7 @@
       "shooterId": "1",
       "associationId": "1",
       "cardNumber": "123",
+      "shooterOfficier":true,
       "classification": "Novice",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -304,6 +305,7 @@
       "shooterId": "1",
       "associationId": "2",
       "cardNumber": "456",
+      "shooterOfficier":false,
       "classification": "Sharpshooter",
       "registrationDate": "2021-05-29T18:25:43.511Z"
     },
@@ -312,6 +314,7 @@
       "shooterId": "2",
       "associationId": "1",
       "cardNumber": "789",
+      "shooterOfficier":true,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -320,6 +323,7 @@
       "shooterId": "4",
       "associationId": "1",
       "cardNumber": "111",
+      "shooterOfficier": false,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
