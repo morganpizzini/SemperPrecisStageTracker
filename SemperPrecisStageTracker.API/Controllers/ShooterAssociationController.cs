@@ -65,7 +65,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             entity.CardNumber = request.CardNumber;
-            entity.ShooterOfficier = request.ShooterOfficier;
+            entity.SafetyOfficier = request.SafetyOfficier;
             entity.Classification = request.Classification;
             entity.RegistrationDate = request.RegistrationDate;
 

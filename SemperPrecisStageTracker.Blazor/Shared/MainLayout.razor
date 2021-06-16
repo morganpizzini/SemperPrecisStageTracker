@@ -1,4 +1,5 @@
 ﻿@using SemperPrecisStageTracker.Contracts.Utilities
+@using System.Net.WebSockets
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
@@ -6,7 +7,9 @@
 @inject NavigationManager NavigationManager
 @inject IAuthenticationService authService
 @inject IHttpService httpService
-<div class="page">
+@inject ILocalStorageService localStorage
+
+<div class="page @CurrentTheme">
 
     <div class="sidebar">
         <NavMenu />
@@ -17,7 +20,12 @@
             {
                 <Button Class="mr-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
             }
-            <CultureSelector/>
+            <strong>@L["Theme"]:</strong>
+            <select class="form-control" @bind="CurrentTheme" style="width:150px; margin: 0 10px;">
+                <option value="light">@L["Light"]</option>
+                <option value="dark">@L["Dark"]</option>
+            </select>
+            <CultureSelector />
             <AuthorizeView>
                 <Authorized>
                     <span>@L["Hello"]&nbsp;<NavLink Class="ml-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
@@ -63,6 +71,16 @@
     private Modal modalInstallRef;
     private static Action actionNotification;
     private bool ShowNotificationAlertStatus;
+    string _currentTheme;
+    string CurrentTheme
+    {
+        get => _currentTheme;
+        set
+        {
+            _currentTheme = value;
+            localStorage.SetItem("theme",_currentTheme);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,6 +88,11 @@
         actionNotification = ShowNotificationAlert;
         // In the background, ask if they want to be notified about order updates
         await RequestNotificationSubscriptionAsync();
+
+
+        // set theme
+        _currentTheme = await localStorage.GetItem<string>("theme");
+
 
         await base.OnInitializedAsync();
     }

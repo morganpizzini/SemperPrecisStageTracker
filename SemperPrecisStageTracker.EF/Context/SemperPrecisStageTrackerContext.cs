@@ -136,6 +136,20 @@ namespace SemperPrecisStageTracker.EF.Context
         modelBuilder.Entity<NotificationSubscription>()
                     .Property(f => f.Id)
                     .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<ShooterSOStage>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<ShooterSOStage>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<ShooterMatch>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<ShooterMatch>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles");
         }
 
         /// <summary>
@@ -197,6 +211,18 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of notification subscription
         /// </summary>
         public DbSet<NotificationSubscription> NotificationSubscriptions { get; set; }
+
+        /// <summary>
+        /// List of shooter matches
+        /// </summary>
+        public DbSet<ShooterMatch> ShooterMatches { get; set; }
+
+        /// <summary>
+        /// List of shooter SO stages
+        /// </summary>
+        public DbSet<ShooterSOStage> ShooterSOStages { get; set; }
+
+        
 
     }
 }

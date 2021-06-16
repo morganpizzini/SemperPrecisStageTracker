@@ -129,4 +129,10 @@
   <data name="NoData" xml:space="preserve">
     <value>Nessun elemento</value>
   </data>
+  <data name="Address" xml:space="preserve">
+    <value>Indirizzo</value>
+  </data>
+  <data name="Holder" xml:space="preserve">
+    <value>Proprietario</value>
+  </data>
 </root>

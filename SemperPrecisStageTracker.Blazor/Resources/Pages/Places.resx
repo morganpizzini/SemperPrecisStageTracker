@@ -130,9 +130,9 @@
     <value>No data</value>
   </data>
   <data name="Holder" xml:space="preserve">
-    <value></value>
+    <value>Holder</value>
   </data>
   <data name="Address" xml:space="preserve">
-    <value></value>
+    <value>Address</value>
   </data>
 </root>

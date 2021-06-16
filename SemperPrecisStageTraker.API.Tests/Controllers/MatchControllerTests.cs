@@ -37,7 +37,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 AssociationId = existingAssociation.Id,
                 ShooterId = existing.Id,
-                ShooterOfficier = true,
+                SafetyOfficier = true,
                 CardNumber= RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate= DateTime.Now,
                 Classification = existingAssociation.Classifications.FirstOrDefault()
@@ -59,7 +59,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && countAfter == countBefore + 1
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.ShooterOfficier ==request.ShooterOfficier
+                          && updatedEntity.SafetyOfficier ==request.SafetyOfficier
                           && updatedEntity.CardNumber==request.CardNumber
                           && updatedEntity.RegistrationDate ==request.RegistrationDate
                           && updatedEntity.Classification==request.Classification
@@ -79,7 +79,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
-                ShooterOfficier = !existing.ShooterOfficier,
+                SafetyOfficier = !existing.SafetyOfficier,
                 CardNumber= RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate= DateTime.Now,
                 Classification = existing.Classification
@@ -99,7 +99,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && countAfter == countBefore
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                           && updatedEntity.ShooterOfficier ==request.ShooterOfficier
+                           && updatedEntity.SafetyOfficier ==request.SafetyOfficier
                             && updatedEntity.CardNumber==request.CardNumber
                             && updatedEntity.RegistrationDate ==request.RegistrationDate
                             && updatedEntity.Classification==request.Classification

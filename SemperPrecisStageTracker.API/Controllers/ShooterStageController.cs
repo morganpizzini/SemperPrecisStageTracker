@@ -34,7 +34,8 @@ namespace SemperPrecisStageTracker.API.Controllers
                 FlagrantPenalties = request.FlagrantPenalties,
                 Ftdr = request.Ftdr,
                 Warning = request.Warning,
-                Disqualified = request.Disqualified
+                Disqualified = request.Disqualified,
+                Notes = request.Notes
             };
             //Invocazione del service layer
             var validations = BasicLayer.UpsertShooterStage(shooterStage);

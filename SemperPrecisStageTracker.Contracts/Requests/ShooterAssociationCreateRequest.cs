@@ -12,7 +12,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string ShooterId { get; set; }
         [Required]
         public string Classification { get; set; }
-        public bool ShooterOfficier { get; set; }
+        public bool SafetyOfficier { get; set; }
     public string CardNumber { get; set; }
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.Now;

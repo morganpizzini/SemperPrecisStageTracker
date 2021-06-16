@@ -1,0 +1,81 @@
+﻿@import 'functions';
+@import 'variables';
+@import 'mixins';
+
+$custom-white: #ccc;
+$custom-lime: rgb(143,214,3);
+$custom-light-grey: rgb(85,85,85);
+$custom-dark-grey: rgb(17,17,17);
+
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.page.dark {
+    background-color: $black;
+    color: $custom-white;
+
+    .top-row {
+        background-color: $custom-dark-grey !important;
+        border-color: $black !important;
+    }
+
+    .sidebar {
+        /*background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%) !important;*/
+        background-image: linear-gradient(180deg, $custom-light-grey 0%, $custom-dark-grey 70%) !important;
+    }
+
+    a, .btn-link {
+        color: $custom-lime;
+    }
+}
+
+
+a, .btn-link {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.form-group label, .card-body .card-title{
+    font-weight: bold;
+}

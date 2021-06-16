@@ -296,7 +296,7 @@
       "shooterId": "1",
       "associationId": "1",
       "cardNumber": "123",
-      "shooterOfficier":true,
+      "safetyOfficier":true,
       "classification": "Novice",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -305,7 +305,7 @@
       "shooterId": "1",
       "associationId": "2",
       "cardNumber": "456",
-      "shooterOfficier":false,
+      "safetyOfficier":false,
       "classification": "Sharpshooter",
       "registrationDate": "2021-05-29T18:25:43.511Z"
     },
@@ -314,7 +314,7 @@
       "shooterId": "2",
       "associationId": "1",
       "cardNumber": "789",
-      "shooterOfficier":true,
+      "safetyOfficier":true,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -323,7 +323,7 @@
       "shooterId": "4",
       "associationId": "1",
       "cardNumber": "111",
-      "shooterOfficier": false,
+      "safetyOfficier": false,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
@@ -340,6 +340,7 @@
       "flagrantPenalties": 0,
       "ftdr": 1,
       "warning": true,
+      "notes": "finger",
       "disqualified": false
     },
     {
@@ -353,6 +354,7 @@
       "flagrantPenalties": 0,
       "ftdr": 1,
       "warning": false,
+      "notes": "",
       "disqualified": false
     },
     {
@@ -366,6 +368,7 @@
       "flagrantPenalties": 0,
       "ftdr": 1,
       "warning": false,
+      "notes": "",
       "disqualified": true
     },
     {
@@ -379,6 +382,7 @@
       "flagrantPenalties": 0,
       "ftdr": 1,
       "warning": false,
+      "notes": "",
       "disqualified": false
     }
   ],

@@ -144,4 +144,13 @@
   <data name="SubscribeToNotification" xml:space="preserve">
     <value>Subscribe to notification</value>
   </data>
+  <data name="Light" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="Dark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
 </root>

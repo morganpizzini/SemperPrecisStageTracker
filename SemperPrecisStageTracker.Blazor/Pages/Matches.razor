@@ -36,7 +36,7 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink></TableRowHeader>
                         <TableRowCell>@match.Association.Name</TableRowCell>
-                        <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Location</TableRowCell>
+                        <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
                             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>

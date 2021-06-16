@@ -106,7 +106,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Association = association != null ? GenerateContract(association): new AssociationContract(),
                 CardNumber = entity.CardNumber,
                 Classification = entity.Classification,
-                ShooterOfficier = entity.ShooterOfficier,
+                SafetyOfficier = entity.SafetyOfficier,
                 RegistrationDate = entity.RegistrationDate
             };
         }
@@ -175,6 +175,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 FlagrantPenalties = entity.FlagrantPenalties,
                 Ftdr = entity.Ftdr,
                 Warning = entity.Warning,
+                Notes = entity.Notes,
                 Disqualified  = entity.Disqualified
             };
         }
