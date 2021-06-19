@@ -1,0 +1,342 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Group" xml:space="preserve">
+    <value>Gruppo</value>
+    <comment />
+  </data>
+  <data name="Detail" xml:space="preserve">
+    <value>Dettaglio gruppo</value>
+    <comment />
+  </data>
+  <data name="Match" xml:space="preserve">
+    <value>Gara</value>
+    <comment />
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nome</value>
+    <comment />
+  </data>
+  <data name="Shooters" xml:space="preserve">
+    <value>Tiratori</value>
+    <comment />
+  </data>
+  <data name="Shooter" xml:space="preserve">
+    <value>Tiratore</value>
+    <comment />
+  </data>
+  <data name="WrongShooter" xml:space="preserve">
+    <value>Seleziona un tiratore!</value>
+    <comment />
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Salva</value>
+    <comment />
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Si</value>
+    <comment />
+  </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Data di nascita</value>
+    <comment />
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Confermare eliminazione di:</value>
+    <comment />
+  </data>
+  <data name="DeleteShooter" xml:space="preserve">
+    <value>Rimozione tiratore</value>
+    <comment />
+  </data>
+  <data name="NoShooters" xml:space="preserve">
+    <value>Nessun tiratore</value>
+    <comment />
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+    <comment />
+  </data>
+  <data name="Stage" xml:space="preserve">
+    <value>Stage</value>
+    <comment />
+  </data>
+  <data name="Target" xml:space="preserve">
+    <value>Bersaglio</value>
+    <comment />
+  </data>
+  <data name="WrongPoint" xml:space="preserve">
+    <value>Punteggio non corretto!</value>
+    <comment />
+  </data>
+  <data name="FillShooter" xml:space="preserve">
+    <value>Compila tiratore</value>
+    <comment />
+  </data>
+  <data name="DownPoints" xml:space="preserve">
+    <value>Punti down</value>
+    <comment />
+  </data>
+  <data name="FlagrantPenalties" xml:space="preserve">
+    <value>Flagrant penalties</value>
+    <comment />
+  </data>
+  <data name="Ftdr" xml:space="preserve">
+    <value>Ftdr</value>
+    <comment />
+  </data>
+  <data name="HitOnNonThreat" xml:space="preserve">
+    <value>Colpi bersaglio non minaccioso</value>
+    <comment />
+  </data>
+  <data name="Penalities" xml:space="preserve">
+    <value>Penalità</value>
+    <comment />
+  </data>
+  <data name="Procedurals" xml:space="preserve">
+    <value>Procedure</value>
+    <comment />
+  </data>
+  <data name="WrongFlagrantPenalties" xml:space="preserve">
+    <value>Errore Flagrant penalties!</value>
+    <comment />
+  </data>
+  <data name="WrongFtdr" xml:space="preserve">
+    <value>Errore ftdr!</value>
+    <comment />
+  </data>
+  <data name="WrongHitOnNonThreat" xml:space="preserve">
+    <value>Errore colpi bersaglio non minaccioso!</value>
+    <comment />
+  </data>
+  <data name="WrongProcedurals" xml:space="preserve">
+    <value>Errore procedure!</value>
+    <comment />
+  </data>
+  <data name="Recap" xml:space="preserve">
+    <value>Recap</value>
+    <comment />
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+    <comment />
+  </data>
+  <data name="Disqualified" xml:space="preserve">
+    <value>Squalificato</value>
+    <comment />
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tempo</value>
+    <comment />
+  </data>
+  <data name="WrongTime" xml:space="preserve">
+    <value>Errore tempo!</value>
+    <comment />
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>Ordinamento</value>
+    <comment />
+  </data>
+  <data name="GunReadyCondition" xml:space="preserve">
+    <value>Posizione di pronto</value>
+    <comment />
+  </data>
+  <data name="CoverGarment" xml:space="preserve">
+    <value>Vest obbligatorio</value>
+    <comment />
+  </data>
+  <data name="Distance" xml:space="preserve">
+    <value>Distanza</value>
+    <comment />
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Note</value>
+    <comment />
+  </data>
+  <data name="Rules" xml:space="preserve">
+    <value>Regolamento</value>
+    <comment />
+  </data>
+  <data name="Scenario" xml:space="preserve">
+    <value>Scenario</value>
+    <comment />
+  </data>
+  <data name="ScoredHits" xml:space="preserve">
+    <value>Calcolo punteggio</value>
+    <comment />
+  </data>
+  <data name="Scoring" xml:space="preserve">
+    <value>Punteggio</value>
+    <comment />
+  </data>
+  <data name="StageProcedure" xml:space="preserve">
+    <value>Procedura stage</value>
+    <comment />
+  </data>
+  <data name="StartStop" xml:space="preserve">
+    <value>Start / Stop</value>
+    <comment />
+  </data>
+  <data name="Strings" xml:space="preserve">
+    <value>Strings</value>
+    <comment />
+  </data>
+  <data name="TargetsDescription" xml:space="preserve">
+    <value>Descrizione bersagli</value>
+    <comment />
+  </data>
+  <data name="SO" xml:space="preserve">
+    <value>SO</value>
+    <comment />
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+    <comment />
+  </data>
+  <data name="ConfirmTime" xml:space="preserve">
+    <value>Conferma tempo</value>
+    <comment />
+  </data>
+  <data name="Approve" xml:space="preserve">
+    <value>Approva</value>
+    <comment />
+  </data>
+  <data name="NN" xml:space="preserve">
+    <value>MN</value>
+    <comment />
+  </data>
+  <data name="AddOne" xml:space="preserve">
+    <value>Aggiungi 1</value>
+  </data>
+  <data name="Legend" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="NotNeutralized" xml:space="preserve">
+    <value>Mancata neutralizzazione</value>
+  </data>
+  <data name="RemoveOne" xml:space="preserve">
+    <value>Rimuovi 1</value>
+  </data>
+  <data name="BackToMatch" xml:space="preserve">
+    <value>Torna al match</value>
+  </data>
+  <data name="BackToStage" xml:space="preserve">
+    <value>Torna allo stage</value>
+  </data>
+</root>

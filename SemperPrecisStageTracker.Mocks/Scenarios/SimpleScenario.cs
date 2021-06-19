@@ -67,6 +67,8 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterAssociations = scenarioClone.ShooterAssociations;
             NotificationSubscriptions = scenarioClone.NotificationSubscriptions;
             Places = scenarioClone.Places;
+            ShooterMatches = scenarioClone.ShooterMatches;
+            ShooterSOStages = scenarioClone.ShooterSOStages;
         }
     }
 }

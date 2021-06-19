@@ -7,26 +7,6 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace SemperPrecisStageTracker.Domain.Cache
 {
-    public interface ISemperPrecisMemoryCache
-    {
-        T GetValue<T>(string key);
-
-        void SetValue<T>(string key, T entity , int size = 1);
-        void RemoveValue(string key);
-    }
-
-    public static class CacheKeys
-    {
-        public static string Stats => nameof(Stats);
-
-        public static string ComposeKey(string key, params string[] values)
-        {
-            if (values == null)
-                return key;
-            return $"{key}-{string.Join("-", values)}";
-        }
-    }
-
     public class SemperPrecisMemoryCache : ISemperPrecisMemoryCache
     {
         private MemoryCache _cache { get; set; }

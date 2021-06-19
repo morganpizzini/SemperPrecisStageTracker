@@ -1,0 +1,244 @@
+﻿@page "/app/matches/{id}"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<MatchDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{Id}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Match"]</CardTitle>
+                    <CardText>@match.Name - @match.MatchDateTime.ToString("d")</CardText>
+                    <CardTitle>@L["Location"]</CardTitle>
+                    <CardText>@match.Place.Name</CardText>
+
+                </CardBody>
+            </Card>
+        </Column>
+        @if (match.Association != null)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Groups"]</CardTitle>
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (match.Groups.Count > 0)
+                            {
+                                <Virtualize Items="@match.Groups" Context="group">
+                                    <TableRow>
+                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                        @L["NoGroups"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+
+                    </Table>
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Stages"]</CardTitle>
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Targets"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (match.Stages.Count > 0)
+                            {
+                                <Virtualize Items="@match.Stages" Context="stage">
+                                    <TableRow>
+                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></TableRowHeader>
+                                        <TableRowCell>@stage.Targets</TableRowCell>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                        @L["NoStages"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+<Modal @ref="modalRefGroup">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteGroup"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@groupToDelete.Name</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalGroup(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalGroup(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefStage">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteStage"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@stageToDelete.Name</Text>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Targets"]</FieldLabel>
+                <Text>@stageToDelete.Targets</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalStage(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalStage(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    // reference to the modal component
+    private Modal modalRefGroup;
+    GroupContract groupToDelete = new GroupContract();
+    private Modal modalRefStage;
+    StageContract stageToDelete = new StageContract();
+
+    MatchContract match = new MatchContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMatch();
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadMatch()
+    {
+        match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+
+    }
+    void DeleteGroup(GroupContract group)
+    {
+        if (group == null)
+            return;
+        groupToDelete = group;
+        modalRefGroup.Show();
+    }
+
+    void DeleteStage(StageContract stage)
+    {
+        if (stage == null)
+            return;
+        stageToDelete = stage;
+        modalRefStage.Show();
+    }
+
+    private async Task HideModalGroup(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(groupToDelete.GroupId))
+        {
+            await Post<GroupContract>("/api/Group/DeleteGroup", new GroupRequest { GroupId = groupToDelete.GroupId });
+            await LoadMatch();
+        }
+        groupToDelete = new GroupContract();
+        modalRefGroup.Hide();
+    }
+
+    private async Task HideModalStage(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(stageToDelete.StageId))
+        {
+            await Post<GroupContract>("/api/Stage/DeleteStage", new StageRequest { StageId = stageToDelete.StageId });
+            await LoadMatch();
+        }
+        stageToDelete = new StageContract();
+        modalRefStage.Hide();
+    }
+
+}

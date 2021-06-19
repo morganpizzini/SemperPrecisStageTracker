@@ -1,0 +1,57 @@
+﻿@page "/app/associations"
+@inherits SemperPrecisBaseComponent
+@inject IHttpService Client
+@inject IStringLocalizer<Associations> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Associations"]</Heading>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @if (PageLoading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+            </TableRow>
+        }
+        else
+        {
+            @if (associations.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                <Virtualize Items="@associations" Context="association">
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))">@association.Name</NavLink></TableRowHeader>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new{id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))"><Icon Name="IconName.Search" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            }
+        }
+    </TableBody>
+</Table>
+
+@code {
+    IList<AssociationContract> associations = new List<AssociationContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        await base.OnInitializedAsync();
+    }
+
+}

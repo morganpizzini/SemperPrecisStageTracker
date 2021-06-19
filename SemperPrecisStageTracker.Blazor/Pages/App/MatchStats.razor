@@ -1,0 +1,146 @@
+﻿@page "/app/matches/{id}/stats"
+@page "/app/stats/{shortLink}"
+@inject IHttpService Client
+@inject IStringLocalizer<MatchStats> L
+
+<Heading Size="HeadingSize.Is1">@L["Stats"]</Heading>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Match"]</CardTitle>
+                    <CardText>
+                        @if (interactive)
+                        {
+                            <text>
+                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTime.ToString("d")
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                @stats.Match.Name - @stats.Match.MatchDateTime.ToString("d")
+                            </text>
+                        }
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (stats.Match.Association != null)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText>
+                            @if (interactive)
+                            {
+                                <NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new {id = stats.Match.Association.AssociationId}))">@stats.Match.Association.Name</NavLink>
+                            }
+                            else
+                            {
+                                @stats.Match.Association.Name
+                            }
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Virtualize Items="@stats.DivisionMatchResults" Context="division">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@division.Name</CardTitle>
+                        @foreach (var classification in division.Classifications)
+                        {
+                            <CardText>@classification.Classification</CardText>
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                        @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                        {
+                                            var tmp = division.StageNumber[i];
+                                            <TableHeaderCell>@(tmp)</TableHeaderCell>
+                                        }
+                                        <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @foreach (var shooter in classification.Shooters)
+                                    {
+                                        <TableRow>
+                                            <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                            <TableRowCell>@shooter.TeamName</TableRowCell>
+                                            @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                            {
+                                                var current = shooter.Results.FirstOrDefault(x => x.StageIndex == i);
+                                                if (current != null)
+                                                {
+                                                    @if (current.Total < 0)
+                                                    {
+                                                        <TableRowCell>-</TableRowCell>
+                                                    }
+                                                    else
+                                                    {
+                                                        <TableRowCell>@String.Format("{0:f2}", current.Total)</TableRowCell>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <TableRowCell>-</TableRowCell>
+                                                }
+                                            }
+                                            <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : String.Format("{0:f2}", shooter.Total))</TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+                        }
+                    </CardBody>
+                </Card>
+            </Virtualize>
+
+        </Column>
+    </Row>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string ShortLink { get; set; }
+
+    public bool PageLoading { get; set; } = true;
+
+    bool interactive => string.IsNullOrEmpty(ShortLink);
+    MatchStatsResultContract stats = new MatchStatsResultContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(ShortLink))
+        {
+            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
+        }
+        else
+        {
+            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
+        }
+
+
+        PageLoading = false;
+
+        await base.OnInitializedAsync();
+    }
+}

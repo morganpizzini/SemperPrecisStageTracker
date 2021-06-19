@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// <summary>
     /// Controller for match
     /// </summary>
-    public class MatchController : ApiControllerBase
+    public partial class MatchController : ApiControllerBase
     {
         /// <summary>
         /// Fetch list of all matchs
@@ -52,7 +52,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //verifico validità dell'entità
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
@@ -184,7 +184,7 @@ var place = BasicLayer.GetPlace(model.PlaceId);
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
             }
 
             //Invocazione del service layer

@@ -1,0 +1,258 @@
+﻿@page "/app/matches/{id}/groups/{groupId}"
+@inherits SemperPrecisBaseComponent
+@using System.Text.Json
+@using SemperPrecisStageTracker.Contracts.Requests
+@inject IStringLocalizer<GroupDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
+<Divider />
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Group"]</CardTitle>
+                    <CardText>@group.Name</CardText>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    <CardText>@group.Shooters.Count</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (group.Match != null)
+        {
+            <Column ColumnSize="ColumnSize.Is6">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = group.Match.Association.AssociationId}))">@group.Match.Association.Name</NavLink></CardText>
+                        <CardTitle>@L["Match"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Divider />
+    @if (availableShooters.Count > 0)
+    {
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull">
+                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                    <Validation>
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@model.ShooterId">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                        @foreach (var shooter in availableShooters)
+                                        {
+                                            <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongShooter"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                            <Validation Validator="@ValidationRule.IsNotEmpty">
+                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                        <Select TValue="string" @bind-SelectedValue="@model.TeamId">
+                                            <ChildContent>
+                                                <SelectItem Value="@("")"></SelectItem>
+                                                @foreach (var team in teams)
+                                                {
+                                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                                                }
+                                            </ChildContent>
+                                            <Feedback>
+                                                <ValidationError>@L["WrongTeam"]</ValidationError>
+                                            </Feedback>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                            <Validation Validator="@ValidationRule.IsNotEmpty">
+                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                        <Select TValue="string" @bind-SelectedValue="@model.DivisionId">
+                                            <ChildContent>
+                                                <SelectItem Value="@("")"></SelectItem>
+                                                @foreach (var division in group.Match.Association.Divisions)
+                                                {
+                                                    <SelectItem Value="@division">@division</SelectItem>
+                                                }
+                                            </ChildContent>
+                                            <Feedback>
+                                                <ValidationError>@L["WrongDivision"]</ValidationError>
+                                            </Feedback>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+                        </FieldBody>
+                    </Field>
+                </Validations>
+            </Column>
+        </Row>
+        <Divider />
+    }
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (group.Shooters.Count > 0)
+                                {
+                                    <Virtualize Items="@group.Shooters" Context="shooter">
+                                        <TableRow>
+                                            <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                    }
+                                    else
+                                    {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                            @L["NoShooters"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                    }
+                                </TableBody>
+
+                        </Table>
+                    
+                    
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.LastName @shooterToDelete.FirstName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.BirthDate.ToString("d")</Text>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string GroupId { get; set; }
+
+    // reference to the modal component
+    private Modal modalRef;
+    ShooterContract shooterToDelete = new ShooterContract();
+
+    GroupContract group = new GroupContract();
+    IList<ShooterContract> availableShooters = new List<ShooterContract>();
+    IList<TeamContract> teams = new List<TeamContract>();
+
+    Validations validations;
+    GroupShooterCreateRequest model = new GroupShooterCreateRequest();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.GroupId = GroupId;
+        await LoadShooters();
+        group = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadShooters()
+    {
+        availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+
+        group.Shooters = await Post<IList<ShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
+        await LoadShooters();
+        model.ShooterId = string.Empty;
+        model.DivisionId = string.Empty;
+        model.TeamId = string.Empty;
+
+    }
+
+    void DeleteShooter(ShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToDelete = shooter;
+        modalRef.Show();
+    }
+
+    private async Task HideModal(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.ShooterId))
+        {
+            group.Shooters = await Post<IList<ShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterDeleteRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
+            await LoadShooters();
+        }
+        shooterToDelete = new ShooterContract();
+        modalRef.Hide();
+    }
+}

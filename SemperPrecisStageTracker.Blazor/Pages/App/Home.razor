@@ -1,0 +1,50 @@
+﻿@page "/app/"
+@using Microsoft.Extensions.Configuration
+@inject ClientConfiguration config
+@inject IConfiguration Configuration
+
+@if (config.IsLocal)
+{
+<ul>
+    <li>Luoghi nel match - manca UI -</li>
+    <li>registrazione SO sulle shooterassociation - manca UI -</li>
+    <li>Notazioni sul warning durante la modale di recap/conferma - manca UI - </li>
+
+    <li>fetch degli shooter attualmente disponibili per essere aggiunti come ShooterMatch o ShooterSOStage</li>
+    <li>test con utenti non segnati come safety officier</li>
+
+    <li>Ogni stage ordine randomico dei tiratori, ma stabile sullo stesso stage</li>
+    <li>Possibilità di mescolare l'ordine direttamente sulla pagina</li>
+    <li>Ogni match ha più di un responsabile di tiro</li>
+    <li>Consentire più SO per stage</li>
+    <li>Se entro come SO ho link rapido per stage</li>
+
+    <li>Creare punti di ritrovo per sparare (sicuro/forse/poco probabile) con piccola chat di messaggi</li>
+
+    <li>uniformare customauthservice pescando le informazioni da localstorage https://github.com/Naveen512/Blazor-webassembly-authentication-scratch/tree/main/BlazorWasm.JwtAuthLearning</li>
+    <li>Bottone per richiamare responsabile si tiro</li>
+
+    <li>Abilitare la modifica dello shooter stage (team e categoria)</li>
+
+
+    <li>upload foto https://www.aspitalia.com/script/1376/Effettuare-Upload-File-Blazor-Azure-Blob-Storage.aspx</li>
+
+    <li>Index db https://blog.asayer.io/getting-started-with-indexeddb-for-big-data-storage http://www.quadaph.com/BlazorIndexDB</li>
+
+    <li>Alla creazione dello stage controllare che l'indice sia consecutivo all'ultimo inserito</li>
+    <li>all'aggiunta dello shooter al gruppo, popolare la lista dei team prendendoli dai team dell'utente</li>
+    <li>all'aggiunta dello shooter al gruppo, verificare la correttezza dell'associazione -aggiungere check in salvataggio-</li>
+
+    <li>Evidenziare Migliori 3 (oro/argento/bronzo) per ogni stage</li>
+    <li>Inserimento link per download immagini</li>
+    <li>esportazione in csv</li>
+    <li>caricamento immagini per posizione stage</li>
+    <li>Opzione lotteria /elimina all'uscita o mantieni</li>
+    <li>Caricare configurazione dal server in startup.cs</li>
+    <li>virtualization sulle liste e loading dinamico https://docs.microsoft.com/it-it/aspnet/core/blazor/components/virtualization?view=aspnetcore-5.0 </li>
+
+    <li>Font MV boli</li>
+
+    <li>?? Controllare tastierino numerico su Ios ??</li>
+</ul>
+}

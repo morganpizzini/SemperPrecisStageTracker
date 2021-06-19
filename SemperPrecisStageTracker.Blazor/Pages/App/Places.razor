@@ -1,0 +1,61 @@
+﻿@page "/app/places"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<Places> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Places"]</Heading>
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<PlaceNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewPlace"]</Button>
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell>@L["Holder"]</TableHeaderCell>
+            <TableHeaderCell>@L["Address"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @if (PageLoading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+            </TableRow>
+        }
+        else
+        {
+            @if (places.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                <Virtualize Items="@places" Context="place">
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<PlaceDetail>(new{ id = place.PlaceId}))">@place.Name</NavLink></TableRowHeader>
+                        <TableRowCell>@place.Holder</TableRowCell>
+                        <TableRowCell>@place.City</TableRowCell>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = place.PlaceId}))"><Icon Name="IconName.Pen" /></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new{ id = place.PlaceId}))"><Icon Name="IconName.Search" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            }
+        }
+    </TableBody>
+</Table>
+
+@code {
+    IList<PlaceContract> places = new List<PlaceContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
+
+        await base.OnInitializedAsync();
+    }
+
+}

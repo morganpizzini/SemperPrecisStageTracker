@@ -38,27 +38,4 @@ namespace SemperPrecisStageTracker.Models
         [NotMapped]
         public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
     }
-
-    public abstract class ShooterRole : SemperPrecisEntity
-    {
-        public string ShooterId { get; set; }
-        public ShooterRoleEnum Role { get; set; }
-    }
-
-    public class ShooterMatch : ShooterRole
-    {
-        public string MatchId { get; set; }
-    }
-
-    public class ShooterSOStage : ShooterRole
-    {
-        public string StageId { get; set; }
-    }
-
-    public enum ShooterRoleEnum
-    {
-        SO= 1,
-        SOChief = 2,
-        MatchDirector= 3
-    }
 }

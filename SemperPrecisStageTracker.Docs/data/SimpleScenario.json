@@ -17,19 +17,19 @@
       "name": "Stage 01",
       "targets": 10,
       "index": 1,
-      "sO":"SO",
-      "scenario":"scenario",
-      "gunReadyCondition":"gunReadyCondition",
-      "stageProcedure":"stageProcedure",
-      "stageProcedureNotes":"stageProcedureNotes",
-      "strings":1,
-      "scoring":"scoring",
-      "targetsDescription":"targetsDescription",
-      "scoredHits":"scoredHits",
-      "startStop":"startStop",
-      "rules":"rules",
-      "distance":"distance",
-      "coverGarment":true
+      "sO": "SO",
+      "scenario": "scenario",
+      "gunReadyCondition": "gunReadyCondition",
+      "stageProcedure": "stageProcedure",
+      "stageProcedureNotes": "stageProcedureNotes",
+      "strings": 1,
+      "scoring": "scoring",
+      "targetsDescription": "targetsDescription",
+      "scoredHits": "scoredHits",
+      "startStop": "startStop",
+      "rules": "rules",
+      "distance": "distance",
+      "coverGarment": true
     },
     {
       "id": "2",
@@ -37,19 +37,19 @@
       "name": "Stage 02",
       "targets": 8,
       "index": 2,
-      "sO":"SO",
-      "scenario":"scenario",
-      "gunReadyCondition":"gunReadyCondition",
-      "stageProcedure":"stageProcedure",
-      "stageProcedureNotes":"stageProcedureNotes",
-      "strings":1,
-      "scoring":"scoring",
-      "targetsDescription":"targetsDescription",
-      "scoredHits":"scoredHits",
-      "startStop":"startStop",
-      "rules":"rules",
-      "distance":"distance",
-      "coverGarment":true
+      "sO": "SO",
+      "scenario": "scenario",
+      "gunReadyCondition": "gunReadyCondition",
+      "stageProcedure": "stageProcedure",
+      "stageProcedureNotes": "stageProcedureNotes",
+      "strings": 1,
+      "scoring": "scoring",
+      "targetsDescription": "targetsDescription",
+      "scoredHits": "scoredHits",
+      "startStop": "startStop",
+      "rules": "rules",
+      "distance": "distance",
+      "coverGarment": true
     },
     {
       "id": "3",
@@ -57,19 +57,19 @@
       "name": "Stage 03",
       "targets": 11,
       "index": 3,
-      "sO":"SO",
-      "scenario":"scenario",
-      "gunReadyCondition":"gunReadyCondition",
-      "stageProcedure":"stageProcedure",
-      "stageProcedureNotes":"stageProcedureNotes",
-      "strings":1,
-      "scoring":"scoring",
-      "targetsDescription":"targetsDescription",
-      "scoredHits":"scoredHits",
-      "startStop":"startStop",
-      "rules":"rules",
-      "distance":"distance",
-      "coverGarment":true
+      "sO": "SO",
+      "scenario": "scenario",
+      "gunReadyCondition": "gunReadyCondition",
+      "stageProcedure": "stageProcedure",
+      "stageProcedureNotes": "stageProcedureNotes",
+      "strings": 1,
+      "scoring": "scoring",
+      "targetsDescription": "targetsDescription",
+      "scoredHits": "scoredHits",
+      "startStop": "startStop",
+      "rules": "rules",
+      "distance": "distance",
+      "coverGarment": true
     },
     {
       "id": "4",
@@ -77,18 +77,18 @@
       "name": "Stage 04",
       "targets": 12,
       "index": 4,
-      "sO":"SO",
-      "scenario":"scenario",
-      "gunReadyCondition":"gunReadyCondition",
-      "stageProcedure":"stageProcedure",
-      "stageProcedureNotes":"stageProcedureNotes",
-      "strings":1,
-      "scoring":"scoring",
-      "targetsDescription":"targetsDescription",
-      "scoredHits":"scoredHits",
-      "startStop":"startStop",
-      "rules":"rules",
-      "distance":"distance",
+      "sO": "SO",
+      "scenario": "scenario",
+      "gunReadyCondition": "gunReadyCondition",
+      "stageProcedure": "stageProcedure",
+      "stageProcedureNotes": "stageProcedureNotes",
+      "strings": 1,
+      "scoring": "scoring",
+      "targetsDescription": "targetsDescription",
+      "scoredHits": "scoredHits",
+      "startStop": "startStop",
+      "rules": "rules",
+      "distance": "distance",
       "coverGarment": true
     }
   ],
@@ -184,51 +184,51 @@
       "name": "Team 03"
     }
   ],
-  "shooterTeam":[
+  "shooterTeam": [
     {
-      "id":"1",
+      "id": "1",
       "shooterId": "1",
       "teamId": "1",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"2",
+      "id": "2",
       "shooterId": "1",
       "teamId": "2",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"3",
+      "id": "3",
       "shooterId": "2",
       "teamId": "1",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"4",
+      "id": "4",
       "shooterId": "3",
       "teamId": "2",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"5",
+      "id": "5",
       "shooterId": "4",
       "teamId": "3",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"6",
+      "id": "6",
       "shooterId": "5",
       "teamId": "2",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"7",
+      "id": "7",
       "shooterId": "6",
       "teamId": "1",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
-      "id":"8",
+      "id": "8",
       "shooterId": "3",
       "teamId": "1",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -290,13 +290,13 @@
       "birthDate": "2021-05-23T18:25:43.511Z"
     }
   ],
-  "shooterAssociations":[
+  "shooterAssociations": [
     {
       "id": "1",
       "shooterId": "1",
       "associationId": "1",
       "cardNumber": "123",
-      "safetyOfficier":true,
+      "safetyOfficier": true,
       "classification": "Novice",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -305,7 +305,7 @@
       "shooterId": "1",
       "associationId": "2",
       "cardNumber": "456",
-      "safetyOfficier":false,
+      "safetyOfficier": true,
       "classification": "Sharpshooter",
       "registrationDate": "2021-05-29T18:25:43.511Z"
     },
@@ -314,7 +314,7 @@
       "shooterId": "2",
       "associationId": "1",
       "cardNumber": "789",
-      "safetyOfficier":true,
+      "safetyOfficier": true,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
@@ -323,9 +323,55 @@
       "shooterId": "4",
       "associationId": "1",
       "cardNumber": "111",
-      "safetyOfficier": false,
+      "safetyOfficier": true,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "5",
+      "shooterId": "5",
+      "associationId": "2",
+      "cardNumber": "1114",
+      "safetyOfficier": true,
+      "classification": "Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "6",
+      "shooterId": "6",
+      "associationId": "1",
+      "cardNumber": "111422",
+      "safetyOfficier": true,
+      "classification": "Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    }
+  ],
+  "shooterMatches": [
+    {
+      "id": "1",
+      "matchId": "1",
+      "shooterId": "4",
+      "role": 3
+    }
+  ],
+  "shooterSOStages": [
+    {
+      "id": "1",
+      "stageId": "1",
+      "shooterId": "1",
+      "role": 1
+    },
+    {
+      "id": "2",
+      "stageId": "1",
+      "shooterId": "2",
+      "role": 2
+    },
+    {
+      "id": "2",
+      "matchId": "1",
+      "shooterId": "3",
+      "role": 1
     }
   ],
   "shooterStages": [
@@ -386,7 +432,7 @@
       "disqualified": false
     }
   ],
-  "associations":[
+  "associations": [
     {
       "id": "1",
       "name": "idpa",

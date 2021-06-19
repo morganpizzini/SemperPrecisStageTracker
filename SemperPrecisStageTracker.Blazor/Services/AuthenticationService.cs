@@ -8,20 +8,11 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using System.Threading.Tasks;
 using SemperPrecisStageTracker.Blazor.Pages;
+using SemperPrecisStageTracker.Blazor.Pages.App;
 using SemperPrecisStageTracker.Blazor.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
-    public interface IAuthenticationService
-    {
-        ShooterContract User { get; }
-        bool IsAuth { get; }
-        Task Initialize();
-        Task<bool> Login(string username, string password);
-        Task UpdateLogin(ShooterContract user);
-        Task Logout();
-    }
-
     public class AuthenticationService : IAuthenticationService
     {
         private IHttpService _httpService;

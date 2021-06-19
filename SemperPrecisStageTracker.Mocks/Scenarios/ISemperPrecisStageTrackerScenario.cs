@@ -45,6 +45,16 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         IList<GroupShooter> GroupShooters { get; set; }
 
         /// <summary>
+        /// List of group shooters
+        /// </summary>
+        IList<ShooterMatch> ShooterMatches { get; set; }
+
+        /// <summary>
+        /// List of group shooters
+        /// </summary>
+        IList<ShooterSOStage> ShooterSOStages { get; set; }
+
+        /// <summary>
         /// List of team shooters
         /// </summary>
         IList<ShooterTeam> ShooterTeams { get; set; }

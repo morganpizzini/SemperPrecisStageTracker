@@ -1,6 +1,13 @@
 ﻿html, body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
 
+@font-face {
+  font-family: "MvBoli";
+  src: url("/css/fonts/mvboli-webfont.woff") format("woff"); }
+
+.custom-font {
+  font-family: 'MvBoli', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
 .page.dark {
   background-color: #000;
   color: #ccc; }

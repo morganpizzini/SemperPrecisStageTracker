@@ -1,0 +1,61 @@
+﻿@page "/app/places/{id}"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<PlaceDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                            <CardTitle>@L["Place"]</CardTitle>
+                            <CardText>@place.Name</CardText>
+                            <CardTitle>@L["Holder"]</CardTitle>
+                            <CardText>@place.Holder</CardText>
+                            <CardTitle>@L["Phone"]</CardTitle>
+                            <CardText>@place.Phone</CardText>
+                            <CardTitle>@L["Email"]</CardTitle>
+                            <CardText>@place.Email</CardText>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                            <CardTitle>@L["Address"]</CardTitle>
+                            <CardText>@place.Address</CardText>
+                            <CardTitle>@L["City"]</CardTitle>
+                            <CardText>@place.City</CardText>
+                            <CardTitle>@L["Region"]</CardTitle>
+                            <CardText>@place.Region</CardText>
+                            <CardTitle>@L["PostalZipCode"]</CardTitle>
+                            <CardText>@place.PostalZipCode</CardText>
+                            <CardTitle>@L["Country"]</CardTitle>
+                            <CardText>@place.Country</CardText>
+                        </Column>
+                    </Row>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    PlaceContract place = new PlaceContract();
+
+    protected override async Task OnInitializedAsync()
+    {
+        place = await Post<PlaceContract>("api/Place/GetPlace", new PlaceRequest() { PlaceId = Id });
+
+        await base.OnInitializedAsync();
+    }
+}

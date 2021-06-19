@@ -11,6 +11,7 @@ using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
 using SemperPrecisStageTracker.Domain.Utils;
+using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -28,6 +29,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IShooterAssociationRepository _shooterAssociationRepository;
         private readonly INotificationSubscriptionRepository _notificationsubscriptionRepository;
         private readonly IPlaceRepository _placeRepository;
+        private readonly IShooterSOStageRepository _shooterSOStageRepository;
+        private readonly IShooterMatchRepository _shooterMatchRepository;
         private readonly ISemperPrecisMemoryCache _cache;
 
         public MainServiceLayer(IDataSession dataSession)
@@ -45,6 +48,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterAssociationRepository = dataSession.ResolveRepository<IShooterAssociationRepository>();
             _notificationsubscriptionRepository = dataSession.ResolveRepository<INotificationSubscriptionRepository>();
             _placeRepository = dataSession.ResolveRepository<IPlaceRepository>();
+            _shooterSOStageRepository = dataSession.ResolveRepository<IShooterSOStageRepository>();
+            _shooterMatchRepository = dataSession.ResolveRepository<IShooterMatchRepository>();
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
         }
         #region Match
@@ -567,6 +572,320 @@ namespace SemperPrecisStageTracker.Domain.Services
             return new List<ValidationResult>();
 
         }
+
+        #endregion
+
+        #region ShooterMatch
+
+        /// <summary>
+        /// Fetch list of teams by provided ids
+        /// </summary>
+        /// <param name="ids"> teams identifier </param>
+        /// <returns>Returns list of teams</returns>
+        public IList<ShooterMatch> FetchShooterMatchesByMatchId(string id)
+        {
+            //Utilizzo il metodo base
+            return FetchEntities(s => s.MatchId== id, null, null, s =>s.ShooterId, false, _shooterMatchRepository);
+        }
+
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns team or null</returns>
+        public ShooterMatch GetShooterMatch(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _shooterMatchRepository);
+        }
+
+        /// <summary>
+        /// Create provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> UpsertShooterMatch(ShooterMatch entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            
+            var existingMatch = this._matchRepository.GetSingle(x => x.Id == entity.MatchId);
+            if (existingMatch == null)
+            {
+                validations.Add(new("Match not found"));
+                return validations;
+            }
+
+            // check association
+            var shooterAssociation = this._shooterAssociationRepository
+                .Fetch(x => x.ShooterId == entity.ShooterId && x.AssociationId == existingMatch.AssociationId)
+                .FirstOrDefault();
+
+            if (shooterAssociation == null)
+            {
+                validations.Add(new("Association for shooter not found"));
+                return validations;
+            }
+
+            if (!shooterAssociation.SafetyOfficier)
+            {
+                validations.Add(new("Shooter is not a Safety Officier"));
+                return validations;
+            }
+
+
+            // load match stage list
+            var stageIds = _stageRepository.Fetch(x => x.MatchId == entity.MatchId).Select(x=> x.Id);
+            // check for some role in ShooterSOStage
+            var existingShooterSO = this._shooterSOStageRepository.Fetch(x => stageIds.Contains(x.StageId) && x.ShooterId == entity.ShooterId);
+            
+            if (existingShooterSO.Count > 0)
+            {
+                validations.Add(new("Shooter is already an SO"));
+                return validations;
+            }
+            
+            var existingShooterMatch = this._shooterMatchRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.MatchId == x.MatchId);
+            
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            // new element
+            if (existingShooterMatch == null)
+            {
+                // Settaggio data di creazione
+                entity.CreationDateTime = DateTime.UtcNow;
+
+                //Validazione argomenti
+                validations = _shooterMatchRepository.Validate(entity);
+
+                //Se ho validazioni fallite, esco
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
+                //Salvataggio
+                _shooterMatchRepository.Save(entity);
+                t.Commit();
+                return validations;
+            }
+
+            existingShooterMatch.MatchId = entity.MatchId;
+            existingShooterMatch.ShooterId = entity.ShooterId;
+            existingShooterMatch.Role = entity.Role;
+            
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (existingShooterMatch.CreationDateTime < new DateTime(2000, 1, 1))
+                existingShooterMatch.CreationDateTime = new DateTime(2000, 1, 1);
+
+            //Validazione argomenti
+            validations = _shooterMatchRepository.Validate(existingShooterMatch);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterMatchRepository.Save(existingShooterMatch);
+            t.Commit();
+            return validations;
+        
+        }
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> DeleteShooterMatch(ShooterMatch entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided shooter match doesn't have valid Id");
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            
+            //Eliminazione
+            _shooterMatchRepository.Delete(entity);
+            
+            t.Commit();
+            return new List<ValidationResult>();
+
+        }
+
+        #endregion
+
+        #region ShooterStageSO
+
+        /// <summary>
+        /// Fetch list of teams by provided ids
+        /// </summary>
+        /// <param name="ids"> teams identifier </param>
+        /// <returns>Returns list of teams</returns>
+        public IList<ShooterSOStage> FetchShooterSOStagesByStageId(string id)
+        {
+            //Utilizzo il metodo base
+            return FetchEntities(s => s.StageId== id, null, null, s =>s.ShooterId, false, _shooterSOStageRepository);
+        }
+
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns team or null</returns>
+        public ShooterSOStage GetShooterSOStage(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _shooterSOStageRepository);
+        }
+
+        /// <summary>
+        /// Create provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> UpsertShooterSOStage(ShooterSOStage entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            
+            // load match stage list
+            var existingStage = _stageRepository.GetSingle(x => x.Id == entity.StageId);
+
+            var existingMatch = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId);
+            if (existingMatch == null)
+            {
+                validations.Add(new("Match not found"));
+                return validations;
+            }
+
+            // check association
+            var shooterAssociation = this._shooterAssociationRepository
+                .Fetch(x => x.ShooterId == entity.ShooterId && x.AssociationId == existingMatch.AssociationId)
+                .FirstOrDefault();
+
+            if (shooterAssociation == null)
+            {
+                validations.Add(new("Association for shooter not found"));
+                return validations;
+            }
+
+            if (!shooterAssociation.SafetyOfficier)
+            {
+                validations.Add(new("Shooter is not a Safety Officier"));
+                return validations;
+            }
+
+
+            // check for some role in ShooterSOStage
+            var existingShooterMatch = this._shooterMatchRepository.Fetch(x => existingStage.MatchId == x.MatchId && x.ShooterId == entity.ShooterId);
+            if (existingShooterMatch.Count > 0)
+            {
+                validations.Add(new("Shooter is already an SO"));
+                return validations;
+            }
+            
+            var existingShooterSOStage = this._shooterSOStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageId == x.StageId);
+
+           
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            // new element
+            if (existingShooterSOStage == null)
+            {
+                // Settaggio data di creazione
+                entity.CreationDateTime = DateTime.UtcNow;
+
+                //Validazione argomenti
+                validations = _shooterSOStageRepository.Validate(entity);
+
+                //Se ho validazioni fallite, esco
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
+                //Salvataggio
+                _shooterSOStageRepository.Save(entity);
+                t.Commit();
+                return validations;
+            }
+
+            existingShooterSOStage.StageId = entity.StageId;
+            existingShooterSOStage.ShooterId = entity.ShooterId;
+            existingShooterSOStage.Role = entity.Role;
+            
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (existingShooterSOStage.CreationDateTime < new DateTime(2000, 1, 1))
+                existingShooterSOStage.CreationDateTime = new DateTime(2000, 1, 1);
+
+            //Validazione argomenti
+            validations = _shooterSOStageRepository.Validate(existingShooterSOStage);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterSOStageRepository.Save(existingShooterSOStage);
+            t.Commit();
+            return validations;
+        
+        }
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> DeleteShooterSOStage(ShooterSOStage entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided shooter SO stage doesn't have valid Id");
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            
+            //Eliminazione
+            _shooterSOStageRepository.Delete(entity);
+            
+            t.Commit();
+            return new List<ValidationResult>();
+
+        }
+
 
         #endregion
 
@@ -2155,6 +2474,8 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _teamRepository.Dispose();
                 _notificationsubscriptionRepository.Dispose();
                 _placeRepository.Dispose();
+                _shooterSOStageRepository.Dispose();
+                _shooterMatchRepository.Dispose();
             }
 
             //Chiamo il metodo base
