@@ -15,6 +15,52 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     public partial class MatchEntitiesControllerTests : ApiControllerTestsBase<MatchController, SimpleScenario>
     {
         [TestMethod]
+        public async Task ShouldFetchAvailableShooterSOStagesBeOkHavingProvidedData()
+        {
+            // get stage with any shooterStage
+            var existingStage = Scenario.Stages.FirstOrDefault(x=> Scenario.ShooterSOStages.Any(s=>s.StageId != x.Id));
+            
+            if(existingStage== null)
+                Assert.Inconclusive("Stage not found");
+
+            var existingMatch = Scenario.Matches.FirstOrDefault(x=> x.Id== existingStage.MatchId);
+            if(existingMatch== null)
+                Assert.Inconclusive("Match not found");
+            
+            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
+
+            // not a match director
+            var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            
+            var shooterIds = Scenario.Shooters.Where(x =>
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id)).Select(x=>x.Id).ToList();
+
+            if(shooterIds.Count<0)
+                Assert.Inconclusive("Shooters not found");
+            
+            //Composizione della request
+            var request = new StageRequest()
+            {
+                StageId = existingStage.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.FetchAvailableStageSO(request);
+            
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+
+            Assert.IsTrue(parsed != null
+                          && shooterIds.All(s=>parsed.Data.Any(x=>x.ShooterId == s))
+            );
+            Assert.AreEqual(shooterIds.Count ,parsed.Data.Count);
+        }
+        [TestMethod]
         public async Task ShouldCreateShooterSOStagesBeOkHavingProvidedData()
         {
             // get stage without shooterStage
@@ -33,7 +79,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x=>x.ShooterId).ToList();
 
-            var existingShooterSo = Scenario.ShooterSOStages.Where(x => x.StageId == existingStage.Id).Select(x=>x.ShooterId);
+            var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
 
             // not a match director
             var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
@@ -82,7 +130,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task ShouldCreateShooterSOStagesBeOkHavingDuplicatedProvidedData()
+        public async Task ShouldCreateShooterSOStagesBeOkHavingProvidedDuplicatedData()
         {
             // get stage without shooterStage
             var existingShooterSOStage = Scenario.ShooterSOStages.FirstOrDefault();
@@ -124,9 +172,114 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                               return x.Role ==request.Shooters[0].Role;
                           }));
         }
+
+        [TestMethod]
+        public async Task ShouldCreateShooterSOStagesBeBadRequestHavingProvidedDifferentStageData()
+        {
+            // get stage without shooterStage
+            var existingShooterSOStage = Scenario.ShooterSOStages.FirstOrDefault();
+            
+            if(existingShooterSOStage== null)
+                Assert.Inconclusive("Shooter SO Stage not found");
+            
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterSOStages.Count;
+
+            var currentStage = Scenario.Stages.FirstOrDefault(x => x.Id == existingShooterSOStage.StageId);
+            if(currentStage== null)
+                Assert.Inconclusive("Stage not found");
+
+            var anotherStage = Scenario.Stages.FirstOrDefault(x => x.Id != currentStage.Id && x.MatchId == currentStage.MatchId);
+
+            //Composizione della request
+            var request = new ShooterSOStageCreateRequest
+            {
+                StageId = anotherStage.Id,
+                Shooters = new List<ShooterSOStageShooterContract>
+                {
+                    new()
+                    {
+                        Role = existingShooterSOStage.Role == ShooterRoleEnum.SO ? (int)ShooterRoleEnum.SOChief : (int)ShooterRoleEnum.SO,
+                        ShooterId = existingShooterSOStage.ShooterId
+                    }
+                }
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateStageSO(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterSOStages.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null
+                          && countAfter == countBefore
+                          && parsed.Data.Any());
+        }
         
         [TestMethod]
-        public async Task ShouldCreateShooterSOStagesBeBadRequestOkHavingProvidedNotAssociatedUser()
+        public async Task ShouldCreateShooterSOStagesBeBadRequestHavingProvidedNotSOShooterData()
+        {
+            // get stage without shooterStage
+            var existingStage = Scenario.Stages.FirstOrDefault(x=> Scenario.ShooterSOStages.All(s=>s.StageId != x.Id));
+            
+            if(existingStage== null)
+                Assert.Inconclusive("Stage not found");
+
+            var existingMatch = Scenario.Matches.FirstOrDefault(x=> x.Id== existingStage.MatchId);
+            if(existingMatch== null)
+                Assert.Inconclusive("Match not found");
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterSOStages.Count;
+
+            var shooterAssociations = Scenario.ShooterAssociations.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
+
+            // not a match director
+            var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            
+            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
+
+            if(shooter == null)
+                Assert.Inconclusive("Shooter not found");
+            
+            //Composizione della request
+            var request = new ShooterSOStageCreateRequest
+            {
+                StageId = existingStage.Id,
+                Shooters = new List<ShooterSOStageShooterContract>
+                {
+                    new()
+                    {
+                        Role = 1,
+                        ShooterId = shooter.Id
+                    }
+                }
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateStageSO(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterSOStages.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null
+                          && countAfter == countBefore
+                          && request.Shooters.Any()
+            );
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateShooterSOStagesBeBadRequestHavingProvidedNotAssociatedUser()
         {
             // get stage without shooterStage
             var existingStage = Scenario.Stages.FirstOrDefault(x=> Scenario.ShooterSOStages.All(s=>s.StageId != x.Id));
@@ -144,11 +297,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x=>x.ShooterId).ToList();
 
+            var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
+
             // not a match director
             var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
             
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
-                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id));
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
 
             if(shooter == null)
                 Assert.Inconclusive("Shooter not found");
@@ -190,9 +347,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedBadRequest(response);
 
             Assert.IsTrue(parsed != null
-                          // only first shooter is saved
-                          && countAfter == countBefore + 1
                           && parsed.Data.Any());
+            // only first shooter is saved
+            Assert.AreEqual(countAfter, countBefore + 1);
         }
 
         [TestMethod]
@@ -216,9 +373,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             // not a match director
             var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
-            
+
+            var matchStageIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x=>x.Id).ToList();
+
+            var shooterInStages = Scenario.ShooterSOStages.Where(x => matchStageIds.Contains(x.StageId)).Select(x=>x.ShooterId).ToList();
+
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
-                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id));
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterInStages.Contains(x.Id));
 
             if(shooter == null)
                 Assert.Inconclusive("Shooter not found");
@@ -257,9 +418,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedBadRequest(response);
             Assert.IsTrue(parsed != null
                           // only first entity is saved
-                          && countAfter == countBefore + 1
                           && parsed.Data.Any()
             );
+            Assert.AreEqual(countAfter,countBefore+1);
         }
 
         [TestMethod]
@@ -325,6 +486,45 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     public partial class MatchEntitiesControllerTests
     {
         protected override Shooter GetIdentityUser() => GetAdminUser();
+
+        [TestMethod]
+        public async Task ShouldFetchAvailableMatchDirectorBeOkHavingProvidedData()
+        {
+            var existingMatch = Scenario.Matches.FirstOrDefault();
+            if(existingMatch== null)
+                Assert.Inconclusive("Match not found");
+            
+            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+
+            var matchStagesIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+
+            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x=>x.ShooterId).ToList();
+            
+            var shooterIds = Scenario.Shooters.Where(x =>
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id)).Select(x=>x.Id).ToList();
+
+            if(shooterIds.Count== 0)
+                Assert.Inconclusive("Shooters not found");
+
+            //Composizione della request
+            var request = new MatchRequest()
+            {
+                MatchId = existingMatch.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.FetchAvailableMatchDirector(request);
+            
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            Assert.IsTrue(parsed != null
+                          && shooterIds.All(s=>parsed.Data.Any(x=>x.ShooterId == s))
+            );
+            Assert.AreEqual(shooterIds.Count ,parsed.Data.Count);
+        }
 
         [TestMethod]
         public async Task ShouldCreateMatchDirectorBeOkHavingProvidedData()
@@ -411,6 +611,52 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore
                           && parsed.Data.Any(x=>x.Shooter.ShooterId == shooter.Id)
+            );
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateMatchDirectorBeRequestHavingProvidedNoSOShooterData()
+        {
+            var existingMatch = Scenario.Matches.FirstOrDefault();
+            if(existingMatch== null)
+                Assert.Inconclusive("Match not found");
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterMatches.Count;
+
+            var shooterAssociations = Scenario.ShooterAssociations.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var shooterMatches= Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+
+            var matchStagesIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+
+            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x=>x.ShooterId).ToList();
+            
+            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
+
+            if(shooter== null)
+                Assert.Inconclusive("Shooter not found");
+
+            //Composizione della request
+            var request = new ShooterMatchCreateRequest
+            {
+                MatchId = existingMatch.Id,
+                ShooterIds = new List<string>{shooter.Id}
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatchDirector(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterMatches.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null
+                          && countAfter == countBefore
+                          && parsed.Data.Any()
             );
         }
 

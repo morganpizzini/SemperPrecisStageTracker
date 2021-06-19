@@ -288,6 +288,24 @@
       "username": "Shooter06",
       "password": "",
       "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "7",
+      "firstName": "Shooter",
+      "lastName": "07",
+      "email": "Shooter@07.it",
+      "username": "Shooter07",
+      "password": "",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "8",
+      "firstName": "Shooter",
+      "lastName": "08",
+      "email": "Shooter@08.it",
+      "username": "Shooter08",
+      "password": "",
+      "birthDate": "2021-05-23T18:25:43.511Z"
     }
   ],
   "shooterAssociations": [
@@ -341,6 +359,24 @@
       "shooterId": "6",
       "associationId": "1",
       "cardNumber": "111422",
+      "safetyOfficier": true,
+      "classification": "Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "7",
+      "shooterId": "7",
+      "associationId": "1",
+      "cardNumber": "1114227",
+      "safetyOfficier": false,
+      "classification": "Expert",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "8",
+      "shooterId": "8",
+      "associationId": "1",
+      "cardNumber": "111428",
       "safetyOfficier": true,
       "classification": "Expert",
       "registrationDate": "2021-05-23T18:25:43.511Z"

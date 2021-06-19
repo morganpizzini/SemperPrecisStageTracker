@@ -588,6 +588,30 @@ namespace SemperPrecisStageTracker.Domain.Services
             return FetchEntities(s => s.MatchId== id, null, null, s =>s.ShooterId, false, _shooterMatchRepository);
         }
 
+        /// <summary>
+        /// Fetch list of teams by provided ids
+        /// </summary>
+        /// <param name="ids"> teams identifier </param>
+        /// <returns>Returns list of teams</returns>
+        public IList<Shooter> FetchAvailableMatchDirectorByMatchId(string id)
+        {
+            var existingMatch = this._matchRepository.GetSingle(x => x.Id == id);
+            if (existingMatch == null)
+                return new List<Shooter>();
+
+            var shooterAssociations = this._shooterAssociationRepository.Fetch(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var shooterMatches= this._shooterMatchRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+
+            var matchStagesIds = this._stageRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+
+            var shooterSO = this._shooterSOStageRepository.Fetch(x => matchStagesIds.Contains(x.StageId)).Select(x=>x.ShooterId).ToList();
+            
+            return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
+            
+        }
+
 
         /// <summary>
         /// Get place by commissionDrawingId
@@ -743,7 +767,36 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Utilizzo il metodo base
             return FetchEntities(s => s.StageId== id, null, null, s =>s.ShooterId, false, _shooterSOStageRepository);
         }
+        
+        /// <summary>
+        /// Fetch list of teams by provided ids
+        /// </summary>
+        /// <param name="ids"> teams identifier </param>
+        /// <returns>Returns list of teams</returns>
+        public IList<Shooter> FetchAvailabelShooterSOByStageId(string id)
+        {
+            var existingStage = _stageRepository.GetSingle(x => x.Id == id);
 
+            if (existingStage == null)
+                return new List<Shooter>();
+
+            var existingMatch = _matchRepository.GetSingle(x=> x.Id== existingStage.MatchId);
+            if(existingMatch== null)
+                return new List<Shooter>();
+            
+            var shooterAssociations = _shooterAssociationRepository.Fetch(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+                .Select(x=>x.ShooterId).ToList();
+
+            var stagesInMatch = _stageRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            
+            var existingShooterSo = _shooterSOStageRepository.Fetch(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
+
+            // not a match director
+            var shooterMatches= _shooterMatchRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            
+            return _shooterRepository.Fetch(x =>
+                shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
+        }
 
         /// <summary>
         /// Get place by commissionDrawingId
@@ -797,16 +850,34 @@ namespace SemperPrecisStageTracker.Domain.Services
                 validations.Add(new("Shooter is not a Safety Officier"));
                 return validations;
             }
+            
+            // check for not assign a shooter to 2 different stage in same match
+            var matchStage = this._stageRepository.Fetch(x => existingStage.MatchId == x.MatchId).Select(x=>x.Id);
 
+            var otherStageSO = this._shooterSOStageRepository.Fetch(x => 
+                // not in current stage
+                entity.StageId != x.StageId &&  
+                // in any stage in this match
+                matchStage.Contains(x.StageId) && 
+                // same shooterId
+                x.ShooterId == entity.ShooterId);
 
-            // check for some role in ShooterSOStage
+            if (otherStageSO.Count > 0)
+            {
+                validations.Add(new("Shooter is already an SO in other stage"));
+                return validations;
+            }
+
+            // check for some role in ShooterMatch
             var existingShooterMatch = this._shooterMatchRepository.Fetch(x => existingStage.MatchId == x.MatchId && x.ShooterId == entity.ShooterId);
             if (existingShooterMatch.Count > 0)
             {
-                validations.Add(new("Shooter is already an SO"));
+                validations.Add(new("Shooter is already a Match director"));
                 return validations;
             }
             
+
+
             var existingShooterSOStage = this._shooterSOStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageId == x.StageId);
 
            

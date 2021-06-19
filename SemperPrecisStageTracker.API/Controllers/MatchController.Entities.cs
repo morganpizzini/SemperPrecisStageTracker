@@ -37,6 +37,22 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(entities.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
         }
 
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAvailableMatchDirector")]
+        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        public Task<IActionResult> FetchAvailableMatchDirector(MatchRequest request)
+        {
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAvailableMatchDirectorByMatchId(request.MatchId);
+            
+            //Ritorno i contratti
+            return Reply(entities.As(ContractUtils.GenerateContract));
+        }
+
 
         /// <summary>
         /// Creates a match on platform
@@ -123,6 +139,22 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(entities.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
         }
 
+
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAvailableStageSO")]
+        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        public Task<IActionResult> FetchAvailableStageSO(StageRequest request)
+        {
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAvailabelShooterSOByStageId(request.StageId);
+            
+            //Ritorno i contratti
+            return Reply(entities.As(ContractUtils.GenerateContract));
+        }
 
         /// <summary>
         /// Creates a match on platform
