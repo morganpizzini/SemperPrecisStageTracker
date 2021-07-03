@@ -15,6 +15,7 @@ using ZenProgramming.Chakra.Core.Mocks.Data;
 using SemperPrecisStageTracker.EF.Context;
 using SemperPrecisStageTracker.Domain.Containers;
 using SemperPrecisStageTracker.Domain.Clients;
+using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.EF.Clients;
 
@@ -42,6 +43,8 @@ namespace SemperPrecisStageTracker.API
                 { "Sql", ServiceResolver.Register<IIdentityClient, SqlIdentityClient> }
             });
             ServiceResolver.Register<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
+
+            ServiceResolver.Register<ICaptchaValidatorService,CaptchaValidatorService>();
             CreateHostBuilder(args).Build().Run();
         }
 

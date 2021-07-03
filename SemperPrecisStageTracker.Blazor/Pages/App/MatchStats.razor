@@ -94,7 +94,7 @@ else
                                                     }
                                                     else
                                                     {
-                                                        <TableRowCell>@String.Format("{0:f2}", current.Total)</TableRowCell>
+                                                        <TableRowCell>@($"{current.Total:f2}")</TableRowCell>
                                                     }
                                                 }
                                                 else
@@ -102,7 +102,7 @@ else
                                                     <TableRowCell>-</TableRowCell>
                                                 }
                                             }
-                                            <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : String.Format("{0:f2}", shooter.Total))</TableRowCell>
+                                            <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
                                         </TableRow>
                                     }
                                 </TableBody>

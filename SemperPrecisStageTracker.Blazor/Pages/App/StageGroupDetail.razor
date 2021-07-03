@@ -5,7 +5,7 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
-<NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@L["BackToStage"]</NavLink>
+<NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = StageId}))">@L["BackToStage"]</NavLink>
 <Divider />
 @if (PageLoading)
 {
@@ -34,7 +34,7 @@ else
                         <CardTitle>@L["Match"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
                         <CardTitle>@L["Stage"]</CardTitle>
-                        <CardText><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></CardText>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = StageId}))">@stage.Name</NavLink></CardText>
                     </CardBody>
                 </Card>
             </Column>
@@ -57,34 +57,43 @@ else
                             <TableBody>
                                 @if (shooters.Count > 0)
                                 {
-                                    <Virtualize Context="shooter" Items="@shooters">
-                                        <TableRow Class="@(shooter.ShooterStatus ==  ShooterStatusEnum.IsDisqualified ? "bg-danger": shooter.ShooterStatus ==  ShooterStatusEnum.HasWarning ? "bg-warning":"")">
-                                            <TableRowHeader>
-                                                @{
-                                                    if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
-                                                    {
-                                                        if (shooter.ShooterStage.Total < 0)
-                                                        {
-                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                                @shooter.Shooter.LastName @shooter.Shooter.FirstName
-                                                            </Button>
-                                                        }
-                                                        else
-                                                        {
-                                                            @shooter.Shooter.LastName @shooter.Shooter.FirstName
-                                                        }
-                                                    }
-                                                    else
+                                <Virtualize Context="shooter" Items="@shooters">
+                                    <TableRow Class="@(shooter.ShooterStatus ==  ShooterStatusEnum.IsDisqualified ? "bg-danger": shooter.ShooterStatus ==  ShooterStatusEnum.HasWarning ? "bg-warning":"")">
+                                        <TableRowHeader>
+                                            @{
+                                                if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                {
+                                                    if (shooter.ShooterStage.Total < 0)
                                                     {
                                                         <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
                                                             @shooter.Shooter.LastName @shooter.Shooter.FirstName
                                                         </Button>
                                                     }
+                                                    else
+                                                    {
+                                                        @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                    }
                                                 }
-                                            </TableRowHeader>
-                                            <TableRowCell>@(shooter.ShooterStage.Total> 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
-                                        </TableRow>
-                                    </Virtualize>
+                                                else
+                                                {
+                                                    <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                        @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                    </Button>
+                                                }
+                                            }
+                                        </TableRowHeader>
+                                        <TableRowCell>@(shooter.ShooterStage.Total> 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
+                                    </TableRow>
+                                    @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
+                                    {
+                                <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                    <TableRowCell></TableRowCell>
+                                    <TableRowCell>
+                                        @shooter.ShooterStage.Notes
+                                    </TableRowCell>
+                                </TableRow>
+                                    }
+                                </Virtualize>
                                 }
                                 else
                                 {
@@ -281,7 +290,7 @@ else
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Time"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@String.Format("{0:f2}", model.Time)</Text>
+                                    <Text>@($"{model.Time:f2}")</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
@@ -318,7 +327,7 @@ else
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@(model.Total> 0 ? String.Format("{0:f2}", model.Total) : model.Total<0 ? @L["Disqualified"] : "" )</Text>
+                                    <Text>@(model.Total> 0 ? $"{model.Total:f2}" : model.Total<0 ? @L["Disqualified"] : "")</Text>
                                 </FieldBody>
                             </Field>
                         </TabPanel>
@@ -356,7 +365,18 @@ else
                 </Column>
             </Row>
             <Text Weight="TextWeight.Bold">@L["Total"]</Text>
-            <Text>@(model.Total> 0 ? String.Format("{0:f2}", model.Total) : model.Total<0 ? @L["Disqualified"] : "" )</Text>
+            <Text>@(model.Total> 0 ? $"{model.Total:f2}" : model.Total<0 ? @L["Disqualified"] : "")</Text>
+
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12">@L["Notes"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <TextEdit Placeholder="@L["Notes"]" @bind-Text="@model.Notes"></TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmModal(false))">@L["Close"]</Button>
@@ -403,15 +423,15 @@ else
     private Modal modalConfirmRef;
     private Modal modalRef;
     private Modal modalLegendRef;
-    ShooterContract shooterToFill = new ShooterContract();
+    ShooterContract shooterToFill = new ();
 
-    StageContract stage = new StageContract();
+    StageContract stage = new ();
 
-    GroupContract group = new GroupContract();
+    GroupContract group = new ();
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
 
     Validations validations;
-    ShooterStageRequest model = new ShooterStageRequest();
+    ShooterStageRequest model = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -444,6 +464,8 @@ else
         model.HitOnNonThreat = shooter.ShooterStage.HitOnNonThreat;
         model.Procedurals = shooter.ShooterStage.Procedurals;
         model.Time = shooter.ShooterStage.Time;
+        model.Warning= shooter.ShooterStage.Warning;
+        model.Notes = shooter.ShooterStage.Notes;
         InitModelList();
         selectedTab = "penalties";
 

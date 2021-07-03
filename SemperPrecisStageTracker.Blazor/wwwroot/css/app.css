@@ -3,7 +3,7 @@
 
 @font-face {
   font-family: "MvBoli";
-  src: url("/css/fonts/mvboli-webfont.woff") format("woff"); }
+  src: url("/css/fonts/mvboli-webfont.woff2") format("woff2"), url("/css/fonts/mvboli-webfont.woff") format("woff"); }
 
 .custom-font {
   font-family: 'MvBoli', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
@@ -19,6 +19,12 @@
     background-image: linear-gradient(180deg, #555555 0%, #111111 70%) !important; }
   .page.dark a, .page.dark .btn-link {
     color: #8fd603; }
+  .page.dark table thead > tr {
+    color: #ccc; }
+  .page.dark table tbody > tr {
+    color: #ccc; }
+  .page.dark .card {
+    background-color: #555555; }
 
 a, .btn-link {
   color: #0366d6; }

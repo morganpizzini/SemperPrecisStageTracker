@@ -53,6 +53,22 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(entities.As(ContractUtils.GenerateContract));
         }
 
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAvailableMatchDirectorByAssociation")]
+        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        public Task<IActionResult> FetchAvailableMatchDirectorByAssociation(AssociationRequest request)
+        {
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAvailableMatchDirectorByMatchId(request.AssociationId);
+            
+            //Ritorno i contratti
+            return Reply(entities.As(ContractUtils.GenerateContract));
+        }
+
 
         /// <summary>
         /// Creates a match on platform

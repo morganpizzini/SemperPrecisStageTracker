@@ -1,21 +1,18 @@
 ﻿@page "/app/"
 @using Microsoft.Extensions.Configuration
 @inject ClientConfiguration config
-@inject IConfiguration Configuration
 
 @if (config.IsLocal)
 {
 <ul>
-    <li>Luoghi nel match - manca UI -</li>
-    <li>registrazione SO sulle shooterassociation - manca UI -</li>
-    <li>Notazioni sul warning durante la modale di recap/conferma - manca UI - </li>
     
+    <li>registrazione SO sulle shooterassociation - manca UI -</li>
+    <li>registrazione SO e MD in match/stage - manca UI</li>
+
     <li>un utente può avere più classificazioni per la stessa associazione</li>
 
     <li>Ogni stage ordine randomico dei tiratori, ma stabile sullo stesso stage</li>
     <li>Possibilità di mescolare l'ordine direttamente sulla pagina</li>
-    <li>Ogni match ha più di un responsabile di tiro</li>
-    <li>Consentire più SO per stage</li>
     <li>Se entro come SO ho link rapido per stage</li>
 
     <li>Creare punti di ritrovo per sparare (sicuro/forse/poco probabile) con piccola chat di messaggi</li>

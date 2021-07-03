@@ -18,18 +18,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private HttpClient _httpClient;
         private NavigationManager _navigationManager;
         private ILocalStorageService _localStorageService;
-        private IConfiguration _configuration;
 
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
-            ILocalStorageService localStorageService,
-            IConfiguration configuration
+            ILocalStorageService localStorageService
         ) {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
-            _configuration = configuration;
         }
 
         public async Task<T> Get<T>(string uri)

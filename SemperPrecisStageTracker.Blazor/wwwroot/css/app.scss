@@ -36,6 +36,20 @@ html, body {
     a, .btn-link {
         color: $custom-lime;
     }
+
+    table {
+        thead > tr {
+            color: $custom-white;
+        }
+
+        tbody > tr {
+            color: $custom-white;
+        }
+    }
+
+    .card {
+        background-color: $custom-light-grey;
+    }
 }
 
 

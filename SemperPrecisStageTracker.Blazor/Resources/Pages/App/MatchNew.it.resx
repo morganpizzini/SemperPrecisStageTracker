@@ -149,14 +149,8 @@
     <value>Salva</value>
     <comment />
   </data>
-  <data name="WrongLocation" xml:space="preserve">
-    <value>Errore nella località!</value>
-  </data>
   <data name="UnifyClassifications" xml:space="preserve">
     <value>Unifica le classificazioni</value>
-  </data>
-  <data name="Location" xml:space="preserve">
-    <value>Località</value>
   </data>
   <data name="Association" xml:space="preserve">
     <value>Associazione</value>
@@ -166,5 +160,11 @@
   </data>
   <data name="BackToList" xml:space="preserve">
     <value>Torna alla lista</value>
+  </data>
+  <data name="Place" xml:space="preserve">
+    <value>Luogo</value>
+  </data>
+  <data name="WrongPlace" xml:space="preserve">
+    <value>Errore località!</value>
   </data>
 </root>

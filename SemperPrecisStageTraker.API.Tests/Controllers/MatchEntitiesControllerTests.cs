@@ -527,6 +527,39 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
+        public async Task ShouldFetchAvailableMatchDirectorBeOkHavingProvidedAssociation()
+        {
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            if(existingAssociation== null)
+                Assert.Inconclusive("Association not found");
+            
+            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingAssociation.Id)
+                .Select(x=>x.ShooterId).ToList();
+            
+            var shooterIds = Scenario.Shooters.Where(x =>
+                shooterAssociations.Contains(x.Id)).Select(x=>x.Id).ToList();
+
+            if(shooterIds.Count== 0)
+                Assert.Inconclusive("Shooters not found");
+
+            //Composizione della request
+            var request = new AssociationRequest()
+            {
+                AssociationId= existingAssociation.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.FetchAvailableMatchDirectorByAssociation(request);
+            
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            Assert.IsTrue(parsed != null
+                          && shooterIds.All(s=>parsed.Data.Any(x=>x.ShooterId == s))
+            );
+            Assert.AreEqual(shooterIds.Count ,parsed.Data.Count);
+        }
+
+        [TestMethod]
         public async Task ShouldCreateMatchDirectorBeOkHavingProvidedData()
         {
             var existingMatch = Scenario.Matches.FirstOrDefault();

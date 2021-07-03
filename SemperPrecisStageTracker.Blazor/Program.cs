@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Blazorise;
 using Blazorise.Bootstrap;
@@ -48,43 +49,39 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddScoped<NetworkService>();
             
-            builder.Services.AddScoped(x =>
-            {
-                Console.WriteLine("TestHttpClient");
-                var apiUrl = new Uri(builder.Configuration["baseAddress"]);
-                // use fake backend if "fakeBackend" is "true" in appsettings.json
-                // if (builder.Configuration["fakeBackend"] == "true")
-                //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
+            //builder.Services.AddScoped(x =>
+            //{
+            //    Console.WriteLine("TestHttpClient");
+            //    var apiUrl = new Uri(builder.Configuration["baseAddress"]);
+            //    // use fake backend if "fakeBackend" is "true" in appsettings.json
+            //    // if (builder.Configuration["fakeBackend"] == "true")
+            //    //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
 
-                return new HttpClient() { BaseAddress = apiUrl };
-            });
+            //    return new HttpClient() { BaseAddress = apiUrl };
+            //});
 
             // load configuration from server
 
-            //var apiUrl = new Uri(builder.Configuration["baseAddress"]);
+            var apiUrl = new Uri(builder.Configuration["baseAddress"]);
 
             // use fake backend if "fakeBackend" is "true" in appsettings.json
             // if (builder.Configuration["fakeBackend"] == "true")
             //     return new HttpClient(new FakeBackendHandler()) { BaseAddress = apiUrl };
 
-            //var httpClient = new HttpClient() { BaseAddress = apiUrl };
+            var httpClient = new HttpClient() { BaseAddress = apiUrl };
 
-            // configure http client
-            //builder.Services.AddScoped(x => httpClient);
+            //configure http client
+            builder.Services.AddScoped(x => httpClient);
 
-            // using var serverConfig = await httpClient.GetAsync("/config");
-            // using var stream = await serverConfig.Content.ReadAsStreamAsync();
+            using var serverConfig = await httpClient.GetAsync("api/config/GetConfig");
+            await using var stream = await serverConfig.Content.ReadAsStreamAsync();
 
-            //builder.Configuration.AddJsonStream(stream);
-
-
-
-
+            //Console.WriteLine(JsonSerializer.Serialize(stream));
+            builder.Configuration.AddJsonStream(stream);
             
             builder.Services.AddScoped(sp => 
             {
                 var config = sp.GetService<IConfiguration>();
-
                 var result = new ClientConfiguration();
                 config.Bind(result);
 

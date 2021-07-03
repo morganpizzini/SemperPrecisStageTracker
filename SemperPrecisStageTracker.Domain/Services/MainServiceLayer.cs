@@ -137,8 +137,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingStages = this._stageRepository.Fetch(x => x.MatchId == id);
 
-            var existingGroups = this._groupRepository.Fetch(x => x.MatchId == id);
-            var existingGroupsIds = existingGroups.Select(x => x.Id);
+            var existingGroupsIds = this._groupRepository.FetchWithProjection(x => x.Id,x => x.MatchId == id);
+            
             var existingShooterGroups = this._groupShooterRepository.Fetch(x => existingGroupsIds.Contains(x.GroupId));
 
             var groupDivisions = existingShooterGroups.GroupBy(x => x.DivisionId).Select(x => new
@@ -156,6 +156,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var existingShootersResult = this._shooterStageRepository.Fetch(x => existingStageIds.Contains(x.StageId));
 
             var shooterIds = existingShooterGroups.Select(x => x.ShooterId).ToList();
+
             var existingShooters = this.FetchShootersByIds(shooterIds);
 
             var shooterAssociation = _shooterAssociationRepository.Fetch(x => shooterIds.Contains(x.ShooterId) && x.AssociationId == id);
@@ -599,16 +600,28 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (existingMatch == null)
                 return new List<Shooter>();
 
-            var shooterAssociations = this._shooterAssociationRepository.Fetch(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x=>x.ShooterId).ToList();
+            var shooterAssociations = this._shooterAssociationRepository.FetchWithProjection(x => x.ShooterId, x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId);
 
-            var shooterMatches= this._shooterMatchRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = this._shooterMatchRepository.FetchWithProjection(x => x.ShooterId, x => x.MatchId == existingMatch.Id);
 
-            var matchStagesIds = this._stageRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            var matchStagesIds = this._stageRepository.FetchWithProjection(x => x.Id, x => x.MatchId == existingMatch.Id);
 
-            var shooterSO = this._shooterSOStageRepository.Fetch(x => matchStagesIds.Contains(x.StageId)).Select(x=>x.ShooterId).ToList();
-            
+            var shooterSO = this._shooterSOStageRepository.FetchWithProjection(x => x.ShooterId, x => matchStagesIds.Contains(x.StageId));
+
             return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
+
+        }
+        
+        /// <summary>
+        /// Fetch list of teams by provided ids
+        /// </summary>
+        /// <param name="ids"> teams identifier </param>
+        /// <returns>Returns list of teams</returns>
+        public IList<Shooter> FetchAvailableMatchDirectorByAssociaitonId(string id)
+        {
+            var shooterAssociations = this._shooterAssociationRepository.FetchWithProjection(x=>x.ShooterId,x => x.SafetyOfficier && x.AssociationId == id);
+            
+            return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id));
             
         }
 
@@ -665,7 +678,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
 
             // load match stage list
-            var stageIds = _stageRepository.Fetch(x => x.MatchId == entity.MatchId).Select(x=> x.Id);
+            var stageIds = _stageRepository.FetchWithProjection(x=>x.Id,x => x.MatchId == entity.MatchId);
             // check for some role in ShooterSOStage
             var existingShooterSO = this._shooterSOStageRepository.Fetch(x => stageIds.Contains(x.StageId) && x.ShooterId == entity.ShooterId);
             
@@ -784,15 +797,14 @@ namespace SemperPrecisStageTracker.Domain.Services
             if(existingMatch== null)
                 return new List<Shooter>();
             
-            var shooterAssociations = _shooterAssociationRepository.Fetch(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x=>x.ShooterId).ToList();
+            var shooterAssociations = _shooterAssociationRepository.FetchWithProjection(x=>x.ShooterId,x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId);
 
-            var stagesInMatch = _stageRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
+            var stagesInMatch = _stageRepository.FetchWithProjection(x => x.Id,x => x.MatchId == existingMatch.Id);
             
-            var existingShooterSo = _shooterSOStageRepository.Fetch(x => stagesInMatch.Contains(x.StageId)).Select(x=>x.ShooterId);
+            var existingShooterSo = _shooterSOStageRepository.FetchWithProjection(x=>x.ShooterId,x => stagesInMatch.Contains(x.StageId));
 
             // not a match director
-            var shooterMatches= _shooterMatchRepository.Fetch(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches= _shooterMatchRepository.FetchWithProjection(x => x.ShooterId,x => x.MatchId == existingMatch.Id);
             
             return _shooterRepository.Fetch(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
@@ -852,7 +864,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
             
             // check for not assign a shooter to 2 different stage in same match
-            var matchStage = this._stageRepository.Fetch(x => existingStage.MatchId == x.MatchId).Select(x=>x.Id);
+            var matchStage = this._stageRepository.FetchWithProjection(x=>x.Id,x => existingStage.MatchId == x.MatchId);
 
             var otherStageSO = this._shooterSOStageRepository.Fetch(x => 
                 // not in current stage
@@ -2020,7 +2032,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var currentStage = _stageRepository.GetSingle(x=>x.Id == stageId);
 
-            var stagesInMatchIds = _stageRepository.Fetch(x => x.MatchId == currentStage.MatchId).Select(x=>x.Id);
+            var stagesInMatchIds = _stageRepository.FetchWithProjection(x=> x.Id,x => x.MatchId == currentStage.MatchId);
 
             var shooterStages = FetchEntities(e => stagesInMatchIds.Contains(e.StageId) && shooterIds.Contains(e.ShooterId) && (e.Disqualified || e.Warning), null, null, e=> !e.Disqualified, false, _shooterStageRepository);
 
@@ -2100,6 +2112,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.Ftdr = entity.Ftdr;
             existingShooterStage.Warning = entity.Warning;
             existingShooterStage.Disqualified = entity.Disqualified;
+            existingShooterStage.Notes = entity.Notes;
 
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (existingShooterStage.CreationDateTime < new DateTime(2000, 1, 1))
@@ -2135,7 +2148,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <returns>Returns list of shooters</returns>
         public IList<Shooter> FetchShootersByGroupId(string id)
         {
-            var shooterIds = this._groupShooterRepository.Fetch(x => x.GroupId == id).Select(x => x.ShooterId);
+            var shooterIds = this._groupShooterRepository.FetchWithProjection(x => x.ShooterId,x => x.GroupId == id);
             //Utilizzo il metodo base
             return FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _shooterRepository);
         }
@@ -2155,16 +2168,14 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (match == null) throw new ArgumentNullException(nameof(match));
 
             // find group in the same match
-            var groupInMatchIds = this._groupRepository.Fetch(x => x.MatchId == group.MatchId).Select(x => x.Id).ToList();
+            var groupInMatchIds = this._groupRepository.FetchWithProjection(x => x.Id,x => x.MatchId == group.MatchId);
 
             // find shooter in other groups
             var unAvailableUsers = this._groupShooterRepository
-                                                    .Fetch(x => groupInMatchIds.Contains(x.GroupId))
-                                                    .Select(x => x.ShooterId)
-                                                    .ToList();
+                .FetchWithProjection(x => x.ShooterId, x => groupInMatchIds.Contains(x.GroupId));
 
             // retrieve shooter in same association
-            var shooterInTeamAssociation = this._shooterAssociationRepository.Fetch(x => x.AssociationId == match.AssociationId).Select(x => x.ShooterId).ToList();
+            var shooterInTeamAssociation = this._shooterAssociationRepository.FetchWithProjection(x => x.ShooterId,x => x.AssociationId == match.AssociationId);
 
             // retrieve shooter not from available user and in association
             return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)), null, null, x => x.LastName, false);

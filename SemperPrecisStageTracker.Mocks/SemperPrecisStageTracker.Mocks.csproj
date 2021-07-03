@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Chakra.Core.Mocks" Version="3.0.3" />
+    <PackageReference Include="Chakra.Core.Mocks" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -141,14 +141,8 @@
   <data name="ErrorOccurs" xml:space="preserve">
     <value>There are some errors!</value>
   </data>
-  <data name="WrongLocation" xml:space="preserve">
-    <value>Wrong location!</value>
-  </data>
   <data name="UnifyClassifications" xml:space="preserve">
     <value>Unify classifications</value>
-  </data>
-  <data name="Location" xml:space="preserve">
-    <value>Location</value>
   </data>
   <data name="Association" xml:space="preserve">
     <value>Association</value>
@@ -158,5 +152,11 @@
   </data>
   <data name="BackToList" xml:space="preserve">
     <value>Back to list</value>
+  </data>
+  <data name="Place" xml:space="preserve">
+    <value>Place</value>
+  </data>
+  <data name="WrongPlace" xml:space="preserve">
+    <value>Wrong place!</value>
   </data>
 </root>

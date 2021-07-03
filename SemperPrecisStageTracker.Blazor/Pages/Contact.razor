@@ -1,4 +1,19 @@
 ﻿@page "/contact"
+@using  System.ComponentModel
+@using System.Text.Json
+@using Microsoft.Extensions.Configuration
+@inject IJSRuntime JS;
+@inject ClientConfiguration config
+
+<h3>reCAPTCHA</h3>
+
+@JsonSerializer.Serialize(config);
+<div id="recaptcha_container"></div>
+<button type="button" class="btn btn-primary" @onclick="ShowResponse">Show Response</button>
+
+<br />
+
+@reCAPTCHA_response
 <section class="py-5">
     <div class="container px-5">
         <!-- Contact form-->
@@ -91,3 +106,40 @@
         </div>
     </div>
 </section>
+
+@code {
+    private int WidgetId;
+
+    public string reCAPTCHA_response;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public void CallbackOnSuccess(string response)
+    {
+        reCAPTCHA_response = response;
+    }
+
+    [JSInvokable, EditorBrowsable(EditorBrowsableState.Never)]
+    public void CallbackOnExpired()
+    {
+        //...
+    }
+
+
+    private async Task ShowResponse()
+    {
+        //https://stackoverflow.com/questions/66471037/how-to-integrate-google-recaptcha-v2-for-blazor-webassembly-with-an-asp-net-core
+        // https://developers.google.com/recaptcha/docs/v3
+        reCAPTCHA_response = await JS.InvokeAsync<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contact-submit" });
+    }
+}
