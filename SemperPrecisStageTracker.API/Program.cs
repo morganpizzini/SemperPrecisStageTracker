@@ -18,7 +18,7 @@ using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.EF.Clients;
-
+using Azure.Identity;
 namespace SemperPrecisStageTracker.API
 {
     public class Program
@@ -48,11 +48,23 @@ namespace SemperPrecisStageTracker.API
             CreateHostBuilder(args).Build().Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =>
+        webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
+        {
+            var settings = config.Build();
+
+            config.AddAzureAppConfiguration(options =>
+            {
+                options.Connect(settings["azKV"])
+                        .ConfigureKeyVault(kv =>
+                        {
+                            kv.SetCredential(new DefaultAzureCredential());
+                        });
+            });
+        })
+        .UseStartup<Startup>());
     }
 }

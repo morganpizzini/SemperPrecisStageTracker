@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 {
                     recaptcha = new
                     {
-                        recaptchaToken = _configuration.GetSection("recaptcha")["recaptchaToken"]
+                        recaptchaToken = _configuration["recaptcha:recaptchaToken"]
                     }
                 });
         }
