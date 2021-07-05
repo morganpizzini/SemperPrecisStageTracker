@@ -18,7 +18,6 @@ using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.EF.Clients;
-using Azure.Identity;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
@@ -61,7 +60,12 @@ namespace SemperPrecisStageTracker.API
         {
             var settings = config.Build();
 
-            var vaultName = $"https://{settings["azKVName"]}.vault.azure.net/";
+            var kvName = settings["azKVName"];
+
+            if (string.IsNullOrEmpty(kvName))
+                throw new NullReferenceException("Azure KeyVault name not provided");
+
+            var vaultName = $"https://{kvName}.vault.azure.net/";
 
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
             var keyVaultClient = new KeyVaultClient(

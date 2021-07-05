@@ -12,9 +12,9 @@ namespace SemperPrecisStageTracker.Domain.Services
 {
     public class CaptchaValidatorService : ICaptchaValidatorService
     {
-        private HttpClient _httpClient;
-        private string recaptchaToken;
-        private string url;
+        private readonly HttpClient _httpClient;
+        private readonly string recaptchaToken;
+        private readonly string url;
 
         public CaptchaValidatorService(HttpClient httpClient, IConfiguration configuration)
         {
@@ -24,12 +24,12 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
         public async Task<string> ValidateToken(string token)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Content = new StringContent(JsonSerializer.Serialize(new
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
-                secret = recaptchaToken,
-                response = token
-            }), Encoding.UTF8, "application/json");
+                Content = new StringContent(
+                    JsonSerializer.Serialize(new {secret = recaptchaToken, response = token}), Encoding.UTF8,
+                    "application/json")
+            };
 
             using var response = await _httpClient.SendAsync(request);
 
