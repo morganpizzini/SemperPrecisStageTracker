@@ -19,8 +19,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         public CaptchaValidatorService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            recaptchaToken = configuration["recaptcha.siteKey"];
-            url = configuration["recaptcha.siteAuthority"];
+            recaptchaToken = configuration["recaptchaSiteKey"];
+            url = configuration["recaptchaSiteAuthority"];
         }
         public async Task<string> ValidateToken(string token)
         {

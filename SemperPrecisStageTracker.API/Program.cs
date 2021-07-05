@@ -19,6 +19,11 @@ using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.EF.Clients;
 using Azure.Identity;
+using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureKeyVault;
+
 namespace SemperPrecisStageTracker.API
 {
     public class Program
@@ -52,18 +57,17 @@ namespace SemperPrecisStageTracker.API
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder =>
-        webBuilder.ConfigureAppConfiguration((hostingContext, config) =>
+        webBuilder.ConfigureAppConfiguration((_, config) =>
         {
             var settings = config.Build();
 
-            config.AddAzureAppConfiguration(options =>
-            {
-                options.Connect(settings["azKV"])
-                        .ConfigureKeyVault(kv =>
-                        {
-                            kv.SetCredential(new DefaultAzureCredential());
-                        });
-            });
+            var vaultName = $"https://{settings["azKVName"]}.vault.azure.net/";
+
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(
+                new KeyVaultClient.AuthenticationCallback(
+                    azureServiceTokenProvider.KeyVaultTokenCallback));
+            config.AddAzureKeyVault(vaultName, keyVaultClient, new DefaultKeyVaultSecretManager());
         })
         .UseStartup<Startup>());
     }
