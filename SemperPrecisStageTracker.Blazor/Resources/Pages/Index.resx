@@ -117,65 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Detail" xml:space="preserve">
-    <value>Shooter detail</value>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
     <comment />
   </data>
-  <data name="Shooter" xml:space="preserve">
-    <value>Shooter</value>
+  <data name="WrongUsername" xml:space="preserve">
+    <value>Wrong username!</value>
     <comment />
   </data>
-  <data name="BirthDate" xml:space="preserve">
-    <value>Birth date</value>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
     <comment />
   </data>
-  <data name="EditShooter" xml:space="preserve">
-    <value>Edit shooter</value>
-    <comment />
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
   </data>
-  <data name="BackToList" xml:space="preserve">
-    <value>Back to list</value>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
   </data>
-  <data name="NewClassification" xml:space="preserve">
-    <value>New classification</value>
-  </data>
-  <data name="NewTeam" xml:space="preserve">
-    <value>New team</value>
-  </data>
-  <data name="Teams" xml:space="preserve">
-    <value>Teams</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="RegistrationDate" xml:space="preserve">
-    <value>Registration date</value>
-  </data>
-  <data name="NoTeams" xml:space="preserve">
-    <value>No teams</value>
-  </data>
-  <data name="Associations" xml:space="preserve">
-    <value>Associations</value>
-  </data>
-  <data name="Classification" xml:space="preserve">
-    <value>Classification</value>
-  </data>
-  <data name="NoAssociations" xml:space="preserve">
-    <value>No associations</value>
+  <data name="WrongPassword" xml:space="preserve">
+    <value>Wrong password!</value>
   </data>
   <data name="Submit" xml:space="preserve">
     <value>Submit</value>
-  </data>
-  <data name="Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="EditTeam" xml:space="preserve">
-    <value>Edit team</value>
-  </data>
-  <data name="EditAssociation" xml:space="preserve">
-    <value>Edit association</value>
-  </data>
-  <data name="SafetyOfficier" xml:space="preserve">
-    <value>Safety officier</value>
   </data>
 </root>

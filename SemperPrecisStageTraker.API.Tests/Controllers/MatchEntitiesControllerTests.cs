@@ -585,14 +585,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //Composizione della request
-            var request = new ShooterMatchCreateRequest
+            var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
                 ShooterIds = new List<string>{shooter.Id}
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateMatchDirector(request);
+            var response = await Controller.CreateMatchDirectors(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterMatches.Count;
@@ -627,14 +627,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //Composizione della request
-            var request = new ShooterMatchCreateRequest
+            var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
                 ShooterIds = new List<string>{shooter.Id}
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateMatchDirector(request);
+            var response = await Controller.CreateMatchDirectors(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterMatches.Count;
@@ -673,14 +673,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //Composizione della request
-            var request = new ShooterMatchCreateRequest
+            var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
                 ShooterIds = new List<string>{shooter.Id}
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateMatchDirector(request);
+            var response = await Controller.CreateMatchDirectors(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterMatches.Count;
@@ -717,14 +717,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //Composizione della request
-            var request = new ShooterMatchCreateRequest
+            var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
                 ShooterIds = new List<string>{shooter.Id}
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateMatchDirector(request);
+            var response = await Controller.CreateMatchDirectors(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterMatches.Count;
@@ -766,14 +766,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter SO not found");
 
             //Composizione della request
-            var request = new ShooterMatchCreateRequest
+            var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
                 ShooterIds = new List<string>{shooter.Id,shooterSO.ShooterId}
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateMatchDirector(request);
+            var response = await Controller.CreateMatchDirectors(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterMatches.Count;

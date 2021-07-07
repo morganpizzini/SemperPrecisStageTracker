@@ -36,6 +36,39 @@ else
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
+                        
+                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
+
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (matchDirectors.Count > 0)
+                                {
+                                    <Virtualize Items="@matchDirectors" Context="matchDirector">
+                                        <TableRow>
+                                            <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+                                else
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                            @L["NoAssociations"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+
                     </CardBody>
                 </Card>
             </Column>
@@ -178,6 +211,67 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+
+<Modal @ref="modalRefMatchDirectorToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["NewMatchDirector"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@matchesDirectorToEdit">
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@matchesDirectorToEdit.ShooterId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var availableMatchDirector in availableMatchDirectors)
+                                    {
+                                        <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefMatchDirectorToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatchDirector"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (matchDirectorToDelete.Shooter != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@matchDirectorToDelete.Shooter.CompleteName</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
@@ -185,24 +279,39 @@ else
 
     // reference to the modal component
     private Modal modalRefGroup;
-    GroupContract groupToDelete = new GroupContract();
+    GroupContract groupToDelete = new();
     private Modal modalRefStage;
-    StageContract stageToDelete = new StageContract();
+    StageContract stageToDelete = new();
 
-    MatchContract match = new MatchContract();
+
+    Validations validations;
+    private Modal modalRefMatchDirectorToDelete;
+    ShooterMatchContract matchDirectorToDelete = new();
+    private Modal modalRefMatchDirectorToEdit;
+    ShooterMatchCreateRequest matchesDirectorToEdit = new();
+
+    MatchContract match = new();
+    IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
+    IList<ShooterContract> availableMatchDirectors = new List<ShooterContract>();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadMatch();
-
+        await LoadMatchDirectors();
         await base.OnInitializedAsync();
     }
 
     async Task LoadMatch()
     {
         match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
-
     }
+
+    async Task LoadMatchDirectors()
+    {
+        matchDirectors = await Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = Id });
+        availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+    }
+
     void DeleteGroup(GroupContract group)
     {
         if (group == null)
@@ -241,4 +350,47 @@ else
         modalRefStage.Hide();
     }
 
+    void NewMatchDirector()
+    {
+        matchesDirectorToEdit = new ShooterMatchCreateRequest { MatchId = match.MatchId };
+        modalRefMatchDirectorToEdit.Show();
+    }
+
+    void DeleteMatchDirector(ShooterMatchContract matchDirector)
+    {
+        if (matchDirector == null)
+            return;
+        matchDirectorToDelete = matchDirector;
+        modalRefMatchDirectorToDelete.Show();
+    }
+
+    private async Task HideModalMatchDirectorToEdit(bool choice)
+    {
+        if (choice)
+        {
+            if (!validations.ValidateAll())
+                return;
+            validations.ClearAll();
+            matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
+            //update available match director
+            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+        }
+        matchesDirectorToEdit= new ();
+        modalRefMatchDirectorToEdit.Hide();
+    }
+
+    private async Task HideModalMatchDirectorToDelete(bool choice)
+    {
+        if (choice && matchDirectorToDelete.Shooter != null)
+        {
+            matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
+            {
+                ShooterMatchId= matchDirectorToDelete.ShooterMatchId
+            });
+            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+    //await LoadMatchDirectors();
+        }
+        matchDirectorToDelete = new ();
+        modalRefMatchDirectorToDelete.Hide();
+    }
 }

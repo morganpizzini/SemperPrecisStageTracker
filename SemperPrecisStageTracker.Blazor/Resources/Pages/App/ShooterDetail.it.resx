@@ -163,4 +163,19 @@
   <data name="Teams" xml:space="preserve">
     <value>Squadre</value>
   </data>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="EditAssociation" xml:space="preserve">
+    <value>Modifica associazione</value>
+  </data>
+  <data name="EditTeam" xml:space="preserve">
+    <value>Modifica team</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Salva</value>
+  </data>
+  <data name="SafetyOfficier" xml:space="preserve">
+    <value>Safety officier</value>
+  </data>
 </root>

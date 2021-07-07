@@ -7,6 +7,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string ShooterId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string CompleteName => $"{LastName} {FirstName}";
         public DateTime BirthDate { get; set; }
         public string AuthData {get;set;}
         public string Username {get;set;}

@@ -89,7 +89,7 @@ else
                             {
                                 <Virtualize Items="@shooterClassifications" Context="classification">
                                     <TableRow>
-                                        <TableRowHeader>@classification.Association.Name</TableRowHeader>
+                                        <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
                                         <TableRowCell>@classification.Classification</TableRowCell>
                                         <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                         <TableRowCell>
@@ -172,6 +172,14 @@ else
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
                                 </Feedback>
                             </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is8">
+                            <Check TValue="bool" @bind-Checked="@associationToEdit.SafetyOfficier">@L["SafetyOfficier"]</Check>
                         </FieldBody>
                     </Field>
                 </Validation>
@@ -313,9 +321,9 @@ else
     Validations validations;
     Validations teamValidations;
     private Modal modalRefAssociationToDelete;
-    ShooterAssociationContract associationToDelete = new ShooterAssociationContract();
+    ShooterAssociationContract associationToDelete = new ();
     private Modal modalRefAssociationToEdit;
-    ShooterAssociationCreateRequest associationToEdit = new ShooterAssociationCreateRequest();
+    ShooterAssociationCreateRequest associationToEdit = new ();
     IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
