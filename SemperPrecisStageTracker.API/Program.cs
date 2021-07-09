@@ -56,8 +56,13 @@ namespace SemperPrecisStageTracker.API
     public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
         .ConfigureWebHostDefaults(webBuilder =>
-        webBuilder.ConfigureAppConfiguration((_, config) =>
+        webBuilder.ConfigureAppConfiguration((hostContext, config) =>
         {
+            if (hostContext.HostingEnvironment.IsDevelopment())
+            {
+                config.AddUserSecrets<Program>();
+            }
+
             var settings = config.Build();
 
             var kvName = settings["azKVName"];
