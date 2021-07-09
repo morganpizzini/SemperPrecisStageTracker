@@ -198,6 +198,21 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateStageSO")]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public Task<IActionResult> CreateStageSO(ShooterSOStageCreateRequest request)
+            => this.CreateStageSOs(new ShooterSOStagesCreateRequest()
+            {
+                StageId = request.StageId,
+                Shooters = new List<ShooterSOStageShooterContract>{request.Shooter}
+            });
+
+        /// <summary>
+        /// Creates a match on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("CreateStageSOs")]
+        [ProducesResponseType(typeof(MatchContract), 200)]
+        public Task<IActionResult> CreateStageSOs(ShooterSOStagesCreateRequest request)
         {
             //Recupero l'elemento dal business layer
             var existingStage = BasicLayer.GetStage(request.StageId);

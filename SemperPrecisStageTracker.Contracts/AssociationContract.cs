@@ -10,4 +10,9 @@ namespace SemperPrecisStageTracker.Contracts
         public IList<string> Divisions {get;set;} = new List<string>();
         public IList<string> Classifications {get;set;} = new List<string>();
     }
+    public enum ShooterRoleEnumContract
+    {
+        SO= 1,
+        SOChief = 2
+    }
 }
