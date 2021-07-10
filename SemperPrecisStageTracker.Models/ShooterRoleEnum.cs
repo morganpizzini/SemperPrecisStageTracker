@@ -2,8 +2,9 @@
 {
     public enum ShooterRoleEnum
     {
-        SO= 1,
-        SOChief = 2,
-        MatchDirector= 3
+        PSO= 1,
+        CSO = 2,
+        MatchDirector= 3,
+        SSO = 4
     }
 }

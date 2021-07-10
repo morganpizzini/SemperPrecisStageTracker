@@ -218,7 +218,7 @@ namespace SemperPrecisStageTracker.EF.Context
         public DbSet<ShooterMatch> ShooterMatches { get; set; }
 
         /// <summary>
-        /// List of shooter SO stages
+        /// List of shooter PSO stages
         /// </summary>
         public DbSet<ShooterSOStage> ShooterSOStages { get; set; }
 

@@ -203,4 +203,13 @@
   <data name="BackToMatch" xml:space="preserve">
     <value>Torna al match</value>
   </data>
+  <data name="Role1" xml:space="preserve">
+    <value>PSO</value>
+  </data>
+  <data name="Role2" xml:space="preserve">
+    <value>CSO</value>
+  </data>
+  <data name="Role4" xml:space="preserve">
+    <value>SSO</value>
+  </data>
 </root>

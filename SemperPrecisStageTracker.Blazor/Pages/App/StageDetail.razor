@@ -24,7 +24,7 @@ else
                     <CardText>@stage.Index</CardText>
                     <CardTitle>@L["Targets"]</CardTitle>
                     <CardText>@stage.Targets</CardText>
-                    <CardTitle>@L["SO"]</CardTitle>
+                    <CardTitle>@L["PSO"]</CardTitle>
                     <CardText>@stage.SO</CardText>
                 </CardBody>
             </Card>
@@ -34,6 +34,41 @@ else
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
                     <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")</CardText>
+
+                    <CardTitle>@L["MatchDirectors"]</CardTitle>
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (matchDirectors.Count > 0)
+                            {
+                                <Virtualize Items="@matchDirectors" Context="matchDirector">
+                                    <TableRow>
+                                        <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
+                                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;<Icon Name="IconName.Phone" /></LoadingTemplate>
+                                                <ChildContent><Icon Name="IconName.Phone" /></ChildContent>
+                                            </Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                        @L["NoMatchDirectors"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
 
                     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
 
@@ -247,6 +282,30 @@ else
     </ModalContent>
 </Modal>
 
+
+<Modal @ref="modalRefCallMatchDirector">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["CallMatchDirectorModalTitle"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (callMatchDirectorSuccess)
+            {
+                <Text>
+                @L["CallMatchDirectorSuccess"]
+                </Text>
+            }
+            else
+            {
+                <Text>
+                @L["CallMatchDirectorFail"]
+                @L[$"{callMatchDirectorError}"]
+                </Text>
+            }
+        </ModalBody>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
@@ -259,6 +318,11 @@ else
 
     MatchContract match = new();
 
+    IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
+    private bool matchDirectorCall;
+    private bool callMatchDirectorSuccess;
+    private string callMatchDirectorError;
+    private Modal modalRefCallMatchDirector;
 
 
     Validations validations;
@@ -273,6 +337,7 @@ else
     {
         stage = await Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
         match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        matchDirectors = await Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = Id });
         await LoadSO();
         await base.OnInitializedAsync();
     }
@@ -286,7 +351,7 @@ else
 
     void NewStageSo()
     {
-        stageSoToEdit = new () { StageId= StageId};
+        stageSoToEdit = new() { StageId = StageId };
         modalRefStageSoToEdit.Show();
     }
 
@@ -326,6 +391,26 @@ else
         }
         stageSoToDelete = new();
         modalRefStageSoToDelete.Hide();
+    }
+
+    async Task CallMatchDirector(ShooterMatchContract matchDirector)
+    {
+        if (matchDirector == null)
+            return;
+        matchDirectorCall = true;
+        var result = await Post<OkResponse>("api/Notification/CallShooter", new CallShooterRequest()
+        {
+            MatchId = Id,
+            ShooterId = matchDirector.Shooter.ShooterId,
+            Context = CallShooterContextEnum.MatchDirector
+        });
+        matchDirectorCall = false;
+        callMatchDirectorSuccess = result.Status;
+
+        if (!result.Status)
+            callMatchDirectorError = result.Errors.FirstOrDefault() ?? string.Empty;
+
+        modalRefCallMatchDirector.Show();
     }
 
 }

@@ -136,7 +136,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingShooterSOStage = Scenario.ShooterSOStages.FirstOrDefault();
             
             if(existingShooterSOStage== null)
-                Assert.Inconclusive("Shooter SO Stage not found");
+                Assert.Inconclusive("Shooter PSO Stage not found");
             
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
@@ -149,7 +149,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = existingShooterSOStage.Role == ShooterRoleEnum.SO ? (int)ShooterRoleEnum.SOChief : (int)ShooterRoleEnum.SO,
+                        Role = existingShooterSOStage.Role == ShooterRoleEnum.PSO ? (int)ShooterRoleEnum.CSO : (int)ShooterRoleEnum.PSO,
                         ShooterId = existingShooterSOStage.ShooterId
                     }
                 }
@@ -180,7 +180,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingShooterSOStage = Scenario.ShooterSOStages.FirstOrDefault();
             
             if(existingShooterSOStage== null)
-                Assert.Inconclusive("Shooter SO Stage not found");
+                Assert.Inconclusive("Shooter PSO Stage not found");
             
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
@@ -199,7 +199,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = existingShooterSOStage.Role == ShooterRoleEnum.SO ? (int)ShooterRoleEnum.SOChief : (int)ShooterRoleEnum.SO,
+                        Role = existingShooterSOStage.Role == ShooterRoleEnum.PSO ? (int)ShooterRoleEnum.CSO : (int)ShooterRoleEnum.PSO,
                         ShooterId = existingShooterSOStage.ShooterId
                     }
                 }
@@ -430,7 +430,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingShooterSOStage = Scenario.ShooterSOStages.FirstOrDefault();
             
             if(existingShooterSOStage== null)
-                Assert.Inconclusive("Shooter SO Stage not found");
+                Assert.Inconclusive("Shooter PSO Stage not found");
             
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
@@ -763,7 +763,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var shooterSO = Scenario.ShooterSOStages.FirstOrDefault(x => matchStages.Contains(x.StageId));
 
             if(shooterSO == null)
-                Assert.Inconclusive("Shooter SO not found");
+                Assert.Inconclusive("Shooter PSO not found");
 
             //Composizione della request
             var request = new ShooterMatchesCreateRequest

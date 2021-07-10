@@ -181,7 +181,7 @@
     <value>Descrizione bersagli</value>
   </data>
   <data name="SO" xml:space="preserve">
-    <value>SO</value>
+    <value>PSO</value>
   </data>
   <data name="WrongDistance" xml:space="preserve">
     <value>Errore nella distanza!</value>
@@ -208,7 +208,7 @@
     <value>Errore nel punteggio!</value>
   </data>
   <data name="WrongSO" xml:space="preserve">
-    <value>Errore con SO!</value>
+    <value>Errore con PSO!</value>
   </data>
   <data name="WrongStageProcedure" xml:space="preserve">
     <value>Errore nella procedura di stage!</value>

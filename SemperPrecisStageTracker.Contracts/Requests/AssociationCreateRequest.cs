@@ -12,4 +12,21 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public IList<string> Classifications {get;set;} = new List<string>();
     }
+
+    public class CallShooterRequest
+    {
+        [Required]
+        public string MatchId { get; set; }
+
+        [Required]
+        public string ShooterId { get; set; }
+        
+        [Required]
+        public CallShooterContextEnum Context { get; set; }
+    }
+
+    public enum CallShooterContextEnum
+    {
+        MatchDirector = 0
+    }
 }

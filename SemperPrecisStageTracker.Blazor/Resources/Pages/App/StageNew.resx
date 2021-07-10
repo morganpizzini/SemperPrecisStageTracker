@@ -175,7 +175,7 @@
     <value>Targets description</value>
   </data>
   <data name="SO" xml:space="preserve">
-    <value>SO</value>
+    <value>PSO</value>
   </data>
   <data name="WrongTargetsDescription" xml:space="preserve">
     <value>Wrong target description!</value>
@@ -190,7 +190,7 @@
     <value>Wrong stage procedure!</value>
   </data>
   <data name="WrongSO" xml:space="preserve">
-    <value>Wrong SO!</value>
+    <value>Wrong PSO!</value>
   </data>
   <data name="WrongScoring" xml:space="preserve">
     <value>Wrong scoting!</value>

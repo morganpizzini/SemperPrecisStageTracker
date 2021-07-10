@@ -341,7 +341,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.Property<string>("Rules")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SO")
+                    b.Property<string>("PSO")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Scenario")

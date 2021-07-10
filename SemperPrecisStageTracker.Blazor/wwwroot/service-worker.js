@@ -22,5 +22,9 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
     event.notification.close();
-    event.waitUntil(clients.openWindow(event.notification.data.url));
+    if (event.notification.data.url.length>0) {
+        event.waitUntil(clients.openWindow(event.notification.data.url));
+    } else {
+        event.waitUntil(clients.openWindow("/app"));
+    }
 });

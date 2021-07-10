@@ -184,10 +184,10 @@
     <value>Wrong index!</value>
   </data>
   <data name="SO" xml:space="preserve">
-    <value>SO</value>
+    <value>PSO</value>
   </data>
   <data name="WrongSO" xml:space="preserve">
-    <value>Wrong SO!</value>
+    <value>Wrong PSO!</value>
   </data>
   <data name="WrongScenario" xml:space="preserve">
     <value>Wrong scenario!</value>

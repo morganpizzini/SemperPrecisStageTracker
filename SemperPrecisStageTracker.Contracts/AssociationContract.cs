@@ -12,7 +12,9 @@ namespace SemperPrecisStageTracker.Contracts
     }
     public enum ShooterRoleEnumContract
     {
-        SO= 1,
-        SOChief = 2
+        PSO= 1,
+        CSO = 2,
+        SSO = 4
+
     }
 }

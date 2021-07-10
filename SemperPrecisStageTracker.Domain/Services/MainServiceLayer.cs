@@ -684,7 +684,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             
             if (existingShooterSO.Count > 0)
             {
-                validations.Add(new("Shooter is already an SO"));
+                validations.Add(new("Shooter is already an PSO"));
                 return validations;
             }
             
@@ -826,6 +826,24 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="matchId">Match identifier</param>
+        /// <param name="userId">User identifier</param>
+        /// <returns>Returns Stage or null</returns>
+        public Stage GetSOStage(string matchId, string userId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(matchId)) throw new ArgumentNullException(nameof(matchId));
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+
+            var stagesInMatch = _stageRepository.FetchWithProjection(x=>x.Id,x => x.MatchId == matchId);
+            var shooterSoStage = GetSingleEntity(c => stagesInMatch.Contains(c.StageId) && c.ShooterId== userId, _shooterSOStageRepository);
+            //Utilizzo il metodo base
+            return GetSingleEntity(x => x.Id == shooterSoStage.StageId, _stageRepository);
+        }
+
+        /// <summary>
         /// Create provided team
         /// </summary>
         /// <param name="entity">Team</param>
@@ -876,7 +894,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             if (otherStageSO.Count > 0)
             {
-                validations.Add(new("Shooter is already an SO in other stage"));
+                validations.Add(new("Shooter is already an PSO in other stage"));
                 return validations;
             }
 
@@ -956,7 +974,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Se l'oggetto � esistente, eccezione
             if (string.IsNullOrEmpty(entity.Id))
-                throw new InvalidProgramException("Provided shooter SO stage doesn't have valid Id");
+                throw new InvalidProgramException("Provided shooter PSO stage doesn't have valid Id");
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
@@ -2478,6 +2496,17 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Utilizzo il metodo base
             return FetchEntities(s => ids.Contains(s.Id), null, null, null, true, _notificationsubscriptionRepository);
+        }
+
+        /// <summary>
+        /// Fetch list of notificationsubscriptions by provided user id
+        /// </summary>
+        /// <param name="ids"> user identifier </param>
+        /// <returns>Returns list of notificationsubscriptions</returns>
+        public IList<NotificationSubscription> FetchNotificationSubscriptionsByUserId(string id)
+        {
+            //Utilizzo il metodo base
+            return FetchEntities(s => s.UserId==id, null, null, null, true, _notificationsubscriptionRepository);
         }
 
         /// <summary>
