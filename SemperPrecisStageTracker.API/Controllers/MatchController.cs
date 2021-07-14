@@ -23,6 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllMatches")]
+        [ApiAuthorizationFilter(AdministratonPermissions.ManageMatches)]
         [ProducesResponseType(typeof(IList<MatchContract>), 200)]
         public Task<IActionResult> FetchAllMatches()
         {

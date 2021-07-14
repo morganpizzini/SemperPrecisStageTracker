@@ -1,10 +1,183 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.OpenApi.Models;
+using SemperPrecisStageTracker.Contracts.Requests;
+using SemperPrecisStageTracker.Domain.Services;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using ZenProgramming.Chakra.Core.Data;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {
+    // https://ekobit.com/blog/asp-netcore-custom-authorization-attributes/
+    // ranged permissions
+    public enum AdministratonPermissions
+    {
+        ManageMatches = 1,
+        ManageShooters = 2,
+        ManageTeams = 3,
+        ManageStages = 4,
+        CreateMatches = 5,
+        CreateShooters = 6,
+        CreateTeams = 7,
+        CreateStages = 8,
+    }
+
+    // singularity permissions
+    public enum EntityPermissions
+    {
+        EditShooter = 1,
+        DeleteShooter = 2,
+        EditMatch = 3,
+        DeleteMatch = 4
+    }
+
+    public class UserPermissions
+    {
+        public ICollection<AdministratonPermissions> AdministratorPermissions { get; set; } = 
+            new List<AdministratonPermissions>();
+
+        public IDictionary<string, ICollection<EntityPermissions>> EntityPermissions { get; set; } =
+            new Dictionary<string, ICollection<EntityPermissions>>();
+    }
+
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class EntityIdAttribute : Attribute
+    {
+    }
+
+    public class ApiAuthorizationFilter : ActionFilterAttribute
+    {
+        private readonly List<AdministratonPermissions> _adminPermission = new();
+        private readonly List<EntityPermissions> _shooterPermission = new();
+        //private readonly List<MatchPermissions> _matchPermissions = new();
+
+        public string PermissionsString
+        {
+            get
+            {
+                var result = string.Empty;
+                if (_adminPermission.Any())
+                    result += string.Join(" ", _adminPermission);
+
+                if (_shooterPermission.Any())
+                    result += " " + string.Join(" ", _shooterPermission);
+
+                return result;
+            }
+        }
+
+
+        public ApiAuthorizationFilter(params EntityPermissions[] permissions)
+        {
+            _shooterPermission.Clear();
+            _shooterPermission.AddRange(permissions);
+        }
+
+        public ApiAuthorizationFilter(params AdministratonPermissions[] permissions)
+        {
+            _adminPermission.Clear();
+            _adminPermission.AddRange(permissions);
+        }
+
+        private string GetPermissionIdValue(ActionExecutingContext context)
+        {
+            if (context.ActionArguments.Any())
+            {
+                var argument = context.ActionArguments.Where(p => p.Key == "request")
+                    .Select(s => s.Value)
+                    .FirstOrDefault();
+                if (argument is EntityFilterValidation entity)
+                    return entity.EntityId;
+            }
+            return string.Empty;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            var userId = PlatformUtils.GetIdentityUserId(context.HttpContext.User);
+            if (userId == null)
+            {
+                context.Result = new ForbidResult();
+            }
+
+            var shooterId = GetPermissionIdValue(context);
+
+            var permissions = GetUserPermissions(userId);
+
+            var valueFound = CheckPermissionsForValue(permissions);
+
+            if (valueFound)
+            {
+                base.OnActionExecuting(context);
+            }
+            else
+            {
+                context.Result = new ForbidResult();
+            }
+        }
+
+        private UserPermissions GetUserPermissions(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                return new();
+            //Transazione isolata per il database con il solo scopo di identificare
+            //l'accesso di emergenza, subito chiusa al termine dell'operazione
+            using IDataSession isolatedSession = SessionFactory.OpenSession();
+
+            //Service layer base
+            using var serviceLayer = new AuthenticationServiceLayer(isolatedSession);
+
+            serviceLayer.GetUserPermissionById(userId);
+
+            return new();
+        }
+
+        private bool CheckPermissionsForValue(UserPermissions permissions, string shooterId = null)
+        {
+            if (permissions.AdministratorPermissions.Any(p => _adminPermission.Contains(p)))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(shooterId) && _shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(shooterId))
+            {
+
+                var existingPermission = permissions.EntityPermissions
+                    .First(sp => sp.Key == shooterId).Value;
+
+                if (existingPermission.Any(p => _shooterPermission.Contains(p)))
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
+
+    public class PermissionsFilter : IOperationFilter
+    {
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
+        {
+            var filterDescriptors = context.ApiDescription.ActionDescriptor.FilterDescriptors;
+            var customAuthorizationFilter = (ApiAuthorizationFilter)filterDescriptors
+                .Select(filterInfo => filterInfo.Filter)
+                .FirstOrDefault(filter => filter is ApiAuthorizationFilter);
+            if (customAuthorizationFilter != null)
+            {
+                operation.Description += $"Permissions: {customAuthorizationFilter.PermissionsString}";
+            }
+        }
+    }
+
     public static class PlatformUtils
     {
         #region private properties

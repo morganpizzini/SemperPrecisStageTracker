@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterUpdateRequest
+    public class ShooterUpdateRequest: ShooterRequest
     {
-        [Required]
-        public string ShooterId { get; set; }
+        //[Required]
+        //public string ShooterId { get; set; }
         [Required]
         public string FirstName { get; set; }
         [Required]

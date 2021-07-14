@@ -88,8 +88,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateShooter")]
+        [ApiAuthorizationFilter(EntityPermissions.EditShooter)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public Task<IActionResult> UpdateShooter(ShooterUpdateRequest request)
+        public Task<IActionResult> UpdateShooter([EntityId]ShooterUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);

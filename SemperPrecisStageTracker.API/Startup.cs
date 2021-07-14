@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
 using SemperPrecisStageTracker.Domain.Configurations;
 using ZenProgramming.Chakra.Core.Configurations;
@@ -77,6 +78,8 @@ namespace SemperPrecisStageTracker.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
+
+                c.OperationFilter<PermissionsFilter>();
 
                 c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
                 {

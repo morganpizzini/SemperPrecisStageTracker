@@ -45,7 +45,6 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
         {
             //Inizializzo la session e il dominio
             DataSession = SessionFactory.OpenSession();
-            //AuthorizationLayer = new AuthenticationServiceLayer(DataSession);
             BasicLayer = new MainServiceLayer(DataSession);
             AuthorizationLayer = new AuthenticationServiceLayer(DataSession);
         }

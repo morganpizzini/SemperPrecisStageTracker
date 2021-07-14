@@ -48,25 +48,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-
-            ////Tento il recupero dell'utente tramite nome
-            //User user = GetUserByUserName(username);
-
-            ////Se non è stato trovato, esco
-            //if (user == null)
-            //    return null;
-
-            //Eseguo l'encoding della password
-            //string hashedProvidedPassword = ShaProcessor.Sha256Encrypt(password);
-
-            ////Se l'hash non è lo stesso presente nell'utente
-            //if (!hashedProvidedPassword.Equals(user.Password))
-            //    return null;
-
-
-            ////Ritorno l'utente
-            //return user;
-
+            
             var response = await _identityClient.SignIn(userName, password);
 
             //Se non ho uno stato valido, esco con null, altrimenti mando in uscita
@@ -189,6 +171,21 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
+        /// <summary>
+        /// Get user permissions
+        /// </summary>
+        /// <param name="userId">User identifier</param>
+        /// <returns>Return user permissions list</returns>
+        public Shooter GetUserPermissionById(string userId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+
+
+            //Recupero i dati, commit ed uscita
+            return _userRepository.GetSingle(x => x.Id == userId);
+
+        }
 
         /// <summary>
         /// Get single user by user id
