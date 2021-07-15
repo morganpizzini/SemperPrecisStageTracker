@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
 using SemperPrecisStageTracker.Domain.Configurations;
+using SemperPrecisStageTracker.Domain.Containers;
 using ZenProgramming.Chakra.Core.Configurations;
 using ZenProgramming.Chakra.Core.Diagnostic;
 
@@ -21,7 +22,7 @@ namespace SemperPrecisStageTracker.API
         readonly string localPolicy = "CorsPolicy";
         readonly string productionPolicy = "ProductionPolicy";
 
-        public IConfiguration Configuration { get; }
+        //public IConfiguration Configuration { get; }
 
         /// <summary>
         /// Application name
@@ -35,7 +36,9 @@ namespace SemperPrecisStageTracker.API
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            //Configuration = configuration;
+            
+            ServiceResolver.Register(configuration);
 
             //Definizione del nome e versione del sistema
             ApplicationName = Assembly.GetEntryAssembly().GetName().Name;

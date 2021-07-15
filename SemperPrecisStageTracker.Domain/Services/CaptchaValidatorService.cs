@@ -22,13 +22,14 @@ namespace SemperPrecisStageTracker.Domain.Services
             recaptchaToken = configuration["recaptchaSiteKey"];
             url = configuration["recaptchaSiteAuthority"];
         }
+
         public async Task<string> ValidateToken(string token)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{url}?secret={recaptchaToken}&response={token}")
             {
-                Content = new StringContent(
-                    JsonSerializer.Serialize(new {secret = recaptchaToken, response = token}), Encoding.UTF8,
-                    "application/json")
+                //Content = new StringContent(
+                //    JsonSerializer.Serialize(new {secret = recaptchaToken, response = token}), Encoding.UTF8,
+                //    "application/json")
             };
 
             using var response = await _httpClient.SendAsync(request);

@@ -120,4 +120,10 @@
   <data name="AcceptPrivacy" xml:space="preserve">
     <value>I Agree to the use of my personal data by ASD SemperPrecis according to the Regulation (EU) 2016/679.</value>
   </data>
+  <data name="Title" xml:space="preserve">
+    <value>Contacts us</value>
+  </data>
+  <data name="SubTitle" xml:space="preserve">
+    <value>Ask us everything!</value>
+  </data>
 </root>

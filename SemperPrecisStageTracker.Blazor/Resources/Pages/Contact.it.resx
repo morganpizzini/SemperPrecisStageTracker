@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AcceptPrivacy" xml:space="preserve">
-    <value>ACCONSENTO Ai sensi del GDPR UE 2016/679 "Regolamento Europeo sulla protezione dei dati", l’utente preso atto dell’&lt;a href="/privacy-policy"&gt;informativa&lt;a&gt; ricevuta per il trattamento riguardante finalità connesse e/o necessarie alla soddisfazione delle richieste formulate dall'utente medesimo attraverso il Sito internet o a mezzo e-mail od altro strumento di comunicazione, per il quale il consenso è obbligatorio.</value>
+    <value>ACCONSENTO Ai sensi del GDPR UE 2016/679 "Regolamento Europeo sulla protezione dei dati", l’utente preso atto dell’informativa ricevuta per il trattamento riguardante finalità connesse e/o necessarie alla soddisfazione delle richieste formulate dall'utente medesimo attraverso il Sito internet o a mezzo e-mail od altro strumento di comunicazione, per il quale il consenso è obbligatorio.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Contattaci</value>
+  </data>
+  <data name="SubTitle" xml:space="preserve">
+    <value>Chiedici qualsiasi cosa!</value>
   </data>
 </root>
