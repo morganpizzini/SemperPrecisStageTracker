@@ -27,6 +27,8 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="_content/DnetIndexedDb/rxjs.min.js"></script>
+    <script src="_content/DnetIndexedDb/dnet-indexeddb.js"></script>
     <script src="js/scriptLoader.js"></script>
     <script src="js/cookieconsent.min.js"></script>
     <script>
@@ -49,14 +51,14 @@
                             const installingWorker = registration.installing;
                             installingWorker.onstatechange = () => {
                                 switch (installingWorker.state) {
-                                case 'installed':
-                                    if (navigator.serviceWorker.controller) {
-                                        resolve(true);
-                                    } else {
-                                        resolve(false);
-                                    }
-                                    break;
-                                default:
+                                    case 'installed':
+                                        if (navigator.serviceWorker.controller) {
+                                            resolve(true);
+                                        } else {
+                                            resolve(false);
+                                        }
+                                        break;
+                                    default:
                                 }
                             };
                         };
@@ -92,144 +94,144 @@
     </script>
     <script src="_content/Blazorise/blazorise.js"></script>
     <script src="_content/Blazorise.Bootstrap/blazorise.bootstrap.js"></script>
-<script>
-    var customFunctions = (function () {
-        //function metodoPrivato() {
-        //    //...
-        //}
-        return {
-            focusElement: function (id) {
-                element = document.getElementById(id);
-                if (element)
-                    element.focus();
-                console.log('focus');
-            },
-            selectElement: function (id) {
-                element = document.getElementById(id);
-                if (element)
-                    element.select();
-                console.log('focus');
-            },
-            isDevice: function () {
-                return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
-            }
-        }
-    })();
-
-    window.BlazorPWA = (function () {
-        applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
-
-        function syncSubToServer(newSubscription) {
-            if (newSubscription) {
-                return {
-                    url: newSubscription.endpoint,
-                    p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
-                    auth: arrayBufferToBase64(newSubscription.getKey('auth'))
-                };
-            }
-        }
-
-        function subscribe(worker) {
-            return new Promise(function (resolve, reject) {
-                worker.pushManager.getSubscription().then(function (sub) {
-                    if (sub === null) {
-                        worker.pushManager.subscribe({
-                            userVisibleOnly: true,
-                            applicationServerKey: applicationServerPublicKey
-                        }).then(function (sub) {
-                            resolve(syncSubToServer(sub));
-                        }).catch(function (e) {
-                            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
-                                return null;
-                            }
-                            console.error("Unable to subscribe to push", e);
-                            reject(e);
-                        });
-                    } else {
-                        resolve(syncSubToServer(sub));
-                    }
-                });
-            });
-        }
-
-        function arrayBufferToBase64(buffer) {
-            // https://stackoverflow.com/a/9458996
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return window.btoa(binary);
-        }
-        return {
-            dismissInstallPWA: function () {
-                localStorage.setItem('skipInstall', "true");
-            },
-            installPWA: function () {
-                localStorage.setItem('skipInstall', "true");
-                if (window.PWADeferredPrompt) {
-                    // Use the stashed event to continue the install process
-                    window.PWADeferredPrompt.prompt();
-                    window.PWADeferredPrompt.userChoice
-                        .then(function (choiceResult) {
-                            window.PWADeferredPrompt = null;
-                        });
+    <script>
+        var customFunctions = (function () {
+            //function metodoPrivato() {
+            //    //...
+            //}
+            return {
+                focusElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.focus();
+                    console.log('focus');
+                },
+                selectElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.select();
+                    console.log('focus');
+                },
+                isDevice: function () {
+                    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
                 }
-            },
-            requestSubscription: async () => {
-                const worker = await navigator.serviceWorker.getRegistration();
-                const existingSubscription = await worker.pushManager.getSubscription();
-                if (!existingSubscription) {
-                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+            }
+        })();
 
+        window.BlazorPWA = (function () {
+            applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
+
+            function syncSubToServer(newSubscription) {
+                if (newSubscription) {
+                    return {
+                        url: newSubscription.endpoint,
+                        p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                        auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                    };
                 }
-            },
-            createSubscription: async () => {
-                const worker = await navigator.serviceWorker.getRegistration();
-                var subContract = await new Promise(function (resolve, reject) {
-                    Notification.requestPermission(function (status) {
-                        if (status == "granted") {
+            }
 
-                            resolve(subscribe(worker));
+            function subscribe(worker) {
+                return new Promise(function (resolve, reject) {
+                    worker.pushManager.getSubscription().then(function (sub) {
+                        if (sub === null) {
+                            worker.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: applicationServerPublicKey
+                            }).then(function (sub) {
+                                resolve(syncSubToServer(sub));
+                            }).catch(function (e) {
+                                if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
+                                    return null;
+                                }
+                                console.error("Unable to subscribe to push", e);
+                                reject(e);
+                            });
                         } else {
-                            reject(status);
+                            resolve(syncSubToServer(sub));
                         }
                     });
                 });
-                return subContract;
-            },
-            init: (callback) => { // callback è un puntatore a una classe .NET Core
-                const updateOnlineStatus = (e) => {
-                    // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
-                    // di stato della connessione
-                    callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
-                }
-
-                window.addEventListener('online', updateOnlineStatus);
-                window.addEventListener('offline', updateOnlineStatus);
-                updateOnlineStatus();
             }
-        }
 
-    })();
-</script>
+            function arrayBufferToBase64(buffer) {
+                // https://stackoverflow.com/a/9458996
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
+            return {
+                dismissInstallPWA: function () {
+                    localStorage.setItem('skipInstall', "true");
+                },
+                installPWA: function () {
+                    localStorage.setItem('skipInstall', "true");
+                    if (window.PWADeferredPrompt) {
+                        // Use the stashed event to continue the install process
+                        window.PWADeferredPrompt.prompt();
+                        window.PWADeferredPrompt.userChoice
+                            .then(function (choiceResult) {
+                                window.PWADeferredPrompt = null;
+                            });
+                    }
+                },
+                requestSubscription: async () => {
+                    const worker = await navigator.serviceWorker.getRegistration();
+                    const existingSubscription = await worker.pushManager.getSubscription();
+                    if (!existingSubscription) {
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
 
-<script>
-    var cc = new CookieConsent({
-        type: 'info',
-        position: 'bottom',
-        palette: {
-            popup: { background: "#eaf7f7", text: "#5c7291" },
-            button: { background: "#56cbdb", text: "#ffffff" }
-        },
-        content: {
-            message: "Questo sito utilizza i cookie per garantire una migliore esperienza di navigazione",
-            dismiss: "Ho capito!",
-            link: "Approfondisci",
-            href: "/cookie-policy"
-        }
-    })    
-</script>
+                    }
+                },
+                createSubscription: async () => {
+                    const worker = await navigator.serviceWorker.getRegistration();
+                    var subContract = await new Promise(function (resolve, reject) {
+                        Notification.requestPermission(function (status) {
+                            if (status == "granted") {
+
+                                resolve(subscribe(worker));
+                            } else {
+                                reject(status);
+                            }
+                        });
+                    });
+                    return subContract;
+                },
+                init: (callback) => { // callback è un puntatore a una classe .NET Core
+                    const updateOnlineStatus = (e) => {
+                        // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
+                        // di stato della connessione
+                        callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
+                    }
+
+                    window.addEventListener('online', updateOnlineStatus);
+                    window.addEventListener('offline', updateOnlineStatus);
+                    updateOnlineStatus();
+                }
+            }
+
+        })();
+    </script>
+
+    <script>
+        var cc = new CookieConsent({
+            type: 'info',
+            position: 'bottom',
+            palette: {
+                popup: { background: "#eaf7f7", text: "#5c7291" },
+                button: { background: "#56cbdb", text: "#ffffff" }
+            },
+            content: {
+                message: "Questo sito utilizza i cookie per garantire una migliore esperienza di navigazione",
+                dismiss: "Ho capito!",
+                link: "Approfondisci",
+                href: "/cookie-policy"
+            }
+        })
+    </script>
 </body>
 </html>

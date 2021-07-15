@@ -10,6 +10,7 @@ using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Containers;
+using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
@@ -101,6 +102,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 
             //Registrazione dei servizi
             ServiceResolver.Register<IIdentityClient, MockIdentityClient>();
+            ServiceResolver.Register<ICaptchaValidatorService,MockCaptchaValidatorService>();
+
             ServiceResolver.Register<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
 
             //Creazione del controller dichiarato

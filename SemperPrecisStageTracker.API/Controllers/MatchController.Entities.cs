@@ -63,7 +63,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> FetchAvailableMatchDirectorByAssociation(AssociationRequest request)
         {
             //Recupero la lista dal layer
-            var entities = BasicLayer.FetchAvailableMatchDirectorByMatchId(request.AssociationId);
+            var entities = BasicLayer.FetchAvailableMatchDirectorByAssociaitonId(request.AssociationId);
             
             //Ritorno i contratti
             return Reply(entities.As(ContractUtils.GenerateContract));

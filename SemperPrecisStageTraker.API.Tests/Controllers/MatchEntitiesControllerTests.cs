@@ -93,7 +93,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooters not found");
             
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = existingStage.Id,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -112,7 +112,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -142,7 +142,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterSOStages.Count;
             
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = existingShooterSOStage.StageId,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -156,7 +156,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -192,7 +192,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var anotherStage = Scenario.Stages.FirstOrDefault(x => x.Id != currentStage.Id && x.MatchId == currentStage.MatchId);
 
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = anotherStage.Id,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -206,7 +206,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -251,7 +251,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
             
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = existingStage.Id,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -265,7 +265,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -319,7 +319,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not in association not found");
 
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = existingStage.Id,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -338,7 +338,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -390,7 +390,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter match not found");
             
             //Composizione della request
-            var request = new ShooterSOStageCreateRequest
+            var request = new ShooterSOStagesCreateRequest
             {
                 StageId = existingStage.Id,
                 Shooters = new List<ShooterSOStageShooterContract>
@@ -409,7 +409,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.CreateStageSO(request);
+            var response = await Controller.CreateStageSOs(request);
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.ShooterSOStages.Count;
@@ -538,7 +538,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             
             var shooterIds = Scenario.Shooters.Where(x =>
                 shooterAssociations.Contains(x.Id)).Select(x=>x.Id).ToList();
-
+            
             if(shooterIds.Count== 0)
                 Assert.Inconclusive("Shooters not found");
 

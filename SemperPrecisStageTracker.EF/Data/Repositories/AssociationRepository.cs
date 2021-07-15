@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class ContactRepository : EntityFrameworkRepositoryBase<Contact, SemperPrecisStageTrackerContext>, IContactRepository
+    {
+        public ContactRepository(IDataSession dataSession)
+            : base(dataSession, c => c.Contacts)
+        {
+        }
+    }
 }

@@ -69,6 +69,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Places = scenarioClone.Places;
             ShooterMatches = scenarioClone.ShooterMatches;
             ShooterSOStages = scenarioClone.ShooterSOStages;
+            Contacts = scenarioClone.Contacts;
         }
     }
 }

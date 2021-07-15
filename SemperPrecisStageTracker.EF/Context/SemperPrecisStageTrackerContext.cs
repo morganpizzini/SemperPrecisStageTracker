@@ -150,6 +150,12 @@ namespace SemperPrecisStageTracker.EF.Context
             .ValueGeneratedOnAdd();
 
         modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles");
+
+        modelBuilder.Entity<Contact>()
+            .HasKey(f => f.Id);
+        modelBuilder.Entity<Contact>()
+            .Property(f => f.Id)
+            .ValueGeneratedOnAdd();
         }
 
         /// <summary>
@@ -221,6 +227,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of shooter PSO stages
         /// </summary>
         public DbSet<ShooterSOStage> ShooterSOStages { get; set; }
+
+        /// <summary>
+        /// List of contact
+        /// </summary>
+        public DbSet<Contact> Contacts { get; set; }
 
         
 

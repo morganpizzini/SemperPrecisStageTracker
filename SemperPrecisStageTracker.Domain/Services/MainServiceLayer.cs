@@ -31,6 +31,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IPlaceRepository _placeRepository;
         private readonly IShooterSOStageRepository _shooterSOStageRepository;
         private readonly IShooterMatchRepository _shooterMatchRepository;
+        private readonly IContactRepository _contractRepository;
         private readonly ISemperPrecisMemoryCache _cache;
 
         public MainServiceLayer(IDataSession dataSession)
@@ -50,8 +51,49 @@ namespace SemperPrecisStageTracker.Domain.Services
             _placeRepository = dataSession.ResolveRepository<IPlaceRepository>();
             _shooterSOStageRepository = dataSession.ResolveRepository<IShooterSOStageRepository>();
             _shooterMatchRepository = dataSession.ResolveRepository<IShooterMatchRepository>();
+            _contractRepository = dataSession.ResolveRepository<IContactRepository>();
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
         }
+
+        #region Contract
+        /// <summary>
+        /// Create provided match
+        /// </summary>
+        /// <param name="entity">Match</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> CreateContract(Contact entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided Match seems to already existing");
+            
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+            // Set unique identifier
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Validazione argomenti
+            var validations = _contractRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _contractRepository.Save(entity);
+            t.Commit();
+            return validations;
+        }
+        #endregion
+
         #region Match
 
         /// <summary>

@@ -37,6 +37,20 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(new List<ValidationResult> {new(captchaCheck)});
             }
 
+            var model = new Contact()
+            {
+                Description = request.Description,
+                Email = request.Email,
+                Name = request.Name,
+                Subject = request.Subject
+            };
+
+            //Invocazione del service layer
+            var validations = BasicLayer.CreateContract(model);
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
             return Ok(new OkResponse() {Status = true});
         }
     }

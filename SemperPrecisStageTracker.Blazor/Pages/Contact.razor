@@ -4,7 +4,8 @@
 @using Microsoft.Extensions.Configuration
 @inject IJSRuntime JS;
 @inject ClientConfiguration config
-
+@inject IStringLocalizer<Contact> L
+@inject IHttpService service
 <h3>reCAPTCHA</h3>
 
 @JsonSerializer.Serialize(config);
@@ -25,6 +26,72 @@
             </div>
             <div class="row gx-5 justify-content-center">
                 <div class="col-lg-8 col-xl-6">
+                    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                                        <Feedback>
+                                            <ValidationError>@L["WrongName"]</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <TextEdit Placeholder="@L["Email"]" @bind-Text="@model.Email">
+                                        <Feedback>
+                                            <ValidationError>@L["WrongEmail"]</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Subject"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <TextEdit Placeholder="@L["Subject"]" @bind-Text="@model.Subject">
+                                        <Feedback>
+                                            <ValidationError>@L["WrongSubject"]</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                        <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Description"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <MemoEdit Rows="5" Placeholder="@L["Description"]" @bind-Text="@model.Description">
+                                        <Feedback>
+                                            <ValidationError>@L["WrongDescription"]</ValidationError>
+                                        </Feedback>
+                                    </MemoEdit>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                        <Validation Validator="@ValidationRule.None">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <Check TValue="bool" @bind-Checked="@model.AcceptPolicy">@L["AcceptPrivacy"]</Check>
+                                </FieldBody>
+                            </Field>
+                        </Validation>
+                        <Text>@L["AllowPrivacy"]</Text>
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="loading" Disabled="loading">
+                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                                <ChildContent>@L["Submit"]</ChildContent>
+                            </Button>
+                        </Field>
+                        <Text>@resultMessage</Text>
+                    </Validations>
                     <!-- * * * * * * * * * * * * * * *-->
                     <!-- * * SB Forms Contact Form * *-->
                     <!-- * * * * * * * * * * * * * * *-->
@@ -74,7 +141,9 @@
                         <!---->
                         <!-- This is what your users will see when there is-->
                         <!-- an error submitting the form-->
-                        <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
+                        <div class="d-none" id="submitErrorMessage">
+                            <div class="text-center text-danger mb-3">Error sending message!</div>
+                        </div>
                         <!-- Submit Button-->
                         <div class="d-grid"><button class="btn btn-primary btn-lg disabled" id="submitButton" type="submit">Submit</button></div>
                     </form>
@@ -112,6 +181,10 @@
 
     public string reCAPTCHA_response;
 
+    Validations validations;
+    ContactCreateRequest model = new();
+    bool loading = false;
+    string resultMessage = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -141,5 +214,25 @@
         //https://stackoverflow.com/questions/66471037/how-to-integrate-google-recaptcha-v2-for-blazor-webassembly-with-an-asp-net-core
         // https://developers.google.com/recaptcha/docs/v3
         reCAPTCHA_response = await JS.InvokeAsync<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contact-submit" });
+    }
+
+    async Task Submit()
+    {
+        resultMessage = string.Empty;
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        loading = true;
+        var response = await service.Post<OkResponse>("/api/Contact/CreateContact", model);
+        if (response.Status)
+        {
+            resultMessage = L["ContactOk"];
+            model = new();
+        }
+        else
+        {
+            resultMessage = L["ContactFailed"];
+        }
+        loading = false;
     }
 }
