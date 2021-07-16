@@ -2,7 +2,9 @@
 {
     public class StageContract
     {
+        [IndexDbKey]
         public string StageId { get; set; }
+        [IndexDbIndex]
         public string Name { get; set; }
         public int Targets { get; set; }
         public int Index { get; set; }

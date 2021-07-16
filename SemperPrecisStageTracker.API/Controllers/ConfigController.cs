@@ -27,6 +27,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpGet]
         [Route("GetConfig")]
         [ProducesResponseType(typeof(object), 200)]
+        [ResponseCache(Duration = 86400,Location = ResponseCacheLocation.Client)]
         public IActionResult GetConfig()
         {
             return Ok(

@@ -90,7 +90,8 @@
             {
                 await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>
                     ("BlazorPWA.requestSubscription");
-                var returnUrl = NavigationManager.QueryString("returnUrl") ?? "";
+                var returnUrl = NavigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>();
+                
                 NavigationManager.NavigateTo(returnUrl);
             }
         }

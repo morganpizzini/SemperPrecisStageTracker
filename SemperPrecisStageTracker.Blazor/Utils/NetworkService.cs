@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Utils
 {
-    public class NetworkService  : IDisposable
+    public class NetworkService : IDisposable
     {
         private readonly IJSRuntime _jsRuntime;
         private readonly DotNetObjectReference<NetworkService> _dotNetObjectReference;
@@ -37,8 +37,8 @@ namespace SemperPrecisStageTracker.Blazor.Utils
         }
 
         public void Dispose()
-   {
-       _dotNetObjectReference.Dispose();
-   }
+        {
+            _dotNetObjectReference.Dispose();
+        }
     }
 }

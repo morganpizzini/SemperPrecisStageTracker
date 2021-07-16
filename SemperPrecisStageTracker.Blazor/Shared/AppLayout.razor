@@ -1,5 +1,6 @@
 ﻿@using SemperPrecisStageTracker.Contracts.Utilities
 @using System.Net.WebSockets
+@using SemperPrecisStageTracker.Blazor.Pages.App
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<AppLayout> L
@@ -29,10 +30,10 @@
             <AuthorizeView>
                 <Authorized>
                     <span>@L["Hello"]&nbsp;<NavLink Class="ml-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
-                    <NavLink class="nav-link" href="logout">@L["Logout"]</NavLink>
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
                 </Authorized>
                 <NotAuthorized>
-                    <NavLink class="nav-link" href="login">@L["Login"]</NavLink>
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Login>())">@L["Login"]</NavLink>
                 </NotAuthorized>
             </AuthorizeView>
         </div>

@@ -2,6 +2,7 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
+@inject MainServiceLayer mainServiceLayer
 
 <Heading Size="HeadingSize.Is1">@L["Matches"]</Heading>
 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewMatch"]</Button>
@@ -54,7 +55,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        ApiLoading = true;
+        matches = await mainServiceLayer.GetMatches();
+        ApiLoading = false;
+
         await base.OnInitializedAsync();
     }
 

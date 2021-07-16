@@ -17,6 +17,7 @@ using SemperPrecisStageTracker.Blazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Contracts;
 using System.Reflection;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using SemperPrecisStageTracker.Blazor.Models;
 using SemperPrecisStageTracker.Blazor.Services.IndexDB;
 
@@ -53,8 +54,9 @@ namespace SemperPrecisStageTracker.Blazor
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<IAuthenticationService, AuthenticationService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
-                .AddScoped<NetworkService>();
-            
+                .AddScoped<NetworkService>()
+                .AddScoped<MainServiceLayer>();
+
             //builder.Services.AddScoped(x =>
             //{
             //    Console.WriteLine("TestHttpClient");
@@ -78,14 +80,15 @@ namespace SemperPrecisStageTracker.Blazor
 
             //configure http client
             builder.Services.AddScoped(x => httpClient);
-
-            using var serverConfig = await httpClient.GetAsync("api/config/GetConfig");
-            await using var stream = await serverConfig.Content.ReadAsStreamAsync();
-
-            //Console.WriteLine(JsonSerializer.Serialize(stream));
-            builder.Configuration.AddJsonStream(stream);
             
-            builder.Services.AddScoped(sp => 
+            using var serverConfig = new HttpRequestMessage(HttpMethod.Get, "api/config/GetConfig");
+            using var responseConfig = await httpClient.SendAsync(serverConfig);
+            
+            await using var stream = await responseConfig.Content.ReadAsStreamAsync();
+
+            builder.Configuration.AddJsonStream(stream);
+
+            builder.Services.AddScoped(sp =>
             {
                 var config = sp.GetService<IConfiguration>();
                 var result = new ClientConfiguration();
@@ -108,8 +111,8 @@ namespace SemperPrecisStageTracker.Blazor
                 indexedDbDatabaseModel.AddStore<ShooterStageAggregationResult>();
                 indexedDbDatabaseModel.AddStore<ShooterMatchContract>();
                 indexedDbDatabaseModel.AddStore<ShooterSOStageContract>();
-                indexedDbDatabaseModel.AddStore<EditedEntities>();
-                
+                indexedDbDatabaseModel.AddStore<EditedEntity>();
+
                 // add offline settings
                 // clean/download all method
                 // services for avoid api call and use indexDB
@@ -118,7 +121,7 @@ namespace SemperPrecisStageTracker.Blazor
 
                 options.UseDatabase(indexedDbDatabaseModel);
             });
-            
+
 
             builder.RootComponents.Add<App>("#app");
             var host = builder.Build();
@@ -135,7 +138,7 @@ namespace SemperPrecisStageTracker.Blazor
             await host.RunAsync();
         }
     }
-    
+
     public static class IndexedDbDatabaseExtensions
     {
         /// <summary>
@@ -206,7 +209,7 @@ namespace SemperPrecisStageTracker.Blazor
         {
             model.Stores ??= new List<IndexedDbStore>();
 
-            var store = new IndexedDbStore {Name = name};
+            var store = new IndexedDbStore { Name = name };
 
             model.Stores.Add(store);
 
@@ -223,7 +226,7 @@ namespace SemperPrecisStageTracker.Blazor
         {
             model.Stores ??= new List<IndexedDbStore>();
 
-            var store = new IndexedDbStore {Name = typeof(TEntity).Name};
+            var store = new IndexedDbStore { Name = typeof(TEntity).Name };
 
             store.SetupFrom<TEntity>();
 
@@ -242,8 +245,8 @@ namespace SemperPrecisStageTracker.Blazor
         public static IndexedDbStore AddStore<TEntity>(this IndexedDbDatabaseModel model, string storeName)
         {
             model.Stores ??= new List<IndexedDbStore>();
-            
-            var store = new IndexedDbStore {Name = storeName};
+
+            var store = new IndexedDbStore { Name = storeName };
 
             store.SetupFrom<TEntity>();
 
@@ -271,11 +274,11 @@ namespace SemperPrecisStageTracker.Blazor
         {
             return idi.UpdateItems(typeof(TEntity).Name, items);
         }
-        public static ValueTask<TEntity> GetByKey<TKey,TEntity>(this IndexedDbInterop idi, TKey key)
+        public static ValueTask<TEntity> GetByKey<TKey, TEntity>(this IndexedDbInterop idi, TKey key)
         {
-            return idi.GetByKey<TKey,TEntity>(typeof(TEntity).Name, key);
+            return idi.GetByKey<TKey, TEntity>(typeof(TEntity).Name, key);
         }
-        public static ValueTask<string> DeleteByKey<TKey,TEntity>(this IndexedDbInterop idi, TKey key)
+        public static ValueTask<string> DeleteByKey<TKey, TEntity>(this IndexedDbInterop idi, TKey key)
         {
             return idi.DeleteByKey(typeof(TEntity).Name, key);
         }
@@ -287,23 +290,23 @@ namespace SemperPrecisStageTracker.Blazor
         {
             return idi.GetAll<TEntity>(typeof(TEntity).Name);
         }
-        public static ValueTask<List<TEntity>> GetRange<TKey,TEntity>(this IndexedDbInterop idi,TKey lowerBound, TKey upperBound)
+        public static ValueTask<List<TEntity>> GetRange<TKey, TEntity>(this IndexedDbInterop idi, TKey lowerBound, TKey upperBound)
         {
             return idi.GetRange<TKey, TEntity>(typeof(TEntity).Name, lowerBound, upperBound);
         }
-        public static ValueTask<List<TEntity>> GetByIndex<TKey,TEntity>(this IndexedDbInterop idi, TKey lowerBound, TKey upperBound, string dbIndex, bool isRange)
+        public static ValueTask<List<TEntity>> GetByIndex<TKey, TEntity>(this IndexedDbInterop idi, TKey lowerBound, TKey upperBound, string dbIndex, bool isRange)
         {
-            return idi.GetByIndex<TKey, TEntity>(typeof(TEntity).Name, lowerBound,  upperBound,  dbIndex, isRange);
+            return idi.GetByIndex<TKey, TEntity>(typeof(TEntity).Name, lowerBound, upperBound, dbIndex, isRange);
         }
-        public static ValueTask<TIndex> GetMaxIndex<TIndex,TEntity>(this IndexedDbInterop idi, string dbIndex)
+        public static ValueTask<TIndex> GetMaxIndex<TIndex, TEntity>(this IndexedDbInterop idi, string dbIndex)
         {
             return idi.GetMaxIndex<TIndex>(typeof(TEntity).Name, dbIndex);
         }
-        public static ValueTask<TKey> GetMaxKey<TKey,TEntity>(this IndexedDbInterop idi)
+        public static ValueTask<TKey> GetMaxKey<TKey, TEntity>(this IndexedDbInterop idi)
         {
             return idi.GetMaxKey<TKey>(typeof(TEntity).Name);
         }
-        public static ValueTask<TIndex> GetMinIndex<TIndex,TEntity>(this IndexedDbInterop idi, string dbIndex)
+        public static ValueTask<TIndex> GetMinIndex<TIndex, TEntity>(this IndexedDbInterop idi, string dbIndex)
         {
             return idi.GetMinIndex<TIndex>(typeof(TEntity).Name, dbIndex);
         }
@@ -380,7 +383,8 @@ namespace SemperPrecisStageTracker.Blazor
 
             var index = new IndexedDbIndex
             {
-                Name = DnetIndexedDb.Fluent.IndexedDbStoreExtensions.ToCamelCase(name), Definition = definition
+                Name = DnetIndexedDb.Fluent.IndexedDbStoreExtensions.ToCamelCase(name),
+                Definition = definition
             };
 
             store.Indexes.Add(index);
@@ -427,7 +431,7 @@ namespace SemperPrecisStageTracker.Blazor
                 }
             }
 
-            if(store.Key == null)
+            if (store.Key == null)
             {
                 throw new System.Exception($"No IndexDbKey Found on Property Attributes in Class {type.Name}");
             }

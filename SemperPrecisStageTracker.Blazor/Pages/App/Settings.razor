@@ -1,0 +1,69 @@
+﻿@page "/app/settings"
+@using SemperPrecisStageTracker.Blazor.Models
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<Settings> L
+@inject ILocalStorageService localStorage
+@inject MainServiceLayer mainServiceLayer;
+<Heading Size="HeadingSize.Is1">@L["Settings"]</Heading>
+<Divider />
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Check TValue="bool" @bind-Checked="@model.OfflineMode">@L["Offline"]</Check>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@model.MatchId">
+                    <ChildContent>
+                        @foreach (var match in matches)
+                        {
+                            <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongMatch"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+            <ChildContent>@L["Submit"]</ChildContent>
+        </Button>
+    </Field>
+</Validations>
+
+@code {
+
+    Validations validations;
+    ClientSetting model = new();
+    IList<MatchContract> matches = new List<MatchContract>();
+    protected override async Task OnInitializedAsync()
+    {
+        matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+        await base.OnInitializedAsync();
+    }
+
+    async Task Submit()
+    {
+        if (!validations.ValidateAll())
+            return;
+        validations.ClearAll();
+        if (model.OfflineMode && string.IsNullOrEmpty(model.MatchId))
+        {
+            model.OfflineMode = false;
+            return;
+        }
+        await mainServiceLayer.UpdateModel(model);
+        
+    }
+}

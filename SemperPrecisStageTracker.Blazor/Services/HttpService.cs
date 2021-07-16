@@ -59,7 +59,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized && !request.RequestUri.ToString().EndsWith("Authorization/SignIn"))
             {
-                _navigationManager.NavigateTo("logout");
+                _navigationManager.NavigateTo("app/logout");
                 return default;
             }
 
