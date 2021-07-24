@@ -9,6 +9,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -23,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllMatches")]
-        [ApiAuthorizationFilter(AdministratonPermissions.ManageMatches)]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageMatches)]
         [ProducesResponseType(typeof(IList<MatchContract>), 200)]
         public Task<IActionResult> FetchAllMatches()
         {

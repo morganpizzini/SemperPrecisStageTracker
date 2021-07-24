@@ -52,110 +52,125 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<GroupShooter>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<GroupShooter>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<GroupShooter>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<GroupShooter>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterTeam>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<ShooterTeam>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<ShooterTeam>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterTeam>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-                modelBuilder.Entity<Match>()
-                    .HasKey(f => f.Id);
-                modelBuilder.Entity<Match>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Match>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Match>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Place>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Place>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Place>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Place>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Association>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Association>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Association>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Association>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Association>()
-            .Property(e => e.Divisions)
-            .HasConversion(
-                v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            modelBuilder.Entity<Association>()
+                .Property(e => e.Divisions)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
-        modelBuilder.Entity<Association>()
-            .Property(e => e.Classifications)
-            .HasConversion(
-                v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            modelBuilder.Entity<Association>()
+                .Property(e => e.Classifications)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
 
-        modelBuilder.Entity<Shooter>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Shooter>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Shooter>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Shooter>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<Stage>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Stage>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Stage>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Stage>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterStage>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<ShooterStage>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<ShooterStage>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterStage>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-                modelBuilder.Entity<ShooterStage>()
-                    .Property(e => e.DownPoints)
-                    .HasConversion(
-                        v => string.Join(',', v),
-                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList());
+            modelBuilder.Entity<ShooterStage>()
+                .Property(e => e.DownPoints)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList());
 
-        modelBuilder.Entity<Team>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Team>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Team>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Team>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterAssociation>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<ShooterAssociation>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<ShooterAssociation>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterAssociation>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<NotificationSubscription>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<NotificationSubscription>()
-                    .Property(f => f.Id)
-                    .ValueGeneratedOnAdd();
+            modelBuilder.Entity<NotificationSubscription>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<NotificationSubscription>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterSOStage>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<ShooterSOStage>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
+            modelBuilder.Entity<ShooterSOStage>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterSOStage>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterMatch>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<ShooterMatch>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
+            modelBuilder.Entity<ShooterMatch>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterMatch>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
-        modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles");
+            modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles");
 
-        modelBuilder.Entity<Contact>()
-            .HasKey(f => f.Id);
-        modelBuilder.Entity<Contact>()
-            .Property(f => f.Id)
-            .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Contact>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Contact>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<EntityPermission>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<EntityPermission>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<AdministrationPermission>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<AdministrationPermission>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<BasePermission>().ToTable("ShooterPermissions");
+
         }
 
         /// <summary>
@@ -233,7 +248,15 @@ namespace SemperPrecisStageTracker.EF.Context
         /// </summary>
         public DbSet<Contact> Contacts { get; set; }
 
-        
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<EntityPermission> EntityPermissions { get; set; }
+
+        /// <summary>
+        /// List of administration permission
+        /// </summary>
+        public DbSet<AdministrationPermission> AdministrationPermissions { get; set; }
 
     }
 }

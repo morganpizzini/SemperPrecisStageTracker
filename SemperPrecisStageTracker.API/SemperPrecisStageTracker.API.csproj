@@ -28,6 +28,7 @@
     <ProjectReference Include="..\SemperPrecisStageTracker.Mocks\SemperPrecisStageTracker.Mocks.csproj" />
     <ProjectReference Include="..\SemperPrecisStageTracker.Models\SemperPrecisStageTracker.Models.csproj" />
     <ProjectReference Include="..\SemperPrecisStageTracker.EF\SemperPrecisStageTracker.EF.csproj" />
+    <ProjectReference Include="..\SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj" />
   </ItemGroup>
 
 </Project>

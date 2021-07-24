@@ -12,41 +12,22 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Domain.Services;
+using SemperPrecisStageTracker.Models.Commons;
+using SemperPrecisStageTracker.Shared.Permissions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using ZenProgramming.Chakra.Core.Data;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {
     // https://ekobit.com/blog/asp-netcore-custom-authorization-attributes/
-    // ranged permissions
-    public enum AdministratonPermissions
-    {
-        ManageMatches = 1,
-        ManageShooters = 2,
-        ManageTeams = 3,
-        ManageStages = 4,
-        CreateMatches = 5,
-        CreateShooters = 6,
-        CreateTeams = 7,
-        CreateStages = 8,
-    }
-
-    // singularity permissions
-    public enum EntityPermissions
-    {
-        EditShooter = 1,
-        DeleteShooter = 2,
-        EditMatch = 3,
-        DeleteMatch = 4
-    }
-
+   
     public class UserPermissions
     {
-        public ICollection<AdministratonPermissions> AdministratorPermissions { get; set; } = 
-            new List<AdministratonPermissions>();
+        public ICollection<AdministrationPermissions> AdministratorPermissions { get; set; } =
+            new List<AdministrationPermissions>();
 
-        public IDictionary<string, ICollection<EntityPermissions>> EntityPermissions { get; set; } =
-            new Dictionary<string, ICollection<EntityPermissions>>();
+        public IDictionary<string, List<EntityPermissions>> EntityPermissions { get; set; } =
+            new Dictionary<string, List<EntityPermissions>>();
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -56,7 +37,7 @@ namespace SemperPrecisStageTracker.API.Helpers
 
     public class ApiAuthorizationFilter : ActionFilterAttribute
     {
-        private readonly List<AdministratonPermissions> _adminPermission = new();
+        private readonly List<AdministrationPermissions> _adminPermission = new();
         private readonly List<EntityPermissions> _shooterPermission = new();
         //private readonly List<MatchPermissions> _matchPermissions = new();
 
@@ -82,12 +63,17 @@ namespace SemperPrecisStageTracker.API.Helpers
             _shooterPermission.AddRange(permissions);
         }
 
-        public ApiAuthorizationFilter(params AdministratonPermissions[] permissions)
+        public ApiAuthorizationFilter(params AdministrationPermissions[] permissions)
         {
             _adminPermission.Clear();
             _adminPermission.AddRange(permissions);
         }
 
+        /// <summary>
+        /// extract EntityId value attribute
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private string GetPermissionIdValue(ActionExecutingContext context)
         {
             if (context.ActionArguments.Any())
@@ -109,11 +95,11 @@ namespace SemperPrecisStageTracker.API.Helpers
                 context.Result = new ForbidResult();
             }
 
-            var shooterId = GetPermissionIdValue(context);
+            var entityId = GetPermissionIdValue(context);
 
             var permissions = GetUserPermissions(userId);
 
-            var valueFound = CheckPermissionsForValue(permissions);
+            var valueFound = CheckPermissionsForValue(permissions,entityId);
 
             if (valueFound)
             {
@@ -136,23 +122,31 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Service layer base
             using var serviceLayer = new AuthenticationServiceLayer(isolatedSession);
 
-            serviceLayer.GetUserPermissionById(userId);
+            var userPermissions = serviceLayer.GetUserPermissionById(userId);
 
-            return new();
+            return new UserPermissions()
+            {
+                AdministratorPermissions =
+                    userPermissions.adminPermissions.Select(x => (AdministrationPermissions)x).ToList(),
+                EntityPermissions = userPermissions.entityPermissions.GroupBy(x => x.EntityId)
+                        .ToDictionary(
+                            x => x.Key,
+                            x => x.Select(e => (EntityPermissions)e.Permission).ToList())
+            };
         }
 
-        private bool CheckPermissionsForValue(UserPermissions permissions, string shooterId = null)
+        private bool CheckPermissionsForValue(UserPermissions permissions, string entityId = null)
         {
             if (permissions.AdministratorPermissions.Any(p => _adminPermission.Contains(p)))
             {
                 return true;
             }
 
-            if (!string.IsNullOrEmpty(shooterId) && _shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(shooterId))
+            if (!string.IsNullOrEmpty(entityId) && _shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(entityId))
             {
 
                 var existingPermission = permissions.EntityPermissions
-                    .First(sp => sp.Key == shooterId).Value;
+                    .First(sp => sp.Key == entityId).Value;
 
                 if (existingPermission.Any(p => _shooterPermission.Contains(p)))
                     return true;

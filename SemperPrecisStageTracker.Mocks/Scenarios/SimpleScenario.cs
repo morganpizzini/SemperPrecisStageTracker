@@ -48,10 +48,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
 
             //Deserializzazione e assegnazione
             var scenarioClone = JsonSerializer.Deserialize<SimpleScenario>(json, new JsonSerializerOptions
-                {
-                    //PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
+            {
+                //PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
             if (scenarioClone == null)
                 throw new ArgumentNullException($"Scenario parsed is null");
 
@@ -70,6 +70,8 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterMatches = scenarioClone.ShooterMatches;
             ShooterSOStages = scenarioClone.ShooterSOStages;
             Contacts = scenarioClone.Contacts;
+            AdministrationPermissions = scenarioClone.AdministrationPermissions;
+            EntityPermissions = scenarioClone.EntityPermissions;
         }
     }
 }

@@ -8,6 +8,22 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
     [Repository]
+    public class EntityPermissionRepository : EntityFrameworkRepositoryBase<EntityPermission, SemperPrecisStageTrackerContext>, IEntityPermissionRepository
+    {
+        public EntityPermissionRepository(IDataSession dataSession)
+            : base(dataSession, c => c.EntityPermissions)
+        {
+        }
+    }
+    [Repository]
+    public class AdministrationPermissionRepository : EntityFrameworkRepositoryBase<AdministrationPermission, SemperPrecisStageTrackerContext>, IAdministrationPermissionRepository
+    {
+        public AdministrationPermissionRepository(IDataSession dataSession)
+            : base(dataSession, c => c.AdministrationPermissions)
+        {
+        }
+    }
+    [Repository]
     public class AssociationRepository : EntityFrameworkRepositoryBase<Association, SemperPrecisStageTrackerContext>, IAssociationRepository
     {
         public AssociationRepository(IDataSession dataSession)

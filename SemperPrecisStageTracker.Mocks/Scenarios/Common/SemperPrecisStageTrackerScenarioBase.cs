@@ -82,6 +82,16 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of contacts
         /// </summary>
         public IList<Contact> Contacts { get; set; } = new List<Contact>();
+
+        /// <summary>
+        /// List of administration permissions
+        /// </summary>
+        public IList<AdministrationPermission> AdministrationPermissions { get; set; } = new List<AdministrationPermission>();
+
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        public IList<EntityPermission> EntityPermissions { get; set; } = new List<EntityPermission>();
         
         
         /// <summary>

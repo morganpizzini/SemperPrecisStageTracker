@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace SemperPrecisStageTracker.Contracts
 {
+
     public class AssociationContract
     {
         public string AssociationId { get; set; }
@@ -15,6 +16,5 @@ namespace SemperPrecisStageTracker.Contracts
         PSO= 1,
         CSO = 2,
         SSO = 4
-
     }
 }

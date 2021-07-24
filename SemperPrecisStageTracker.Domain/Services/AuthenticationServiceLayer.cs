@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using ZenProgramming.Chakra.Core.Data;
@@ -22,6 +23,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #region Private fields
         private readonly IShooterRepository _userRepository;
+        private readonly IEntityPermissionRepository _entityPermissionRepository;
+        private readonly IAdministrationPermissionRepository _administrationPermissionRepository;
         private readonly IIdentityClient _identityClient;
         #endregion
 
@@ -34,6 +37,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Inizializzazioni
             _userRepository = dataSession.ResolveRepository<IShooterRepository>();
+            _entityPermissionRepository = dataSession.ResolveRepository<IEntityPermissionRepository>();
+            _administrationPermissionRepository = dataSession.ResolveRepository<IAdministrationPermissionRepository>();
             _identityClient = ServiceResolver.Resolve<IIdentityClient>();
         }
 
@@ -48,7 +53,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-            
+
             var response = await _identityClient.SignIn(userName, password);
 
             //Se non ho uno stato valido, esco con null, altrimenti mando in uscita
@@ -75,7 +80,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // controllo validazione user
             var validations = CheckUserValidation(entity);
-            
+
             if (validations.Count > 0)
             {
                 return validations;
@@ -84,7 +89,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
-                //Validazione argomenti
+            //Validazione argomenti
             validations = _userRepository.Validate(entity);
 
             //Se ho validazioni fallite, esco
@@ -176,15 +181,16 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId">User identifier</param>
         /// <returns>Return user permissions list</returns>
-        public Shooter GetUserPermissionById(string userId)
+        public (IList<int> adminPermissions, IList<EntityPermission> entityPermissions) GetUserPermissionById(string userId)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-
             //Recupero i dati, commit ed uscita
-            return _userRepository.GetSingle(x => x.Id == userId);
-
+            return (
+                _administrationPermissionRepository.FetchWithProjection(x => x.Permission, x => x.ShooterId == userId),
+                _entityPermissionRepository.Fetch(x => x.ShooterId == userId)
+                );
         }
 
         /// <summary>

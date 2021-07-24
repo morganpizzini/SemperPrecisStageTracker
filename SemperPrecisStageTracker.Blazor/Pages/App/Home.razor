@@ -10,6 +10,13 @@
     <Button Clicked="@Add">aggiungi</Button>
     <Button Clicked="@Get">get</Button>
     @matches.Count
+
+    <h3>Working</h3>
+    <ul>
+        <li>User permissions</li>
+        <li>IndexDB</li>
+    </ul>
+    <h3>TO-DO</h3>
     <ul>
         <li>Bloccare approvazione se non ho tempo</li>
 
@@ -67,6 +74,6 @@
         var openResult = await matchServiceIndexDb.OpenIndexedDb();
 
         matches = await matchServiceIndexDb.GetAll<MatchContract>("MatchContract");
-        
+
     }
 }

@@ -4,8 +4,7 @@ using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.Models
 {
-
-
+   
     public class Association : SemperPrecisEntity {
         [Required]
         public string Name { get; set; }

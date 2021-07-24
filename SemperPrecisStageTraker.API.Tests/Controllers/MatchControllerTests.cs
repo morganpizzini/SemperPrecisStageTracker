@@ -8,11 +8,51 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTraker.API.Tests.Controllers.Common;
 using ZenProgramming.Chakra.Core.Utilities.Data;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers
 {
+    [TestClass]
+    public class PermissionControllerTests : ApiControllerTestsBase<PermissionController, SimpleScenario>
+    {
+        protected override Shooter GetIdentityUser() => GetAdminUser();
+
+        [TestMethod]
+        public async Task ShouldFetchShooterPermissionBeOkHavingProvidedData()
+        {
+            //Invoke del metodo
+            var response = await Controller.FetchAllUserPermissions();
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<PermissionsResponse>(response);
+            Assert.IsTrue(parsed != null &&
+                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageMatches) &&
+                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageShooters) &&
+                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageShooters) &&
+                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageTeams)
+            );
+        }
+
+        [TestMethod]
+        public async Task ShouldFetchShooterPermissionBeOkHavingProvidedDataOnAnotherUser()
+        {
+            UpdateIdentityUser(GetAnotherUser());
+            //Invoke del metodo
+            var response = await Controller.FetchAllUserPermissions();
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<PermissionsResponse>(response);
+
+            Assert.IsTrue(parsed != null &&
+                          parsed.Data.EntityPermissions.Any(x => x.Permission == (int)EntityPermissions.EditShooter && x.EntityId == "1")
+            );
+        }
+
+    }
+
+
     [TestClass]
     public class ContactControllerTests : ApiControllerTestsBase<ContactController, SimpleScenario>
     {
@@ -22,7 +62,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         {
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Contacts.Count;
-            
+
             //Composizione della request
             var request = new ContactCreateRequest
             {

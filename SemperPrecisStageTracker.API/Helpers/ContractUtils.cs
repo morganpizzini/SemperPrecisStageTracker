@@ -398,5 +398,42 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Total = entity.Total
             };
         }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static AdministrationPermissionContract GenerateContract(AdministrationPermission entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new AdministrationPermissionContract()
+            {
+                AdministrationPermissionId = entity.Id,
+                Permission= entity.Permission
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static EntityPermissionContract GenerateContract(EntityPermission entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new EntityPermissionContract()
+            {
+                EntityPermissionId = entity.Id,
+                EntityId = entity.Id,
+                Permission= entity.Permission
+            };
+        }
     }
 }
