@@ -2,7 +2,7 @@
 {
     public abstract class BasePermissionContract
     {
-        public int Permission { get; set; }
+        public string Permission { get; set; }
     }
     public class AdministrationPermissionContract : BasePermissionContract
     {

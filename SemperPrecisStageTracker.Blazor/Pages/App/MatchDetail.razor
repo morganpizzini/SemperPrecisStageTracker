@@ -4,9 +4,12 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+@if (PageCondition)
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+}
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{Id}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
 @if (PageLoading)
@@ -36,7 +39,7 @@ else
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
-                        
+
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
 
                         <Table Striped="true" Hoverable="true">
@@ -53,7 +56,10 @@ else
                                         <TableRow>
                                             <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                             <TableRowCell>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
+                                                @if (PageCondition)
+                                                {
+                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
+                                                }
                                             </TableRowCell>
                                         </TableRow>
                                     </Virtualize>
@@ -96,7 +102,10 @@ else
                                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
                                         <TableRowCell>
                                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                            @if (PageCondition)
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete"/></Button>
+                                            }
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>
@@ -141,8 +150,11 @@ else
                                         <TableRowCell>@stage.Targets</TableRowCell>
                                         <TableRowCell>
                                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
+                                        @if (PageCondition)
+                                        {
+                                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new {id = Id, stageId = stage.StageId}))"><Icon Name="IconName.Pen"/></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete"/></Button>
+                                        }
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>
@@ -277,6 +289,10 @@ else
     [Parameter]
     public string Id { get; set; }
 
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch));
+    
     // reference to the modal component
     private Modal modalRefGroup;
     GroupContract groupToDelete = new();
@@ -375,7 +391,7 @@ else
             //update available match director
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
         }
-        matchesDirectorToEdit= new ();
+        matchesDirectorToEdit = new();
         modalRefMatchDirectorToEdit.Hide();
     }
 
@@ -385,12 +401,12 @@ else
         {
             matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
             {
-                ShooterMatchId= matchDirectorToDelete.ShooterMatchId
+                ShooterMatchId = matchDirectorToDelete.ShooterMatchId
             });
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
-    //await LoadMatchDirectors();
+            //await LoadMatchDirectors();
         }
-        matchDirectorToDelete = new ();
+        matchDirectorToDelete = new();
         modalRefMatchDirectorToDelete.Hide();
     }
 }

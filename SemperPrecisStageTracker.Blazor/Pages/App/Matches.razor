@@ -39,9 +39,12 @@
                         <TableRowCell>@match.Association.Name</TableRowCell>
                         <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
+                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch)))
+                            {
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen"/></Button>
+                            }
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search"/></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar"/></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

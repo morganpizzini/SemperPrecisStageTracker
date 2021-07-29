@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
-using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Models;
-using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -27,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("SignIn")]
-        [ProducesResponseType(typeof(SignInResult), 200)]
+        [ProducesResponseType(typeof(SignInResponse), 200)]
         public async Task<IActionResult> SignIn(SignInRequest request)
         {
             //Tento il signin ed ottengo l'utente se è completato
@@ -36,12 +32,19 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se non ho utente, unauthorized
             if (result == null)
                 return Unauthorized();
-
+            
+            var permissions = await AuthorizationLayer.GetUserPermissionById(result.Id);
+            
             // recupero il profilo
             //var profile = AuthorizationLayer.FetchProfilesOnUser(result.Username).FirstOrDefault();
             
             //Se è tutto ok, serializzo il contratto
-            return Ok(ContractUtils.GenerateContract(result));
+            return Ok(
+                new SignInResponse
+                {
+                    Shooter = ContractUtils.GenerateContract(result),
+                    Permissions = ContractUtils.GenerateContract(permissions.adminPermissions,permissions.entityPermissions)
+                });
         }
 
 

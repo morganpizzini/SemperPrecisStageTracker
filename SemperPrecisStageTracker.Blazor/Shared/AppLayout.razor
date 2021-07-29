@@ -6,7 +6,7 @@
 @inject IStringLocalizer<AppLayout> L
 @inject NetworkService NetworkService
 @inject NavigationManager NavigationManager
-@inject IAuthenticationService authService
+@inject StateService stateService
 @inject IHttpService httpService
 @inject ILocalStorageService localStorage
 
@@ -101,7 +101,7 @@
 
     async Task RequestNotificationSubscriptionAsync()
     {
-        if (!authService.IsAuth)
+        if (!stateService.IsAuth)
             return;
         await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
     }

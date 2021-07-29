@@ -1,13 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using System.Threading.Tasks;
-using SemperPrecisStageTracker.Blazor.Pages;
+using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Pages.App;
 using SemperPrecisStageTracker.Blazor.Utils;
 
@@ -15,44 +16,60 @@ namespace SemperPrecisStageTracker.Blazor.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private IHttpService _httpService;
-        private NavigationManager _navigationManager;
-        private ILocalStorageService _localStorageService;
-        private AuthenticationStateProvider _authenticationStateProvider;
-        public ShooterContract User { get; private set; }
+        private readonly IHttpService _httpService;
+        private readonly NavigationManager _navigationManager;
+        private readonly ILocalStorageService _localStorageService;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        //public ShooterContract User { get; private set; }
+        //public PermissionsResponse Permissions { get; private set; }
+        private readonly StateService _stateService;
 
-        public bool IsAuth => User != null;
+        private string userKey => nameof(_stateService.User);
+        private string permissionKey => nameof(_stateService.Permissions);
+        
 
-        public CustomAuthStateProvider _customAuthenticationStateProvider => _authenticationStateProvider as CustomAuthStateProvider;
+        private CustomAuthStateProvider _customAuthenticationStateProvider => _authenticationStateProvider as CustomAuthStateProvider;
+
+        private ILogger<AuthenticationService> _logger;
 
         public AuthenticationService(
             IHttpService httpService,
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
-            AuthenticationStateProvider authenticationStateProvider
+            AuthenticationStateProvider authenticationStateProvider,
+            StateService stateService,
+            ILogger<AuthenticationService> logger
         )
         {
+            _logger = logger;
             _httpService = httpService;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
             _authenticationStateProvider = authenticationStateProvider;
+            _stateService = stateService;
         }
 
         public async Task Initialize()
         {
-            User = await _localStorageService.GetItem<ShooterContract>("user");
-            if (User != null)
+            _stateService.User = await _localStorageService.GetItem<ShooterContract>(userKey);
+            _stateService.Permissions = await _localStorageService.GetItem<PermissionsResponse>(permissionKey);
+            if (_stateService.User != null)
             {
-                _customAuthenticationStateProvider.LoginNotify(User);
+                _customAuthenticationStateProvider.LoginNotify(_stateService.User);
             }
         }
 
         public async Task<bool> Login(string username, string password)
         {
-            User = await _httpService.Post<ShooterContract>("/api/Authorization/SignIn", new SignInRequest { Username = username, Password = password });
-            User.AuthData = $"{username}:{password}".EncodeBase64();
-            await _localStorageService.SetItem("user", User);
-            _customAuthenticationStateProvider.LoginNotify(User);
+            var response = await _httpService.Post<SignInResponse>("/api/Authorization/SignIn", new SignInRequest { Username = username, Password = password });
+
+            _stateService.User = response.Shooter;
+            _stateService.User.AuthData = $"{username}:{password}".EncodeBase64();
+            _stateService.Permissions = response.Permissions;
+
+            await _localStorageService.SetItem(userKey, _stateService.User);
+            await _localStorageService.SetItem(permissionKey, response.Permissions);
+            _customAuthenticationStateProvider.LoginNotify(_stateService.User);
 
             return true;
         }
@@ -60,23 +77,49 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public async Task UpdateLogin(ShooterContract user)
         {
             // update username
-            var userParams = User.AuthData.DecodeBase64().Split(":");
+            var userParams = _stateService.User.AuthData.DecodeBase64().Split(":");
             userParams[0] = user.Username;
             user.AuthData = string.Join(":", userParams).EncodeBase64();
 
             //override
-            User = user;
-            await _localStorageService.SetItem("user", User);
-            _customAuthenticationStateProvider.LoginNotify(User);
+            _stateService.User = user;
+            await _localStorageService.SetItem(userKey,_stateService.User);
+            _customAuthenticationStateProvider.LoginNotify(_stateService.User);
         }
 
         public async Task Logout()
         {
-            User = null;
-            await _localStorageService.RemoveItem("user");
+            _stateService.User = null;
+            await _localStorageService.RemoveItem(userKey);
+            await _localStorageService.RemoveItem(permissionKey);
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }
 
+        public bool CheckPermissions(IEnumerable<string> roles, string resourceId = "")
+        {
+            _logger.LogInformation(JsonSerializer.Serialize(roles));
+            _logger.LogInformation(JsonSerializer.Serialize(_stateService.Permissions.AdministrationPermissions));
+            _logger.LogInformation(resourceId);
+
+            if (_stateService.Permissions.AdministrationPermissions.Any(p => roles.Contains(p.Permission)))
+            {
+                return true;
+            }
+            _logger.LogInformation(resourceId);
+
+            if (!string.IsNullOrEmpty(resourceId) && _stateService.Permissions.EntityPermissions.Any() && _stateService.Permissions.EntityPermissions.Any(x=>x.EntityId == resourceId))
+            {
+
+                var existingPermissionOnResource = _stateService.Permissions.EntityPermissions
+                    .Where(sp => sp.EntityId == resourceId).Select(x=>x.Permission)
+                    .ToList();
+
+                if (existingPermissionOnResource.Any(roles.Contains))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

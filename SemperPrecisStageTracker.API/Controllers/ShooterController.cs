@@ -60,26 +60,28 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateShooter")]
+        [ApiAuthorizationFilter(EntityPermissions.CreateShooter)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public Task<IActionResult> CreateShooter(ShooterCreateRequest request)
+        public async Task<IActionResult> CreateShooter([EntityId]ShooterCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Shooter
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                BirthDate = request.BirthDate
+                BirthDate = request.BirthDate,
+                Email = request.Email,
+                Username = request.Username
             };
 
             //Invocazione del service layer
-            var validations = BasicLayer.CreateShooter(model);
+            var validations = await BasicLayer.CreateShooter(model,PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
-
-
+                return BadRequest(validations);
+            
             //Return contract
-            return Reply(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -104,6 +106,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.FirstName = request.FirstName;
             entity.LastName = request.LastName;
             entity.BirthDate = request.BirthDate;
+            entity.Email = request.Email;
+            entity.Username = request.Username;
             
             //Salvataggio
             var validations = BasicLayer.UpdateShooter(entity);
@@ -121,8 +125,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooter")]
+        [ApiAuthorizationFilter(EntityPermissions.DeleteShooter)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public Task<IActionResult> DeleteShooter(ShooterRequest request)
+        public async Task<IActionResult> DeleteShooter([EntityId]ShooterRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -131,17 +136,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             }
 
             //Invocazione del service layer
-            var validations = BasicLayer.DeleteShooter(entity);
+            var validations = await BasicLayer.DeleteShooter(entity);
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
     }
 }

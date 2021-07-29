@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -87,7 +88,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return string.Empty;
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var userId = PlatformUtils.GetIdentityUserId(context.HttpContext.User);
             if (userId == null)
@@ -97,21 +98,21 @@ namespace SemperPrecisStageTracker.API.Helpers
 
             var entityId = GetPermissionIdValue(context);
 
-            var permissions = GetUserPermissions(userId);
+            var permissions = await GetUserPermissions(userId);
 
             var valueFound = CheckPermissionsForValue(permissions,entityId);
 
             if (valueFound)
             {
-                base.OnActionExecuting(context);
+                await next();
             }
             else
             {
                 context.Result = new ForbidResult();
             }
         }
-
-        private UserPermissions GetUserPermissions(string userId)
+        
+        private async Task<UserPermissions> GetUserPermissions(string userId)
         {
             if (string.IsNullOrEmpty(userId))
                 return new();
@@ -122,16 +123,16 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Service layer base
             using var serviceLayer = new AuthenticationServiceLayer(isolatedSession);
 
-            var userPermissions = serviceLayer.GetUserPermissionById(userId);
+            var userPermissions = await serviceLayer.GetUserPermissionById(userId);
 
             return new UserPermissions()
             {
                 AdministratorPermissions =
-                    userPermissions.adminPermissions.Select(x => (AdministrationPermissions)x).ToList(),
+                    userPermissions.adminPermissions.Select(x => x.ParseEnum<AdministrationPermissions>()).ToList(),
                 EntityPermissions = userPermissions.entityPermissions.GroupBy(x => x.EntityId)
                         .ToDictionary(
                             x => x.Key,
-                            x => x.Select(e => (EntityPermissions)e.Permission).ToList())
+                            x => x.Select(e => e.Permission.ParseEnum<EntityPermissions>()).ToList())
             };
         }
 

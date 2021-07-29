@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Blazor
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
-        private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity());
+        private ClaimsPrincipal claimsPrincipal = new (new ClaimsIdentity());
 
         public void LoginNotify(ShooterContract user)
         {
@@ -20,8 +20,8 @@ namespace SemperPrecisStageTracker.Blazor
             var identity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Email, user.Email),
-            }, "Fake authentication type");
+                new Claim(ClaimTypes.Email, user.Email)
+            }, "Basic auth type");
 
             claimsPrincipal = new ClaimsPrincipal(identity);
 

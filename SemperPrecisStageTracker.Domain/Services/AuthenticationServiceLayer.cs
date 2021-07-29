@@ -9,6 +9,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
 
@@ -181,16 +182,66 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId">User identifier</param>
         /// <returns>Return user permissions list</returns>
-        public (IList<int> adminPermissions, IList<EntityPermission> entityPermissions) GetUserPermissionById(string userId)
+        public Task<(IList<string> adminPermissions, IList<EntityPermission> entityPermissions)> GetUserPermissionById(string userId)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
             //Recupero i dati, commit ed uscita
-            return (
+            return Task.FromResult((
                 _administrationPermissionRepository.FetchWithProjection(x => x.Permission, x => x.ShooterId == userId),
                 _entityPermissionRepository.Fetch(x => x.ShooterId == userId)
-                );
+                ));
+        }
+
+        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<EntityPermissions> permissions, string entityId)
+        {
+            var permissionsAsStringList = permissions.Select(x=> x.ToDescriptionString()).ToList();
+            return this.DeletePermissionsOnEntity(permissionsAsStringList, entityId);
+        }
+
+        /// <summary>
+        /// Delete user permissions
+        /// </summary>
+        /// <param name="userId">User identifier</param>
+        /// <returns>Return user permissions list</returns>
+        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<string> permissions, string entityId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(entityId)) throw new ArgumentNullException(nameof(entityId));
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //retrieve elements
+            var existing =
+                _entityPermissionRepository.Fetch(x => x.EntityId == entityId && permissions.Contains(x.Permission));
+
+            foreach (var entityPermission in existing)
+            {
+                _entityPermissionRepository.Delete(entityPermission);
+            }
+
+            //Recupero i dati, commit ed uscita
+            return Task.FromResult(validations);
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newEntityPermissions"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> SaveUserPermissions(IList<EntityPermission> newEntityPermissions)
+        {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            foreach (var newEntityPermission in newEntityPermissions)
+            {
+                validations = _entityPermissionRepository.Validate(newEntityPermission);
+                if (validations.Count > 0)
+                    return validations;
+
+                _entityPermissionRepository.Save(newEntityPermission);
+
+            }
+            return validations;
         }
 
         /// <summary>
@@ -334,5 +385,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Chiamo il metodo base
             base.Dispose(isDisposing);
         }
+
+
     }
 }

@@ -24,20 +24,20 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllMatches")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManageMatches)]
+        //[ApiAuthorizationFilter(AdministrationPermissions.ManageMatches)]
         [ProducesResponseType(typeof(IList<MatchContract>), 200)]
         public Task<IActionResult> FetchAllMatches()
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllMatches();
-            var associationIds = entities.Select(x=>x.AssociationId).ToList();
-            var placeIds = entities.Select(x=>x.PlaceId).ToList();
+            var associationIds = entities.Select(x => x.AssociationId).ToList();
+            var placeIds = entities.Select(x => x.PlaceId).ToList();
 
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
             var places = BasicLayer.FetchPlacesByIds(placeIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(p => p.Id == x.AssociationId),places.FirstOrDefault(p => p.Id == x.PlaceId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,association,place,groups,stages));
+            return Reply(ContractUtils.GenerateContract(entity, association, place, groups, stages));
         }
 
         /// <summary>
@@ -95,9 +95,9 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var entities = BasicLayer.GetMatchStats(entity.Id);
             var association = BasicLayer.GetAssociation(entity.AssociationId);
-var place = BasicLayer.GetPlace(entity.PlaceId);
+            var place = BasicLayer.GetPlace(entity.PlaceId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,association,place,entities));
+            return Reply(ContractUtils.GenerateContract(entity, association, place, entities));
         }
 
         /// <summary>
@@ -107,30 +107,31 @@ var place = BasicLayer.GetPlace(entity.PlaceId);
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateMatch")]
+        [ApiAuthorizationFilter(EntityPermissions.CreateMatch)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> CreateMatch(MatchCreateRequest request)
+        public async Task<IActionResult> CreateMatch([EntityId]MatchCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Match
             {
                 Name = request.Name,
                 MatchDateTime = request.MatchDateTime,
-                AssociationId= request.AssociationId,
+                AssociationId = request.AssociationId,
                 PlaceId = request.PlaceId,
                 OpenMatch = request.OpenMatch,
                 UnifyClassifications = request.UnifyClassifications
             };
 
             //Invocazione del service layer
-            var validations = BasicLayer.CreateMatch(model);
+            var validations = await BasicLayer.CreateMatch(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             var association = BasicLayer.GetAssociation(model.AssociationId);
-var place = BasicLayer.GetPlace(model.PlaceId);
+            var place = BasicLayer.GetPlace(model.PlaceId);
             //Return contract
-            return Reply(ContractUtils.GenerateContract(model,association,place));
+            return Ok(ContractUtils.GenerateContract(model, association, place));
         }
 
         /// <summary>
@@ -141,7 +142,8 @@ var place = BasicLayer.GetPlace(model.PlaceId);
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> UpdateMatch(MatchUpdateRequest request)
+        [ApiAuthorizationFilter(EntityPermissions.EditMatch)]
+        public Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetMatch(request.MatchId);
@@ -166,7 +168,7 @@ var place = BasicLayer.GetPlace(model.PlaceId);
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity,association,place));
+            return Reply(ContractUtils.GenerateContract(entity, association, place));
         }
 
         /// <summary>
@@ -176,8 +178,9 @@ var place = BasicLayer.GetPlace(model.PlaceId);
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
+        [ApiAuthorizationFilter(EntityPermissions.DeleteMatch)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> DeleteMatch(MatchRequest request)
+        public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -186,18 +189,18 @@ var place = BasicLayer.GetPlace(model.PlaceId);
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());
+                return NotFound();
             }
 
             //Invocazione del service layer
-            var validations = BasicLayer.DeleteMatch(entity);
+            var validations = await BasicLayer.DeleteMatch(entity);
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity,association,place));
+            return Ok(ContractUtils.GenerateContract(entity, association, place));
         }
     }
 }

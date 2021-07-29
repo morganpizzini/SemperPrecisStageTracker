@@ -15,18 +15,20 @@ namespace SemperPrecisStageTracker.Blazor.Services
 {
     public class HttpService : IHttpService
     {
-        private HttpClient _httpClient;
-        private NavigationManager _navigationManager;
-        private ILocalStorageService _localStorageService;
-
+        private readonly HttpClient _httpClient;
+        private readonly NavigationManager _navigationManager;
+        //private ILocalStorageService _localStorageService;
+        private readonly StateService _stateService;
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
-            ILocalStorageService localStorageService
+            StateService stateService
+            //ILocalStorageService localStorageService
         ) {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
-            _localStorageService = localStorageService;
+            _stateService = stateService;
+            //_localStorageService = localStorageService;
         }
 
         public async Task<T> Get<T>(string uri)
@@ -49,10 +51,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private async Task<T> sendRequest<T>(HttpRequestMessage request)
         {
             // add basic auth header if user is logged in and request is to the api url
-            var user = await _localStorageService.GetItem<ShooterContract>("user");
+            //var user = _authenticationService.User
             var isApiUrl = !request.RequestUri.IsAbsoluteUri;
-            if (user != null && isApiUrl)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", user.AuthData);
+            if (_stateService.IsAuth && isApiUrl)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _stateService.User.AuthData);
 
             using var response = await _httpClient.SendAsync(request);
 

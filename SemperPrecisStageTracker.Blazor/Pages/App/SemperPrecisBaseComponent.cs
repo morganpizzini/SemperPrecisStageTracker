@@ -11,6 +11,10 @@ namespace SemperPrecisStageTracker.Blazor.Pages
     {
         [Inject]
         private IHttpService Service { get; set; }
+        
+        [Inject]
+        protected IAuthenticationService AuthService { get; set; }
+
         public bool PageLoading { get; set; } = true;
         public bool ApiLoading { get; set; }
 

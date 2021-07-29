@@ -15,87 +15,6 @@ using ZenProgramming.Chakra.Core.Utilities.Data;
 namespace SemperPrecisStageTraker.API.Tests.Controllers
 {
     [TestClass]
-    public class PermissionControllerTests : ApiControllerTestsBase<PermissionController, SimpleScenario>
-    {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
-
-        [TestMethod]
-        public async Task ShouldFetchShooterPermissionBeOkHavingProvidedData()
-        {
-            //Invoke del metodo
-            var response = await Controller.FetchAllUserPermissions();
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<PermissionsResponse>(response);
-            Assert.IsTrue(parsed != null &&
-                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageMatches) &&
-                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageShooters) &&
-                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageShooters) &&
-                            parsed.Data.AdministrationPermissions.Any(x => x.Permission == (int)AdministrationPermissions.ManageTeams)
-            );
-        }
-
-        [TestMethod]
-        public async Task ShouldFetchShooterPermissionBeOkHavingProvidedDataOnAnotherUser()
-        {
-            UpdateIdentityUser(GetAnotherUser());
-            //Invoke del metodo
-            var response = await Controller.FetchAllUserPermissions();
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<PermissionsResponse>(response);
-
-            Assert.IsTrue(parsed != null &&
-                          parsed.Data.EntityPermissions.Any(x => x.Permission == (int)EntityPermissions.EditShooter && x.EntityId == "1")
-            );
-        }
-
-    }
-
-
-    [TestClass]
-    public class ContactControllerTests : ApiControllerTestsBase<ContactController, SimpleScenario>
-    {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
-        [TestMethod]
-        public async Task ShouldCreateContactBeOkHavingProvidedData()
-        {
-            //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Contacts.Count;
-
-            //Composizione della request
-            var request = new ContactCreateRequest
-            {
-                Name = RandomizationUtils.GenerateRandomString(50),
-                Token = RandomizationUtils.GenerateRandomString(50),
-                Description = RandomizationUtils.GenerateRandomString(50),
-                Email = RandomizationUtils.GenerateRandomEmail(),
-                Subject = RandomizationUtils.GenerateRandomString(50),
-                AcceptPolicy = true,
-            };
-
-            //Invoke del metodo
-            var response = await Controller.CreateContact(request);
-
-            //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Contacts.Count;
-
-            var lastInsert = Scenario.Contacts.OrderByDescending(x => x.CreationDateTime).FirstOrDefault();
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<OkResponse>(response);
-            Assert.IsTrue(parsed != null
-                          && countAfter == countBefore + 1
-                          && lastInsert != null
-                          && lastInsert.Name == request.Name
-                          && lastInsert.Description == request.Description
-                          && lastInsert.Email == request.Email
-                          && lastInsert.Subject == request.Subject
-            );
-        }
-
-    }
-
-    [TestClass]
     public class MatchControllerTests : ApiControllerTestsBase<MatchController, SimpleScenario>
     {
         protected override Shooter GetIdentityUser() => GetAdminUser();
@@ -151,6 +70,72 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                             && parsed.Data.OpenMatch == request.OpenMatch
                             && parsed.Data.UnifyClassifications == request.UnifyClassifications
                           );
+        }
+
+
+        [TestMethod]
+        public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
+        {
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.EntityPermissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTime = DateTime.Now,
+                OpenMatch = true,
+                UnifyClassifications = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.EntityPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore,countAfter);
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateMatchBeOkAndCreatePermissions()
+        {
+            UpdateIdentityUser(GetAnotherUser());
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.EntityPermissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTime = DateTime.Now,
+                OpenMatch = true,
+                UnifyClassifications = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.EntityPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore+2,countAfter);
         }
 
         [TestMethod]
@@ -269,6 +254,42 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 parsed.Data.MatchId == existing.Id);
             Assert.AreEqual(countBefore - 1, countAfter);
         }
+
+        [TestMethod]
+        public async Task ShouldDeleteMatchBeOkAndDeletePermissions()
+        {
+            var permission =
+                Scenario.EntityPermissions.FirstOrDefault(x => x.Permission == nameof(EntityPermissions.EditMatch));
+
+            if (permission == null)
+                Assert.Inconclusive("Permissions not found");
+            
+            //Recupero una Match esistente non utilizzato
+            var existing = Scenario.Matches.FirstOrDefault(x=>x.Id == permission.EntityId);
+
+            if (existing == null)
+                Assert.Inconclusive("Match does not exists");
+            
+            //Composizione della request
+            var request = new MatchRequest { MatchId = existing.Id };
+
+            //Invoke del metodo
+            var response = await Controller.DeleteMatch(request);
+
+            //Parsing della risposta
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            
+            var countPermissionAfter = Scenario.EntityPermissions.Count(x => 
+                x.EntityId == permission.EntityId &&
+                (x.Permission == nameof(EntityPermissions.EditMatch) ||
+                 x.Permission == nameof(EntityPermissions.DeleteMatch)));
+
+
+            Assert.IsTrue(parsed.Data.MatchId == existing.Id);
+
+            Assert.AreEqual(0,countPermissionAfter);
+        }
+
 
         [TestMethod]
         public async Task ShouldDeleteMatchBeBadNotFoundHavingProvidedWrongId()

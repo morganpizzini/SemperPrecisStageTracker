@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks.Dataflow;
+using System.Threading.Tasks;
 using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Containers;
 using SemperPrecisStageTracker.Domain.Data.Repositories;
@@ -11,7 +10,7 @@ using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
 using SemperPrecisStageTracker.Domain.Utils;
-using ZenProgramming.Chakra.Core.Extensions;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -33,6 +32,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IShooterMatchRepository _shooterMatchRepository;
         private readonly IContactRepository _contractRepository;
         private readonly ISemperPrecisMemoryCache _cache;
+        private readonly AuthenticationServiceLayer authenticationService;
 
         public MainServiceLayer(IDataSession dataSession)
                 : base(dataSession)
@@ -53,6 +53,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterMatchRepository = dataSession.ResolveRepository<IShooterMatchRepository>();
             _contractRepository = dataSession.ResolveRepository<IContactRepository>();
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
+
+            authenticationService = new AuthenticationServiceLayer(dataSession);
         }
 
         #region Contract
@@ -255,7 +257,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Match</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> CreateMatch(Match entity)
+        public async Task<IList<ValidationResult>> CreateMatch(Match entity,string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -286,25 +288,103 @@ namespace SemperPrecisStageTracker.Domain.Services
             // Set unique identifier
             entity.ShortLink = RandomUtils.RandomString();
             //Esecuzione in transazione
-            using (var t = DataSession.BeginTransaction())
+            using var t = DataSession.BeginTransaction();
+            //Validazione argomenti
+            validations = _matchRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
             {
-
-                //Validazione argomenti
-                validations = _matchRepository.Validate(entity);
-
-                //Se ho validazioni fallite, esco
-                if (validations.Count > 0)
-                {
-                    //Rollback ed uscita
-                    t.Rollback();
-                    return validations;
-                }
-
-                //Salvataggio
-                _matchRepository.Save(entity);
-                t.Commit();
+                //Rollback ed uscita
+                t.Rollback();
                 return validations;
             }
+
+            //Salvataggio
+            _matchRepository.Save(entity);
+
+            //Add user permission on match
+            validations = await AddUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditMatch, EntityPermissions.DeleteMatch},userId);
+
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            t.Commit();
+            return validations;
+        }
+
+        private Task<IList<ValidationResult>> RemoveUserValidation(string entityId, EntityPermissions permission)
+            => this.RemoveUserValidation(entityId,new List<EntityPermissions>{permission});
+
+        private Task<IList<ValidationResult>> RemoveUserValidation(string entityId,
+            IList<EntityPermissions> permissions)
+        {
+            if (string.IsNullOrEmpty(entityId)) throw new ArgumentNullException(nameof(entityId));
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            return authenticationService.DeletePermissionsOnEntity(permissions,entityId);
+        }
+
+        private Task<IList<ValidationResult>> AddUserValidation(string entityId, EntityPermissions permission, string userId)
+            => this.AddUserValidation(entityId,new List<EntityPermissions>{permission},userId);
+        
+        private async Task<IList<ValidationResult>> AddUserValidation(string entityId, IList<EntityPermissions> permissions, string userId)
+        {
+            if (string.IsNullOrEmpty(entityId)) throw new ArgumentNullException(nameof(entityId));
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            IList<EntityPermission> newEntityPermissions = new List<EntityPermission>();
+
+            var userPermissions = await authenticationService.GetUserPermissionById(userId);
+            foreach (var permission in permissions)
+            {
+                switch (permission)
+                {
+                    case EntityPermissions.EditMatch:
+                    case EntityPermissions.DeleteMatch:
+                        if (userPermissions.adminPermissions.Contains(nameof(AdministrationPermissions.ManageMatches)))
+                        {
+                            break;
+                        }
+                        newEntityPermissions.Add(new EntityPermission
+                        {
+                            Permission = permission.ToDescriptionString(),
+                            ShooterId = userId,
+                            EntityId = entityId
+                        });
+                    break;
+
+                    case EntityPermissions.EditShooter:
+                    case EntityPermissions.DeleteShooter:
+                        if (userPermissions.adminPermissions.Contains(nameof(AdministrationPermissions.ManageShooters)))
+                        {
+                            break;
+                        }
+                        newEntityPermissions.Add(new EntityPermission
+                        {
+                            Permission = permission.ToDescriptionString(),
+                            ShooterId = userId,
+                            EntityId = entityId
+                        });
+                        break;
+                }
+            }
+            
+
+            if (newEntityPermissions.Count== 0)
+            {
+                return validations;
+            }
+
+
+            return authenticationService.SaveUserPermissions(newEntityPermissions);
         }
 
         /// <summary>
@@ -390,7 +470,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Match</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> DeleteMatch(Match entity)
+        public async Task<IList<ValidationResult>> DeleteMatch(Match entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -404,6 +484,14 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 //Eliminazione
                 _matchRepository.Delete(entity);
+
+                var validations = await RemoveUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditMatch, EntityPermissions.DeleteMatch});
+                if (validations.Count > 1)
+                {
+                    t.Rollback();
+                    return validations;
+                }
+
                 t.Commit();
                 return new List<ValidationResult>();
             }
@@ -1492,7 +1580,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> CreateShooter(Shooter entity)
+        public async Task<IList<ValidationResult>> CreateShooter(Shooter entity,string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -1531,6 +1619,17 @@ namespace SemperPrecisStageTracker.Domain.Services
 
                 //Salvataggio
                 _shooterRepository.Save(entity);
+
+                //Add user permission on match
+                validations = await AddUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditShooter, EntityPermissions.DeleteShooter},userId);
+
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
                 t.Commit();
                 return validations;
             }
@@ -1611,7 +1710,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> DeleteShooter(Shooter entity)
+        public async Task<IList<ValidationResult>> DeleteShooter(Shooter entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -1649,6 +1748,13 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Eliminazione
             _shooterRepository.Delete(entity);
+
+            var validations = await RemoveUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditShooter, EntityPermissions.DeleteShooter});
+            if (validations.Count > 1)
+            {
+                t.Rollback();
+                return validations;
+            }
             t.Commit();
             return new List<ValidationResult>();
         }

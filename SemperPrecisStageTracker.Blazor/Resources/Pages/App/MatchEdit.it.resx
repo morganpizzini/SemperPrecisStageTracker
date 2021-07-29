@@ -170,4 +170,7 @@
   <data name="Place" xml:space="preserve">
     <value>Luogo</value>
   </data>
+  <data name="NoAuth" xml:space="preserve">
+    <value>Non autorizzato</value>
+  </data>
 </root>

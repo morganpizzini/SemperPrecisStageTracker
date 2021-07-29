@@ -1,11 +1,10 @@
 ﻿@page "/app/login"
-@using System.ComponentModel.DataAnnotations
 @using SemperPrecisStageTracker.Contracts.Utilities
 @inject IAuthenticationService AuthenticationService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Login> L
 @inject IJSRuntime JSRuntime
-@inject AuthenticationStateProvider auth
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
 <Alert Color="Color.Success">
@@ -72,7 +71,7 @@
     protected override void OnInitialized()
     {
         // redirect to home if already logged in
-        if (AuthenticationService.User != null)
+        if (stateService.User != null)
         {
             NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SemperPrecisStageTracker.Contracts;
+using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 
@@ -435,5 +436,30 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Permission= entity.Permission
             };
         }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="adminPermissions">Admin permissions list</param>
+        /// <param name="entityPermissions">Entity permission list</param>
+        /// <returns>Returns contract</returns>
+        public static PermissionsResponse GenerateContract(IList<string> adminPermissions, IList<EntityPermission> entityPermissions)
+        {
+            //Validazione argomenti
+            if (adminPermissions == null) throw new ArgumentNullException(nameof(adminPermissions));
+            if (entityPermissions == null) throw new ArgumentNullException(nameof(entityPermissions));
+
+            //Ritorno il contratto
+            return new PermissionsResponse
+            {
+                AdministrationPermissions = adminPermissions.Select(x => new AdministrationPermissionContract
+                {
+                    Permission = x
+                }).ToList(),
+                EntityPermissions = entityPermissions.As(GenerateContract)
+            };
+        }
+
+        
     }
 }

@@ -1,5 +1,4 @@
 ﻿@page "/app"
-@using Microsoft.Extensions.Configuration
 @using SemperPrecisStageTracker.Blazor.Services.IndexDB
 @inject ClientConfiguration config
 @inject MatchServiceIndexedDb matchServiceIndexDb
@@ -13,7 +12,8 @@
 
     <h3>Working</h3>
     <ul>
-        <li>User permissions</li>
+        <li>User permissions // https://stackoverflow.com/questions/61959852/how-to-implement-custom-authorization-filter-for-blazor-page</li>
+        <li>Delete match / shooter / team / association</li>
         <li>IndexDB</li>
     </ul>
     <h3>TO-DO</h3>
