@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using SemperPrecisStageTracker.Domain.Clients;
-using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Data;
@@ -13,17 +12,6 @@ using ZenProgramming.Chakra.Core.Mocks.Scenarios.Extensions;
 
 namespace SemperPrecisStageTracker.Mocks.Clients
 {
-    /// <summary>
-    /// Mock implementation for Captcha
-    /// </summary>
-    public class MockCaptchaValidatorService : ICaptchaValidatorService
-    {
-        public Task<string> ValidateToken(string token)
-        {
-            return Task.FromResult(string.Empty);
-        }
-    }
-
     /// <summary>
     /// Mock implementation for IdentityClient
     /// </summary>

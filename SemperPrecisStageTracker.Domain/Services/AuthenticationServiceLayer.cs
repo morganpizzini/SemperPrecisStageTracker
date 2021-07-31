@@ -6,9 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using SemperPrecisStageTracker.Domain.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
@@ -177,6 +177,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
+        private (IList<string> adminPermissions, IList<EntityPermission> entityPermissions) userPermissions = 
+            (new List<string>(),new List<EntityPermission>());
         /// <summary>
         /// Get user permissions
         /// </summary>
@@ -187,16 +189,21 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
+            if (userPermissions.entityPermissions.Count == 0 && userPermissions.adminPermissions.Count == 0)
+            {
+                userPermissions = (
+                    _administrationPermissionRepository.FetchWithProjection(x => x.Permission, x => x.ShooterId == userId),
+                    _entityPermissionRepository.Fetch(x => x.ShooterId == userId)
+                );
+            }
+
             //Recupero i dati, commit ed uscita
-            return Task.FromResult((
-                _administrationPermissionRepository.FetchWithProjection(x => x.Permission, x => x.ShooterId == userId),
-                _entityPermissionRepository.Fetch(x => x.ShooterId == userId)
-                ));
+            return Task.FromResult(userPermissions);
         }
 
         public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<EntityPermissions> permissions, string entityId)
         {
-            var permissionsAsStringList = permissions.Select(x=> x.ToDescriptionString()).ToList();
+            var permissionsAsStringList = permissions.Select(x => x.ToDescriptionString()).ToList();
             return this.DeletePermissionsOnEntity(permissionsAsStringList, entityId);
         }
 
@@ -345,6 +352,47 @@ namespace SemperPrecisStageTracker.Domain.Services
 
 
             return validations;
+        }
+
+        public Task<bool> ValidateUserPermissions(string userId,IList<AdministrationPermissions> adminPermission)
+        {
+            return ValidateUserPermissions(userId, string.Empty, adminPermission, new List<EntityPermissions>());
+        }
+        public async Task<bool> ValidateUserPermissions(string userId, string entityId, IList<AdministrationPermissions> adminPermission, IList<EntityPermissions> shooterPermission)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return false;
+            }
+            var rawUserPermissions = await GetUserPermissionById(userId);
+
+            // Convert user permission in application enum permissions
+            var permissions = new UserPermissions()
+            {
+                AdministratorPermissions =
+                    rawUserPermissions.adminPermissions.Select(x => x.ParseEnum<AdministrationPermissions>()).ToList(),
+                EntityPermissions = rawUserPermissions.entityPermissions.GroupBy(x => x.EntityId)
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Select(e => e.Permission.ParseEnum<EntityPermissions>()).ToList())
+            };
+
+            // check for permissions
+            if (permissions.AdministratorPermissions.Any(adminPermission.Contains))
+            {
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(entityId) && shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(entityId))
+            {
+                var existingPermission = permissions.EntityPermissions
+                    .First(sp => sp.Key == entityId).Value;
+
+                if (existingPermission.Any(shooterPermission.Contains))
+                    return true;
+            }
+
+            return false;
         }
 
         #region Private methods

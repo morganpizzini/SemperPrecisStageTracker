@@ -48,7 +48,7 @@
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" SelectedValueChanged="@AssociationSelectChanged">
+                            <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var association in associations)
@@ -58,25 +58,6 @@
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongAssociation"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MatchDirector"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@model.PlaceId">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var place in places)
-                                    {
-                                        <SelectItem Value="@place.PlaceId">@place.Name</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongPlace"]</ValidationError>
                                 </Feedback>
                             </Select>
                         </FieldBody>
@@ -175,17 +156,17 @@
         }
     }
 
-    private async Task AssociationSelectChanged(string id)
-    {
-        if (string.IsNullOrEmpty(id))
-        {
-            shooters.Clear();
-            return;
-        }
-        model.AssociationId = id;
-        // load available match director
-        shooters = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirectorByAssociaitonId", new AssociationRequest { AssociationId = model.AssociationId });
-    }
+    //private async Task AssociationSelectChanged(string id)
+    //{
+    //    if (string.IsNullOrEmpty(id))
+    //    {
+    //        shooters.Clear();
+    //        return;
+    //    }
+    //    model.AssociationId = id;
+    //    // load available match director
+    //    shooters = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirectorByAssociationId", new AssociationRequest { AssociationId = model.AssociationId });
+    //}
 
     async Task Submit()
     {

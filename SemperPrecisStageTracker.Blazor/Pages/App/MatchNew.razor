@@ -33,25 +33,6 @@
     </Validation>
     <Validation Validator="@ValidationRule.IsNotEmpty">
         <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
-                    <ChildContent>
-                        <SelectItem Value="@("")"></SelectItem>
-                        @foreach (var association in associations)
-                        {
-                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                        }
-                    </ChildContent>
-                    <Feedback>
-                        <ValidationError>@L["WrongAssociation"]</ValidationError>
-                    </Feedback>
-                </Select>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true" JustifyContent="JustifyContent.End">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Place"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                 <Select TValue="string" @bind-SelectedValue="@model.PlaceId">

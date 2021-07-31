@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Contracts
         public DateTime CreationDateTime { get; set; }
         public bool UnifyClassifications { get; set; }
         public bool OpenMatch {get; set; }
-        public AssociationContract Association {get;set;}
+        public AssociationContract Association { get; set; } = new();
         public PlaceContract Place {get;set;}
         public IList<GroupContract> Groups { get; set; } = new List<GroupContract>();
         public IList<StageContract> Stages { get; set; } = new List<StageContract>();

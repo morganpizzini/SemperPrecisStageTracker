@@ -13,8 +13,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string AssociationId { get; set; }
         [Required]
         public string PlaceId {get;set;}
-        [Required]
-        public string MatchDirectorId {get;set;}
+        
         public bool UnifyClassifications { get; set; }
         public bool OpenMatch {get; set; }
 

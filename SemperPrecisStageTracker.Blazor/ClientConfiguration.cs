@@ -8,9 +8,4 @@ namespace SemperPrecisStageTracker.Blazor
 
         public RecapthaConfiguration Recaptcha { get; set; } = new();
     }
-
-    public class RecapthaConfiguration
-    {
-        public string RecaptchaToken { get; set; }
-    }
 }

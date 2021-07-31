@@ -5,7 +5,10 @@
 @inject MainServiceLayer mainServiceLayer
 
 <Heading Size="HeadingSize.Is1">@L["Matches"]</Heading>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewMatch"]</Button>
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(AdministrationPermissions.CreateMatches)))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewMatch"]</Button>
+}
 <Divider />
 <Table Striped="true" Hoverable="true">
     <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -41,10 +44,14 @@
                         <TableRowCell>
                             @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch)))
                             {
-                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen"/></Button>
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search"/></Button>
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar"/></Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
+                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch)))
+                            {
+                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(match))"><Icon Name="IconName.Delete" /></Button>
+                            }
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>
@@ -52,17 +59,80 @@
         }
     </TableBody>
 </Table>
-
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityToDelete.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Association"]</FieldLabel>
+                    <Text>@entityToDelete.Association.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Date"]</FieldLabel>
+                    <Text>@entityToDelete.MatchDateTime.ToString("d")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
     IList<MatchContract> matches = new List<MatchContract>();
+
+    private Modal modalRefEntityToDelete;
+    MatchContract entityToDelete = new();
 
     protected override async Task OnInitializedAsync()
     {
         ApiLoading = true;
-        matches = await mainServiceLayer.GetMatches();
+        await LoadEntities();
         ApiLoading = false;
 
         await base.OnInitializedAsync();
     }
 
+    private async Task LoadEntities()
+    {
+        ApiLoading = true;
+        matches = await mainServiceLayer.GetMatches();
+        ApiLoading = false;
+    }
+
+    void DeleteEntity(MatchContract entity)
+    {
+        if (entity == null)
+            return;
+        entityToDelete = entity;
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && entityToDelete != null)
+        {
+            await Post<MatchContract>("/api/Match/DeleteMatch", new MatchRequest
+            {
+                MatchId = entityToDelete.MatchId
+            });
+
+            await LoadEntities();
+        }
+        entityToDelete = new();
+        modalRefEntityToDelete.Hide();
+    }
 }

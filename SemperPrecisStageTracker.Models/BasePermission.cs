@@ -7,13 +7,4 @@ namespace SemperPrecisStageTracker.Models
         public string ShooterId { get; set; }
         public string Permission { get; set; }
     }
-
-    public class AdministrationPermission : BasePermission
-    {
-    }
-
-    public class EntityPermission : BasePermission
-    {
-        public string EntityId { get; set; }
-    }
 }

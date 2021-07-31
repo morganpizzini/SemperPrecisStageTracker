@@ -269,6 +269,16 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Predisposizione al fallimento
             IList<ValidationResult> validations = new List<ValidationResult>();
 
+            //Check permissions
+            if (!await authenticationService.ValidateUserPermissions(userId, new List<AdministrationPermissions>
+            {
+                AdministrationPermissions.CreateMatches,
+                AdministrationPermissions.ManageMatches
+            }))
+            {
+                validations.Add(new ValidationResult($"User {userId} has no permissions on {nameof(CreateMatch)}"));
+            }
+
             // check association
             if (_associationRepository.GetSingle(x => x.Id == entity.AssociationId) == null)
             {
@@ -304,7 +314,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _matchRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditMatch, EntityPermissions.DeleteMatch},userId);
+            validations = await AddUserPermissions(entity.Id,new List<EntityPermissions>{EntityPermissions.EditMatch, EntityPermissions.DeleteMatch},userId);
 
             if (validations.Count > 0)
             {
@@ -329,10 +339,24 @@ namespace SemperPrecisStageTracker.Domain.Services
             return authenticationService.DeletePermissionsOnEntity(permissions,entityId);
         }
 
-        private Task<IList<ValidationResult>> AddUserValidation(string entityId, EntityPermissions permission, string userId)
-            => this.AddUserValidation(entityId,new List<EntityPermissions>{permission},userId);
-        
-        private async Task<IList<ValidationResult>> AddUserValidation(string entityId, IList<EntityPermissions> permissions, string userId)
+        /// <summary>
+        /// Add user capability to made change on new entity
+        /// </summary>
+        /// <param name="entityId">Entity Id</param>
+        /// <param name="permission">Permission to apply</param>
+        /// <param name="userId">User identifier</param>
+        /// <returns>List validation</returns>
+        private Task<IList<ValidationResult>> AddUserPermissions(string entityId, EntityPermissions permission, string userId)
+            => this.AddUserPermissions(entityId,new List<EntityPermissions>{permission},userId);
+
+        /// <summary>
+        /// Add user capability to made change on new entity
+        /// </summary>
+        /// <param name="entityId">Entity Id</param>
+        /// <param name="permissions">Permissions to apply</param>
+        /// <param name="userId">User identifier</param>
+        /// <returns>List validation</returns>
+        private async Task<IList<ValidationResult>> AddUserPermissions(string entityId, IList<EntityPermissions> permissions, string userId)
         {
             if (string.IsNullOrEmpty(entityId)) throw new ArgumentNullException(nameof(entityId));
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
@@ -1621,7 +1645,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _shooterRepository.Save(entity);
 
                 //Add user permission on match
-                validations = await AddUserValidation(entity.Id,new List<EntityPermissions>{EntityPermissions.EditShooter, EntityPermissions.DeleteShooter},userId);
+                validations = await AddUserPermissions(entity.Id,new List<EntityPermissions>{EntityPermissions.EditShooter, EntityPermissions.DeleteShooter},userId);
 
                 if (validations.Count > 0)
                 {

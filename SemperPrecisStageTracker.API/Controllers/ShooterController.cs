@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateShooter")]
-        [ApiAuthorizationFilter(EntityPermissions.CreateShooter)]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageShooters,AdministrationPermissions.CreateShooters)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> CreateShooter([EntityId]ShooterCreateRequest request)
         {
@@ -91,7 +91,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateShooter")]
-        [ApiAuthorizationFilter(EntityPermissions.EditShooter)]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.EditShooter},new [] {AdministrationPermissions.ManageShooters})]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public Task<IActionResult> UpdateShooter([EntityId]ShooterUpdateRequest request)
         {
@@ -125,11 +125,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooter")]
-        [ApiAuthorizationFilter(EntityPermissions.DeleteShooter)]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.DeleteShooter},new [] {AdministrationPermissions.ManageShooters})]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> DeleteShooter([EntityId]ShooterRequest request)
         {
-
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
 
@@ -137,7 +136,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
             {
                 return NotFound();
-
             }
 
             //Invocazione del service layer

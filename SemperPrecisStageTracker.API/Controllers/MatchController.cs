@@ -107,9 +107,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateMatch")]
-        [ApiAuthorizationFilter(EntityPermissions.CreateMatch)]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageMatches,AdministrationPermissions.CreateMatches)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public async Task<IActionResult> CreateMatch([EntityId]MatchCreateRequest request)
+        public async Task<IActionResult> CreateMatch(MatchCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Match
@@ -142,7 +142,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        [ApiAuthorizationFilter(EntityPermissions.EditMatch)]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.EditMatch},new [] {AdministrationPermissions.ManageMatches})]
         public Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -178,7 +178,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
-        [ApiAuthorizationFilter(EntityPermissions.DeleteMatch)]
+        [ApiAuthorizationFilter(new []{EntityPermissions.DeleteMatch},
+                                new []{AdministrationPermissions.ManageMatches})]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {

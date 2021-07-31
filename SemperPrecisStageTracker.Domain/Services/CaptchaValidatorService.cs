@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
@@ -46,12 +44,5 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return parsedData is { Success: true } ? string.Empty : string.Join(", ", parsedData.ErrorCodes);
         }
-    }
-
-    public class CaptchaResponse
-    {
-        public bool Success { get; set; }
-        [JsonPropertyName("error-codes")]
-        public IList<string> ErrorCodes { get; set; }
     }
 }

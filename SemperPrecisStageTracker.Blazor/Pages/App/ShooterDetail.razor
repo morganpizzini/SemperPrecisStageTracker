@@ -1,6 +1,7 @@
 ﻿@page "/app/shooters/{id}"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<ShooterDetail> L
+@inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
@@ -313,26 +314,60 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (shooter != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooter.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Username"]</FieldLabel>
+                    <Text>@shooter.Username</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
     [Parameter]
     public string Id { get; set; }
 
-    ShooterContract shooter = new ShooterContract();
+    private Modal modalRefEntityToDelete;
+
+    ShooterContract shooter = new();
     Validations validations;
     Validations teamValidations;
     private Modal modalRefAssociationToDelete;
-    ShooterAssociationContract associationToDelete = new ();
+    ShooterAssociationContract associationToDelete = new();
     private Modal modalRefAssociationToEdit;
-    ShooterAssociationCreateRequest associationToEdit = new ();
+    ShooterAssociationCreateRequest associationToEdit = new();
     IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
 
     private Modal modalRefTeamToDelete;
 
-    ShooterTeamContract teamToDelete = new ShooterTeamContract();
+    ShooterTeamContract teamToDelete = new();
     private Modal modalRefTeamToEdit;
-    ShooterTeamCreateRequest teamToEdit = new ShooterTeamCreateRequest();
+    ShooterTeamCreateRequest teamToEdit = new();
     IList<TeamContract> teams = new List<TeamContract>();
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     protected override async Task OnInitializedAsync()
@@ -352,6 +387,24 @@ else
     async Task LoadShooterClassifications()
     {
         shooterClassifications = await Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && shooter != null)
+        {
+            await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
+            {
+                ShooterId = shooter.ShooterId
+            });
+            UriHelper.NavigateTo(RouteHelper.GetUrl<Shooters>());
+        }
+        modalRefEntityToDelete.Hide();
     }
 
     void ValidateDate(ValidatorEventArgs e)

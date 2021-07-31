@@ -29,19 +29,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
         
 
         private CustomAuthStateProvider _customAuthenticationStateProvider => _authenticationStateProvider as CustomAuthStateProvider;
-
-        private ILogger<AuthenticationService> _logger;
-
+        
         public AuthenticationService(
             IHttpService httpService,
             NavigationManager navigationManager,
             ILocalStorageService localStorageService,
             AuthenticationStateProvider authenticationStateProvider,
-            StateService stateService,
-            ILogger<AuthenticationService> logger
+            StateService stateService
         )
         {
-            _logger = logger;
             _httpService = httpService;
             _navigationManager = navigationManager;
             _localStorageService = localStorageService;
@@ -98,15 +94,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public bool CheckPermissions(IEnumerable<string> roles, string resourceId = "")
         {
-            _logger.LogInformation(JsonSerializer.Serialize(roles));
-            _logger.LogInformation(JsonSerializer.Serialize(_stateService.Permissions.AdministrationPermissions));
-            _logger.LogInformation(resourceId);
-
             if (_stateService.Permissions.AdministrationPermissions.Any(p => roles.Contains(p.Permission)))
             {
                 return true;
             }
-            _logger.LogInformation(resourceId);
 
             if (!string.IsNullOrEmpty(resourceId) && _stateService.Permissions.EntityPermissions.Any() && _stateService.Permissions.EntityPermissions.Any(x=>x.EntityId == resourceId))
             {
