@@ -8,6 +8,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.Threading.Tasks;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -59,8 +60,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateTeam")]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageTeams,AdministrationPermissions.CreateTeams)]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public Task<IActionResult> CreateTeam(TeamCreateRequest request)
+        public async Task<IActionResult> CreateTeam(TeamCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Team
@@ -69,14 +71,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = BasicLayer.CreateTeam(model);
+            var validations = await BasicLayer.CreateTeam(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -87,26 +89,26 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public Task<IActionResult> UpdateTeam(TeamUpdateRequest request)
+        [ApiAuthorizationFilter(new[]{EntityPermissions.EditTeam},new [] {AdministrationPermissions.ManageTeams})]
+        public async Task<IActionResult> UpdateTeam([EntityId] TeamUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetTeam(request.TeamId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             
             //Salvataggio
-            var validations = BasicLayer.UpdateTeam(entity);
+            var validations = await BasicLayer.UpdateTeam(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
-
+                return BadRequest(validations);
 
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -116,8 +118,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteTeam")]
+        [ApiAuthorizationFilter(new []{EntityPermissions.DeleteTeam},
+            new []{AdministrationPermissions.ManageTeams})]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public Task<IActionResult> DeleteTeam(TeamRequest request)
+        public async Task<IActionResult> DeleteTeam([EntityId]TeamRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -126,17 +130,16 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
-
+                return NotFound();
             }
 
             //Invocazione del service layer
-            var validations = BasicLayer.DeleteTeam(entity);
+            var validations = await BasicLayer.DeleteTeam(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
     }
 }

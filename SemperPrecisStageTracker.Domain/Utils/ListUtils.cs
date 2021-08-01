@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 namespace SemperPrecisStageTracker.Domain.Utils
 {
     public static class ListUtils
@@ -19,6 +21,10 @@ namespace SemperPrecisStageTracker.Domain.Utils
                 }
             }
 
+        }
+        public static void AddMessage(this IList<ValidationResult> validations, string message)
+        {
+            validations.Add(new ValidationResult(message));
         }
     }
 }

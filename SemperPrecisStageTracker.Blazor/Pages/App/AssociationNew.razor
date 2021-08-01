@@ -6,65 +6,74 @@
 <Heading Size="HeadingSize.Is1">@L["NewAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-    <Validation Validator="@ValidationRule.IsNotEmpty">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                    <Feedback>
-                        <ValidationError>@L["WrongName"]</ValidationError>
-                    </Feedback>
-                </TextEdit>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Field>
-        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-        @for (int i = 0; i < model.Divisions.Count; i++)
-        {
-            var tmp = i;
-            <FieldBody ColumnSize="ColumnSize.Is8">
-                <Addons>
-                    <Addon AddonType="AddonType.Body">
-                        <input value="@model.Divisions[tmp]" class="form-control"
-                               @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                    </Addon>
-                    <Addon AddonType="AddonType.End">
-                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                    </Addon>
-                </Addons>
-            </FieldBody>
-        }
-    </Field>
-    <Field>
-        <FieldLabel ColumnSize="ColumnSize.Is4">@L["Classifications"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-        @for (int i = 0; i < model.Classifications.Count; i++)
-        {
-            var tmp = i;
-            <FieldBody ColumnSize="ColumnSize.Is8">
-                <Addons>
-                    <Addon AddonType="AddonType.Body">
-                        <input value="@model.Classifications[tmp]" class="form-control"
-                               @onchange="@(e => model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                    </Addon>
-                    <Addon AddonType="AddonType.End">
-                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Classifications.Remove(model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                    </Addon>
-                </Addons>
-            </FieldBody>
-        }
-    </Field>
-    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                <ChildContent>@L["Submit"]</ChildContent>
-            </Button>
-        </FieldBody>
-    </Field>
-</Validations>
-
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageAssociations).And(nameof(AdministrationPermissions.CreateAssociations)))">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                            <Feedback>
+                                <ValidationError>@L["WrongName"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Field>
+                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                @for (int i = 0; i < model.Divisions.Count; i++)
+                {
+                    var tmp = i;
+                    <FieldBody ColumnSize="ColumnSize.Is8">
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@model.Divisions[tmp]" class="form-control"
+                                       @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    </FieldBody>
+                }
+            </Field>
+            <Field>
+                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Classifications"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                @for (int i = 0; i < model.Classifications.Count; i++)
+                {
+                    var tmp = i;
+                    <FieldBody ColumnSize="ColumnSize.Is8">
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@model.Classifications[tmp]" class="form-control"
+                                       @onchange="@(e => model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Classifications.Remove(model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    </FieldBody>
+                }
+            </Field>
+            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                        <ChildContent>@L["Submit"]</ChildContent>
+                    </Button>
+                </FieldBody>
+            </Field>
+        </Validations>
+    </Authorized>
+</AuthorizeView>
 @code {
 
     Validations validations;

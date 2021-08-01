@@ -1,10 +1,18 @@
 ﻿@page "/app/places/{id}"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<PlaceDetail> L
+@inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.EditPlace), Id))
+{
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+}
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.DeletePlace), Id))
+{
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+}
 @if (PageLoading)
 {
     <p class="text-center">
@@ -46,16 +54,63 @@ else
         </Column>
     </Row>
 }
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (place != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@place.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Holder"]</FieldLabel>
+                    <Text>@place.Holder</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
     public string Id { get; set; }
-    PlaceContract place = new PlaceContract();
+    private Modal modalRefEntityToDelete;
+    PlaceContract place = new();
 
     protected override async Task OnInitializedAsync()
     {
         place = await Post<PlaceContract>("api/Place/GetPlace", new PlaceRequest() { PlaceId = Id });
 
         await base.OnInitializedAsync();
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && place != null)
+        {
+            await Post<PlaceContract>("/api/Place/DeletePlace", new PlaceRequest
+            {
+                PlaceId = place.PlaceId
+            });
+            UriHelper.NavigateTo(RouteHelper.GetUrl<Places>());
+        }
+        modalRefEntityToDelete.Hide();
     }
 }

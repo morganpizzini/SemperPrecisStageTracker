@@ -1,11 +1,22 @@
 ﻿@page "/app/teams/{id}"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<TeamDetail> L
+@inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+@if (PageCondition)
+{
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
+}
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+}
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.DeleteTeam), Id))
+{
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+}
 @if (PageLoading)
 {
     <p class="text-center">
@@ -48,7 +59,10 @@ else
                                         <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
                                         <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                        @if (PageCondition)
+                                        {
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                        }
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>
@@ -148,10 +162,42 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (team != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@team.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
     public string Id { get; set; }
+
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.EditTeam), Id);
+    
+
+    private Modal modalRefEntityToDelete;
+
     IList<ShooterContract> shooters = new List<ShooterContract>();
     TeamContract team = new TeamContract();
     Validations shooterValidations;
@@ -188,6 +234,24 @@ else
         {
             e.Status = ValidationStatus.Success;
         }
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && team != null)
+        {
+            await Post<TeamContract>("/api/Team/DeleteTeam", new TeamRequest
+            {
+                TeamId = team.TeamId
+            });
+            UriHelper.NavigateTo(RouteHelper.GetUrl<Teams>());
+        }
+        modalRefEntityToDelete.Hide();
     }
     async Task LoadShooterTeams()
     {

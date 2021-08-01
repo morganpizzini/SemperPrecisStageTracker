@@ -7,6 +7,9 @@
 <NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
 <Divider />
 <AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageMatches).And(nameof(EntityPermissions.EditMatch)))" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
     <NotAuthorized>
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
@@ -14,7 +17,7 @@
         @if (PageLoading)
         {
             <p class="text-center">
-                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x"/>
             </p>
         }
         else
@@ -100,7 +103,7 @@
                 </Validation>
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;@L["Submit"]</LoadingTemplate>
                         <ChildContent>@L["Submit"]</ChildContent>
                     </Button>
                 </Field>
@@ -114,14 +117,20 @@
 @code {
     [Parameter]
     public string Id { get; set; }
+
+
     Validations validations;
     MatchUpdateRequest model = new MatchUpdateRequest();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<PlaceContract> places = new List<PlaceContract>();
-    IList<ShooterContract> shooters = new List<ShooterContract>();
 
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageMatches).AndList(nameof(EntityPermissions.EditMatch)),Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
         associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
         places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
 

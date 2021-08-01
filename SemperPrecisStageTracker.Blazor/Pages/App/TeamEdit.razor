@@ -6,45 +6,60 @@
 <Heading Size="HeadingSize.Is1">@L["EditTeam"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 <Divider />
-@if (PageLoading)
-{
-    <p class="text-center">
-        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
-    </p>
-}
-else
-{
-    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-        <Validation Validator="@ValidationRule.IsNotEmpty">
-            <Field Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                        <Feedback>
-                            <ValidationError>@L["WrongName"]</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                    <ChildContent>@L["Submit"]</ChildContent>
-                </Button>
-            </FieldBody>
-        </Field>
-    </Validations>
-}
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageTeams).And(nameof(EntityPermissions.EditTeam)))" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (PageLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
+                                <Feedback>
+                                    <ValidationError>@L["WrongName"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                            <ChildContent>@L["Submit"]</ChildContent>
+                        </Button>
+                    </FieldBody>
+                </Field>
+            </Validations>
+        }
+    </Authorized>
+</AuthorizeView>
 @code {
     [Parameter]
     public string Id { get; set; }
     Validations validations;
-    TeamUpdateRequest model = new TeamUpdateRequest();
+    TeamUpdateRequest model = new ();
 
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageTeams).AndList(nameof(EntityPermissions.EditTeam)),Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
         var existing = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest { TeamId = Id });
         model.TeamId = existing.TeamId;
         model.Name = existing.Name;

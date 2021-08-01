@@ -6,6 +6,14 @@
 <Heading Size="HeadingSize.Is1">@L["NewPlace"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
 <Divider />
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManagePlaces).And(nameof(AdministrationPermissions.CreatePlaces)))">
+<Authorizing>
+    <h3 class="mt-5">@L["Loading"]</h3>
+</Authorizing>
+<NotAuthorized>
+    <h3 class="mt-5">@L["NoAuth"]</h3>
+</NotAuthorized>
+<Authorized>
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
     <Validation Validator="@ValidationRule.IsNotEmpty">
         <Field Horizontal="true">
@@ -124,7 +132,8 @@
         </FieldBody>
     </Field>
 </Validations>
-
+</Authorized>
+</AuthorizeView>
 @code {
 
     Validations validations;

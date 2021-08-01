@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
@@ -59,8 +60,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateAssociation")]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageAssociations,AdministrationPermissions.CreateAssociations)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public Task<IActionResult> CreateAssociation(AssociationCreateRequest request)
+        public async Task<IActionResult> CreateAssociation(AssociationCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Association
@@ -71,14 +73,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = BasicLayer.CreateAssociation(model);
+            var validations = await BasicLayer.CreateAssociation(model,PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -88,15 +90,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateAssociation")]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.EditAssociation},new [] {AdministrationPermissions.ManageAssociations})]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public Task<IActionResult> UpdateAssociation(AssociationUpdateRequest request)
+        public async Task<IActionResult> UpdateAssociation([EntityId]AssociationUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -104,13 +107,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Divisions = request.Divisions;
 
             //Salvataggio
-            var validations = BasicLayer.UpdateAssociation(entity);
+            var validations = await BasicLayer.UpdateAssociation(entity,PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
-
-
+                return BadRequest(validations);
+            
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -120,26 +122,26 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteAssociation")]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.DeleteAssociation},new [] {AdministrationPermissions.ManageAssociations})]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public Task<IActionResult> DeleteAssociation(AssociationRequest request)
+        public async Task<IActionResult> DeleteAssociation([EntityId]AssociationRequest request)
         {
-
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
             }
 
             //Invocazione del service layer
-            var validations = BasicLayer.DeleteAssociation(entity);
+            var validations = await BasicLayer.DeleteAssociation(entity,PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
     }
 }

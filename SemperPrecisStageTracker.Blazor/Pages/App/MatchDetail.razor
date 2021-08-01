@@ -331,7 +331,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch));
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),Id);
 
     // reference to the modal component
     private Modal modalRefGroup;

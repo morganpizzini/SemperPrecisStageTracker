@@ -62,7 +62,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateShooter")]
         [ApiAuthorizationFilter(AdministrationPermissions.ManageShooters,AdministrationPermissions.CreateShooters)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public async Task<IActionResult> CreateShooter([EntityId]ShooterCreateRequest request)
+        public async Task<IActionResult> CreateShooter(ShooterCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Shooter
@@ -93,14 +93,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateShooter")]
         [ApiAuthorizationFilter(new[]{EntityPermissions.EditShooter},new [] {AdministrationPermissions.ManageShooters})]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public Task<IActionResult> UpdateShooter([EntityId]ShooterUpdateRequest request)
+        public async Task<IActionResult> UpdateShooter([EntityId]ShooterUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             //Aggiornamento dell'entità
             entity.FirstName = request.FirstName;
@@ -110,12 +110,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Username = request.Username;
             
             //Salvataggio
-            var validations = BasicLayer.UpdateShooter(entity);
+            var validations = await BasicLayer.UpdateShooter(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeleteShooter(entity);
+            var validations = await BasicLayer.DeleteShooter(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 

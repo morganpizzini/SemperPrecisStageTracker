@@ -1,7 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Shared.Permissions
 {
@@ -14,6 +11,10 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         ManageShooters = 2,
         [Description("ManageTeams")]
         ManageTeams = 3,
+        [Description("ManageAssociations")]
+        ManageAssociations = 9,
+        [Description("ManagePlaces")]
+        ManagePlaces = 11,
         [Description("ManageStages")]
         ManageStages = 4,
         [Description("CreateMatches")]
@@ -23,7 +24,11 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("CreateTeams")]
         CreateTeams = 7,
         [Description("CreateStages")]
-        CreateStages = 8
+        CreateStages = 8,
+        [Description("CreateAssociations")]
+        CreateAssociations = 10,
+        [Description("CreatePlaces")]
+        CreatePlaces = 12
     }
     // singularity permissions
 }

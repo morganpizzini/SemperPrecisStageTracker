@@ -4,7 +4,10 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Teams"]</Heading>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(AdministrationPermissions.CreateTeams)))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+}
 <Divider />
 <Table Striped="true" Hoverable="true">
     <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -34,7 +37,10 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))">@team.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamEdit>(new {id = team.TeamId}))"><Icon Name="IconName.Pen" /></Button>
+                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.EditTeam), team.TeamId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamEdit>(new {id = team.TeamId}))"><Icon Name="IconName.Pen" /></Button>
+                            }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))"><Icon Name="IconName.Search" /></Button>
                         </TableRowCell>
                     </TableRow>

@@ -6,6 +6,7 @@ using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
@@ -57,8 +58,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreatePlace")]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManagePlaces,AdministrationPermissions.CreatePlaces)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public Task<IActionResult> CreatePlace(PlaceCreateRequest request)
+        public async Task<IActionResult> CreatePlace(PlaceCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Place
@@ -75,14 +77,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = BasicLayer.CreatePlace(model);
+            var validations = await BasicLayer.CreatePlace(model,PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
-
-
+                return BadRequest(validations);
+            
             //Return contract
-            return Reply(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -92,15 +93,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdatePlace")]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.EditPlace},new [] {AdministrationPermissions.ManagePlaces})]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public Task<IActionResult> UpdatePlace(PlaceUpdateRequest request)
+        public async Task<IActionResult> UpdatePlace([EntityId]PlaceUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -114,13 +116,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Country = request.Country;
             
             //Salvataggio
-            var validations = BasicLayer.UpdatePlace(entity);
+            var validations = await BasicLayer.UpdatePlace(entity,PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
-
-
+                return BadRequest(validations);
+            
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
@@ -130,27 +131,27 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeletePlace")]
+        [ApiAuthorizationFilter(new[]{EntityPermissions.DeletePlace},new [] {AdministrationPermissions.ManagePlaces})]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public Task<IActionResult> DeletePlace(PlaceRequest request)
+        public async Task<IActionResult> DeletePlace([EntityId]PlaceRequest request)
         {
-
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return NotFound();
 
             }
 
             //Invocazione del service layer
-            var validations = BasicLayer.DeletePlace(entity);
+            var validations = await BasicLayer.DeletePlace(entity,PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
     }
 }

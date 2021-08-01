@@ -1,10 +1,18 @@
 ﻿@page "/app/associations/{id}"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<AssociationDetail> L
+@inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.EditAssociation), Id))
+{
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
+}
+@if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.DeleteAssociation), Id))
+{
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+}
 @if (PageLoading)
 {
     <p class="text-center">
@@ -57,11 +65,11 @@ else
                         }
                         else
                         {
-                        <ul>
-                            <Virtualize Items="@association.Classifications" Context="s">
-                                <li>@s</li>
-                            </Virtualize>
-                        </ul>
+                            <ul>
+                                <Virtualize Items="@association.Classifications" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
                         }
 
                     </CardText>
@@ -70,20 +78,62 @@ else
         </Column>
     </Row>
 }
-
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (association != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@association.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
     public string Id { get; set; }
 
+    private Modal modalRefEntityToDelete;
 
-    AssociationContract association = new AssociationContract();
+    AssociationContract association = new ();
 
     protected override async Task OnInitializedAsync()
     {
         association = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
 
         await base.OnInitializedAsync();
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && association != null)
+        {
+            await Post<TeamContract>("/api/Association/DeleteAssociation", new AssociationRequest
+            {
+                AssociationId = association.AssociationId
+            });
+            UriHelper.NavigateTo(RouteHelper.GetUrl<Associations>());
+        }
+        modalRefEntityToDelete.Hide();
     }
 
 }

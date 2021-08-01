@@ -143,14 +143,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
         [ApiAuthorizationFilter(new[]{EntityPermissions.EditMatch},new [] {AdministrationPermissions.ManageMatches})]
-        public Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
+        public async Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetMatch(request.MatchId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());
+                return NotFound();
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -161,14 +161,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.UnifyClassifications = request.UnifyClassifications;
 
             //Salvataggio
-            var validations = BasicLayer.UpdateMatch(entity);
+            var validations = await BasicLayer.UpdateMatch(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Confermo
-            return Reply(ContractUtils.GenerateContract(entity, association, place));
+            return Ok(ContractUtils.GenerateContract(entity, association, place));
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeleteMatch(entity);
+            var validations = await BasicLayer.DeleteMatch(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
