@@ -28,7 +28,9 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("CreateAssociations")]
         CreateAssociations = 10,
         [Description("CreatePlaces")]
-        CreatePlaces = 12
+        CreatePlaces = 12,
+        [Description("ShowShooters")]
+        ShowShooters = 13
     }
     // singularity permissions
 }

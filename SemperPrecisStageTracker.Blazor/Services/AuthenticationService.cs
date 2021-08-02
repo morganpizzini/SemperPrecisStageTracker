@@ -92,6 +92,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }
 
+        public bool CheckPermissions(string roles, string resourceId = "") =>
+            CheckPermissions(new List<string> {roles}, resourceId);
+
         public bool CheckPermissions(IEnumerable<string> roles, string resourceId = "")
         {
             if (_stateService.Permissions.AdministrationPermissions.Any(p => roles.Contains(p.Permission)))

@@ -3,94 +3,108 @@
 @inject IStringLocalizer<ShooterEdit> L
 @inject NavigationManager UriHelper
 
-
 <Heading Size="HeadingSize.Is1">@L["EditShooter"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 <Divider />
-@if (PageLoading)
-{
-    <p class="text-center">
-        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
-    </p>
-}
-else
-{
-    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-        <Validation Validator="@ValidationRule.IsNotEmpty">
-            <Field Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
-                        <Feedback>
-                            <ValidationError>@L["WrongFirstName"]</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Validation Validator="@ValidationRule.IsNotEmpty">
-            <Field Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["LastName"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
-                        <Feedback>
-                            <ValidationError>@L["WrongLastName"]</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Validation Validator="@ValidateDate">
-            <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["BirthDate"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
-                        <Feedback>
-                            <ValidationError>@L["WrongValidBirthDate"]</ValidationError>
-                        </Feedback>
-                    </DateEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Validation Validator="@ValidationRule.IsNotEmpty">
-            <Field Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
-                        <Feedback>
-                            <ValidationError>@L["WrongUsername"]</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Validation Validator="@ValidationRule.IsNotEmpty">
-            <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                    <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
-                        <Feedback>
-                            <ValidationError>@L["WrongEmail"]</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </FieldBody>
-            </Field>
-        </Validation>
-        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                <ChildContent>@L["Submit"]</ChildContent>
-            </Button>
-        </Field>
-    </Validations>
-}
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(EntityPermissions.EditShooter)))" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (PageLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
+                                <Feedback>
+                                    <ValidationError>@L["WrongFirstName"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["LastName"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
+                                <Feedback>
+                                    <ValidationError>@L["WrongLastName"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["BirthDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongValidBirthDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                                <Feedback>
+                                    <ValidationError>@L["WrongUsername"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                                <Feedback>
+                                    <ValidationError>@L["WrongEmail"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                        <ChildContent>@L["Submit"]</ChildContent>
+                    </Button>
+                </Field>
+            </Validations>
+        }
+    </Authorized>
+</AuthorizeView>
 @code {
     [Parameter]
     public string Id { get; set; }
     Validations validations;
-    ShooterUpdateRequest model = new ShooterUpdateRequest();
+    ShooterUpdateRequest model = new ();
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageShooters).AndList(nameof(EntityPermissions.EditShooter)), Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
         var existing = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
         model.FirstName = existing.FirstName;
         model.LastName = existing.LastName;

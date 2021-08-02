@@ -5,119 +5,138 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+
 <Divider />
-@if (PageLoading)
-{
-    <p class="text-center">
-        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
-    </p>
-}
-else
-{
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Shooter"]</CardTitle>
-                    <CardText>@shooter.LastName @shooter.FirstName</CardText>
-                    <CardTitle>@L["BirthDate"]</CardTitle>
-                    <CardText>@shooter.BirthDate.ToString("d")</CardText>
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.ShowShooters)).And(nameof(EntityPermissions.EditTeam)))" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (PageCondition)
+        {
+            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+        }
+        @if (PageLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Shooter"]</CardTitle>
+                            <CardText>@shooter.LastName @shooter.FirstName</CardText>
+                            <CardTitle>@L["BirthDate"]</CardTitle>
+                            <CardText>@shooter.BirthDate.ToString("d")</CardText>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
 
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Teams"]</CardTitle>
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Teams"]</CardTitle>
 
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (shooterTeams.Count > 0)
-                            {
-                                <Virtualize Items="@shooterTeams" Context="shooterTeam">
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
                                     <TableRow>
-                                        <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
-                                        <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
-                                        <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
-                                        </TableRowCell>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
                                     </TableRow>
-                                </Virtualize>
-                            }
-                            else
-                            {
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
-                                        @L["NoTeams"]
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </CardBody>
-            </Card>
-        </Column>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Associations"]</CardTitle>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (shooterTeams.Count > 0)
+                                    {
+                                        <Virtualize Items="@shooterTeams" Context="shooterTeam">
+                                            <TableRow>
+                                                <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
+                                                <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                                @L["NoTeams"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+                        </CardBody>
+                    </Card>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Associations"]</CardTitle>
 
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
-                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (shooterClassifications.Count > 0)
-                            {
-                                <Virtualize Items="@shooterClassifications" Context="classification">
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
                                     <TableRow>
-                                        <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
-                                        <TableRowCell>@classification.Classification</TableRowCell>
-                                        <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
-                                        <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
-                                        </TableRowCell>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
                                     </TableRow>
-                                </Virtualize>
-                            }
-                            else
-                            {
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
-                                        @L["NoAssociations"]
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (shooterClassifications.Count > 0)
+                                    {
+                                        <Virtualize Items="@shooterClassifications" Context="classification">
+                                            <TableRow>
+                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
+                                                <TableRowCell>@classification.Classification</TableRowCell>
+                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                @L["NoAssociations"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
 
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
 
-}
-
+        }
+    </Authorized>
+</AuthorizeView>
 <Modal @ref="modalRefAssociationToEdit">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -350,6 +369,11 @@ else
     [Parameter]
     public string Id { get; set; }
 
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(EntityPermissions.EditShooter), Id);
+
+
     private Modal modalRefEntityToDelete;
 
     ShooterContract shooter = new();
@@ -372,6 +396,11 @@ else
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageTeams).AndList(nameof(AdministrationPermissions.ShowShooters)).AndList(nameof(EntityPermissions.EditShooter)), Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
         teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
