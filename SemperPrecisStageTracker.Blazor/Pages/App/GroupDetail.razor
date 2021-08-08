@@ -41,7 +41,7 @@ else
         }
     </Row>
     <Divider />
-    @if (availableShooters.Count > 0)
+    @if (MainServiceLayer.Online && availableShooters.Count > 0)
     {
         <Row>
             <Column ColumnSize="ColumnSize.IsFull">
@@ -124,39 +124,42 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Shooters"]</CardTitle>
-                    
-                        <Table Striped="true" Hoverable="true">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (group.Shooters.Count > 0)
-                                {
-                                    <Virtualize Items="@group.Shooters" Context="shooter">
-                                        <TableRow>
-                                            <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
-                                            <TableRowCell>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
-                                            </TableRowCell>
-                                        </TableRow>
-                                    </Virtualize>
-                                    }
-                                    else
-                                    {
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (group.Shooters.Count > 0)
+                            {
+                                <Virtualize Items="@group.Shooters" Context="shooter">
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
-                                            @L["NoShooters"]
+                                        <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                                        <TableRowCell>
+                                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch), Id))
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
+                                            }
                                         </TableRowCell>
                                     </TableRow>
-                                    }
-                                </TableBody>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                        @L["NoShooters"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
 
-                        </Table>
-                    
-                    
+                    </Table>
+
+
                 </CardBody>
             </Card>
         </Column>
@@ -212,15 +215,20 @@ else
     {
         model.GroupId = GroupId;
         await LoadShooters();
-        group = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
-        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
-
+        group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
+        if (MainServiceLayer.Online)
+        {
+            teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
+        }
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+        if (MainServiceLayer.Online)
+        {
+            availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+        }
     }
 
     async Task Submit()

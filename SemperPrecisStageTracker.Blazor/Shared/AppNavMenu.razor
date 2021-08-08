@@ -39,6 +39,11 @@
                         <Icon Name="FontAwesomeIcons.Book" /> @L["Places"]
                     </NavLink>
                 </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Settings>())">
+                        <Icon Name="FontAwesomeIcons.Book" /> @L["Settings"]
+                    </NavLink>
+                </li>
             </ul>
         </div>
     </Authorized>

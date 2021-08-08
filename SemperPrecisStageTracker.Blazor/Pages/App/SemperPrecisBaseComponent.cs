@@ -14,6 +14,9 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         
         [Inject]
         protected IAuthenticationService AuthService { get; set; }
+        
+        [Inject]
+        protected MainServiceLayer MainServiceLayer { get; set; }
 
         public bool PageLoading { get; set; } = true;
         public bool ApiLoading { get; set; }
@@ -30,6 +33,13 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         {
             ApiLoading = true;
             var result = await Service.Post<T>(uri,value);
+            ApiLoading = false;
+            return result;
+        }
+        protected async Task<T> Post<T>(Func<Task<T>> method)
+        {
+            ApiLoading = true;
+            var result = await method();
             ApiLoading = false;
             return result;
         }

@@ -56,7 +56,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterIds = shooters.Select(x => x.Id).ToList();
             var shooterStages = BasicLayer.FetchShootersResultsOnStage(request.StageId,shooterIds);
 
-            var shooterWarning = BasicLayer.FetchShootersWarningsDisqualified(request.StageId,shooterIds);
+            var shooterWarning = BasicLayer.FetchShootersWarningsDisqualifiedOnStage(request.StageId,shooterIds);
 
             //Return contract
             return Reply(shooters.As(x=>ContractUtils.GenerateContract(x,shooterStages.FirstOrDefault(y=>y.ShooterId == x.Id ),

@@ -8,17 +8,14 @@
 {
     <Button Clicked="@Add">aggiungi</Button>
     <Button Clicked="@Get">get</Button>
+    <Button Clicked="@Clear">clear</Button>
     @matches.Count
 
-    <h3>Working</h3>
     <ul>
-        <li>La visione degli shooter deve essere consentita solo a un permesso admin "ShowShooters", diverso da ManageShooter, per privacy</li>
-        <li>IndexDB</li>
-    </ul>
-    <h3>TO-DO</h3>
-    <ul>
-        <li>Inserire password backdoor in keyvault</li>
+        <li>mettere alert allo switch dell'offline mode</li>
+        
         <li>UI per assegnazione permessi manuale</li>
+
         <li>Bloccare approvazione se non ho tempo</li>
 
         <li>Un utente può avere più classificazioni per la stessa associazione</li>
@@ -67,14 +64,21 @@
     private async Task Add()
     {
         var openResult = await matchServiceIndexDb.OpenIndexedDb();
-        await matchServiceIndexDb.AddItems(new List<MatchContract> { new() { MatchId = "1", Name = "Match01" } });
+        await matchServiceIndexDb.AddItems(new List<MatchContract> { new() { MatchId = Guid.NewGuid().ToString(), Name = "Match01" } });
     }
 
     private async Task Get()
     {
         var openResult = await matchServiceIndexDb.OpenIndexedDb();
 
-        matches = await matchServiceIndexDb.GetAll<MatchContract>("MatchContract");
+        matches = await matchServiceIndexDb.GetAll<MatchContract>();
+
+    }
+    private async Task Clear()
+    {
+        var openResult = await matchServiceIndexDb.OpenIndexedDb();
+
+        await matchServiceIndexDb.DeleteAll<MatchContract>();
 
     }
 }

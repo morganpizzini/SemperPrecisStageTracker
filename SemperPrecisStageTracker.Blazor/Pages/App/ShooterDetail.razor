@@ -7,7 +7,7 @@
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.ShowShooters)).And(nameof(EntityPermissions.EditTeam)))" Resource="@Id">
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.ShowShooters)).And(nameof(EntityPermissions.EditShooter)))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>

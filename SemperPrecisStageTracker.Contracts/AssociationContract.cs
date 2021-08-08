@@ -1,14 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace SemperPrecisStageTracker.Contracts
 {
-
+    public class MatchDataAssociationContract
+    {
+        public MatchContract Match { get; set; }
+        //public IList<ShooterContract> Shooters { get; set; }
+        //public IList<StageContract> Stages { get; set; }
+        //public IList<GroupContract> Groups { get; set; }
+        public IList<ShooterStageAggregationResult> ShooterStages { get; set; }
+        public IList<ShooterMatchContract> ShooterMatchs { get; set; }
+        public IList<ShooterSOStageContract> ShooterSoStages { get; set; }
+    }
+    
     public class AssociationContract
     {
         public string AssociationId { get; set; }
         public string Name { get; set; }
-        public IList<string> Divisions {get;set;} = new List<string>();
-        public IList<string> Classifications {get;set;} = new List<string>();
+        public IList<string> Divisions { get; set; } = new List<string>();
+        public IList<string> Classifications { get; set; } = new List<string>();
+    }
+
+    public class EditedEntityRequest
+    {
+        public string EntityId { get; set; }
+        public DateTime EditDateTime { get; set; } = DateTime.UtcNow;
+    }
+    public class UpdateDataRequest
+    {
+        public IList<ShooterStageContract> ShooterStages { get; set; }
+        public IList<EditedEntityRequest> EditedEntities { get; set; }
     }
 }

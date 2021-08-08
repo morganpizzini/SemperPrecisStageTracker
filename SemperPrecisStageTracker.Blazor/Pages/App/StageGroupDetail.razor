@@ -46,7 +46,6 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Shooters"]</CardTitle>
-                    
                         <Table Striped="true" Hoverable="true">
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
@@ -57,43 +56,44 @@ else
                             <TableBody>
                                 @if (shooters.Count > 0)
                                 {
-                                <Virtualize Context="shooter" Items="@shooters">
-                                    <TableRow Class="@(shooter.ShooterStatus ==  ShooterStatusEnum.IsDisqualified ? "bg-danger": shooter.ShooterStatus ==  ShooterStatusEnum.HasWarning ? "bg-warning":"")">
-                                        <TableRowHeader>
-                                            @{
-                                                if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
-                                                {
-                                                    if (shooter.ShooterStage.Total < 0)
+                                    <Virtualize Context="shooter" Items="@shooters">
+                                        <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                            <TableRowHeader>
+                                                @{
+                                                    if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                    {
+                                                        if (shooter.ShooterStage.Total < 0)
+                                                        {
+                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                                @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                            </Button>
+                                                        }
+                                                        else
+                                                        {
+                                                            @shooter.Shooter.LastName
+                                                            @shooter.Shooter.FirstName
+                                                        }
+                                                    }
+                                                    else
                                                     {
                                                         <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
                                                             @shooter.Shooter.LastName @shooter.Shooter.FirstName
                                                         </Button>
                                                     }
-                                                    else
-                                                    {
-                                                        @shooter.Shooter.LastName @shooter.Shooter.FirstName
-                                                    }
                                                 }
-                                                else
-                                                {
-                                                    <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                        @shooter.Shooter.LastName @shooter.Shooter.FirstName
-                                                    </Button>
-                                                }
-                                            }
-                                        </TableRowHeader>
-                                        <TableRowCell>@(shooter.ShooterStage.Total> 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total<0 ? @L["Disqualified"] : "")</TableRowCell>
-                                    </TableRow>
-                                    @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
-                                    {
-                                <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
-                                    <TableRowCell></TableRowCell>
-                                    <TableRowCell>
-                                        @shooter.ShooterStage.Notes
-                                    </TableRowCell>
-                                </TableRow>
-                                    }
-                                </Virtualize>
+                                            </TableRowHeader>
+                                            <TableRowCell>@(shooter.ShooterStage.Total > 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total < 0 ? @L["Disqualified"] : "")</TableRowCell>
+                                        </TableRow>
+                                        @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
+                                        {
+                                            <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                                <TableRowCell></TableRowCell>
+                                                <TableRowCell>
+                                                    @shooter.ShooterStage.Notes
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </Virtualize>
                                 }
                                 else
                                 {
@@ -437,19 +437,24 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LoadShooters();
-        stage = await Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
+        stage = await Post(async () =>
+        {
+            group = await MainServiceLayer.GetGroup(Id,GroupId);
+            return await MainServiceLayer.GetStage(Id, StageId);
+        });
+
         model.StageId = stage.StageId;
         InitModelList();
-
-        group = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
 
         await base.OnInitializedAsync();
     }
 
     async Task LoadShooters()
     {
-        shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId });
+        shooters = await MainServiceLayer.FetchGroupShooterStage(GroupId, StageId);
+        //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId });
     }
+
     void FillShooter(ShooterStageAggregationResult shooter)
     {
         if (shooter == null)
@@ -518,7 +523,8 @@ else
             if (!validations.ValidateAll())
                 return;
             validations.ClearAll();
-            var response = await Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+
+            var response = await MainServiceLayer.UpsertShooterStage(model);
             await LoadShooters();
             shooterToFill = new ShooterContract();
             InitModelList();

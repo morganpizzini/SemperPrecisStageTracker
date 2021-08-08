@@ -12,7 +12,7 @@
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 }
 
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch)))
+@if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch),Id))
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
@@ -45,8 +45,10 @@ else
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
-
-                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
+                        @if (PageCondition)
+                        {
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
+                        }
 
                         <Table Striped="true" Hoverable="true">
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -331,7 +333,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),Id);
+    private bool PageCondition => pageCondition ??= MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),Id);
 
     // reference to the modal component
     private Modal modalRefGroup;
@@ -359,13 +361,15 @@ else
 
     async Task LoadMatch()
     {
-        match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
+        match = await Post(()=>MainServiceLayer.GetMatch(Id));
     }
+
 
     async Task LoadMatchDirectors()
     {
-        matchDirectors = await Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = Id });
-        availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+        matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
+        if(MainServiceLayer.Online)
+            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
     }
 
     void DeleteEntity()

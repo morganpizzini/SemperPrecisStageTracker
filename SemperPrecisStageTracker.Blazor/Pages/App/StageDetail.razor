@@ -69,9 +69,10 @@ else
                             }
                         </TableBody>
                     </Table>
-
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
-
+                    @if (MainServiceLayer.Online)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
+                    }
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -88,7 +89,10 @@ else
                                         <TableRowHeader>@stageSo.Shooter.CompleteName</TableRowHeader>
                                         <TableRowHeader>@L[$"Role{stageSo.Role}"]</TableRowHeader>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStageSo(stageSo))"><Icon Name="IconName.Delete" /></Button>
+                                            @if (MainServiceLayer.Online)
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStageSo(stageSo))"><Icon Name="IconName.Delete" /></Button>
+                                            }
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>
@@ -335,9 +339,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        stage = await Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = StageId });
-        match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = Id });
-        matchDirectors = await Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = Id });
+        match = await Post(async () =>
+        {
+            stage = await MainServiceLayer.GetStage(Id,StageId);
+            matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
+            return await MainServiceLayer.GetMatch(Id);
+        });
         await LoadSO();
         await base.OnInitializedAsync();
     }
@@ -345,8 +352,11 @@ else
 
     async Task LoadSO()
     {
-        stageSos = await Post<IList<ShooterSOStageContract>>("api/Match/FetchAllShooterSOStages", new StageRequest { StageId = StageId });
-        availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId });
+        stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
+        if (MainServiceLayer.Online)
+        {
+            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId });
+        }
     }
 
     void NewStageSo()

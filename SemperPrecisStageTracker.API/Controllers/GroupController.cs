@@ -27,20 +27,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllGroupsByMatchId(request.MatchId);
-
-
-            //seleziono gli id dei posti
-            var matchIds = entities.Select(x => x.MatchId).ToList();
-
-            //recupero gli utenti
-            // var matches = this.BasicLayer.FetchMatchsByIds(matchIds);
-
+            
             //Ritorno i contratti
             return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
-            // return Reply(entities.As(x =>
-            // {
-            //     return ContractUtils.GenerateContract(x, matches.FirstOrDefault(p => p.Id == x.MatchId));
-            // }));
         }
 
         /// <summary>

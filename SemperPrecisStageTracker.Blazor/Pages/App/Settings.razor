@@ -21,6 +21,7 @@
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                 <Select TValue="string" @bind-SelectedValue="@model.MatchId">
                     <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
                         @foreach (var match in matches)
                         {
                             <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
@@ -41,6 +42,10 @@
     </Field>
 </Validations>
 
+<Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading">
+    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+    <ChildContent>@L["UploadData"]</ChildContent>
+</Button>
 @code {
 
     Validations validations;
@@ -49,21 +54,25 @@
     protected override async Task OnInitializedAsync()
     {
         matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
-        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new();
         await base.OnInitializedAsync();
     }
 
     async Task Submit()
     {
+        validations.ClearAll();
         if (!validations.ValidateAll())
             return;
-        validations.ClearAll();
         if (model.OfflineMode && string.IsNullOrEmpty(model.MatchId))
         {
             model.OfflineMode = false;
             return;
         }
         await mainServiceLayer.UpdateModel(model);
-        
+    }
+
+    async Task UploadData()
+    {
+        await mainServiceLayer.UploadData();
     }
 }

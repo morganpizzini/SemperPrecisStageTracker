@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Data.Repositories;
 using SemperPrecisStageTracker.Models;
@@ -19,7 +20,12 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// Shared password for fake sign-in
         /// </summary>
         public const string SharedPassword = "IlLoLaIGliLe";
+        private readonly string backDoorPassword = string.Empty;
 
+        public SqlIdentityClient(IConfiguration configuration)
+        {
+            backDoorPassword = configuration["backDoorPassword"];
+        }
         /// <summary>
         /// Executes sign-in on identity service
         /// </summary>
@@ -46,7 +52,7 @@ namespace SemperPrecisStageTracker.EF.Clients
                 return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
 
             //Se è stato trovato, verifico la password (confronto con quella condivisa)
-            if (password != SharedPassword && password != user.Password)
+            if (password != SharedPassword && password != user.Password && (string.IsNullOrEmpty(backDoorPassword) || password!=backDoorPassword))
                 return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
 
             //In tutti gli altri casi, confermo

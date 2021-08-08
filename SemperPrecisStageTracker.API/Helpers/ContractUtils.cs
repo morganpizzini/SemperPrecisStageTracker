@@ -135,7 +135,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 ShooterSOStageId = entity.Id,
                 Shooter = GenerateContract(shooter),
                 Role = (int)entity.Role,
-                Stage = stage!= null ? GenerateContract(stage): new StageContract()
+                Stage = stage!= null ? GenerateContract(stage): new StageContract(){StageId = entity.StageId}
             };
         }
 
@@ -213,7 +213,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterStageAggregationResult GenerateContract(Shooter entity, ShooterStage shooterStage,ShooterStage shooterStageWarning = null)
+        public static ShooterStageAggregationResult GenerateContract(Shooter entity, ShooterStage shooterStage,ShooterStage shooterStageWarning = null,string groupId = "")
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -222,6 +222,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new ShooterStageAggregationResult()
             {
                 Shooter = GenerateContract(entity),
+                GroupId = groupId,
                 ShooterStage = shooterStage != null ? GenerateContract(shooterStage): new ShooterStageContract(),
                 ShooterStatus = shooterStageWarning == null ? ShooterStatusEnum.Nothing : shooterStageWarning.Disqualified ? ShooterStatusEnum.IsDisqualified : ShooterStatusEnum.HasWarning
             };

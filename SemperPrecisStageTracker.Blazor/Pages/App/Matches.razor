@@ -2,7 +2,6 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
-@inject MainServiceLayer mainServiceLayer
 
 <Heading Size="HeadingSize.Is1">@L["Matches"]</Heading>
 @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(AdministrationPermissions.CreateMatches)))
@@ -42,12 +41,12 @@
                         <TableRowCell>@match.Association.Name</TableRowCell>
                         <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),match.MatchId))
+                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),match.MatchId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch), match.MatchId))
+                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch), match.MatchId))
                             {
                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(match))"><Icon Name="IconName.Delete" /></Button>
                             }
@@ -106,9 +105,7 @@
 
     private async Task LoadEntities()
     {
-        ApiLoading = true;
-        matches = await mainServiceLayer.GetMatches();
-        ApiLoading = false;
+        matches = await Post(()=>MainServiceLayer.GetMatches());
     }
 
     void DeleteEntity(MatchContract entity)

@@ -107,15 +107,15 @@ namespace SemperPrecisStageTracker.Blazor
                     .WithVersion(1);
 
                 indexedDbDatabaseModel.AddStore<MatchContract>();
-                indexedDbDatabaseModel.AddStore<ShooterContract>();
-                indexedDbDatabaseModel.AddStore<StageContract>();
-                indexedDbDatabaseModel.AddStore<GroupContract>();
+                //indexedDbDatabaseModel.AddStore<ShooterContract>();
+                //indexedDbDatabaseModel.AddStore<StageContract>();
+                //indexedDbDatabaseModel.AddStore<GroupContract>();
                 indexedDbDatabaseModel.AddStore<ShooterStageAggregationResult>();
                 indexedDbDatabaseModel.AddStore<ShooterMatchContract>();
                 indexedDbDatabaseModel.AddStore<ShooterSOStageContract>();
                 indexedDbDatabaseModel.AddStore<EditedEntity>();
 
-                // add offline settings
+                // add Offline settings
                 // clean/download all method
                 // services for avoid api call and use indexDB
                 // services for push all
