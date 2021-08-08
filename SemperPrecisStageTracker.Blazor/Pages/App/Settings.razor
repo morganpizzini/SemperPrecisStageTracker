@@ -46,9 +46,29 @@
     <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
     <ChildContent>@L["UploadData"]</ChildContent>
 </Button>
+
+<Modal @ref="modalRefPrompt">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["OnlineModePromptTitle"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["OnlineModePromptText"]</FieldLabel>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPrompt(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPrompt(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     Validations validations;
+    private Modal modalRefPrompt;
+
     ClientSetting model = new();
     IList<MatchContract> matches = new List<MatchContract>();
     protected override async Task OnInitializedAsync()
@@ -68,11 +88,27 @@
             model.OfflineMode = false;
             return;
         }
+
+        // check status of unsaved model and prompt modal
+        if (!model.OfflineMode && await mainServiceLayer.CheckUnsavedModels())
+        {
+            modalRefPrompt.Show();
+            return;
+        }
         await mainServiceLayer.UpdateModel(model);
     }
 
     async Task UploadData()
     {
         await mainServiceLayer.UploadData();
+    }
+
+    private async Task HideModalPrompt(bool choice)
+    {
+        if (choice)
+        {
+            await mainServiceLayer.UpdateModel(model);
+        }
+        modalRefPrompt.Hide();
     }
 }

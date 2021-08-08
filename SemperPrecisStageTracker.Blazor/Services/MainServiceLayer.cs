@@ -53,6 +53,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 await Task.Delay(200);
         }
 
+        public async Task<bool> CheckUnsavedModels() =>
+            (await _matchServiceIndexDb.GetAll<EditedEntity>()).Count > 0;
+
+        
+
         public async Task UpdateModel(ClientSetting model)
         {
             await _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
