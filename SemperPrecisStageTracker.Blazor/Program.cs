@@ -36,8 +36,13 @@ namespace SemperPrecisStageTracker.Blazor
                     {
                         var stringLocalizer = options.Services.GetService<IStringLocalizer<Program>>();
 
-                        return stringLocalizer != null && arguments?.Count() > 0
-                            ? string.Format(stringLocalizer[message], arguments.ToArray())
+                        var trimSpace = message.IndexOf('|');
+                        if (trimSpace > 0)
+                        {
+                            message= message.Substring(0,trimSpace);
+                        }
+                        return stringLocalizer != null
+                            ? string.Format(stringLocalizer[message], arguments?.ToArray() ?? new string[0])
                             : message;
                     };
                 })

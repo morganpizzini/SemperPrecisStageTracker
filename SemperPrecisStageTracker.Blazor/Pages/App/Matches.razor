@@ -41,7 +41,7 @@
                         <TableRowCell>@match.Association.Name</TableRowCell>
                         <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
-                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),match.MatchId))
+                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch), match.MatchId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
@@ -105,7 +105,7 @@
 
     private async Task LoadEntities()
     {
-        matches = await Post(()=>MainServiceLayer.GetMatches());
+        matches = await Post(() => MainServiceLayer.GetMatches());
     }
 
     void DeleteEntity(MatchContract entity)

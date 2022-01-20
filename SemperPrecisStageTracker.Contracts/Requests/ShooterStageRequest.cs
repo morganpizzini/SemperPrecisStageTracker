@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -13,6 +14,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public IList<int> DownPoints { get; set; } = new List<int>();
         [Required]
+        //[Range(1, Double.MaxValue, 
+        //ErrorMessage = "minValueError {0}{1}{2}")]
+        [Range(1, Double.MaxValue,
+        ErrorMessage = "minValueError| {1}")]
         public decimal Time { get; set; }
         
         public int Procedurals { get; set; }

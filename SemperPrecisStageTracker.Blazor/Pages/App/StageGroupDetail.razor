@@ -131,7 +131,7 @@ else
                     <Button Size="Size.Small" Color="Color.Link" Clicked="@(() => HideLegendModal(true))"><Icon Name="IconName.Info" /></Button>
                 </Column>
             </Row>
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+            <Validations @ref="validations" Mode="ValidationMode.Auto" Model="@model" ValidateOnLoad="false">
 
                 <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                     <Items>
@@ -141,18 +141,13 @@ else
                     </Items>
                     <Content>
                         <TabPanel Name="penalties">
-                            <Validation Validator="@ValidationRule.None">
+                            <Validation>
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        @*<TextEdit Placeholder="@L["Time"]" @bind-Value="@model.Time" InputMode="TextInputMode.Decimal" ElementId="time" OnFocus="@(async () => await OnFocus("time"))">
+                                        <NumericEdit Placeholder="@L["Time"]" Min="1" TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
-                                                <ValidationError>@L["WrongCountry"]</ValidationError>
-                                            </Feedback>
-                                        </TextEdit>*@
-                                        <NumericEdit Placeholder="@L["Time"]" TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
-                                            <Feedback>
-                                                <ValidationError>@L["WrongTime"]</ValidationError>
+                                                <ValidationError/>
                                             </Feedback>
                                         </NumericEdit>
                                     </FieldBody>
@@ -367,7 +362,7 @@ else
             <Text Weight="TextWeight.Bold">@L["Total"]</Text>
             <Text>@(model.Total> 0 ? $"{model.Total:f2}" : model.Total<0 ? @L["Disqualified"] : "")</Text>
 
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+            <Validations @ref="noteValidations" Mode="ValidationMode.Manual" Model="@model">
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is12">@L["Notes"]</FieldLabel>
@@ -419,6 +414,7 @@ else
     {
         selectedTab = name;
     }
+
     // reference to the modal component
     private Modal modalConfirmRef;
     private Modal modalRef;
@@ -431,6 +427,7 @@ else
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
 
     Validations validations;
+    Validations noteValidations;
     ShooterStageRequest model = new();
 
 
@@ -473,7 +470,6 @@ else
         model.Notes = shooter.ShooterStage.Notes;
         InitModelList();
         selectedTab = "penalties";
-
         modalRef.Show();
     }
 
@@ -520,9 +516,9 @@ else
     {
         if (choice)
         {
-            if (!validations.ValidateAll())
+            if (!noteValidations.ValidateAll())
                 return;
-            validations.ClearAll();
+            noteValidations.ClearAll();
 
             var response = await MainServiceLayer.UpsertShooterStage(model);
             await LoadShooters();

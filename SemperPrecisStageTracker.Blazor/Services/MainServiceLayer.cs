@@ -20,7 +20,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly MatchServiceIndexedDb _matchServiceIndexDb;
         public bool Offline { get; private set; }
         public bool Online => !Offline;
-        private bool init = false;
+        private bool _init = false;
 
         public MainServiceLayer(ILocalStorageService localStorage, IHttpService httpService, MatchServiceIndexedDb matchServiceIndexDb)
         {
@@ -31,10 +31,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
             Task t3 = Task.Run(async () =>
             {
                 var openResult = await matchServiceIndexDb.OpenIndexedDb();
-
                 var model = await _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
-                Offline = model.OfflineMode;
-                init = true;
+                Offline = model?.OfflineMode ?? false;
+                _init = true;
             });
 
             //var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
@@ -49,7 +48,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         private async Task CheckInitStatus()
         {
-            while (!init)
+            while (!_init)
                 await Task.Delay(200);
         }
 
