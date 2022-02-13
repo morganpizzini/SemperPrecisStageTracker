@@ -110,9 +110,9 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<ShooterContract>("/api/Shooter/CreateShooter", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
     }

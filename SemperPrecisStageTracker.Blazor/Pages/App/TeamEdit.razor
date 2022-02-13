@@ -69,9 +69,9 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<TeamContract>("/api/Team/UpdateTeam", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<TeamDetail>(new { id = response.TeamId }));
     }

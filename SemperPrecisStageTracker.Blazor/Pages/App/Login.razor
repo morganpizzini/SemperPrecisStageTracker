@@ -79,9 +79,9 @@
 
     private async void Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         try
         {
             var loginResult = await AuthenticationService.Login(model.Username, model.Password);

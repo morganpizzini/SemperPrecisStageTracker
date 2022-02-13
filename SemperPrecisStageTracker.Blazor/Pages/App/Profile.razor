@@ -167,9 +167,9 @@ else
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         user = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
         await authService.UpdateLogin(user);
         showEditModel = false;

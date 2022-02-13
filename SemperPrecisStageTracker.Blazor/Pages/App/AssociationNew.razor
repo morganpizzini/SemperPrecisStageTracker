@@ -86,10 +86,10 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
 
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<AssociationContract>("/api/Association/CreateAssociation", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<AssociationDetail>(new { id = response.AssociationId }));
     }

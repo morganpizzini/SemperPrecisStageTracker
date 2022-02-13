@@ -377,15 +377,15 @@ else
     {
         if (choice)
         {
-            if (!validations.ValidateAll())
+            if (! (await validations.ValidateAll()))
                 return;
-            validations.ClearAll();
+            await validations.ClearAll();
             stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit);
             //update available match director
             availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
         }
         stageSoToEdit = new();
-        modalRefStageSoToEdit.Hide();
+        await modalRefStageSoToEdit.Hide();
     }
 
     private async Task HideModalMatchDirectorToDelete(bool choice)
@@ -400,7 +400,7 @@ else
             //await LoadSO();
         }
         stageSoToDelete = new();
-        modalRefStageSoToDelete.Hide();
+        await modalRefStageSoToDelete.Hide();
     }
 
     async Task CallMatchDirector(ShooterMatchContract matchDirector)
@@ -420,7 +420,7 @@ else
         if (!result.Status)
             callMatchDirectorError = result.Errors.FirstOrDefault() ?? string.Empty;
 
-        modalRefCallMatchDirector.Show();
+        await modalRefCallMatchDirector.Show();
     }
 
 }

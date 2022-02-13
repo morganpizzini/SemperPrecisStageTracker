@@ -251,7 +251,7 @@ else
             });
             UriHelper.NavigateTo(RouteHelper.GetUrl<Teams>());
         }
-        modalRefEntityToDelete.Hide();
+        await modalRefEntityToDelete.Hide();
     }
     async Task LoadShooterTeams()
     {
@@ -268,22 +268,22 @@ else
     {
         if (choice)
         {
-            if (!shooterValidations.ValidateAll())
+            if (!(await shooterValidations.ValidateAll()))
                 return;
-            shooterValidations.ClearAll();
+            await shooterValidations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
             await LoadShooterTeams();
         }
         shooterToEdit = new ShooterTeamCreateRequest();
-        modalRefShooterToEdit.Hide();
+        await modalRefShooterToEdit.Hide();
     }
 
-    void DeleteShooter(ShooterTeamContract shooter)
+    async Task DeleteShooter(ShooterTeamContract shooter)
     {
         if (shooter == null)
             return;
         shooterToDelete = shooter;
-        modalRefShooterToDelete.Show();
+        await modalRefShooterToDelete.Show();
     }
 
     private async Task HideModalShooterToDelete(bool choice)
@@ -298,6 +298,6 @@ else
             await LoadShooterTeams();
         }
         shooterToDelete = new ShooterTeamContract();
-        modalRefShooterToDelete.Hide();
+        await modalRefShooterToDelete.Hide();
     }
 }

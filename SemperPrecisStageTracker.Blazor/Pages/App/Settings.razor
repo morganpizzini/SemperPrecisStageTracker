@@ -80,8 +80,8 @@
 
     async Task Submit()
     {
-        validations.ClearAll();
-        if (!validations.ValidateAll())
+        await validations.ClearAll();
+        if (! (await validations.ValidateAll()))
             return;
         if (model.OfflineMode && string.IsNullOrEmpty(model.MatchId))
         {
@@ -92,7 +92,7 @@
         // check status of unsaved model and prompt modal
         if (!model.OfflineMode && await mainServiceLayer.CheckUnsavedModels())
         {
-            modalRefPrompt.Show();
+            await modalRefPrompt.Show();
             return;
         }
         await mainServiceLayer.UpdateModel(model);
@@ -109,6 +109,6 @@
         {
             await mainServiceLayer.UpdateModel(model);
         }
-        modalRefPrompt.Hide();
+        await modalRefPrompt.Hide();
     }
 }

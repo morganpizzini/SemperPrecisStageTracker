@@ -179,9 +179,9 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<MatchContract>("/api/Match/UpdateMatch", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new { id = response.MatchId }));
     }

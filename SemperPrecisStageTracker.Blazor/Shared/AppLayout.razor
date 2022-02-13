@@ -159,6 +159,6 @@
         {
             await JSRuntime.InvokeVoidAsync("BlazorPWA.dismissInstallPWA");
         }
-        modalInstallRef.Hide();
+        await modalInstallRef.Hide();
     }
 }

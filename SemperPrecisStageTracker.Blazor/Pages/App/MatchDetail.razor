@@ -387,15 +387,15 @@ else
             });
             UriHelper.NavigateTo(RouteHelper.GetUrl<Matches>());
         }
-        modalRefEntityToDelete.Hide();
+        await modalRefEntityToDelete.Hide();
     }
 
-    void DeleteGroup(GroupContract group)
+    async Task DeleteGroup(GroupContract group)
     {
         if (group == null)
             return;
         groupToDelete = group;
-        modalRefGroup.Show();
+        await modalRefGroup.Show();
     }
 
     void DeleteStage(StageContract stage)
@@ -414,7 +414,7 @@ else
             await LoadMatch();
         }
         groupToDelete = new GroupContract();
-        modalRefGroup.Hide();
+        await modalRefGroup.Hide();
     }
 
     private async Task HideModalStage(bool choice)
@@ -425,36 +425,36 @@ else
             await LoadMatch();
         }
         stageToDelete = new StageContract();
-        modalRefStage.Hide();
+        await modalRefStage.Hide();
     }
 
-    void NewMatchDirector()
+    async Task NewMatchDirector()
     {
         matchesDirectorToEdit = new ShooterMatchCreateRequest { MatchId = match.MatchId };
-        modalRefMatchDirectorToEdit.Show();
+        await modalRefMatchDirectorToEdit.Show();
     }
 
-    void DeleteMatchDirector(ShooterMatchContract matchDirector)
+    async Task DeleteMatchDirector(ShooterMatchContract matchDirector)
     {
         if (matchDirector == null)
             return;
         matchDirectorToDelete = matchDirector;
-        modalRefMatchDirectorToDelete.Show();
+        await modalRefMatchDirectorToDelete.Show();
     }
 
     private async Task HideModalMatchDirectorToEdit(bool choice)
     {
         if (choice)
         {
-            if (!validations.ValidateAll())
+            if (! (await validations.ValidateAll()))
                 return;
-            validations.ClearAll();
+            await validations.ClearAll();
             matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
             //update available match director
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
         }
         matchesDirectorToEdit = new();
-        modalRefMatchDirectorToEdit.Hide();
+        await modalRefMatchDirectorToEdit.Hide();
     }
 
     private async Task HideModalMatchDirectorToDelete(bool choice)
@@ -469,6 +469,6 @@ else
             //await LoadMatchDirectors();
         }
         matchDirectorToDelete = new();
-        modalRefMatchDirectorToDelete.Hide();
+        await modalRefMatchDirectorToDelete.Hide();
     }
 }

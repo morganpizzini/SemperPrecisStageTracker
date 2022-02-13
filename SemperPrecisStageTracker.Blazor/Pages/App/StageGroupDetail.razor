@@ -495,20 +495,20 @@ else
             modalLegendRef.Hide();
         }
     }
-    private void HideModal(bool choice)
+    private async Task HideModal(bool choice)
     {
         if (choice)
         {
-            if (!validations.ValidateAll())
+            if (! (await validations.ValidateAll()))
                 return;
-            validations.ClearAll();
-            modalConfirmRef.Show();
+            await validations.ClearAll();
+            await modalConfirmRef.Show();
         }
         else
         {
             shooterToFill = new ShooterContract();
             InitModelList();
-            modalRef.Hide();
+            await modalRef.Hide();
         }
 
     }
@@ -516,17 +516,17 @@ else
     {
         if (choice)
         {
-            if (!noteValidations.ValidateAll())
+            if (!(await noteValidations.ValidateAll()))
                 return;
-            noteValidations.ClearAll();
+            await noteValidations.ClearAll();
 
             var response = await MainServiceLayer.UpsertShooterStage(model);
             await LoadShooters();
             shooterToFill = new ShooterContract();
             InitModelList();
-            modalRef.Hide();
+            await modalRef.Hide();
         }
-        modalConfirmRef.Hide();
+        await modalConfirmRef.Hide();
     }
 
     private async Task OnFocus(string elementId)

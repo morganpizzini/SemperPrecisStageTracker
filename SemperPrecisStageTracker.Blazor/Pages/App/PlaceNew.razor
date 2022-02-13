@@ -164,9 +164,9 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<PlaceContract>("/api/Place/CreatePlace", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceDetail>(new {id = response.PlaceId}));
     }

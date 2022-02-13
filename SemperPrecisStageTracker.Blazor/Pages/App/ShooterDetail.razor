@@ -433,7 +433,7 @@
             });
             UriHelper.NavigateTo(RouteHelper.GetUrl<Shooters>());
         }
-        modalRefEntityToDelete.Hide();
+        await modalRefEntityToDelete.Hide();
     }
 
     void ValidateDate(ValidatorEventArgs e)
@@ -495,14 +495,14 @@
     {
         if (choice)
         {
-            if (!validations.ValidateAll())
+            if (! (await validations.ValidateAll()))
                 return;
-            validations.ClearAll();
+            await validations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
             await LoadShooterClassifications();
         }
         associationToEdit = new ShooterAssociationCreateRequest();
-        modalRefAssociationToEdit.Hide();
+        await modalRefAssociationToEdit.Hide();
     }
 
     void DeleteClassification(ShooterAssociationContract association)
@@ -524,7 +524,7 @@
             await LoadShooterClassifications();
         }
         associationToDelete = new ShooterAssociationContract();
-        modalRefAssociationToDelete.Hide();
+        await modalRefAssociationToDelete.Hide();
     }
 
     void NewTeam()
@@ -548,14 +548,14 @@
     {
         if (choice)
         {
-            if (!teamValidations.ValidateAll())
+            if (!( await teamValidations.ValidateAll()))
                 return;
-            teamValidations.ClearAll();
+            await teamValidations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
             await LoadShooterTeams();
         }
         teamToEdit = new ShooterTeamCreateRequest();
-        modalRefTeamToEdit.Hide();
+        await modalRefTeamToEdit.Hide();
     }
     void DeleteTeam(ShooterTeamContract team)
     {
@@ -576,6 +576,6 @@
             await LoadShooterTeams();
         }
         teamToDelete = new ShooterTeamContract();
-        modalRefTeamToDelete.Hide();
+        await modalRefTeamToDelete.Hide();
     }
 }

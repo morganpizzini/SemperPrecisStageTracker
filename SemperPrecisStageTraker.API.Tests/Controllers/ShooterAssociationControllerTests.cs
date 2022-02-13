@@ -29,7 +29,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
 
-
             //Composizione della request
             var request = new ShooterAssociationCreateRequest
             {

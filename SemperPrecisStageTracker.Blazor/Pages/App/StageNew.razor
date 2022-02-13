@@ -227,9 +227,9 @@
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
         var response = await Post<GroupContract>("/api/Stage/CreateStage", model);
         UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}));
     }

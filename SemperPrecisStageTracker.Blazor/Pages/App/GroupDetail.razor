@@ -233,9 +233,9 @@ else
 
     async Task Submit()
     {
-        if (!validations.ValidateAll())
+        if (! (await validations.ValidateAll()))
             return;
-        validations.ClearAll();
+        await validations.ClearAll();
 
         group.Shooters = await Post<IList<ShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
         await LoadShooters();
@@ -261,6 +261,6 @@ else
             await LoadShooters();
         }
         shooterToDelete = new ShooterContract();
-        modalRef.Hide();
+        await modalRef.Hide();
     }
 }
