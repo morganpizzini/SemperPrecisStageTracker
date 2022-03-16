@@ -77,12 +77,30 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetAnotherUser()
+        protected Shooter GetAnotherUser(string userId = null)
         {
             //Recupero l'utente amministratore
-            return Scenario.Shooters
-                .SingleOrDefault(u => u.Username == SimpleScenario.AnotherUser);
+            return
+                string.IsNullOrEmpty(userId) ?
+                Scenario.Shooters
+                .SingleOrDefault(u => u.Username == SimpleScenario.AnotherUser)
+                :
+                Scenario.Shooters
+                .SingleOrDefault(u => u.Id == userId);
         }
+
+        /// <summary>
+        /// Get admin that will be used for ASP.NET Identity
+        /// </summary>
+        /// <returns>Returns Shooter instance</returns>
+        protected Shooter GetUserNotIn(IList<string> userIds)
+        {
+            //Recupero l'utente amministratore
+            return
+                Scenario.Shooters
+                .FirstOrDefault(u => !userIds.Contains(u.Id));
+        }
+
         #endregion
 
         /// <summary>

@@ -510,11 +510,48 @@
       ]
     }
   ],
+  "teamHolders": [
+    {
+      "id": "1",
+      "shooterId": "1",
+      "teamId": "1",
+      "description": "amministratore (shooter 1 - team 1)"
+    },
+    {
+      "id": "2",
+      "shooterId": "2",
+      "teamId": "2",
+      "description": "amministratore (shooter 2 - team 2)"
+    }
+  ],
+  "shooterTeamPayments": [
+    {
+      "id": "1",
+      "shooterId": "1",
+      "teamId": "1",
+      "amount": 10.0,
+      "reason": "Pay XYZ",
+      "paymentDateTime": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "2",
+      "shooterId": "2",
+      "teamId": "2",
+      "amount": 20.0,
+      "reason": "Pay ABC",
+      "paymentDateTime": "2021-06-20T18:25:43.511Z"
+    }
+  ],
   "administrationPermissions": [
     {
       "id": "1",
       "shooterId": "1",
       "permission": "ManageMatches"
+    },
+    {
+      "id": "1",
+      "shooterId": "2",
+      "permission": "CreateMatches"
     },
     {
       "id": "2",

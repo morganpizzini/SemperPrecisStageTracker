@@ -66,6 +66,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldUpdateShooterTeamPaymentBeOkHavingProvidedData()
         {
             var existing = Scenario.ShooterTeamPayments.FirstOrDefault();
+            if (existing == null)
+            {
+                Assert.Inconclusive("No shooter team payment exists");
+            }
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterTeamPayments.Count;
 
@@ -73,6 +77,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Composizione della request
             var request = new ShooterTeamPaymentUpdateRequest
             {
+                ShooterTeamPaymentId = existing.Id,
                 TeamId = existing.TeamId,
                 ShooterId = existing.ShooterId,
                 Reason= RandomizationUtils.GenerateRandomString(5),
@@ -91,11 +96,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
 
-            Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
-                          && countAfter == countBefore + 1
-                          
-                          && updatedEntity.TeamId == request.TeamId
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(countAfter,countBefore);
+            Assert.IsTrue(updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
                           && updatedEntity.Reason ==request.Reason
                           && updatedEntity.PaymentDateTime ==request.PaymentDateTime

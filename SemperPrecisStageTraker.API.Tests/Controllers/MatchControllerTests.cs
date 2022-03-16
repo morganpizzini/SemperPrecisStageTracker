@@ -72,45 +72,26 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           );
         }
 
-
-        [TestMethod]
-        public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
-        {
-            //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.EntityPermissions.Count;
-
-            var existingAssociation = Scenario.Associations.FirstOrDefault();
-            var existingPlace = Scenario.Places.FirstOrDefault();
-
-            //Composizione della request
-            var request = new MatchCreateRequest
-            {
-                Name = RandomizationUtils.GenerateRandomString(50),
-                AssociationId = existingAssociation.Id,
-                PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
-                OpenMatch = true,
-                UnifyClassifications = true
-            };
-
-            //Invoke del metodo
-            var response = await Controller.CreateMatch(request);
-
-            //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.EntityPermissions.Count;
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<MatchContract>(response);
-            Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore,countAfter);
-        }
-
         [TestMethod]
         public async Task ShouldCreateMatchBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetAnotherUser());
+            var adminPermission = Scenario.AdministrationPermissions
+                .Select(x => new
+                {
+                    x.ShooterId,
+                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
+                })
+                .FirstOrDefault(x => x.Permission == AdministrationPermissions.CreateMatches);
+
+            if (adminPermission == null)
+            {
+                Assert.Inconclusive("admin permission not found");
+            }
+
+            UpdateIdentityUser(GetAnotherUser(adminPermission.ShooterId));
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.EntityPermissions.Count;
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.EntityPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -130,12 +111,119 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateMatch(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.EntityPermissions.Count;
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.EntityPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
             Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore+2,countAfter);
+            Assert.AreEqual(countBefore + 1, countAfter);
+            Assert.AreEqual(countBeforePermission + 2, countAfterPermission);
+        }
+        [TestMethod]
+        public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
+        {
+            var adminPermission = Scenario.AdministrationPermissions
+                .Select(x => new
+                {
+                    x.ShooterId,
+                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
+                })
+                .FirstOrDefault(x=> x.Permission == AdministrationPermissions.ManageMatches);
+
+            if (adminPermission == null)
+            {
+                Assert.Inconclusive("admin permission not found");
+            }
+
+            UpdateIdentityUser(GetAnotherUser(adminPermission.ShooterId));
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.EntityPermissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTime = DateTime.Now,
+                OpenMatch = true,
+                UnifyClassifications = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.EntityPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore+1,countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission,countAfterPermission);
+        }
+
+        [TestMethod]
+        public async Task ShouldNotCreateMatchBeBadRequestWithoutPermission()
+        {
+            var userWIthPermissionsIds = Scenario.AdministrationPermissions
+                .Select(x => new
+                {
+                    x.ShooterId,
+                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
+                })
+                .Where(x => x.Permission == AdministrationPermissions.CreateMatches || x.Permission == AdministrationPermissions.ManageMatches)
+                .Select(x=> x.ShooterId)
+                .ToList();
+
+
+            var selectedUser= GetUserNotIn(userWIthPermissionsIds);
+
+            if (selectedUser == null)
+            {
+                Assert.Inconclusive("User without permissions not found");
+            }
+
+            UpdateIdentityUser(GetAnotherUser(selectedUser.Id));
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.EntityPermissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTime = DateTime.Now,
+                OpenMatch = true,
+                UnifyClassifications = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.EntityPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore, countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
         }
 
         [TestMethod]

@@ -65,7 +65,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.TeamHolders.Count;
 
-
             //Composizione della request
             var request = new TeamHolderCreateRequest
             {
@@ -84,12 +83,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<TeamHolderContract>(response);
 
             var updatedEntity = Scenario.TeamHolders.FirstOrDefault(x => x.Id == parsed.Data.TeamHolderId);
-
-            Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
-                          && countAfter == countBefore + 1
-                          
-                          && updatedEntity.TeamId == request.TeamId
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(countAfter,countBefore);
+            Assert.IsTrue(updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
                           && updatedEntity.Description ==request.Description
             );

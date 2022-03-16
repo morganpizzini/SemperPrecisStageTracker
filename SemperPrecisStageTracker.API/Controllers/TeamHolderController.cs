@@ -182,7 +182,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(ContractUtils.GenerateContract(entity));
         }
 
         /// <summary>
