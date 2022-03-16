@@ -94,7 +94,19 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
+ modelBuilder.Entity<TeamHolder>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<TeamHolder>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
 
+                        modelBuilder.Entity<ShooterTeamPayment>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterTeamPayment>()
+                        .Property(f => f.Id)
+                        .ValueGeneratedOnAdd();
+                        
+                        
             modelBuilder.Entity<Shooter>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Shooter>()
@@ -219,6 +231,12 @@ namespace SemperPrecisStageTracker.EF.Context
         public DbSet<ShooterStage> ShooterStages { get; set; }
 
         /// <summary>
+        /// List of shooter team payment
+        /// </summary>
+        public DbSet<ShooterTeamPayment> ShooterTeamPayments { get; set; }
+
+
+        /// <summary>
         /// List of teams
         /// </summary>
         public DbSet<Team> Teams { get; set; }
@@ -242,6 +260,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of shooter PSO stages
         /// </summary>
         public DbSet<ShooterSOStage> ShooterSOStages { get; set; }
+
+        /// <summary>
+        /// List of team holders
+        /// </summary>
+        public DbSet<TeamHolder> TeamHolders { get; set; }
 
         /// <summary>
         /// List of contact

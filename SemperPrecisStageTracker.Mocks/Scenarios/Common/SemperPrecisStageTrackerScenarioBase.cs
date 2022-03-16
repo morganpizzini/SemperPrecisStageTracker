@@ -92,8 +92,17 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of entity permissions
         /// </summary>
         public IList<EntityPermission> EntityPermissions { get; set; } = new List<EntityPermission>();
+
+        /// <summary>
+        /// List of team holders
+        /// </summary>
+        public IList<TeamHolder> TeamHolders { get; set; } = new List<TeamHolder>();
         
-        
+        /// <summary>
+        /// List of Shooter Team Payments
+        /// </summary>
+        public IList<ShooterTeamPayment> ShooterTeamPayments { get; set; } = new List<ShooterTeamPayment>();
+
         /// <summary>
         /// Executes initialization of entities
         /// </summary>

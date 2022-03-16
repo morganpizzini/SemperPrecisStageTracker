@@ -17,6 +17,9 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string Classification { get; set; }
         [Required]
+        public string Division { get; set; }
+        [Required]
         public DateTime RegistrationDate { get; set; }
+        public DateTime? ExpireDate { get; set; }
     }
 }

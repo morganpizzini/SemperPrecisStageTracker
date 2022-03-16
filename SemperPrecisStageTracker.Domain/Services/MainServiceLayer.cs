@@ -31,6 +31,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IShooterSOStageRepository _shooterSOStageRepository;
         private readonly IShooterMatchRepository _shooterMatchRepository;
         private readonly IContactRepository _contractRepository;
+        private readonly ITeamHolderRepository _teamHolderRepository;
+        private readonly IShooterTeamPaymentRepository _shooterTeamPaymentRepository;
         private readonly ISemperPrecisMemoryCache _cache;
         private readonly AuthenticationServiceLayer authenticationService;
 
@@ -52,6 +54,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterSOStageRepository = dataSession.ResolveRepository<IShooterSOStageRepository>();
             _shooterMatchRepository = dataSession.ResolveRepository<IShooterMatchRepository>();
             _contractRepository = dataSession.ResolveRepository<IContactRepository>();
+            _teamHolderRepository = dataSession.ResolveRepository<ITeamHolderRepository>();
+             _shooterTeamPaymentRepository = dataSession.ResolveRepository<IShooterTeamPaymentRepository>();
+
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
 
             authenticationService = new AuthenticationServiceLayer(dataSession);
@@ -2772,6 +2777,233 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
         #endregion
 
+        #region teamHolder
+
+        /// <summary>
+        /// Fetch list of shooters by provided ids
+        /// </summary>
+        /// <param name="id"> group identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public TeamHolder GetTeamHolderByTeamAndShooterId(string TeamId, string ShooterId)
+        {
+            return this._teamHolderRepository.GetSingle(x => x.TeamId == TeamId && x.ShooterId == ShooterId);
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<TeamHolder> FetchTeamHoldersFromTeamId(string teamId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(teamId)) throw new ArgumentNullException(nameof(teamId));
+            return FetchEntities(e => e.TeamId == teamId, null, null, null, true, _teamHolderRepository);
+        }
+
+        /// <summary>
+        /// Updates provided group
+        /// </summary>
+        /// <param name="teamId">group id</param>
+        /// <param name="shooterIds">Shooter ids</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> UpsertTeamHolder(TeamHolder entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (entity.CreationDateTime < new DateTime(2000, 1, 1))
+                entity.CreationDateTime = new DateTime(2000, 1, 1);
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Validazione argomenti
+            validations = _teamHolderRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _teamHolderRepository.Save(entity);
+            t.Commit();
+            return validations;
+
+        }
+
+        /// <summary>
+        /// Delete provided stage
+        /// </summary>
+        /// <param name="entity">Stage</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> DeleteTeamHolder(TeamHolder entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided stage doesn't have valid Id");
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Eliminazione
+            _teamHolderRepository.Delete(entity);
+            t.Commit();
+            return new List<ValidationResult>();
+        }
+        #endregion
+#region shooterTeamPayment
+
+        /// <summary>
+        /// Fetch list of shooters by provided ids
+        /// </summary>
+        /// <param name="id"> group identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public IList<ShooterTeamPayment> FetchShooterTeamPaymentByTeamAndShooterId(string TeamId, string ShooterId)
+        {
+            return this._shooterTeamPaymentRepository.Fetch(x => x.TeamId == TeamId && x.ShooterId == ShooterId,null,null,x=>x.PaymentDateTime,true);
+        }
+
+  /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns shooter or null</returns>
+        public ShooterTeamPayment GetShooterTeamPayment(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _shooterTeamPaymentRepository);
+        }
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<ShooterTeamPayment> FetchShooterTeamPaymentsFromTeamId(string teamId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(teamId)) throw new ArgumentNullException(nameof(teamId));
+            return FetchEntities(e => e.TeamId == teamId, null, null, null, true, _shooterTeamPaymentRepository);
+        }
+
+        /// <summary>
+        /// Create provided shooter
+        /// </summary>
+        /// <param name="entity">ShooterTeamPayment</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> CreateShooterTeamPayment(ShooterTeamPayment entity, string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided ShooterTeamPayment seems to already existing");
+
+            //Predisposizione al fallimento
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Validazione argomenti
+            validations = _shooterTeamPaymentRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterTeamPaymentRepository.Save(entity);
+
+            t.Commit();
+            return validations;
+        }
+
+        /// <summary>
+        /// Updates provided shooter
+        /// </summary>
+        /// <param name="entity">ShooterTeamPayment</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> UpdateShooterTeamPayment(ShooterTeamPayment entity, string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � nuovo, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
+
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (entity.CreationDateTime < new DateTime(2000, 1, 1))
+                entity.CreationDateTime = new DateTime(2000, 1, 1);
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Validazione argomenti
+            validations = _shooterTeamPaymentRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterTeamPaymentRepository.Save(entity);
+            t.Commit();
+            return validations;
+        }
+
+        /// <summary>
+        /// Delete provided stage
+        /// </summary>
+        /// <param name="entity">Stage</param>
+        /// <returns>Returns list of validations</returns>
+        public IList<ValidationResult> DeleteShooterTeamPayment(ShooterTeamPayment entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided stage doesn't have valid Id");
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Eliminazione
+            _shooterTeamPaymentRepository.Delete(entity);
+            t.Commit();
+            return new List<ValidationResult>();
+        }
+        #endregion
         #region shooterassociation
 
         /// <summary>
@@ -2787,6 +3019,21 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return FetchEntities(e => e.ShooterId == shooterId, null, null, null, true, _shooterAssociationRepository);
         }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public ShooterAssociation GetShooterAssociationById(string id)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+            
+            return _shooterAssociationRepository.GetSingle(x=>x.Id == id);
+        }
+
         /// <summary>
         /// Get place by commissionDrawingId
         /// </summary>
@@ -2800,6 +3047,21 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(associationId)) throw new ArgumentNullException(nameof(associationId));
 
             return FetchEntities(c => c.ShooterId == shooterId && c.AssociationId == associationId, null, null, x => x.RegistrationDate, true, _shooterAssociationRepository).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public ShooterAssociation GetShooterAssociationByShooterAndAssociationAndDivision(string shooterId, string associationId,string division)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
+            if (string.IsNullOrEmpty(associationId)) throw new ArgumentNullException(nameof(associationId));
+
+            return _shooterAssociationRepository.GetSingle(c => c.ShooterId == shooterId && c.AssociationId == associationId && c.Division == division);
         }
 
         /// <summary>
@@ -2823,13 +3085,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             var validations = _shooterAssociationRepository.Validate(entity);
 
-            // avoid card number duplication
-            var sameCardId = _shooterAssociationRepository.Count(x => x.AssociationId == entity.AssociationId && x.CardNumber == entity.CardNumber);
-
-            if ((string.IsNullOrEmpty(entity.Id) && sameCardId > 0) || (!string.IsNullOrEmpty(entity.Id) && sameCardId > 1))
-                validations.Add(new ValidationResult($"{nameof(entity.CardNumber)} not unique"));
-
-            // check association classification
+            // check association classification and division
             var currentAssociation = _associationRepository.GetSingle(x => x.Id == entity.AssociationId);
 
             if (currentAssociation == null)
@@ -2837,6 +3093,9 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             if (!currentAssociation.Classifications.Contains(entity.Classification))
                 validations.Add(new ValidationResult($"{entity.Classification} not valid"));
+
+            if (!currentAssociation.Divisions.Contains(entity.Division))
+                validations.Add(new ValidationResult($"{entity.Division} not valid"));
 
             //Se ho validazioni fallite, esco
             if (validations.Count > 0)
@@ -3060,6 +3319,8 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _placeRepository.Dispose();
                 _shooterSOStageRepository.Dispose();
                 _shooterMatchRepository.Dispose();
+                _teamHolderRepository.Dispose();
+                _shooterTeamPaymentRepository.Dispose();
             }
 
             //Chiamo il metodo base

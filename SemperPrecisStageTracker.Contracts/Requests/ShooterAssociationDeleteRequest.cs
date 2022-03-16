@@ -9,4 +9,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string ShooterId { get; set; }
     }
+
+    public class ShooterAssociationRequest
+    {
+        [Required]
+        public string ShooterAssociationId { get; set; }
+    }
 }

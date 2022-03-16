@@ -106,7 +106,7 @@
                                         <Virtualize Items="@shooterClassifications" Context="classification">
                                             <TableRow>
                                                 <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
-                                                <TableRowCell>@classification.Classification</TableRowCell>
+                                                <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
@@ -190,6 +190,25 @@
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["division"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@associationToEdit.Division">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var division in divisions)
+                                    {
+                                        <SelectItem Value="@division">@division</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["Wrongdivision"]</ValidationError>
                                 </Feedback>
                             </Select>
                         </FieldBody>
@@ -387,6 +406,8 @@
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
 
+    IList<string> divisions = new List<string>();
+
     private Modal modalRefTeamToDelete;
 
     ShooterTeamContract teamToDelete = new();
@@ -469,6 +490,7 @@
             return;
 
         classifications = existingAssociation.Classifications;
+        divisions = existingAssociation.Divisions;
     }
     void NewClassification()
     {
@@ -484,6 +506,7 @@
             ShooterId = shooter.ShooterId,
             AssociationId = shooterAssociation.Association.AssociationId,
             Classification = shooterAssociation.Classification,
+            Division = shooterAssociation.Division,
             RegistrationDate = shooterAssociation.RegistrationDate,
             CardNumber = shooterAssociation.CardNumber
         };
@@ -516,10 +539,9 @@
     {
         if (choice && associationToDelete.Association != null)
         {
-            await Post<GroupContract>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationDeleteRequest
+            await Post<GroupContract>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
             {
-                AssociationId = associationToDelete.Association.AssociationId,
-                ShooterId = shooter.ShooterId
+                ShooterAssociationId = associationToDelete.ShooterAssociationId
             });
             await LoadShooterClassifications();
         }

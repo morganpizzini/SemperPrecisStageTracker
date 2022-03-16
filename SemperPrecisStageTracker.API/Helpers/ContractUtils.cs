@@ -78,6 +78,47 @@ namespace SemperPrecisStageTracker.API.Helpers
             };
         }
 
+/// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static ShooterTeamPaymentContract GenerateContract(ShooterTeamPayment entity,Shooter shooter = null,Team team = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new ShooterTeamPaymentContract()
+            {
+                ShooterTeamPaymentId = entity.Id,
+                Team = team != null ? GenerateContract(team): new TeamContract(),
+                Shooter = shooter != null ? GenerateContract(shooter): new ShooterContract(),
+                Amount = entity.Amount,
+                Reason = entity.Reason,
+                PaymentDateTime = entity.PaymentDateTime
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static TeamHolderContract GenerateContract(TeamHolder entity,Shooter shooter = null,Team team = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new TeamHolderContract()
+            {
+                TeamHolderId = entity.Id,
+                Team = team != null ? GenerateContract(team): new TeamContract(),
+                Shooter = shooter != null ? GenerateContract(shooter): new ShooterContract(),
+                Description = entity.Description
+            };
+        }
         /// <summary>
         /// Generate contract using entity
         /// </summary>
@@ -91,9 +132,11 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Ritorno il contratto
             return new ShooterAssociationContract()
             {
+                ShooterAssociationId = entity.Id,
                 Association = association != null ? GenerateContract(association): new AssociationContract(),
                 CardNumber = entity.CardNumber,
                 Classification = entity.Classification,
+                Division = entity.Division,
                 SafetyOfficier = entity.SafetyOfficier,
                 RegistrationDate = entity.RegistrationDate
             };

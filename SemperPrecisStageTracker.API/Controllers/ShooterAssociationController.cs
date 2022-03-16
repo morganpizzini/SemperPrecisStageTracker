@@ -8,6 +8,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -55,22 +56,29 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
-            var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociation(request.ShooterId,request.AssociationId);
+            var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId,request.AssociationId,request.Division);
+
+            var newEntity = new ShooterAssociation{
+                ShooterId = request.ShooterId,
+                AssociationId = request.AssociationId,
+                CardNumber = request.CardNumber,
+                SafetyOfficier = request.SafetyOfficier,
+                Classification = request.Classification,
+                Division = request.Division,
+                RegistrationDate = request.RegistrationDate
+            };
+
+            IList<ValidationResult> validations;
 
             if (entity == null){
-                entity = new ShooterAssociation{
-                    ShooterId = request.ShooterId,
-                    AssociationId = request.AssociationId
-                };
+                entity.ExpireDate = request.RegistrationDate.AddDays(-1);
+                validations = BasicLayer.UpsertShooterAssociation(entity);
+                if (validations.Count > 0)
+                    return BadRequestTask(validations);    
             }
 
-            entity.CardNumber = request.CardNumber;
-            entity.SafetyOfficier = request.SafetyOfficier;
-            entity.Classification = request.Classification;
-            entity.RegistrationDate = request.RegistrationDate;
-
             //Invocazione del service layer
-            var validations = BasicLayer.UpsertShooterAssociation(entity);
+            validations = BasicLayer.UpsertShooterAssociation(entity);
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
@@ -87,10 +95,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationDeleteRequest request)
+        public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetShooterAssociationByShooterAndAssociation(request.ShooterId,request.AssociationId);
+            var entity = BasicLayer.GetShooterAssociationById(request.ShooterAssociationId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)

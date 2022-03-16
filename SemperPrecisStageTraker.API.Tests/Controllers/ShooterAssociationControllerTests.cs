@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SemperPrecisStageTracker.API.Controllers;
+using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
@@ -37,7 +38,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 SafetyOfficier = true,
                 CardNumber= RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate= DateTime.Now,
-                Classification = existingAssociation.Classifications.FirstOrDefault()
+                Classification = existingAssociation.Classifications.FirstOrDefault(),
+                Division = existingAssociation.Divisions.FirstOrDefault()
             };
 
             //Invoke del metodo
@@ -47,10 +49,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterAssociations.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<OkResponse>(response);
+            var parsed = ParseExpectedOk<ShooterAssociationContract>(response);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId
-                && x.ShooterId == request.ShooterId);
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == parsed.Data.ShooterAssociationId);
 
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
@@ -60,6 +61,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity.CardNumber==request.CardNumber
                           && updatedEntity.RegistrationDate ==request.RegistrationDate
                           && updatedEntity.Classification==request.Classification
+                          && updatedEntity.Division ==request.Division
             );
 
         }
@@ -79,7 +81,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 SafetyOfficier = !existing.SafetyOfficier,
                 CardNumber= RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate= DateTime.Now,
-                Classification = existing.Classification
+                Classification = existing.Classification,
+                Division = existing.Division
             };
 
             //Invoke del metodo
@@ -89,17 +92,53 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterAssociations.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<OkResponse>(response);
+            var parsed = ParseExpectedOk<ShooterAssociationContract>(response);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == existing.Id);
+            var oldEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == existing.Id);
+
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == parsed.Data.ShooterAssociationId);
+
             Assert.IsTrue(parsed != null
-                          && countAfter == countBefore
+                            // the old one should be closed with end date
+                          && countAfter == countBefore + 1
+                          && oldEntity.ExpireDate != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
                           && updatedEntity.SafetyOfficier ==request.SafetyOfficier
                           && updatedEntity.CardNumber==request.CardNumber
                           && updatedEntity.RegistrationDate ==request.RegistrationDate
                           && updatedEntity.Classification==request.Classification
+                          && updatedEntity.Division==request.Division
+            );
+
+        }
+
+        [TestMethod]
+        public async Task ShouldDeleteShooterAssociationBeOkHavingProvidedData()
+        {
+            var existing = Scenario.ShooterAssociations.FirstOrDefault();
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterAssociations.Count;
+
+            //Composizione della request
+            var request = new ShooterAssociationRequest
+            {
+                ShooterAssociationId = existing.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.DeleteShooterAssociation(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterAssociations.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<OkResponse>(response);
+
+            
+            Assert.IsTrue(parsed != null
+                            // the old one should be closed with end date
+                          && countAfter == countBefore -1
             );
 
         }
