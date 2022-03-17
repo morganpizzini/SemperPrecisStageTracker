@@ -14,6 +14,7 @@ using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Extensions;
@@ -101,6 +102,43 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 .FirstOrDefault(u => !userIds.Contains(u.Id));
         }
 
+        protected Shooter GetUserWithoutPermission(IList<AdministrationPermissions> adminPermissions)
+            => GetUserWithPermission(adminPermissions,false);
+        
+        /// <summary>
+        /// Get admin that will be used for ASP.NET Identity
+        /// </summary>
+        /// <returns>Returns Shooter instance</returns>
+        protected Shooter GetUserWithPermission(IList<AdministrationPermissions> adminPermissions, bool inOrOut = true)
+        {
+            var userWIthPermissionsIds = new List<string>();
+            if (adminPermissions != null)
+                userWIthPermissionsIds.AddRange(Scenario.AdministrationPermissions
+                .Select(x => new
+                {
+                    x.ShooterId,
+                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
+                })
+                .Where(x => adminPermissions.Contains(x.Permission))
+                .Select(x => x.ShooterId)
+                .ToList());
+
+            if (inOrOut)
+            {
+                var selectedUser = userWIthPermissionsIds.FirstOrDefault();
+                if (selectedUser == null)
+                {
+                    Assert.Inconclusive("no user with privileges found");
+                    return null;
+                }
+                return GetAnotherUser(selectedUser);
+            }
+            else
+            {
+                return GetUserNotIn(userWIthPermissionsIds);
+            }
+        }
+
         #endregion
 
         /// <summary>
@@ -120,9 +158,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 
             //Registrazione dei servizi
             ServiceResolver.Register<IIdentityClient, MockIdentityClient>();
-            ServiceResolver.Register<ICaptchaValidatorService,MockCaptchaValidatorService>();
+            ServiceResolver.Register<ICaptchaValidatorService, MockCaptchaValidatorService>();
 
-            ServiceResolver.Register<ISemperPrecisMemoryCache,SemperPrecisMemoryCache>();
+            ServiceResolver.Register<ISemperPrecisMemoryCache, SemperPrecisMemoryCache>();
 
             //Creazione del controller dichiarato
             Controller = new TApiController();

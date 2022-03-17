@@ -32,17 +32,17 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound()); ;
 
             //Invocazione del service layer
             var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.Id);
-            var associationIds = shooterAssociations.Select(x=>x.Id).ToList();
+            var associationIds = shooterAssociations.Select(x => x.Id).ToList();
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Return contract
             return Reply(
-                shooterAssociations.As(x=>ContractUtils.GenerateContract(x,associations.FirstOrDefault(a=>a.Id== x.AssociationId)))
-                    .OrderBy(x=> x.Association.Name).ToList()
+                shooterAssociations.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(a => a.Id == x.AssociationId)))
+                    .OrderBy(x => x.Association.Name).ToList()
                 );
         }
 
@@ -56,26 +56,27 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
-            var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId,request.AssociationId,request.Division);
-
-            var newEntity = new ShooterAssociation{
-                ShooterId = request.ShooterId,
-                AssociationId = request.AssociationId,
-                CardNumber = request.CardNumber,
-                SafetyOfficier = request.SafetyOfficier,
-                Classification = request.Classification,
-                Division = request.Division,
-                RegistrationDate = request.RegistrationDate
-            };
+            var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
 
             IList<ValidationResult> validations;
 
-            if (entity == null){
-                entity.ExpireDate = request.RegistrationDate.AddDays(-1);
+            if (entity != null)
+            {
+                entity.ExpireDate = entity.RegistrationDate.AddDays(-1);
                 validations = BasicLayer.UpsertShooterAssociation(entity);
+
                 if (validations.Count > 0)
-                    return BadRequestTask(validations);    
+                    return BadRequestTask(validations);
             }
+
+            entity = new ShooterAssociation();
+            entity.ShooterId = request.ShooterId;
+            entity.AssociationId = request.AssociationId;
+            entity.CardNumber = request.CardNumber;
+            entity.SafetyOfficier = request.SafetyOfficier;
+            entity.Classification = request.Classification;
+            entity.Division = request.Division;
+            entity.RegistrationDate = request.RegistrationDate;
 
             //Invocazione del service layer
             validations = BasicLayer.UpsertShooterAssociation(entity);
@@ -84,7 +85,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound()); ;
 
             }
             //Invocazione del service layer
@@ -113,7 +114,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
     }
 }

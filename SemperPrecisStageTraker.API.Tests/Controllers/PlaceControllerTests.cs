@@ -48,7 +48,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 City = RandomizationUtils.GenerateRandomString(15),
                 Region = RandomizationUtils.GenerateRandomString(15),
                 PostalZipCode = RandomizationUtils.GenerateRandomString(15),
-                Country = RandomizationUtils.GenerateRandomString(15)
+                Country = RandomizationUtils.GenerateRandomString(15),
             };
 
             //Invoke del metodo

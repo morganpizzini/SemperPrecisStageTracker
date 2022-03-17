@@ -316,6 +316,7 @@
       "cardNumber": "123",
       "safetyOfficier": true,
       "classification": "Novice",
+      "division": "Stock Service Pistol (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -325,6 +326,7 @@
       "cardNumber": "456",
       "safetyOfficier": true,
       "classification": "Sharpshooter",
+      "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-29T18:25:43.511Z"
     },
     {
@@ -334,6 +336,7 @@
       "cardNumber": "789",
       "safetyOfficier": true,
       "classification": "Expert",
+      "division": "Custom Defensive Pistol (CDP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -343,6 +346,7 @@
       "cardNumber": "111",
       "safetyOfficier": true,
       "classification": "Expert",
+      "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -351,7 +355,8 @@
       "associationId": "2",
       "cardNumber": "1114",
       "safetyOfficier": true,
-      "classification": "Expert",
+      "classification": "Novice",
+      "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -361,6 +366,7 @@
       "cardNumber": "111422",
       "safetyOfficier": true,
       "classification": "Expert",
+      "division": "Stock Service Pistol (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -369,7 +375,8 @@
       "associationId": "1",
       "cardNumber": "1114227",
       "safetyOfficier": false,
-      "classification": "Expert",
+      "classification": "SharpShooter",
+      "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -378,7 +385,8 @@
       "associationId": "1",
       "cardNumber": "111428",
       "safetyOfficier": true,
-      "classification": "Expert",
+      "classification": "Marksman",
+      "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
@@ -549,22 +557,32 @@
       "permission": "ManageMatches"
     },
     {
-      "id": "1",
+      "id": "11",
+      "shooterId": "1",
+      "permission": "ManagePlaces"
+    },
+    {
+      "id": "2",
       "shooterId": "2",
       "permission": "CreateMatches"
     },
     {
-      "id": "2",
+      "id": "3",
       "shooterId": "1",
       "permission": "ManageShooters"
     },
     {
-      "id": "3",
+      "id": "4",
+      "shooterId": "2",
+      "permission": "CreateShooters"
+    },
+    {
+      "id": "5",
       "shooterId": "1",
       "permission": "ManageTeams"
     },
     {
-      "id": "4",
+      "id": "6",
       "shooterId": "1",
       "permission": "ManageStages"
     }

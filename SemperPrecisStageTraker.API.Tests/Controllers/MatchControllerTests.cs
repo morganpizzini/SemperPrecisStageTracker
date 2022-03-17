@@ -75,20 +75,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateMatchBeOkAndCreatePermissions()
         {
-            var adminPermission = Scenario.AdministrationPermissions
-                .Select(x => new
-                {
-                    x.ShooterId,
-                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
-                })
-                .FirstOrDefault(x => x.Permission == AdministrationPermissions.CreateMatches);
-
-            if (adminPermission == null)
-            {
-                Assert.Inconclusive("admin permission not found");
-            }
-
-            UpdateIdentityUser(GetAnotherUser(adminPermission.ShooterId));
+            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateMatches }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
             var countBeforePermission = Scenario.EntityPermissions.Count;
@@ -123,20 +110,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
         {
-            var adminPermission = Scenario.AdministrationPermissions
-                .Select(x => new
-                {
-                    x.ShooterId,
-                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
-                })
-                .FirstOrDefault(x=> x.Permission == AdministrationPermissions.ManageMatches);
-
-            if (adminPermission == null)
-            {
-                Assert.Inconclusive("admin permission not found");
-            }
-
-            UpdateIdentityUser(GetAnotherUser(adminPermission.ShooterId));
+            UpdateIdentityUser(
+                GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageMatches }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
             var countBeforePermission = Scenario.EntityPermissions.Count;
@@ -171,27 +146,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task ShouldNotCreateMatchBeBadRequestWithoutPermission()
+        public async Task ShouldCreateMatchBeBadRequestWithoutPermission()
         {
-            var userWIthPermissionsIds = Scenario.AdministrationPermissions
-                .Select(x => new
-                {
-                    x.ShooterId,
-                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
-                })
-                .Where(x => x.Permission == AdministrationPermissions.CreateMatches || x.Permission == AdministrationPermissions.ManageMatches)
-                .Select(x=> x.ShooterId)
-                .ToList();
-
-
-            var selectedUser= GetUserNotIn(userWIthPermissionsIds);
-
-            if (selectedUser == null)
-            {
-                Assert.Inconclusive("User without permissions not found");
-            }
-
-            UpdateIdentityUser(GetAnotherUser(selectedUser.Id));
+            UpdateIdentityUser(GetUserWithoutPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageMatches, AdministrationPermissions.CreateMatches }));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;

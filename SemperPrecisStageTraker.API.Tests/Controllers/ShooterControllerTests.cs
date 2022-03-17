@@ -74,9 +74,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.EntityPermissions.Count;
 
-            var existingAssociation = Scenario.Associations.FirstOrDefault();
-            var existingPlace = Scenario.Places.FirstOrDefault();
-
             //Composizione della request
             var request = new ShooterCreateRequest
             {
@@ -100,14 +97,45 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
+        public async Task ShouldCreateShooterBeBadRequestWithoutPermission()
+        {
+            UpdateIdentityUser(GetUserWithoutPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageShooters, AdministrationPermissions.CreateShooters }));
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Shooters.Count;
+            var countBeforePermission = Scenario.EntityPermissions.Count;
+
+            //Composizione della request
+            var request = new ShooterCreateRequest
+            {
+                Email = RandomizationUtils.GenerateRandomEmail(),
+                LastName = RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
+                BirthDate = DateTime.Now,
+                Username = RandomizationUtils.GenerateRandomString(10)
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateShooter(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Shooters.Count;
+            var countAfterPermission = Scenario.EntityPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore, countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
+        }
+
+        [TestMethod]
         public async Task ShouldCreateShooterBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetAnotherUser());
+            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateShooters}));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.EntityPermissions.Count;
-
-            var existingAssociation = Scenario.Associations.FirstOrDefault();
-            var existingPlace = Scenario.Places.FirstOrDefault();
 
             //Composizione della request
             var request = new ShooterCreateRequest

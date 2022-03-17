@@ -49,12 +49,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterAssociations.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterAssociationContract>(response);
+            var parsed = ParseExpectedOk<OkResponse>(response);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == parsed.Data.ShooterAssociationId);
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.ShooterId == request.ShooterId);
 
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
+                          && updatedEntity != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
                           && updatedEntity.SafetyOfficier ==request.SafetyOfficier
@@ -92,15 +93,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterAssociations.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterAssociationContract>(response);
+            var parsed = ParseExpectedOk<OkResponse>(response);
 
             var oldEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == existing.Id);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == parsed.Data.ShooterAssociationId);
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.ShooterId == request.ShooterId && !x.ExpireDate.HasValue);
 
+            Assert.AreEqual(countBefore + 1,countAfter);
             Assert.IsTrue(parsed != null
                             // the old one should be closed with end date
-                          && countAfter == countBefore + 1
                           && oldEntity.ExpireDate != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
