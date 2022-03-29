@@ -1,0 +1,83 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.API", "SemperPrecisStageTracker.API\SemperPrecisStageTracker.API.csproj", "{E246E88C-6048-4231-B3FF-B9F0E489FF10}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Models", "SemperPrecisStageTracker.Models\SemperPrecisStageTracker.Models.csproj", "{A14E710A-A9A3-4584-8747-1EC0EF5F88A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Domain", "SemperPrecisStageTracker.Domain\SemperPrecisStageTracker.Domain.csproj", "{78724616-5205-4D29-A038-39218D6021F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Mocks", "SemperPrecisStageTracker.Mocks\SemperPrecisStageTracker.Mocks.csproj", "{567650E8-9B44-489E-B0A9-A3191425353F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SemperPrecisStageTracker.Docs", "SemperPrecisStageTracker.Docs", "{3198F0A0-7552-430B-9BE5-FDDB8246AC79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{F04B4A40-FA42-4004-85AF-525EDBDAD626}"
+	ProjectSection(SolutionItems) = preProject
+		SemperPrecisStageTracker.Docs\data\SimpleScenario.json = SemperPrecisStageTracker.Docs\data\SimpleScenario.json
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Contracts", "SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj", "{C3E75CB2-2DFF-43EE-8AF7-BAE1F1D314A9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Blazor", "SemperPrecisStageTracker.Blazor\SemperPrecisStageTracker.Blazor.csproj", "{81B980C7-E993-48D4-BE45-A96AA2A992A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.EF", "SemperPrecisStageTracker.EF\SemperPrecisStageTracker.EF.csproj", "{1D825977-8299-4C62-B188-42E8122B85E4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTraker.API.Tests", "SemperPrecisStageTraker.API.Tests\SemperPrecisStageTraker.API.Tests.csproj", "{754674CC-84AA-4F4B-9D48-B45A76D810D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemperPrecisStageTracker.Shared", "SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj", "{EF6597EB-425D-4844-BC23-D35E386D28C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E246E88C-6048-4231-B3FF-B9F0E489FF10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E246E88C-6048-4231-B3FF-B9F0E489FF10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E246E88C-6048-4231-B3FF-B9F0E489FF10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E246E88C-6048-4231-B3FF-B9F0E489FF10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A14E710A-A9A3-4584-8747-1EC0EF5F88A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A14E710A-A9A3-4584-8747-1EC0EF5F88A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A14E710A-A9A3-4584-8747-1EC0EF5F88A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A14E710A-A9A3-4584-8747-1EC0EF5F88A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78724616-5205-4D29-A038-39218D6021F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78724616-5205-4D29-A038-39218D6021F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78724616-5205-4D29-A038-39218D6021F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78724616-5205-4D29-A038-39218D6021F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{567650E8-9B44-489E-B0A9-A3191425353F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{567650E8-9B44-489E-B0A9-A3191425353F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{567650E8-9B44-489E-B0A9-A3191425353F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{567650E8-9B44-489E-B0A9-A3191425353F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3E75CB2-2DFF-43EE-8AF7-BAE1F1D314A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3E75CB2-2DFF-43EE-8AF7-BAE1F1D314A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3E75CB2-2DFF-43EE-8AF7-BAE1F1D314A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3E75CB2-2DFF-43EE-8AF7-BAE1F1D314A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81B980C7-E993-48D4-BE45-A96AA2A992A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81B980C7-E993-48D4-BE45-A96AA2A992A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81B980C7-E993-48D4-BE45-A96AA2A992A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81B980C7-E993-48D4-BE45-A96AA2A992A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D825977-8299-4C62-B188-42E8122B85E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D825977-8299-4C62-B188-42E8122B85E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D825977-8299-4C62-B188-42E8122B85E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D825977-8299-4C62-B188-42E8122B85E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{754674CC-84AA-4F4B-9D48-B45A76D810D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{754674CC-84AA-4F4B-9D48-B45A76D810D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{754674CC-84AA-4F4B-9D48-B45A76D810D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{754674CC-84AA-4F4B-9D48-B45A76D810D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF6597EB-425D-4844-BC23-D35E386D28C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF6597EB-425D-4844-BC23-D35E386D28C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF6597EB-425D-4844-BC23-D35E386D28C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF6597EB-425D-4844-BC23-D35E386D28C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F04B4A40-FA42-4004-85AF-525EDBDAD626} = {3198F0A0-7552-430B-9BE5-FDDB8246AC79}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C566BE0-02F4-4392-BFDC-A52006C88AF0}
+	EndGlobalSection
+EndGlobal
