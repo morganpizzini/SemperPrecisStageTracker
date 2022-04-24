@@ -108,6 +108,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.BirthDate = request.BirthDate;
             entity.Email = request.Email;
             entity.Username = request.Username;
+            entity.FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate;
+            entity.FirearmsLicence = request.FirearmsLicence;
+            entity.MedicalExaminationExpireDate = request.MedicalExaminationExpireDate;
             
             //Salvataggio
             var validations = await BasicLayer.UpdateShooter(entity, PlatformUtils.GetIdentityUserId(User));

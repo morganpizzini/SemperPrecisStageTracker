@@ -1848,14 +1848,14 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             var validations = new List<ValidationResult>();
 
-            //   // controllo esistenza shooter con stesso nome / PEC / SDI
-            //   var existing = _shooterRepository.GetSingle(x => x.Id != entity.Id
-            //                                                     && x.Name == entity.Name);
+            // controllo esistenza shooter con stesso nome / PEC / SDI
+            var existing = _shooterRepository.GetSingle(x => x.Id != entity.Id
+                                                              && x.FirearmsLicence == entity.FirearmsLicence);
 
-            //   if (existing != null)
-            //   {
-            //     validations.Add(new ValidationResult($"Entity with name {entity.Name} already exists"));
-            //   }
+            if (existing != null)
+            {
+                validations.Add(new ValidationResult($"Entity with firearms licence '{entity.FirearmsLicence}' already exists"));
+            }
 
             return validations;
         }
@@ -2873,7 +2873,18 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             return this._shooterTeamPaymentRepository.Fetch(x => x.TeamId == TeamId && x.ShooterId == ShooterId,null,null,x=>x.PaymentDateTime,true);
         }
-
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<ShooterTeamPayment> FetchShooterTeamPaymentsFromTeamId(string teamId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(teamId)) throw new ArgumentNullException(nameof(teamId));
+            return FetchEntities(e => e.TeamId == teamId, null, null, null, true, _shooterTeamPaymentRepository);
+        }
   /// <summary>
         /// Get place by commissionDrawingId
         /// </summary>
@@ -2888,18 +2899,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Utilizzo il metodo base
             return GetSingleEntity(c => c.Id == id, _shooterTeamPaymentRepository);
         }
-        /// <summary>
-        /// Get place by commissionDrawingId
-        /// </summary>
-        /// <param name="id">Identifier</param>
-        /// <param name="userId">filter by userId</param>
-        /// <returns>Returns stage or null</returns>
-        public IList<ShooterTeamPayment> FetchShooterTeamPaymentsFromTeamId(string teamId)
-        {
-            //Validazione argomenti
-            if (string.IsNullOrEmpty(teamId)) throw new ArgumentNullException(nameof(teamId));
-            return FetchEntities(e => e.TeamId == teamId, null, null, null, true, _shooterTeamPaymentRepository);
-        }
+
 
         /// <summary>
         /// Create provided shooter

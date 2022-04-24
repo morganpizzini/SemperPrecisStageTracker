@@ -159,6 +159,48 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.AreEqual(countBefore+2,countAfter);
         }
 
+         [TestMethod]
+        public async Task ShouldGetShooterBeOkHavingProvidedData()
+        {
+            //Recupero una Shooter esistente
+            var existing = Scenario.Shooters.FirstOrDefault();
+            if (existing == null)
+                Assert.Inconclusive("Shooter does not exists");
+            
+            //conteggio esistenti
+            var countBefore = Scenario.Shooters.Count;
+
+
+            //Composizione della request
+            var request = new ShooterRequest
+            {
+                ShooterId = existing.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.GetShooter(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<ShooterContract>(response);
+
+            //conteggio esistenti
+            var countAfter = Scenario.Shooters.Count;
+
+
+            Assert.IsTrue(parsed != null
+                          && parsed.Data.Email == existing.Email
+                          && parsed.Data.LastName == existing.LastName
+                          && parsed.Data.FirstName == existing.FirstName
+                          && parsed.Data.BirthDate == existing.BirthDate
+                          && parsed.Data.FirearmsLicence == existing.FirearmsLicence
+                          && parsed.Data.FirearmsLicenceExpireDate == existing.FirearmsLicenceExpireDate
+                          && parsed.Data.MedicalExaminationExpireDate == existing.MedicalExaminationExpireDate
+                          && parsed.Data.Username == existing.Username);
+
+            //verifica contatori
+            Assert.AreEqual(countBefore, countAfter);
+        }
+
         [TestMethod]
         public async Task ShouldUpdateShooterBeOkHavingProvidedData()
         {
@@ -179,7 +221,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 LastName = RandomizationUtils.GenerateRandomString(10),
                 FirstName= RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
-                Username = RandomizationUtils.GenerateRandomString(10)
+                Username = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicenceExpireDate = DateTime.Now,
+                MedicalExaminationExpireDate = DateTime.Now
             };
 
             //Invoke del metodo
@@ -197,21 +242,65 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.LastName == request.LastName
                           && parsed.Data.FirstName == request.FirstName
                           && parsed.Data.BirthDate == request.BirthDate
+                          && parsed.Data.FirearmsLicence == request.FirearmsLicence
+                          && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
+                          && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate
                           && parsed.Data.Username == request.Username);
 
             //verifica contatori
             Assert.AreEqual(countBefore, countAfter);
         }
 
+        [TestMethod]
+        public async Task ShouldUpdateShooterBeBadRequestHavingProvidedSameFirearmsLicence()
+        {
+            //conteggio esistenti
+            var countBefore = Scenario.Shooters.Count;
+            //Recupero una Shooter esistente
+            var existing = Scenario.Shooters.FirstOrDefault();
+            
+            if (existing == null)
+                Assert.Inconclusive("Shooter does not exists");
+
+            //Recupero una Shooter esistente
+            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x=>x.Id!= existing.Id);
+            
+            if (existing == null)
+                Assert.Inconclusive("Shooter does not exists");
+
+            //Composizione della request
+            var request = new ShooterUpdateRequest
+            {
+                ShooterId = existingToUpdate.Id,
+                FirearmsLicence = existing.FirearmsLicence,
+                Email = RandomizationUtils.GenerateRandomEmail(),
+                LastName = RandomizationUtils.GenerateRandomString(10),
+                FirstName= RandomizationUtils.GenerateRandomString(10),
+                BirthDate = DateTime.Now,
+                Username = RandomizationUtils.GenerateRandomString(10)
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateShooter(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            //conteggio esistenti
+            var countAfter = Scenario.Shooters.Count;
+
+            Assert.IsNotNull(parsed);
+            Assert.IsTrue(parsed.Data.Any());
+
+            //verifica contatori
+            Assert.AreEqual(countBefore, countAfter);
+        }
 
         [TestMethod]
         public async Task ShouldUpdateShooterBeNotFoundHavingProvidedWrongId()
         {
             //conteggio esistenti
             var countBefore = Scenario.Shooters.Count;
-
-            var existingAssociation = Scenario.Associations.FirstOrDefault();
-            var existingPlace = Scenario.Places.FirstOrDefault();
 
             //Composizione della request
             var request = new ShooterUpdateRequest

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Blazorise;
-using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using DnetIndexedDb;
 using DnetIndexedDb.Models;
@@ -18,6 +17,7 @@ using SemperPrecisStageTracker.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Blazor.Models;
 using SemperPrecisStageTracker.Blazor.Services.IndexDB;
+using Blazorise.Bootstrap5;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -31,7 +31,8 @@ namespace SemperPrecisStageTracker.Blazor
 
             builder.Services.AddBlazorise(options =>
                 {
-                    options.ChangeTextOnKeyPress = true;
+                    options.Immediate = true;
+                    //options.ChangeTextOnKeyPress = true;
                     options.ValidationMessageLocalizer = (message, arguments) =>
                     {
                         var stringLocalizer = options.Services.GetService<IStringLocalizer<Program>>();
@@ -46,7 +47,7 @@ namespace SemperPrecisStageTracker.Blazor
                             : message;
                     };
                 })
-                .AddBootstrapProviders()
+                .AddBootstrap5Providers()
                 .AddFontAwesomeIcons();
 
             builder.Services.AddOptions();

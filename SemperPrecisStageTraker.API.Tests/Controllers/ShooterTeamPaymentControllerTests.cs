@@ -57,7 +57,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity.ShooterId == request.ShooterId
                           && updatedEntity.Amount ==request.Amount
                           && updatedEntity.Reason ==request.Reason
-                          && updatedEntity.PaymentDateTime ==request.PaymentDateTime
+                          && updatedEntity.PaymentDateTime == request.PaymentDateTime
+                          && updatedEntity.ExpireDateTime == request.ExpireDateTime
+                          && updatedEntity.NotifyExpiration == request.NotifyExpiration
             );
 
         }
@@ -103,6 +105,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity.Reason ==request.Reason
                           && updatedEntity.PaymentDateTime ==request.PaymentDateTime
                           && updatedEntity.Amount ==request.Amount
+                          && updatedEntity.ExpireDateTime == request.ExpireDateTime
+                          && updatedEntity.NotifyExpiration == request.NotifyExpiration
             );
 
         }

@@ -96,11 +96,13 @@
             return;
         }
         await mainServiceLayer.UpdateModel(model);
+        await ShowNotification(L["DataDownloaded"], L["Success"], NotificationType.Success);
     }
 
     async Task UploadData()
     {
         await mainServiceLayer.UploadData();
+        await ShowNotification(L["DataUploaded"], L["Success"], NotificationType.Success);
     }
 
     private async Task HideModalPrompt(bool choice)
@@ -108,6 +110,7 @@
         if (choice)
         {
             await mainServiceLayer.UpdateModel(model);
+            await ShowNotification(L["OfflineModeActive"], L["Success"], NotificationType.Success);
         }
         await modalRefPrompt.Hide();
     }

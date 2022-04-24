@@ -13,6 +13,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string Reason { get; set; } = string.Empty;
         
         public DateTime PaymentDateTime { get; set; }
+        public DateTime? ExpireDateTime { get; set; }
+        public bool NotifyExpiration { get; set; }
     }
     public class MatchDataAssociationContract
     {
@@ -21,7 +23,7 @@ namespace SemperPrecisStageTracker.Contracts
         //public IList<StageContract> Stages { get; set; }
         //public IList<GroupContract> Groups { get; set; }
         public IList<ShooterStageAggregationResult> ShooterStages { get; set; }
-        public IList<ShooterMatchContract> ShooterMatchs { get; set; }
+        public IList<ShooterMatchContract> ShooterMatches { get; set; }
         public IList<ShooterSOStageContract> ShooterSoStages { get; set; }
     }
     

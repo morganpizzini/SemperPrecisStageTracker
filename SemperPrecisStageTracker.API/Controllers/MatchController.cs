@@ -80,9 +80,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (string.IsNullOrEmpty(request.MatchId))
             {
                 if (string.IsNullOrEmpty(request.ShortLink))
-                {
                     return Task.FromResult<IActionResult>(NotFound());
-                }
                 entity = BasicLayer.GetMatchFromShortLink(request.ShortLink);
             }
             else

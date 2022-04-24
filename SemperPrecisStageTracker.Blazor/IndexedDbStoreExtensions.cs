@@ -73,7 +73,7 @@ namespace SemperPrecisStageTracker.Blazor
 
             var index = new IndexedDbIndex
             {
-                Name = DnetIndexedDb.Fluent.IndexedDbStoreExtensions.ToCamelCase(name),
+                Name = name.ToCamelCase(),
                 Definition = definition
             };
 

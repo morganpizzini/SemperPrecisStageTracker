@@ -4,42 +4,51 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Shooters"]</Heading>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
-{
-    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
-}
 <Divider />
-<Table Striped="true" Hoverable="true">
-    <TableHeader ThemeContrast="ThemeContrast.Dark">
-        <TableRow>
-            <TableHeaderCell>@L["Name"]</TableHeaderCell>
-            <TableHeaderCell>@L["Username"]</TableHeaderCell>
-            <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
-            <TableHeaderCell></TableHeaderCell>
-        </TableRow>
-    </TableHeader>
-    <TableBody>
-        @if (PageLoading)
+<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.CreateShooters)).And(nameof(EntityPermissions.EditShooter)).And(nameof(EntityPermissions.DeleteShooter)))">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
         {
-            <TableRow>
-                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
-            </TableRow>
+            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
         }
-        else
-        {
-            @if (shooters.Count == 0)
-            {
+        <Divider />
+        <Table Striped="true" Hoverable="true">
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
                 <TableRow>
-                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                    <TableHeaderCell>@L["Username"]</TableHeaderCell>
+                    <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
                 </TableRow>
-            }
-            else
-            {
-                <Virtualize Items="@shooters" Context="shooter">
+            </TableHeader>
+            <TableBody>
+                @if (PageLoading)
+                {
                     <TableRow>
-                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.CompleteName</NavLink></TableRowHeader>
-                        <TableRowCell>@shooter.Username</TableRowCell>
-                        @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.ShowShooters).AndList(EntityPermissions.EditShooter), shooter.ShooterId))
+                        <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+                    </TableRow>
+                }
+                else
+                {
+                    @if (shooters.Count == 0)
+                    {
+                        <TableRow>
+                            <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                        </TableRow>
+                    }
+                    else
+                    {
+                        <Virtualize Items="@shooters" Context="shooter">
+                            <TableRow>
+                                <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.CompleteName</NavLink></TableRowHeader>
+                                <TableRowCell>@shooter.Username</TableRowCell>
+                                @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.ShowShooters).AndList(EntityPermissions.EditShooter), shooter.ShooterId))
                         {
                             <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
                         }
@@ -53,8 +62,8 @@
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Pen" /></Button>
                             }
                             @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters
-                               .AndList(AdministrationPermissions.ShowShooters)
-                               .AndList(EntityPermissions.EditShooter), shooter.ShooterId))
+                            .AndList(AdministrationPermissions.ShowShooters)
+                            .AndList(EntityPermissions.EditShooter), shooter.ShooterId))
                             {
                                 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Search" /></Button>
                             }
@@ -66,42 +75,44 @@
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>
-            }
-        }
-    </TableBody>
-</Table>
-<Modal @ref="modalRefEntityToDelete">
-    <ModalContent Centered="true">
-        <ModalHeader>
-            <ModalTitle>@L["DeleteShooter"]</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Field>
-                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
-            </Field>
-            @if (entityToDelete != null)
-            {
-                <Field>
-                    <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@entityToDelete.CompleteName</Text>
-                </Field>
-                <Field>
-                    <FieldLabel>@L["Username"]</FieldLabel>
-                    <Text>@entityToDelete.Username</Text>
-                </Field>
-                <Field>
-                    <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@entityToDelete.BirthDate.ToString("d")</Text>
-                </Field>
-            }
-        </ModalBody>
-        <ModalFooter>
-            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
+                    }
+                }
+            </TableBody>
+        </Table>
+        <Modal @ref="modalRefEntityToDelete">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                    <CloseButton />
+                </ModalHeader>
+                <ModalBody>
+                    <Field>
+                        <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                    </Field>
+                    @if (entityToDelete != null)
+                    {
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <Text>@entityToDelete.CompleteName</Text>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["Username"]</FieldLabel>
+                            <Text>@entityToDelete.Username</Text>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["BirthDate"]</FieldLabel>
+                            <Text>@entityToDelete.BirthDate.ToString("d")</Text>
+                        </Field>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    </Authorized>
+</AuthorizeView>
 @code {
     IList<ShooterContract> shooters = new List<ShooterContract>();
 
@@ -134,9 +145,9 @@
         if (choice && entityToDelete != null)
         {
             await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
-            {
-                ShooterId = entityToDelete.ShooterId
-            });
+                {
+                    ShooterId = entityToDelete.ShooterId
+                });
 
             await LoadEntities();
         }

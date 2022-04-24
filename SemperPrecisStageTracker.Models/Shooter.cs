@@ -15,5 +15,8 @@ namespace SemperPrecisStageTracker.Models
         public string Username {get;set;}
         public string Email {get;set;}
         public string Password {get;set;}
+        public string FirearmsLicence {get;set;}
+        public DateTime FirearmsLicenceExpireDate {get;set;}
+        public DateTime MedicalExaminationExpireDate {get;set;}
     }
 }

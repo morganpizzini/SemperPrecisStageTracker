@@ -55,12 +55,19 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             shooterIdsSum.AddRange(stageShooterIds);
 
+            // load MDs and SOs
+
+            var shooters = BasicLayer.FetchShootersByIds(shooterIdsSum);
+
+            var shooterMatches = shooters.Where(x => shooterIds.Contains(x.Id));
+            var stageSoShooters = shooters.Where(x => stageShooterIds.Contains(x.Id));
+
             // GroupShooter/FetchGroupShooterStage
 
             var groupIds = groups.Select(x => x.Id).ToList();
 
-            //var groupShootersIds = BasicLayer.FetchShootersIdsByGroupIds(groupIds);
             IList<(string groupId, IList<Shooter> shooters)> groupAggregate = new List<(string groupId, IList<Shooter>)>();
+
             foreach (var groupId in groupIds)
             {
                 groupAggregate.Add((groupId, BasicLayer.FetchShootersByGroupId(groupId)));
@@ -70,34 +77,47 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groupShootersIds = groupAggregateShooters.Select(x => x.Id).ToList();
 
+            var shooterStageResults = BasicLayer.FetchShootersResultsOnStages(stageIds, groupShootersIds);
 
-            var shooterStages = BasicLayer.FetchShootersResultsOnStages(stageIds, groupShootersIds);
+            var finalStageResults = new List<ShooterStage>();
 
-            var shooterWarning = BasicLayer.FetchShootersWarningsDisqualifiedOnStages(stageIds, groupShootersIds);
+            // fill empty stages results
 
-            // load shooters
+            foreach (var stageId in stageIds)
+            {
+                foreach (var shooter in groupAggregateShooters)
+                {
+                    var existingResult = shooterStageResults.FirstOrDefault(x => x.StageId == stageId && x.ShooterId == shooter.Id);
+                    if (existingResult != null)
+                    {
+                        finalStageResults.Add(existingResult);
+                        continue;
+                    }
+                    finalStageResults.Add(new ShooterStage
+                    {
+                        StageId = stageId,
+                        ShooterId = shooter.Id
+                    });
+                }
+            }
 
-            var shooters = BasicLayer.FetchShootersByIds(shooterIdsSum);
-
-            var shooterMatches = shooters.Where(x => shooterIds.Contains(x.Id));
-            var stageShooters = shooters.Where(x => stageShooterIds.Contains(x.Id));
-            //var groupShooters = shooters.Where(x => groupShootersIds.Contains(x.Id));
+            var shooterWarnings = BasicLayer.FetchShootersWarningsDisqualifiedOnStages(stageIds, groupShootersIds);
 
             //Ritorno i contratti
             return Reply(new MatchDataAssociationContract
             {
                 Match = ContractUtils.GenerateContract(match, association, place, groups, stages),
 
-                ShooterMatchs = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
+                ShooterMatches = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
 
                 ShooterSoStages = shooterSoStages.As(x =>
-                    ContractUtils.GenerateContract(x, stageShooters.FirstOrDefault(s => s.Id == x.ShooterId))),
+                    ContractUtils.GenerateContract(x, stageSoShooters.FirstOrDefault(s => s.Id == x.ShooterId))),
 
-                ShooterStages = groupAggregateShooters.As(x =>
-                      ContractUtils.GenerateContract(x,
-                          shooterStages.FirstOrDefault(y => y.ShooterId == x.Id),
-                                    shooterWarning.FirstOrDefault(y => y.ShooterId == x.Id),
-                                    groupAggregate.FirstOrDefault(g => g.shooters.Any(c => c.Id == x.Id)).groupId ?? string.Empty))
+                ShooterStages = finalStageResults.As(x =>
+                      ContractUtils.GenerateContract(groupAggregateShooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                        x,
+                        shooterWarnings.FirstOrDefault(y => y.ShooterId == x.ShooterId),
+                        groupAggregate.FirstOrDefault(g => g.shooters.Any(c => c.Id == x.ShooterId)).groupId ?? string.Empty))
             });
         }
 

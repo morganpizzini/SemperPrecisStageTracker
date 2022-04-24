@@ -81,6 +81,7 @@
     {
         if (! (await validations.ValidateAll()))
             return;
+
         await validations.ClearAll();
         try
         {

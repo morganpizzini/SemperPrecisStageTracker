@@ -102,14 +102,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 return true;
             }
 
-            if (!string.IsNullOrEmpty(resourceId) && _stateService.Permissions.EntityPermissions.Any() && _stateService.Permissions.EntityPermissions.Any(x=>x.EntityId == resourceId))
+            if (_stateService.Permissions.EntityPermissions.Any())
             {
-
-                var existingPermissionOnResource = _stateService.Permissions.EntityPermissions
-                    .Where(sp => sp.EntityId == resourceId).Select(x=>x.Permission)
-                    .ToList();
-
-                if (existingPermissionOnResource.Any(roles.Contains))
+                var existingPermissionOnResource = _stateService.Permissions.EntityPermissions.AsQueryable();
+                
+                if(!string.IsNullOrEmpty(resourceId))
+                    existingPermissionOnResource.Where(sp => sp.EntityId == resourceId);
+                
+                if (existingPermissionOnResource.Select(x=>x.Permission).Any(roles.Contains))
                     return true;
             }
 

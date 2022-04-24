@@ -87,7 +87,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
               new HttpResponseMessage(HttpStatusCode.OK), user));
         }
         /// <summary>
-        /// Converts default scenario in Bonebat scenario
+        /// Converts default scenario in SemperPrecisStageTracker scenario
         /// </summary>
         /// <returns></returns>
         private ISemperPrecisStageTrackerScenario GetScenario()

@@ -79,11 +79,6 @@
     Validations validations;
     AssociationCreateRequest model = new AssociationCreateRequest();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
-
     async Task Submit()
     {
         if (! (await validations.ValidateAll()))

@@ -6,16 +6,19 @@ namespace SemperPrecisStageTracker.Shared.Permissions
 {
     public static class MyEnumExtensions
     {
-        public static IList<string> AndList(this object value, object newValue) => new List<string>
+        public static IList<string> AndList(this object value, object newValue)
         {
-            value.ToString(),
-            newValue.ToString()
-        };
-        //public static IList<T> AndList<T>(this T value, T newValue) => new List<T>
-        //{
-        //    value,
-        //    newValue
-        //};
+            if (value is IList<string> list)
+            {
+                list.Add(newValue.ToString());
+                return list;
+            }
+            return new List<string>
+            {
+                value.ToString(),
+                newValue.ToString()
+            };
+        }
 
         public static IList<T> AndList<T>(this IList<T> value, T newValue)
         {

@@ -14,5 +14,8 @@ namespace SemperPrecisStageTracker.Contracts
         [IndexDbIndex]
         public string Username {get;set;}
         public string Email {get;set;}
+        public string FirearmsLicence {get;set;}
+        public DateTime FirearmsLicenceExpireDate {get;set;}
+        public DateTime MedicalExaminationExpireDate {get;set;}
     }
 }

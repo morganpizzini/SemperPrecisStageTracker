@@ -117,46 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Submit" xml:space="preserve">
-    <value>Submit</value>
+  <data name="Close" xml:space="preserve">
+    <value>Chiudi</value>
+  </data>
+  <data name="DataDownloaded" xml:space="preserve">
+    <value>Dati scaricati</value>
+  </data>
+  <data name="DataUploaded" xml:space="preserve">
+    <value>Dati inviati</value>
+  </data>
+  <data name="Match" xml:space="preserve">
+    <value>Gara</value>
   </data>
   <data name="Offline" xml:space="preserve">
     <value>Offline</value>
   </data>
-  <data name="Match" xml:space="preserve">
-    <value>Match</value>
-  </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
-  </data>
-  <data name="UploadData" xml:space="preserve">
-    <value>Upload data</value>
-  </data>
-  <data name="WrongMatch" xml:space="preserve">
-    <value>Wrong match</value>
-  </data>
-  <data name="Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="DataDownloaded" xml:space="preserve">
-    <value>Data successfully downloaded</value>
-  </data>
-  <data name="DataUploaded" xml:space="preserve">
-    <value>Data successfully uploaded</value>
-  </data>
   <data name="OfflineModeActive" xml:space="preserve">
-    <value>Offline mode active</value>
+    <value>Offline mode attiva</value>
   </data>
   <data name="OnlineModePromptText" xml:space="preserve">
-    <value>There are some unsaved changes, do you want to proceed?</value>
+    <value>Ci sono dati non salvati, vuoi comunque procedere?</value>
   </data>
   <data name="OnlineModePromptTitle" xml:space="preserve">
-    <value>Enable online mode</value>
+    <value>Abilitazione online mode</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Salva</value>
   </data>
   <data name="Success" xml:space="preserve">
-    <value>Success</value>
+    <value>Successo</value>
+  </data>
+  <data name="UploadData" xml:space="preserve">
+    <value>Caricamento dati</value>
+  </data>
+  <data name="WrongMatch" xml:space="preserve">
+    <value>Errore gara</value>
   </data>
   <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>Si</value>
   </data>
 </root>

@@ -53,7 +53,7 @@
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                             <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
                                 <Feedback>
-                                    <ValidationError>@L["WrongValidBirthDate"]</ValidationError>
+                                    <ValidationError>@L["WrongBirthDate"]</ValidationError>
                                 </Feedback>
                             </DateEdit>
                         </FieldBody>
@@ -80,6 +80,42 @@
                                     <ValidationError>@L["WrongEmail"]</ValidationError>
                                 </Feedback>
                             </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmsLicence"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["FirearmsLicence"]" @bind-Text="@model.FirearmsLicence">
+                                <Feedback>
+                                    <ValidationError>@L["WrongFirearmsLicence"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmsLicenceExpireDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@model.FirearmsLicenceExpireDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongFirearmsLicenceExpireDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MedicalExaminationExpireDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@model.MedicalExaminationExpireDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongMedicalExaminationExpireDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
                         </FieldBody>
                     </Field>
                 </Validation>
@@ -111,6 +147,9 @@
         model.BirthDate = existing.BirthDate;
         model.Username = existing.Username;
         model.Email = existing.Email;
+        model.FirearmsLicenceExpireDate = existing.FirearmsLicenceExpireDate;
+        model.FirearmsLicence = existing.FirearmsLicence;
+        model.MedicalExaminationExpireDate = existing.MedicalExaminationExpireDate;
         model.ShooterId = Id;
         await base.OnInitializedAsync();
     }

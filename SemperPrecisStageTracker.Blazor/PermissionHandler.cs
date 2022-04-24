@@ -10,10 +10,8 @@ namespace SemperPrecisStageTracker.Blazor
     public class PermissionHandler : AuthorizationHandler<RolesAuthorizationRequirement>
     {
         private readonly IAuthenticationService _authService;
-        private readonly ILogger<PermissionHandler> _logger;
-        public PermissionHandler(IAuthenticationService authService, ILogger<PermissionHandler> logger)
+        public PermissionHandler(IAuthenticationService authService)
         {
-            _logger = logger;
             _authService = authService;
         }
         
@@ -44,11 +42,8 @@ namespace SemperPrecisStageTracker.Blazor
             if (_authService.CheckPermissions(roles, resourceId))
             {
                 context.Succeed(requirement);
-                _logger.LogInformation("OOOKKK");
                 return Task.CompletedTask;
             }
-
-            _logger.LogInformation("NOOOO");
 
             context.Fail();
             return Task.CompletedTask;

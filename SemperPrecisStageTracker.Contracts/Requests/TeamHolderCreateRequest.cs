@@ -1,16 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterTeamCreateRequest
+    public class TeamHolderCreateRequest
     {
         [Required]
 
         public string TeamId { get; set; }
         [Required]
         public string ShooterId { get; set; }
-        [Required]
-        public DateTime RegistrationDate { get; set; } = DateTime.Now;
+        public string Description { get; set; } = string.Empty;
     }
 }

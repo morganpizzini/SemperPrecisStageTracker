@@ -78,7 +78,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             };
         }
 
-/// <summary>
+        /// <summary>
         /// Generate contract using entity
         /// </summary>
         /// <param name="entity">Source entity</param>
@@ -96,7 +96,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Shooter = shooter != null ? GenerateContract(shooter): new ShooterContract(),
                 Amount = entity.Amount,
                 Reason = entity.Reason,
-                PaymentDateTime = entity.PaymentDateTime
+                PaymentDateTime = entity.PaymentDateTime,
+                ExpireDateTime = entity.ExpireDateTime,
+                NotifyExpiration = entity.NotifyExpiration
             };
         }
 
@@ -219,7 +221,10 @@ namespace SemperPrecisStageTracker.API.Helpers
                 LastName = entity.LastName,
                 BirthDate = entity.BirthDate,
                 Email = entity.Email,
-                Username = entity.Username
+                Username = entity.Username,
+                FirearmsLicence = entity.FirearmsLicence,
+                FirearmsLicenceExpireDate = entity.FirearmsLicenceExpireDate,
+                MedicalExaminationExpireDate = entity.MedicalExaminationExpireDate
             };
         }
 

@@ -30,19 +30,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             Task t3 = Task.Run(async () =>
             {
-                var openResult = await matchServiceIndexDb.OpenIndexedDb();
                 var model = await _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
                 Offline = model?.OfflineMode ?? false;
                 _init = true;
+                var openResult = await matchServiceIndexDb.OpenIndexedDb();
             });
-
-            //var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
-            //model.RunSynchronously();
-            //model.Wait();
-            //if(model.IsCompleted)
-            //{
-            //    var t= model.Result;
-            //}
 
         }
 
@@ -77,7 +69,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await _matchServiceIndexDb.AddItems(new List<MatchContract> { response.Match });
 
             await _matchServiceIndexDb.AddItems(response.ShooterStages.ToList());
-            await _matchServiceIndexDb.AddItems(response.ShooterMatchs.ToList());
+            await _matchServiceIndexDb.AddItems(response.ShooterMatches.ToList());
             await _matchServiceIndexDb.AddItems(response.ShooterSoStages.ToList());
         }
 

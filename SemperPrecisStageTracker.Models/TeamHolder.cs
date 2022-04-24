@@ -3,15 +3,12 @@ using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.Models
 {
-    public class GroupShooter : SemperPrecisEntity
+    public class TeamHolder : SemperPrecisEntity
     {
         [Required]
-        public string GroupId { get; set; }
+        public string TeamId { get; set; }
         [Required]
         public string ShooterId { get; set; }
-        [Required]
-        public string DivisionId {get; set;}
-        [Required]
-        public string TeamId {get; set;}
+        public string Description { get; set; } = string.Empty;
     }
 }

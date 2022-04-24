@@ -22,8 +22,6 @@ namespace SemperPrecisStageTracker.API
         readonly string localPolicy = nameof(localPolicy);
         readonly string productionPolicy = nameof(productionPolicy);
 
-        //public IConfiguration Configuration { get; }
-
         /// <summary>
         /// Application name
         /// </summary>

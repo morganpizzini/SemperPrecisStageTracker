@@ -16,16 +16,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.5" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.5" />
-    <PackageReference Include="DnetIndexedDb" Version="2.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.2" PrivateAssets="all" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Components" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Snackbar" Version="1.0.4" />
+    <PackageReference Include="DnetIndexedDb" Version="2.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.4" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />    
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.4" />
   </ItemGroup>
 
   <ItemGroup>

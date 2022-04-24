@@ -2,7 +2,7 @@ using SemperPrecisStageTracker.Models;
 using System;
 using System.Security.Claims;
 
-namespace Bonebat.Identities
+namespace SemperPrecisStageTracker.Domain.Identities
 {
     /// <summary>
     /// Utilities for Claims Principal

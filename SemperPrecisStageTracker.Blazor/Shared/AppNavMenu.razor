@@ -1,7 +1,8 @@
 ﻿@using SemperPrecisStageTracker.Blazor.Pages.App
 @inject IStringLocalizer<AppNavMenu> L
+@inject IAuthenticationService AuthService
 <div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">SemperPrecis Tracker</a>
+    <a class="navbar-brand px-3" href="/app">SemperPrecis Tracker</a>
     <AuthorizeView>
         <Authorized>
             <button class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -24,11 +25,14 @@
                         <Icon Name="FontAwesomeIcons.Book" /> @L["Matches"]
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
-                        <Icon Name="FontAwesomeIcons.Book" /> @L["Shooters"]
-                    </NavLink>
-                </li>
+                @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters).AndList(EntityPermissions.EditShooter).AndList(EntityPermissions.DeleteShooter)))
+                {
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
+                            <Icon Name="FontAwesomeIcons.Book" /> @L["Shooters"]
+                        </NavLink>
+                    </li>
+                }
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Teams>())">
                         <Icon Name="FontAwesomeIcons.Book" /> @L["Teams"]

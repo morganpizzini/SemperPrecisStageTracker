@@ -117,46 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Submit" xml:space="preserve">
-    <value>Submit</value>
+  <data name="Shooters" xml:space="preserve">
+    <value>Shooters</value>
   </data>
-  <data name="Offline" xml:space="preserve">
-    <value>Offline</value>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
   </data>
-  <data name="Match" xml:space="preserve">
-    <value>Match</value>
+  <data name="NewShooter" xml:space="preserve">
+    <value>New shooter</value>
   </data>
-  <data name="Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Birtdate</value>
   </data>
-  <data name="UploadData" xml:space="preserve">
-    <value>Upload data</value>
+  <data name="Username" xml:space="preserve">
+    <value>Username</value>
   </data>
-  <data name="WrongMatch" xml:space="preserve">
-    <value>Wrong match</value>
-  </data>
-  <data name="Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="DataDownloaded" xml:space="preserve">
-    <value>Data successfully downloaded</value>
-  </data>
-  <data name="DataUploaded" xml:space="preserve">
-    <value>Data successfully uploaded</value>
-  </data>
-  <data name="OfflineModeActive" xml:space="preserve">
-    <value>Offline mode active</value>
-  </data>
-  <data name="OnlineModePromptText" xml:space="preserve">
-    <value>There are some unsaved changes, do you want to proceed?</value>
-  </data>
-  <data name="OnlineModePromptTitle" xml:space="preserve">
-    <value>Enable online mode</value>
-  </data>
-  <data name="Success" xml:space="preserve">
-    <value>Success</value>
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+  <data name="NoData" xml:space="preserve">
+    <value>No data</value>
   </data>
 </root>

@@ -34,6 +34,6 @@ namespace SemperPrecisStageTracker.Contracts
         public string Notes { get; set; }
         public bool Disqualified  { get; set; }
 
-        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
+        public decimal Total => Disqualified ? -99 : Time + DownPoints?.DefaultIfEmpty(0).Sum() ?? 0 + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
     }
 }
