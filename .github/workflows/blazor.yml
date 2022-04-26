@@ -1,4 +1,4 @@
-name: Web API
+name: Blazor
 
 on:
   push:
