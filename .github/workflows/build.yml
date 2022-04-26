@@ -1,0 +1,22 @@
+name: Web API
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.x
+    - name: Install dependencies
+      run: dotnet restore ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj
+    - name: Build
+      run: dotnet build ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj --configuration Release --no-restore
