@@ -1,4 +1,4 @@
-name: .NET Core
+name: Web API
 
 on:
   push:
@@ -17,6 +17,6 @@ jobs:
       with:
         dotnet-version: 6.x
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj --configuration Release --no-restore
