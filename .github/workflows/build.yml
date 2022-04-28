@@ -46,7 +46,9 @@ jobs:
     #   run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
     
     - name: sample
-      run: echo "${{ env.AZURE_CREDENTIALS }}"
+      run: |
+        echo "${{ env.AZURE_CREDENTIALS }}"
+        echo "${{ env.DOTNET_VERSION }}"
     - name: sample 1
       run: echo "${{ env.API_PUBLISH_PROFILE }}"
 
