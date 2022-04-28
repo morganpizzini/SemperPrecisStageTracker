@@ -30,12 +30,21 @@ jobs:
       run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
     
     - name: dotnet test
-      run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --no-build --no-restore
+      run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --no-restore  --logger trx --results-directory "TestResults"
+
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: dotnet-results
+        path: TestResults
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
       
     - name: dotnet publish
       run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
     
     - uses: azure/login@v1
+      name: 'Login'
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
