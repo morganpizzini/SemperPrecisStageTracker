@@ -6,6 +6,7 @@ on:
   workflow_dispatch:  
 
 env:
+  APP_PATH: ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj
   AZURE_WEBAPP_NAME: semperprecisapi    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './myapp'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.x'           # set this to the dot net version to use
@@ -22,12 +23,12 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Install dependencies
-      run: dotnet restore ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj
+      run: dotnet restore ${{ env.APP_PATH }}
     - name: Build
-      run: dotnet build ./SemperPrecisStageTracker.API/SemperPrecisStageTracker.API.csproj --configuration Release --no-restore
+      run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
       
     - name: dotnet build and publish
-      run: dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
+      run: dotnet publish ${{ env.APP_PATH }} -c Release --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
       
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
