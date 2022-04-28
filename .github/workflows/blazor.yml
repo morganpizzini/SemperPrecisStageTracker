@@ -16,7 +16,7 @@ env:
 
 jobs:
   build:
-
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +31,7 @@ jobs:
       run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
     
     - name: dotnet build and publish
-      run: dotnet publish ${{ env.APP_PATH }} -c Release --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
+      run: dotnet publish ${{ env.APP_PATH }} -c Release --no-restore --no-build -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
       
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
