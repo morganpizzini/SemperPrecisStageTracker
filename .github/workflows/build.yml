@@ -1,6 +1,14 @@
 name: Web API
 
 on:
+  workflow_call:
+    secrets:
+      AZURE_CREDENTIALS:
+        description: 'Azure login credentials'
+        required: true
+      API_PUBLISH_PROFILE:
+        description: 'API publishing profile'
+        required: true
   push:
     branches: [ main ]
     paths:
