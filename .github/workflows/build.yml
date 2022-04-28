@@ -12,6 +12,8 @@ env:
   AZURE_WEBAPP_NAME: semperprecisapi    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './myapp'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.x'           # set this to the dot net version to use
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  API_PUBLISH_PROFILE: ${{ secrets.API_PUBLISH_PROFILE }}
 
 jobs:
   build:
@@ -44,20 +46,20 @@ jobs:
     #   run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
     
     - name: sample
-      run: echo "${{ secrets.AZURE_CREDENTIALS }}"
+      run: echo "${{ env.AZURE_CREDENTIALS }}"
     - name: sample 1
-      run: echo "${{ secrets.API_PUBLISH_PROFILE }}"
+      run: echo "${{ env.API_PUBLISH_PROFILE }}"
 
     - uses: azure/login@v1
       name: 'Login'
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ env.AZURE_CREDENTIALS }}
         
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
-        publish-profile: ${{ secrets.API_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
+        publish-profile: ${{ env.API_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
         
     - name: Azure CLI script
