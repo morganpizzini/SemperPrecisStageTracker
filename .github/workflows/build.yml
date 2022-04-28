@@ -45,6 +45,8 @@ jobs:
     
     - name: sample
       run: echo "${{ secrets.AZURE_CREDENTIALS }}"
+    - name: sample 1
+      run: echo "${{ secrets.API_PUBLISH_PROFILE }}"
 
     - uses: azure/login@v1
       name: 'Login'
