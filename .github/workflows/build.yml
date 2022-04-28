@@ -20,29 +20,32 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Install dependencies
-      run: dotnet restore ${{ env.APP_PATH }}
-    - name: Build
-      run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
+    # - name: Setup .NET Core
+    #   uses: actions/setup-dotnet@v1
+    #   with:
+    #     dotnet-version: ${{ env.DOTNET_VERSION }}
+    # - name: Install dependencies
+    #   run: dotnet restore ${{ env.APP_PATH }}
+    # - name: Build
+    #   run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
     
-    - name: dotnet test
-      run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --logger trx --results-directory "TestResults"
+    # - name: dotnet test
+    #   run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --logger trx --results-directory "TestResults"
 
-    - name: Upload dotnet test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: dotnet-results
-        path: TestResults
-      # Use always() to always run this step to publish test results when there are test failures
-      if: ${{ always() }}
+    # - name: Upload dotnet test results
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: dotnet-results
+    #     path: TestResults
+    #   # Use always() to always run this step to publish test results when there are test failures
+    #   if: ${{ always() }}
 
-    - name: dotnet publish
-      run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
+    # - name: dotnet publish
+    #   run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
     
+    - name: sample
+      run: echo "${{ secrets.AZURE_CREDENTIALS }}"
+
     - uses: azure/login@v1
       name: 'Login'
       with:

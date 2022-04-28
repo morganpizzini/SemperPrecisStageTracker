@@ -2939,6 +2939,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterTeamPaymentRepository.Save(entity);
 
             t.Commit();
+            await Task.CompletedTask;
             return validations;
         }
 
@@ -2979,6 +2980,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Salvataggio
             _shooterTeamPaymentRepository.Save(entity);
             t.Commit();
+            await Task.CompletedTask;
             return validations;
         }
 
