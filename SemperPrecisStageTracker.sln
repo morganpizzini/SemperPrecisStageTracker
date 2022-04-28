@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.EF", "SemperPrecisStageTracker.EF\SemperPrecisStageTracker.EF.csproj", "{1D825977-8299-4C62-B188-42E8122B85E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTraker.API.Tests", "SemperPrecisStageTraker.API.Tests\SemperPrecisStageTraker.API.Tests.csproj", "{754674CC-84AA-4F4B-9D48-B45A76D810D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.API.Tests", "SemperPrecisStageTracker.API.Tests\SemperPrecisStageTracker.API.Tests.csproj", "{754674CC-84AA-4F4B-9D48-B45A76D810D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Shared", "SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj", "{EF6597EB-425D-4844-BC23-D35E386D28C6}"
 EndProject
