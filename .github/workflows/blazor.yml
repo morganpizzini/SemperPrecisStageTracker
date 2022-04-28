@@ -3,6 +3,8 @@ name: Blazor
 on:
   push:
     branches: [ main ]
+    paths:
+    - "SemperPrecisStageTracker.Blazor/**"
   workflow_dispatch:  
 
 env:
