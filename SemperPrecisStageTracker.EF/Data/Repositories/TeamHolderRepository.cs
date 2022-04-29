@@ -8,10 +8,10 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
     [Repository]
-    public class AssociationRepository : EntityFrameworkRepositoryBase<Association, SemperPrecisStageTrackerContext>, IAssociationRepository
+    public class TeamHolderRepository : EntityFrameworkRepositoryBase<TeamHolder, SemperPrecisStageTrackerContext>, ITeamHolderRepository
     {
-        public AssociationRepository(IDataSession dataSession)
-            : base(dataSession, c => c.Associations)
+        public TeamHolderRepository(IDataSession dataSession)
+            : base(dataSession, c => c.TeamHolders)
         {
         }
     }
