@@ -78,6 +78,8 @@ namespace SemperPrecisStageTracker.API
                 options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
             });
 
+            services.AddHealthChecks();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
@@ -138,7 +140,6 @@ namespace SemperPrecisStageTracker.API
                 default:
                     throw new Exception("CORS configuration NOT FOUND");
             }
-            
             //Utilizzo l'autenticazione
             app.UseAuthentication();
 
@@ -146,7 +147,8 @@ namespace SemperPrecisStageTracker.API
 
             app.UseEndpoints(endpoints =>
             {
-                 endpoints.MapGet("/", async context =>
+                endpoints.MapHealthChecks("/healthz");
+                endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hi!");
                 });

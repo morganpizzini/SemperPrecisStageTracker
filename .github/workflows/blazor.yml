@@ -44,3 +44,11 @@ jobs:
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         publish-profile: ${{ secrets.BLAZOR_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
