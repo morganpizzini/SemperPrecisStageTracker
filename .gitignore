@@ -222,3 +222,4 @@ __pycache__/
 Thumbs.db
 
 !SemperPrecisStageTracker.Blazor/wwwroot/js/cookieconsent.min.js
+!SemperPrecisStageTracker.Blazor/wwwroot/css/app.min.css

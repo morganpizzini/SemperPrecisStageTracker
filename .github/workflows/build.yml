@@ -5,6 +5,12 @@ on:
     branches: [ main ]
     paths:
     - "SemperPrecisStageTracker.API/**"
+    - "SemperPrecisStageTracker.Contracts/**"
+    - "SemperPrecisStageTracker.Domain/**"
+    - "SemperPrecisStageTracker.Mocks/**"
+    - "SemperPrecisStageTracker.Models/**"
+    - "SemperPrecisStageTracker.EF/**"
+    - "SemperPrecisStageTracker.Shared/**"
   workflow_dispatch:  
 
 env:
