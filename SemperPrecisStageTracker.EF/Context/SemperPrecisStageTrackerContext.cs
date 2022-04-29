@@ -150,19 +150,12 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterSOStage>()
+            modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles")
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterSOStage>()
+
+            modelBuilder.Entity<ShooterRole>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<ShooterMatch>()
-                .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterMatch>()
-                .Property(f => f.Id)
-                .ValueGeneratedOnAdd();
-
-            modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles");
 
             modelBuilder.Entity<Contact>()
                 .HasKey(f => f.Id);
@@ -170,19 +163,25 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<EntityPermission>()
+            
+            modelBuilder.Entity<BasePermission>().ToTable("ShooterPermissions")
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<EntityPermission>()
-                .Property(f => f.Id)
+
+            modelBuilder.Entity<BasePermission>().Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<AdministrationPermission>()
-                .HasKey(f => f.Id);
-            modelBuilder.Entity<AdministrationPermission>()
-                .Property(f => f.Id)
-                .ValueGeneratedOnAdd();
+            //modelBuilder.Entity<EntityPermission>()
+            //    .HasKey(f => f.Id);
+            //modelBuilder.Entity<EntityPermission>()
+            //    .Property(f => f.Id)
+            //    .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<BasePermission>().ToTable("ShooterPermissions");
+            //modelBuilder.Entity<AdministrationPermission>()
+            //    .HasKey(f => f.Id);
+            //modelBuilder.Entity<AdministrationPermission>()
+            //    .Property(f => f.Id)
+            //    .ValueGeneratedOnAdd();
+
 
         }
 
