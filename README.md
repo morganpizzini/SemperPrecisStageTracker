@@ -6,6 +6,13 @@ Add specified KeyVault ref for load production/test configuration
 
 ```json
 {
-  "azKVName": "<KeyVaultName>"
+  "backDoorPassword": "",
+  "recaptchaSiteAuthority": "",
+  "recaptchaSiteKey": "",
+  "recaptchaToken": "",
+  "webPushPrivate": "",
+  "webPushPublic": "",
+  "webPushUser": "",
+  "connectionStrings:SqlDb": "only for migrations"
 }
 ```

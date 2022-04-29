@@ -92,8 +92,9 @@
                 await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>
                     ("BlazorPWA.requestSubscription");
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>();
-                
+
                 NavigationManager.NavigateTo(returnUrl);
+                return;
             }
             await NotificationService.Error(L["Error"], L["LoginFailed"]);
         }

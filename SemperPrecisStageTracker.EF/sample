@@ -1,0 +1,303 @@
+﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+CREATE TABLE [Associations] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Divisions] nvarchar(max) NOT NULL,
+    [Ranks] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Associations] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Groups] (
+    [Id] nvarchar(255) NOT NULL,
+    [MatchId] nvarchar(max) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Groups] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [GroupShooters] (
+    [Id] nvarchar(255) NOT NULL,
+    [GroupId] nvarchar(max) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [DivisionId] nvarchar(max) NOT NULL,
+    [TeamId] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_GroupShooters] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Matches] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [AssociationId] nvarchar(max) NOT NULL,
+    [Location] nvarchar(max) NULL,
+    [MatchDateTime] datetime2 NOT NULL,
+    [UnifyRanks] bit NOT NULL,
+    [OpenMatch] bit NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Matches] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterAssociations] (
+    [Id] nvarchar(255) NOT NULL,
+    [AssociationId] nvarchar(max) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [Rank] nvarchar(max) NOT NULL,
+    [RegistrationDate] datetime2 NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterAssociations] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Shooters] (
+    [Id] nvarchar(255) NOT NULL,
+    [FirstName] nvarchar(max) NOT NULL,
+    [LastName] nvarchar(max) NOT NULL,
+    [BirthDate] datetime2 NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Shooters] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterStages] (
+    [Id] nvarchar(255) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [StageId] nvarchar(max) NOT NULL,
+    [Time] decimal(18,2) NOT NULL,
+    [DownPoints] nvarchar(max) NULL,
+    [Procedurals] int NOT NULL,
+    [HitOnNonThreat] int NOT NULL,
+    [FlagrantPenalties] int NOT NULL,
+    [Ftdr] int NOT NULL,
+    [Procedural] bit NOT NULL,
+    [Disqualified] bit NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterStages] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterTeams] (
+    [Id] nvarchar(255) NOT NULL,
+    [TeamId] nvarchar(max) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [RegistrationDate] datetime2 NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterTeams] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Stages] (
+    [Id] nvarchar(255) NOT NULL,
+    [MatchId] nvarchar(max) NULL,
+    [Name] nvarchar(max) NULL,
+    [Index] int NOT NULL,
+    [Targets] int NOT NULL,
+    [SO] nvarchar(max) NULL,
+    [Scenario] nvarchar(max) NULL,
+    [GunReadyCondition] nvarchar(max) NULL,
+    [StageProcedure] nvarchar(max) NULL,
+    [StageProcedureNotes] nvarchar(max) NULL,
+    [Strings] int NOT NULL,
+    [Scoring] nvarchar(max) NULL,
+    [TargetsDescription] nvarchar(max) NULL,
+    [ScoredHits] nvarchar(max) NULL,
+    [StartStop] nvarchar(max) NULL,
+    [Rules] nvarchar(max) NULL,
+    [Distance] nvarchar(max) NULL,
+    [CoverGarment] bit NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Stages] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Teams] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Teams] PRIMARY KEY ([Id])
+);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20210524095242_Initial', N'6.0.4');
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+ALTER TABLE [Shooters] ADD [Email] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [Shooters] ADD [Password] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [Shooters] ADD [Username] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [Matches] ADD [ShortLink] nvarchar(max) NOT NULL DEFAULT N'';
+GO
+
+CREATE TABLE [NotificationSubscriptions] (
+    [Id] nvarchar(255) NOT NULL,
+    [UserId] nvarchar(max) NOT NULL,
+    [Url] nvarchar(max) NOT NULL,
+    [P256dh] nvarchar(max) NOT NULL,
+    [Auth] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_NotificationSubscriptions] PRIMARY KEY ([Id])
+);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20210531091242_InitialCreate', N'6.0.4');
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+EXEC sp_rename N'[ShooterStages].[Procedural]', N'Warning', N'COLUMN';
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20210601132116_Warning', N'6.0.4');
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+EXEC sp_rename N'[Stages].[PSO]', N'SO', N'COLUMN';
+GO
+
+EXEC sp_rename N'[Matches].[Location]', N'PlaceId', N'COLUMN';
+GO
+
+ALTER TABLE [ShooterStages] ADD [Notes] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [Shooters] ADD [FirearmsLicence] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [Shooters] ADD [FirearmsLicenceExpireDate] datetime2 NOT NULL DEFAULT '0001-01-01T00:00:00.0000000';
+GO
+
+ALTER TABLE [Shooters] ADD [MedicalExaminationExpireDate] datetime2 NOT NULL DEFAULT '0001-01-01T00:00:00.0000000';
+GO
+
+ALTER TABLE [ShooterAssociations] ADD [CardNumber] nvarchar(max) NULL;
+GO
+
+ALTER TABLE [ShooterAssociations] ADD [Division] nvarchar(max) NOT NULL DEFAULT N'';
+GO
+
+ALTER TABLE [ShooterAssociations] ADD [ExpireDate] datetime2 NULL;
+GO
+
+ALTER TABLE [ShooterAssociations] ADD [SafetyOfficier] bit NOT NULL DEFAULT CAST(0 AS bit);
+GO
+
+CREATE TABLE [Contacts] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [Subject] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Contacts] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Places] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NOT NULL,
+    [Holder] nvarchar(max) NOT NULL,
+    [Phone] nvarchar(max) NULL,
+    [Email] nvarchar(max) NOT NULL,
+    [Address] nvarchar(max) NULL,
+    [City] nvarchar(max) NOT NULL,
+    [Region] nvarchar(max) NOT NULL,
+    [PostalZipCode] nvarchar(max) NOT NULL,
+    [Country] nvarchar(max) NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Places] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterPermissions] (
+    [Id] nvarchar(255) NOT NULL,
+    [ShooterId] nvarchar(max) NULL,
+    [Permission] nvarchar(max) NULL,
+    [Discriminator] nvarchar(max) NOT NULL,
+    [EntityId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterPermissions] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterRoles] (
+    [Id] nvarchar(255) NOT NULL,
+    [ShooterId] nvarchar(max) NULL,
+    [Role] int NOT NULL,
+    [Discriminator] nvarchar(max) NOT NULL,
+    [MatchId] nvarchar(max) NULL,
+    [StageId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterRoles] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [ShooterTeamPayments] (
+    [Id] nvarchar(255) NOT NULL,
+    [TeamId] nvarchar(max) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [Amount] real NOT NULL,
+    [Reason] nvarchar(max) NOT NULL,
+    [PaymentDateTime] datetime2 NOT NULL,
+    [ExpireDateTime] datetime2 NULL,
+    [NotifyExpiration] bit NOT NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_ShooterTeamPayments] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [TeamHolders] (
+    [Id] nvarchar(255) NOT NULL,
+    [TeamId] nvarchar(max) NOT NULL,
+    [ShooterId] nvarchar(max) NOT NULL,
+    [Description] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_TeamHolders] PRIMARY KEY ([Id])
+);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20220429120544_payment', N'6.0.4');
+GO
+
+COMMIT;
+GO
+
