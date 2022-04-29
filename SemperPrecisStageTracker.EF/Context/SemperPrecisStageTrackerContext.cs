@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SemperPrecisStageTracker.Models;
 using Microsoft.Extensions.Configuration;
-using SemperPrecisStageTracker.Shared.Utils;
+using SemperPrecisStageTracker.Domain.Containers;
 
 namespace SemperPrecisStageTracker.EF.Context
 {
@@ -25,10 +25,9 @@ namespace SemperPrecisStageTracker.EF.Context
         /// </summary>
         public SemperPrecisStageTrackerContext()
         {
+            var configuration = ServiceResolver.Resolve<IConfiguration>();
             const string SqlDbConnectionStringName = "SqlDb";
-            //var sqlSetting = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.ConnectionStrings
-            //    .SingleOrDefault(c => c.Name == SqlDbConnectionStringName);
-            var sqlSetting = SharedProperties.Configuration.GetConnectionString(SqlDbConnectionStringName);
+            var sqlSetting = configuration.GetConnectionString(SqlDbConnectionStringName);
             if (sqlSetting == null)
                 throw new InvalidProgramException("Connection string for database with " +
                                                   $"name '{SqlDbConnectionStringName}' cannot be found");

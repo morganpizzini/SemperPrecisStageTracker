@@ -39,7 +39,6 @@ namespace SemperPrecisStageTracker.API
                 { "Mockup", SessionFactory.RegisterDefaultDataSession<MockDataSession<SimpleScenario>> },
                 { "Sql", SessionFactory.RegisterDefaultDataSession<EntityFrameworkDataSession<SemperPrecisStageTrackerContext>> }
             });
-
             // identity client
             SettingsUtils.Switch(ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider, new Dictionary<string, Action>
             {
@@ -62,6 +61,7 @@ namespace SemperPrecisStageTracker.API
             {
                 config.AddUserSecrets<Program>();
             }
+                config.AddUserSecrets<Program>();
 
             var settings = config.Build();
 

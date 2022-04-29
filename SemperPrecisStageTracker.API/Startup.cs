@@ -12,7 +12,6 @@ using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
 using SemperPrecisStageTracker.Domain.Configurations;
 using SemperPrecisStageTracker.Domain.Containers;
-using SemperPrecisStageTracker.Shared.Utils;
 using ZenProgramming.Chakra.Core.Configurations;
 using ZenProgramming.Chakra.Core.Diagnostic;
 
@@ -34,8 +33,6 @@ namespace SemperPrecisStageTracker.API
 
         public Startup(IConfiguration configuration)
         {
-            SharedProperties.Configuration = configuration;
-
             ServiceResolver.Register(configuration);
 
             //Definizione del nome e versione del sistema
@@ -49,7 +46,7 @@ namespace SemperPrecisStageTracker.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            var configuration = ServiceResolver.Resolve<IConfiguration>();
             services.AddCors(options =>
             {
                 options.AddPolicy(name: localPolicy,
@@ -57,11 +54,11 @@ namespace SemperPrecisStageTracker.API
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 
-                var blazorEndpoint = SharedProperties.Configuration["blazorEndpoint"];
+                var blazorEndpoint = configuration["blazorEndpoint"];
                 if (!string.IsNullOrEmpty(blazorEndpoint))
                     options.AddPolicy(name: productionPolicy,
                         builder => builder
-                            .WithOrigins(SharedProperties.Configuration["blazorEndpoint"])
+                            .WithOrigins(configuration["blazorEndpoint"])
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials());
@@ -115,7 +112,7 @@ namespace SemperPrecisStageTracker.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (!env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
@@ -132,7 +129,8 @@ namespace SemperPrecisStageTracker.API
             {
                 case "production":
                     Tracer.Info($"[CORS] Working on {productionPolicy} CORS policy");
-                    app.UseCors(productionPolicy);
+                    app.UseCors(localPolicy);
+                    //app.UseCors(productionPolicy);
                     break;
                 case "development":
                     Tracer.Info($"[CORS] Working on {localPolicy} CORS policy");
