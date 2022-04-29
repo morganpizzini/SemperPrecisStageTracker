@@ -12,6 +12,7 @@ using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
 using SemperPrecisStageTracker.Domain.Configurations;
 using SemperPrecisStageTracker.Domain.Containers;
+using SemperPrecisStageTracker.Shared.Utils;
 using ZenProgramming.Chakra.Core.Configurations;
 using ZenProgramming.Chakra.Core.Diagnostic;
 
@@ -21,7 +22,6 @@ namespace SemperPrecisStageTracker.API
     {
         readonly string localPolicy = nameof(localPolicy);
         readonly string productionPolicy = nameof(productionPolicy);
-        public IConfiguration Configuration { get; }
         /// <summary>
         /// Application name
         /// </summary>
@@ -34,8 +34,8 @@ namespace SemperPrecisStageTracker.API
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            
+            SharedProperties.Configuration = configuration;
+
             ServiceResolver.Register(configuration);
 
             //Definizione del nome e versione del sistema
@@ -56,11 +56,12 @@ namespace SemperPrecisStageTracker.API
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
-                var blazorEndpoint = Configuration["blazorEndpoint"];
+
+                var blazorEndpoint = SharedProperties.Configuration["blazorEndpoint"];
                 if (!string.IsNullOrEmpty(blazorEndpoint))
                     options.AddPolicy(name: productionPolicy,
                         builder => builder
-                            .WithOrigins(Configuration["blazorEndpoint"])
+                            .WithOrigins(SharedProperties.Configuration["blazorEndpoint"])
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials());

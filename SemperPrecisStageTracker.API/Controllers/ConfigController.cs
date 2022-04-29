@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using SemperPrecisStageTracker.Domain.Configurations;
-using ZenProgramming.Chakra.Core.Configurations;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -33,16 +31,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ResponseCache(Duration = 86400,Location = ResponseCacheLocation.Client)]
         public IActionResult GetConfig()
         {
-            //const string SqlDbConnectionStringName = "SqlDb";
-            //var sqlSetting = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.ConnectionStrings
-            //    .SingleOrDefault(c => c.Name == SqlDbConnectionStringName);
             return Ok(
                 new
                 {
                     recaptcha = new
                     {
-                        //myConn = sqlSetting,
-                        connectionString = _configuration.GetConnectionString("SqlDB"),
                         recaptchaToken = _configuration["recaptchaToken"]
                     }
                 });

@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SemperPrecisStageTracker.Models;
-using SemperPrecisStageTracker.Domain.Configurations;
-using ZenProgramming.Chakra.Core.Configurations;
+using Microsoft.Extensions.Configuration;
+using SemperPrecisStageTracker.Shared.Utils;
 
 namespace SemperPrecisStageTracker.EF.Context
 {
@@ -26,12 +26,14 @@ namespace SemperPrecisStageTracker.EF.Context
         public SemperPrecisStageTrackerContext()
         {
             const string SqlDbConnectionStringName = "SqlDb";
-            var sqlSetting = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.ConnectionStrings
-                .SingleOrDefault(c => c.Name == SqlDbConnectionStringName);
+            //var sqlSetting = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.ConnectionStrings
+            //    .SingleOrDefault(c => c.Name == SqlDbConnectionStringName);
+            var sqlSetting = SharedProperties.Configuration.GetConnectionString(SqlDbConnectionStringName);
             if (sqlSetting == null)
                 throw new InvalidProgramException("Connection string for database with " +
                                                   $"name '{SqlDbConnectionStringName}' cannot be found");
-            ConnectionString = sqlSetting.ConnectionString;
+            ConnectionString = sqlSetting;
+            //ConnectionString = sqlSetting.ConnectionString;
         }
 
         /// <summary>
