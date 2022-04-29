@@ -5,6 +5,7 @@
 @inject IStringLocalizer<Login> L
 @inject IJSRuntime JSRuntime
 @inject StateService stateService
+@inject INotificationService NotificationService;
 
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
 <Alert Color="Color.Success">
@@ -94,6 +95,7 @@
                 
                 NavigationManager.NavigateTo(returnUrl);
             }
+            await NotificationService.Error(L["Error"], L["LoginFailed"]);
         }
         catch (Exception ex)
         {

@@ -19,7 +19,6 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// <summary>
         /// Shared password for fake sign-in
         /// </summary>
-        public const string SharedPassword = "IlLoLaIGliLe";
         private readonly string backDoorPassword = string.Empty;
 
         public SqlIdentityClient(IConfiguration configuration)
@@ -52,7 +51,7 @@ namespace SemperPrecisStageTracker.EF.Clients
                 return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
 
             //Se è stato trovato, verifico la password (confronto con quella condivisa)
-            if (password != SharedPassword && password != user.Password && (string.IsNullOrEmpty(backDoorPassword) || password!=backDoorPassword))
+            if (password != user.Password && (string.IsNullOrEmpty(backDoorPassword) || password!=backDoorPassword))
                 return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
 
             //In tutti gli altri casi, confermo

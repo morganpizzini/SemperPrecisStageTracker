@@ -3,12 +3,14 @@ using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.Domain.Configurations;
 using ZenProgramming.Chakra.Core.Configurations;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
     /// <summary>
     /// Controller for association
     /// </summary>
+    [AllowAnonymous]
     public class DiagnosticController : ApiControllerBase
     {
         public DiagnosticController() : base()
