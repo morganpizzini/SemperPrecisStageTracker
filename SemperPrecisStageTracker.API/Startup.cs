@@ -124,7 +124,7 @@ namespace SemperPrecisStageTracker.API
             app.UseRouting();
 
             //Abilito CORS
-            //Se siamo in modalit� "dev"
+            //Se siamo in modalità "dev"
             switch (ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName.ToLower())
             {
                 case "production":
