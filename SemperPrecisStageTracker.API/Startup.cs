@@ -112,9 +112,9 @@ namespace SemperPrecisStageTracker.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseDeveloperExceptionPage();
             if (!env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SemperPrecisStageTracker v1"));
             }
@@ -129,8 +129,7 @@ namespace SemperPrecisStageTracker.API
             {
                 case "production":
                     Tracer.Info($"[CORS] Working on {productionPolicy} CORS policy");
-                    app.UseCors(localPolicy);
-                    //app.UseCors(productionPolicy);
+                    app.UseCors(productionPolicy);
                     break;
                 case "development":
                     Tracer.Info($"[CORS] Working on {localPolicy} CORS policy");

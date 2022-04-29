@@ -57,26 +57,32 @@ namespace SemperPrecisStageTracker.API
         .ConfigureWebHostDefaults(webBuilder =>
         webBuilder.ConfigureAppConfiguration((hostContext, config) =>
         {
-            if (hostContext.HostingEnvironment.IsDevelopment())
+            var isDev = hostContext.HostingEnvironment.IsDevelopment();
+            if (isDev)
             {
                 config.AddUserSecrets<Program>();
             }
-                config.AddUserSecrets<Program>();
 
             var settings = config.Build();
 
-            var kvName = settings["azKVName"];
+            if (!isDev)
+            {
+                // use az key vault
+                var kvName = settings["azKVName"];
 
-            if (string.IsNullOrEmpty(kvName))
-                throw new NullReferenceException("Azure KeyVault name not provided");
+                if (string.IsNullOrEmpty(kvName))
+                    throw new NullReferenceException("Azure KeyVault name not provided");
 
-            var vaultName = $"https://{kvName}.vault.azure.net/";
+                var vaultName = $"https://{kvName}.vault.azure.net/";
 
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(
-                new KeyVaultClient.AuthenticationCallback(
-                    azureServiceTokenProvider.KeyVaultTokenCallback));
-            config.AddAzureKeyVault(vaultName, keyVaultClient, new DefaultKeyVaultSecretManager());
+                var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                var keyVaultClient = new KeyVaultClient(
+                    new KeyVaultClient.AuthenticationCallback(
+                        azureServiceTokenProvider.KeyVaultTokenCallback));
+                config.AddAzureKeyVault(vaultName, keyVaultClient, new DefaultKeyVaultSecretManager());
+            }
+
+            
         })
         .UseStartup<Startup>());
     }
