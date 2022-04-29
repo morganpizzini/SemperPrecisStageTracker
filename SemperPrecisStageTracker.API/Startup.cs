@@ -21,7 +21,7 @@ namespace SemperPrecisStageTracker.API
     {
         readonly string localPolicy = nameof(localPolicy);
         readonly string productionPolicy = nameof(productionPolicy);
-
+        public IConfiguration Configuration { get; }
         /// <summary>
         /// Application name
         /// </summary>
@@ -34,7 +34,7 @@ namespace SemperPrecisStageTracker.API
 
         public Startup(IConfiguration configuration)
         {
-            //Configuration = configuration;
+            Configuration = configuration;
             
             ServiceResolver.Register(configuration);
 
@@ -56,12 +56,14 @@ namespace SemperPrecisStageTracker.API
                     builder => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
-                options.AddPolicy(name: productionPolicy,
-                    builder => builder
-                        .WithOrigins("https://semperprecisStagetracker.azurewebsites.net")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials());
+                var blazorEndpoint = Configuration["blazorEndpoint"];
+                if (!string.IsNullOrEmpty(blazorEndpoint))
+                    options.AddPolicy(name: productionPolicy,
+                        builder => builder
+                            .WithOrigins(Configuration["blazorEndpoint"])
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());
             });
 
 
