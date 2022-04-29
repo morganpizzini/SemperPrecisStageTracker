@@ -110,13 +110,20 @@ namespace SemperPrecisStageTracker.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,IConfiguration configuration)
         {
-            app.UseDeveloperExceptionPage();
             if (!env.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SemperPrecisStageTracker v1"));
+            }
+            else
+            {
+                if (bool.Parse(configuration["enableDev"] ?? "false"))
+                {
+                    app.UseDeveloperExceptionPage();
+                }
             }
 
             app.UseHttpsRedirection();
