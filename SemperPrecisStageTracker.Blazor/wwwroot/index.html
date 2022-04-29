@@ -217,6 +217,7 @@
 
     <script>
         var cc = new CookieConsent({
+            container: document.body,
             type: 'info',
             position: 'bottom',
             palette: {
@@ -230,6 +231,7 @@
                 href: "/cookie-policy"
             }
         })
+        cc.on("initialized", (...args) => console.log(args))
     </script>
 </body>
 </html>
