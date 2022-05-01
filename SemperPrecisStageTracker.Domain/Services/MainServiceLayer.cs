@@ -163,7 +163,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (validations.Count > 0)
             {
                 t.Rollback();
+                return validations;
             }
+            t.Commit();
             return validations;
         }
         #endregion
