@@ -135,4 +135,7 @@
   <data name="NoData" xml:space="preserve">
     <value>Nessun elemento</value>
   </data>
+  <data name="Search" xml:space="preserve">
+    <value>Cerca</value>
+  </data>
 </root>

@@ -1,4 +1,5 @@
 ﻿@page "/app/shooters"
+@inject IJSRuntime JSRuntime
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Shooters> L
 @inject NavigationManager UriHelper
@@ -13,6 +14,10 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
+        <div class="form-group">
+            <input @ref="searchInput" class="form-control" @bind-value="SearchText"
+                   @bind-value:event="oninput" placeholder="@L["Search"]" />
+        </div>
         @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
         {
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
@@ -36,7 +41,7 @@
                 }
                 else
                 {
-                    @if (shooters.Count == 0)
+                    @if (FilteredList.Count == 0)
                     {
                         <TableRow>
                             <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
@@ -44,7 +49,7 @@
                     }
                     else
                     {
-                        <Virtualize Items="@shooters" Context="shooter">
+                        <Virtualize Items="@FilteredList" Context="shooter">
                             <TableRow>
                                 <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.CompleteName</NavLink></TableRowHeader>
                                 <TableRowCell>@shooter.Username</TableRowCell>
@@ -114,10 +119,32 @@
     </Authorized>
 </AuthorizeView>
 @code {
+    ElementReference searchInput;
+    public string SearchText = "";
+
+    IList<ShooterContract> FilteredList
+    {
+        get
+        {
+            var search = SearchText.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(s => s.ToLower().Trim()).ToArray();
+            return shooters.Where( tags =>
+                search.All(s => tags.Searchable.Any(t => t.Contains(s)))).ToList();
+        }
+    }
+
     IList<ShooterContract> shooters = new List<ShooterContract>();
 
     private Modal modalRefEntityToDelete;
     ShooterContract entityToDelete = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.DebounceEvent(searchInput, "input", TimeSpan.FromMilliseconds(500));
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

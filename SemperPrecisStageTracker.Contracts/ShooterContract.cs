@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SemperPrecisStageTracker.Contracts
 {
@@ -9,6 +10,10 @@ namespace SemperPrecisStageTracker.Contracts
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string CompleteName => $"{LastName} {FirstName}";
+        // List of "searchable" properties
+        public IEnumerable<string> Searchable =>
+            new []{FirstName.ToLower(), LastName.ToLower(), Username.ToLower()};
+        
         public DateTime BirthDate { get; set; }
         public string AuthData {get;set;}
         [IndexDbIndex]
