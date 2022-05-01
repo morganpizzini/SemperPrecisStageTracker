@@ -4,6 +4,8 @@ using SemperPrecisStageTracker.Domain.Configurations;
 using ZenProgramming.Chakra.Core.Configurations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using SemperPrecisStageTracker.Contracts.Requests;
+using Microsoft.Extensions.Configuration;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -13,10 +15,13 @@ namespace SemperPrecisStageTracker.API.Controllers
     [AllowAnonymous]
     public class DiagnosticController : ApiControllerBase
     {
-        public DiagnosticController() : base()
-        {
-            
+        private readonly string adminUser;
+
+        public DiagnosticController(IConfiguration configuration)
+        {   
+            adminUser= configuration["adminUsername"];
         }
+
         /// <summary>
         /// Fetch list of all associations
         /// </summary>
@@ -30,6 +35,23 @@ namespace SemperPrecisStageTracker.API.Controllers
                 EnvironmentName = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName,
                 Provider = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider
             });
+        }
+
+        /// <summary>
+        /// Init database
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpGet]
+        [Route("InitDatabase")]
+        [ProducesResponseType(typeof(object), 200)]
+        public async Task<IActionResult> InitDatabase()
+        {
+            var validations = await BasicLayer.InitDatabase(adminUser);
+            if (validations.Count > 0)
+            {
+                return BadRequest(validations);
+            }
+            return Ok(new OkResponse() {Status = true});
         }
     }
 }

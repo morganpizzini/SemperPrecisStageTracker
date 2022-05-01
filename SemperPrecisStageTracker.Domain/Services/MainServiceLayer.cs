@@ -62,6 +62,112 @@ namespace SemperPrecisStageTracker.Domain.Services
             authenticationService = new AuthenticationServiceLayer(dataSession);
         }
 
+        #region Init database
+
+        public async Task<IList<ValidationResult>> InitDatabase(string adminUser)
+        {
+             //Predisposizione al fallimento
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            using var t = DataSession.BeginTransaction();
+            
+            //looking for admin user
+            var user = _shooterRepository.GetSingle(x=>x.Username == adminUser);
+
+            if(user == null)
+            {
+                // create user
+                user = new Shooter
+                {
+                    Username = adminUser,
+                    FirstName = adminUser,
+                    LastName = adminUser,
+                    Password = adminUser,
+                    Email = $"{adminUser}@email.com",
+                };
+                validations = ValidateEntity(user,_shooterRepository);
+                if (validations.Count > 0)
+                {
+                    t.Rollback();
+                    return validations;
+                }
+                _shooterRepository.Save(user);
+            }
+            // check permissions
+            IList<AdministrationPermission> userPermissions = new List<AdministrationPermission>();
+            // manage associations
+            var hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageAssociations);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageAssociations.ToDescriptionString()
+                });
+            }
+            // manage places
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManagePlaces);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManagePlaces.ToDescriptionString()
+                });
+            }
+            // manage matches
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageMatches);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageMatches.ToDescriptionString()
+                });
+            }
+            // manage associations
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageAssociations);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageAssociations.ToDescriptionString()
+                });
+            }
+            // manage shooters
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageShooters);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageShooters.ToDescriptionString()
+                });
+            }
+            // manage teams
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageTeams);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageTeams.ToDescriptionString()
+                });
+            }
+
+            // manage stages
+            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id,AdministrationPermissions.ManageStages);
+            if (!hasPermissions)
+            {
+                userPermissions.Add(new AdministrationPermission{
+                    ShooterId = user.Id,
+                    Permission = AdministrationPermissions.ManageStages.ToDescriptionString()
+                });
+            }
+            validations = authenticationService.SaveUserPermissions(userPermissions);
+            if (validations.Count > 0)
+            {
+                t.Rollback();
+            }
+            return validations;
+        }
+        #endregion
+
         #region Contract
         /// <summary>
         /// Create provided match

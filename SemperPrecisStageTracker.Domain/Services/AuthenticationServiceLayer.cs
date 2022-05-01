@@ -236,6 +236,26 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="newEntityPermissions"></param>
         /// <returns></returns>
+        public IList<ValidationResult> SaveUserPermissions(IList<AdministrationPermission> newEntityPermissions)
+        {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            foreach (var newEntityPermission in newEntityPermissions)
+            {
+                validations = _administrationPermissionRepository.Validate(newEntityPermission);
+                if (validations.Count > 0)
+                    return validations;
+
+                _administrationPermissionRepository.Save(newEntityPermission);
+
+            }
+            return validations;
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newEntityPermissions"></param>
+        /// <returns></returns>
         public IList<ValidationResult> SaveUserPermissions(IList<EntityPermission> newEntityPermissions)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
@@ -353,7 +373,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return validations;
         }
-
+        public Task<bool> ValidateUserPermissions(string userId,AdministrationPermissions adminPermission)
+        {
+            return ValidateUserPermissions(userId, new List<AdministrationPermissions>{adminPermission });
+        }
         public Task<bool> ValidateUserPermissions(string userId,IList<AdministrationPermissions> adminPermission)
         {
             return ValidateUserPermissions(userId, string.Empty, adminPermission, new List<EntityPermissions>());

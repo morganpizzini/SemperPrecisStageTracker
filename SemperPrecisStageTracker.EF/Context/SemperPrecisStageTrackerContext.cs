@@ -95,7 +95,7 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
- modelBuilder.Entity<TeamHolder>()
+            modelBuilder.Entity<TeamHolder>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<TeamHolder>()
                         .Property(f => f.Id)
@@ -169,19 +169,6 @@ namespace SemperPrecisStageTracker.EF.Context
 
             modelBuilder.Entity<BasePermission>().Property(f => f.Id)
                 .ValueGeneratedOnAdd();
-
-            //modelBuilder.Entity<EntityPermission>()
-            //    .HasKey(f => f.Id);
-            //modelBuilder.Entity<EntityPermission>()
-            //    .Property(f => f.Id)
-            //    .ValueGeneratedOnAdd();
-
-            //modelBuilder.Entity<AdministrationPermission>()
-            //    .HasKey(f => f.Id);
-            //modelBuilder.Entity<AdministrationPermission>()
-            //    .Property(f => f.Id)
-            //    .ValueGeneratedOnAdd();
-
 
         }
 
