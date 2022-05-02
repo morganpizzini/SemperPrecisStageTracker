@@ -16,10 +16,12 @@ namespace SemperPrecisStageTracker.API.Controllers
     public class DiagnosticController : ApiControllerBase
     {
         private readonly string adminUser;
+        private readonly string[] cors;
 
         public DiagnosticController(IConfiguration configuration)
         {   
             adminUser= configuration["adminUsername"];
+            cors = configuration.GetSection("blazorEndpoints").Get<string[]>();
         }
 
         /// <summary>
@@ -33,7 +35,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             return Reply(new {
                 EnvironmentName = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName,
-                Provider = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider
+                Provider = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider,
+                Cors = cors
             });
         }
 

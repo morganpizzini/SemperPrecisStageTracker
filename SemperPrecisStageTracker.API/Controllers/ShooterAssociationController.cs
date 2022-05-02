@@ -36,7 +36,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Invocazione del service layer
             var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.Id);
-            var associationIds = shooterAssociations.Select(x => x.Id).ToList();
+            var associationIds = shooterAssociations.Select(x => x.AssociationId).ToList();
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Return contract

@@ -20,8 +20,7 @@ namespace SemperPrecisStageTracker.API
 {
     public class Startup
     {
-        readonly string localPolicy = nameof(localPolicy);
-        readonly string productionPolicy = nameof(productionPolicy);
+        readonly string corsPolicy = nameof(corsPolicy);
         /// <summary>
         /// Application name
         /// </summary>
@@ -50,26 +49,21 @@ namespace SemperPrecisStageTracker.API
             var configuration = ServiceResolver.Resolve<IConfiguration>();
             services.AddCors(options =>
             {
-                
-                Action<CorsPolicyBuilder> allowAllPolicy = (builder) => builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-
-                //unificare i cors policy
-                options.AddPolicy(name: localPolicy, allowAllPolicy);
-
                 var blazorEndpoints = configuration.GetSection("blazorEndpoints").Get<string[]>();
-                
-                if (blazorEndpoints.Length>0)
-                    options.AddPolicy(name: productionPolicy,
+                if (blazorEndpoints.Length > 0)
+                {
+                    options.AddPolicy(name: corsPolicy,
                         builder => builder
                             .WithOrigins(blazorEndpoints)
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials());
+                }
                 else
                 {
-                    options.AddPolicy(name: productionPolicy, allowAllPolicy);
+                    options.AddPolicy(name: corsPolicy, (builder) => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
                 }
             });
 
@@ -140,20 +134,8 @@ namespace SemperPrecisStageTracker.API
             app.UseRouting();
 
             //Abilito CORS
-            //Se siamo in modalità "dev"
-            switch (ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName.ToLower())
-            {
-                case "production":
-                    Tracer.Info($"[CORS] Working on {productionPolicy} CORS policy");
-                    app.UseCors(productionPolicy);
-                    break;
-                case "development":
-                    Tracer.Info($"[CORS] Working on {localPolicy} CORS policy");
-                    app.UseCors(localPolicy);
-                    break;
-                default:
-                    throw new Exception("CORS configuration NOT FOUND");
-            }
+            app.UseCors(corsPolicy);
+
             //Utilizzo l'autenticazione
             app.UseAuthentication();
 

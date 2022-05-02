@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -66,13 +67,40 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             );
 
         }
+
+        [TestMethod]
+        public async Task ShouldFetchShooterAssociationBeOkHavingProvidedData()
+        {
+            var existing = Scenario.ShooterAssociations.FirstOrDefault();
+            
+            if(existing == null){
+                Assert.Inconclusive("No shooter association exists");
+            }
+            
+            var count = Scenario.ShooterAssociations.Count(x=>x.ShooterId == existing.ShooterId);
+
+            var request = new ShooterRequest
+            {
+                ShooterId = existing.ShooterId
+            };
+
+            //Invoke del metodo
+            var response = await Controller.FetchShooterAssociation(request);
+
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<IList<ShooterAssociationContract>>(response);
+
+            Assert.AreEqual(count,parsed.Data.Count);
+            Assert.IsTrue(parsed.Data.All(x=>!string.IsNullOrEmpty(x.Association.Name)));
+
+        }
         [TestMethod]
         public async Task ShouldUpdateShooterAssociationBeOkHavingProvidedData()
         {
             var existing = Scenario.ShooterAssociations.FirstOrDefault();
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterAssociations.Count;
-
 
             //Composizione della request
             var request = new ShooterAssociationCreateRequest
