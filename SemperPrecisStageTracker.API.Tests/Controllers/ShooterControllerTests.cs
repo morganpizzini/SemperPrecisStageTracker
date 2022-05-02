@@ -402,7 +402,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task ShouldDeleteShooterBeBadNotFoundHavingProvidedWrongId()
+        public async Task ShouldDeleteShooterBeNotFoundHavingProvidedWrongId()
         {
 
             //Conteggio gli elementi prima della cancellazione

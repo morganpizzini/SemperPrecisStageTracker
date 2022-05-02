@@ -50,17 +50,20 @@ namespace SemperPrecisStageTracker.API
             var configuration = ServiceResolver.Resolve<IConfiguration>();
             services.AddCors(options =>
             {
+                
                 Action<CorsPolicyBuilder> allowAllPolicy = (builder) => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader();
 
+                //unificare i cors policy
                 options.AddPolicy(name: localPolicy, allowAllPolicy);
 
-                var blazorEndpoint = configuration["blazorEndpoint"];
-                if (!string.IsNullOrEmpty(blazorEndpoint))
+                var blazorEndpoints = configuration.GetSection("blazorEndpoints").Get<string[]>();
+                
+                if (blazorEndpoints.Length>0)
                     options.AddPolicy(name: productionPolicy,
                         builder => builder
-                            .WithOrigins(configuration["blazorEndpoint"])
+                            .WithOrigins(blazorEndpoints)
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials());
