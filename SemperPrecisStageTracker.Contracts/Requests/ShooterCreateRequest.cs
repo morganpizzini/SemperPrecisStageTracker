@@ -16,7 +16,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Email {get;set;}
         public string FirearmsLicence {get;set;}
-        public DateTime FirearmsLicenceExpireDate {get;set;}
+        public DateTime FirearmsLicenceExpireDate {get;set;} = DateTime.Now.AddYears(1);
 
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -49,10 +50,11 @@ namespace SemperPrecisStageTracker.API
             var configuration = ServiceResolver.Resolve<IConfiguration>();
             services.AddCors(options =>
             {
-                options.AddPolicy(name: localPolicy,
-                    builder => builder.AllowAnyOrigin()
+                Action<CorsPolicyBuilder> allowAllPolicy = (builder) => builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader());
+                        .AllowAnyHeader();
+
+                options.AddPolicy(name: localPolicy, allowAllPolicy);
 
                 var blazorEndpoint = configuration["blazorEndpoint"];
                 if (!string.IsNullOrEmpty(blazorEndpoint))
@@ -62,6 +64,10 @@ namespace SemperPrecisStageTracker.API
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials());
+                else
+                {
+                    options.AddPolicy(name: productionPolicy, allowAllPolicy);
+                }
             });
 
 

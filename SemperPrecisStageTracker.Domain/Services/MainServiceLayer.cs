@@ -1958,7 +1958,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // controllo esistenza shooter con stesso nome / PEC / SDI
             var existing = _shooterRepository.GetSingle(x => x.Id != entity.Id
-                                                              && x.FirearmsLicence == entity.FirearmsLicence);
+                                                              && x.Email == entity.Email
+                                                              && (!string.IsNullOrEmpty(x.FirearmsLicence) || x.FirearmsLicence == entity.FirearmsLicence));
 
             if (existing != null)
             {
