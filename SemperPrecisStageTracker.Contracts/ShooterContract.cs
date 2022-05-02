@@ -13,7 +13,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string CompleteName => $"{LastName} {FirstName}";
         // List of "searchable" properties
         public IEnumerable<string> Searchable =>
-            (new []{FirstName?.ToLower() ?? "", LastName?.ToLower() ?? "", Username?.ToLower() ?? ""}).Where(x => !string.IsNullOrEmpty(x)).ToArray();
+            (new []{FirstName?.ToLower() ?? "", LastName?.ToLower() ?? "", Username?.ToLower() ?? ""})
+            .Where(x => !string.IsNullOrEmpty(x)).ToArray();
         
         public DateTime BirthDate { get; set; }
         public string AuthData {get;set;}

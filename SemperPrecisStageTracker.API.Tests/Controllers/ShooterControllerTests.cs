@@ -46,7 +46,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 LastName = RandomizationUtils.GenerateRandomString(10),
                 FirstName= RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
-                Username = RandomizationUtils.GenerateRandomString(10)
+                Username = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicenceExpireDate = DateTime.Now
             };
 
             //Invoke del metodo
@@ -64,6 +66,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                            && parsed.Data.FirstName == request.FirstName
                             && parsed.Data.BirthDate == request.BirthDate
                             && parsed.Data.Username == request.Username
+                            && parsed.Data.FirearmsLicence == request.FirearmsLicence
+                            && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
                           );
         }
 

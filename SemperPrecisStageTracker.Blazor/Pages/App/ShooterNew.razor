@@ -75,6 +75,42 @@
                     </FieldBody>
                 </Field>
             </Validation>
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                            <Feedback>
+                                <ValidationError>@L["WrongEmail"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmLicence"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <TextEdit Placeholder="@L["FirearmLicence"]" Role="TextRole.Email" @bind-Text="@model.FirearmsLicence">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirearmLicence"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidateDate">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmLicence"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <DateEdit TValue="DateTime" @bind-Date="@model.FirearmsLicenceExpireDate">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirearmLicence"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
             <Field Horizontal="true" JustifyContent="JustifyContent.End">
                 <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
                     <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>

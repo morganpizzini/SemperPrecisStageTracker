@@ -15,5 +15,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Username {get;set;}
         [Required]
         public string Email {get;set;}
+        public string FirearmsLicence {get;set;}
+        public DateTime FirearmsLicenceExpireDate {get;set;}
+
     }
 }

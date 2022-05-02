@@ -71,7 +71,9 @@ namespace SemperPrecisStageTracker.API.Controllers
                 LastName = request.LastName,
                 BirthDate = request.BirthDate,
                 Email = request.Email,
-                Username = request.Username
+                Username = request.Username,
+                FirearmsLicence = request.FirearmsLicence,
+                FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate
             };
 
             //Invocazione del service layer
