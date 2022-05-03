@@ -56,11 +56,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
-            var groups = BasicLayer.FetchAllGroupsByMatchId(entity.Id);
+            var groups = BasicLayer.FetchAllGroupsWithShootersByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
+            
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity, association, place, groups, stages));
         }

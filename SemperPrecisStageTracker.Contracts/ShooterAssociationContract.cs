@@ -17,5 +17,6 @@ namespace SemperPrecisStageTracker.Contracts
         public string CardNumber { get; set; }
         public bool SafetyOfficier {get; set;}
         public DateTime RegistrationDate { get; set; }
+        public DateTime? ExpireDate { get; set; }
     }
 }

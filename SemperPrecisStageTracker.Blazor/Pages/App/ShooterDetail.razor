@@ -101,9 +101,9 @@
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    @if (shooterClassifications.Count > 0)
+                                    @if (activeShooterClassifications.Count > 0)
                                     {
-                                        <Virtualize Items="@shooterClassifications" Context="classification">
+                                        <Virtualize Items="@activeShooterClassifications" Context="classification">
                                             <TableRow>
                                                 <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
                                                 <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
@@ -112,6 +112,53 @@
                                                     @if (PageCondition)
                                                     {
                                                         <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                @L["NoAssociations"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+
+                        </CardBody>
+                    </Card>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["ExpiredAssociations"]</CardTitle>
+
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (expiredShooterClassifications.Count > 0)
+                                    {
+                                        <Virtualize Items="@expiredShooterClassifications" Context="classification">
+                                            <TableRow>
+                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
+                                                <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
+                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                <TableRowCell>@classification.ExpireDate.Value.ToString("d")</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (PageCondition)
+                                                    {
                                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
                                                     }
                                                 </TableRowCell>
@@ -146,6 +193,18 @@
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@associationToEdit">
                 <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CardNumber"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationToEdit.CardNumber">
+                                <Feedback>
+                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -165,14 +224,21 @@
                     </Field>
                 </Validation>
                 <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CardNumber"]</FieldLabel>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["division"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationToEdit.CardNumber">
+                            <Select TValue="string" @bind-SelectedValue="@associationToEdit.Division">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var division in divisions)
+                                    {
+                                        <SelectItem Value="@division">@division</SelectItem>
+                                    }
+                                </ChildContent>
                                 <Feedback>
-                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
+                                    <ValidationError>@L["Wrongdivision"]</ValidationError>
                                 </Feedback>
-                            </TextEdit>
+                            </Select>
                         </FieldBody>
                     </Field>
                 </Validation>
@@ -190,25 +256,6 @@
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["division"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@associationToEdit.Division">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var division in divisions)
-                                    {
-                                        <SelectItem Value="@division">@division</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["Wrongdivision"]</ValidationError>
                                 </Feedback>
                             </Select>
                         </FieldBody>
@@ -403,6 +450,8 @@
     private Modal modalRefAssociationToEdit;
     ShooterAssociationCreateRequest associationToEdit = new();
     IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
+    IList<ShooterAssociationContract> activeShooterClassifications => shooterClassifications.Where(x => x.ExpireDate == null).ToList();
+    IList<ShooterAssociationContract> expiredShooterClassifications => shooterClassifications.Where(x => x.ExpireDate != null).ToList();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
 
@@ -480,7 +529,8 @@
     {
         associationToEdit.AssociationId = value;
         associationToEdit.Classification = string.Empty;
-        associationToEdit.CardNumber = string.Empty;
+        associationToEdit.Division = string.Empty;
+        associationToEdit.SafetyOfficier = false;
         SelectClassificationBasedOnAssociationId(value);
     }
     void SelectClassificationBasedOnAssociationId(string value)

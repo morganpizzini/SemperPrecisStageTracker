@@ -12,19 +12,22 @@
     @matches.Count
 
     <ul>
-        /app/associations/new
-        spazio tra i titoli e il bottone
-        spazio tra ogni elemento aggiunto nella lista
-
-        /app/associations/:id
-        le divisioni non appaiono
-
         /app/shooters/new
         gli errori 500 bloccano l'interfaccia
         aggiungere visita medica, non obbligatoria
 
-        /app/shooters/:id
-        aggiunta di una classificazione: controllare che il numero di tessera sia diverso da uno già esistente assegnato ad un altro tiratore
+        creare interfaccia per creare più di un gruppo alla volta
+
+        /app/matches/:id/groups/:id
+        alla selezione del tiratore autocompilare le select team e classificazione
+        aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore
+        nella lista degli shooter mostrare classificazione e divisione e il pagamento, aggiungere bottone per aggiornare stato pagamento e possibilità di cambiare la categoria senza dover eliminare il tiratore
+        tra gli shooter estrapolare solo quelli con classificazione attiva nell'associazione del match
+        
+        app/matches/:id/stages/:id/group/:id
+        mostrare classificazione e divisione, probabilmente con un toggle che abilita/disabilita
+
+        bottone che in homepage mi porti ad /app
 
         @*rimuovere i Validator="@ValidationRule.IsNotEmpty"*@
 

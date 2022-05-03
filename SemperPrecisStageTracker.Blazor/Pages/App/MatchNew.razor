@@ -82,7 +82,9 @@
                 <Field Horizontal="true">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <Check TValue="bool" @bind-Checked="@model.UnifyClassifications">@L["UnifyClassifications"]</Check>
+                        <Tooltip Text="@L["UnifyClassificationDescription"]">
+                            <Check TValue="bool" @bind-Checked="@model.UnifyClassifications">@L["UnifyClassifications"]</Check>
+                        </Tooltip>
                     </FieldBody>
                 </Field>
             </Validation>
@@ -90,7 +92,9 @@
                 <Field Horizontal="true">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
+                        <Tooltip Text="@L["OpenMatchDescription"]">
+                            <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
+                        </Tooltip>
                     </FieldBody>
                 </Field>
             </Validation>

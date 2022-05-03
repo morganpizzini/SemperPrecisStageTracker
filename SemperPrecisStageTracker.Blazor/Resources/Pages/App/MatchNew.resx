@@ -159,4 +159,10 @@
   <data name="WrongPlace" xml:space="preserve">
     <value>Wrong place!</value>
   </data>
+  <data name="OpenMatchDescription" xml:space="preserve">
+    <value>Even not associated shooter can partecipate</value>
+  </data>
+  <data name="UnifyClassificationDescription" xml:space="preserve">
+    <value>Classification will be done without shooter ranking</value>
+  </data>
 </root>

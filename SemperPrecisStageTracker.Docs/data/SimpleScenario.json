@@ -340,7 +340,7 @@
       "cardNumber": "123",
       "safetyOfficier": true,
       "classification": "Novice",
-      "division": "Stock Service Pistol (SSP)",
+      "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -360,7 +360,7 @@
       "cardNumber": "789",
       "safetyOfficier": true,
       "classification": "Expert",
-      "division": "Custom Defensive Pistol (CDP)",
+      "division": "Custom Defensive Pistol idpa (CDP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -370,7 +370,7 @@
       "cardNumber": "111",
       "safetyOfficier": true,
       "classification": "Expert",
-      "division": "Enhanced Service Pistol (ESP)",
+      "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -390,7 +390,7 @@
       "cardNumber": "111422",
       "safetyOfficier": true,
       "classification": "Expert",
-      "division": "Stock Service Pistol (SSP)",
+      "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -400,7 +400,7 @@
       "cardNumber": "1114227",
       "safetyOfficier": false,
       "classification": "SharpShooter",
-      "division": "Enhanced Service Pistol (ESP)",
+      "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -410,7 +410,7 @@
       "cardNumber": "111428",
       "safetyOfficier": true,
       "classification": "Marksman",
-      "division": "Enhanced Service Pistol (ESP)",
+      "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
@@ -505,12 +505,12 @@
       "id": "1",
       "name": "idpa",
       "divisions": [
-        "Stock Service Pistol (SSP)",
-        "Enhanced Service Pistol (ESP)",
-        "Custom Defensive Pistol (CDP)",
-        "Compact Carry Pistol (CCP)",
-        "Revolver (REV)",
-        "Back Up Gun (BUG)"
+        "Stock Service Pistol idpa (SSP)",
+        "Enhanced Service Pistol idpa (ESP)",
+        "Custom Defensive Pistol idpa (CDP)",
+        "Compact Carry Pistol idpa (CCP)",
+        "Revolver idpa (REV)",
+        "Back Up Gun idpa (BUG)"
       ],
       "classifications": [
         "Novice",

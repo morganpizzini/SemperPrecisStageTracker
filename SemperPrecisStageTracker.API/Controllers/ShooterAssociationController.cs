@@ -56,7 +56,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
-            var entity = this.BasicLayer.GetShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
+            var entity = this.BasicLayer.GetActiveShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
 
             IList<ValidationResult> validations;
 

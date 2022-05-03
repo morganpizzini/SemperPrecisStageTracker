@@ -34,6 +34,38 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
+        public async Task ShouldGetAMatchesBeOkHavingElements()
+        {
+            var existing = Scenario.Matches.FirstOrDefault();
+            if(existing == null)
+            {
+                Assert.Inconclusive("No match found");
+                return;
+            }
+            var groups = Scenario.Groups.Where(x=>x.MatchId== existing.Id).Select(x=>x.Id).ToList();
+            
+            var shooterGroups = Scenario.GroupShooters.Where(x=>groups.Contains(x.GroupId)).ToList();
+
+            if(shooterGroups.Count == 0){
+                Assert.Inconclusive("No shooter in group");
+                return;
+            }
+
+            //conteggio esistenti generici o inseriti dall'utente
+            var request = new MatchRequest
+            {
+                MatchId = existing.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.GetMatch(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            Assert.IsTrue(parsed.Data.Groups.SelectMany(x=>x.Shooters).Any());
+        }
+
+        [TestMethod]
         public async Task ShouldCreateMatchBeOkHavingProvidedData()
         {
             //Conteggio gli elementi prima della creazione

@@ -143,6 +143,48 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         }
 
         [TestMethod]
+        public async Task ShouldUpdateShooterAssociationBeBadRequestHavingProvidedSameCardId()
+        {
+            var existing = Scenario.ShooterAssociations.FirstOrDefault();
+            var another = Scenario.ShooterAssociations.FirstOrDefault(x=>x.ShooterId!= existing.ShooterId && x.AssociationId == existing.AssociationId);
+            if (another == null)
+            {
+                Assert.Inconclusive("Another shooter association not found");
+            }
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterAssociations.Count;
+
+            //Composizione della request
+            var request = new ShooterAssociationCreateRequest
+            {
+                AssociationId = existing.AssociationId,
+                ShooterId = existing.ShooterId,
+                SafetyOfficier = !existing.SafetyOfficier,
+                CardNumber= another.CardNumber,
+                RegistrationDate= DateTime.Now,
+                Classification = existing.Classification,
+                Division = existing.Division
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpsertShooterAssociation(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterAssociations.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+
+            Assert.AreEqual(countBefore,countAfter);
+            Assert.IsTrue(parsed != null &&
+                            // the old one should be closed with end date
+                          parsed.Data.Any()
+            );
+
+        }
+
+        [TestMethod]
         public async Task ShouldDeleteShooterAssociationBeOkHavingProvidedData()
         {
             var existing = Scenario.ShooterAssociations.FirstOrDefault();

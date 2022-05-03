@@ -28,10 +28,11 @@
                 </Field>
             </Validation>
             <Field>
-                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Divisions"]&nbsp;<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
                 @for (int i = 0; i < model.Divisions.Count; i++)
                 {
                     var tmp = i;
+                    <div class="mb-2">
                     <FieldBody ColumnSize="ColumnSize.Is8">
                         <Addons>
                             <Addon AddonType="AddonType.Body">
@@ -43,13 +44,16 @@
                             </Addon>
                         </Addons>
                     </FieldBody>
+                    </div>
                 }
             </Field>
             <Field>
-                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Classifications"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Classifications"]&nbsp;<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
                 @for (int i = 0; i < model.Classifications.Count; i++)
                 {
                     var tmp = i;
+                    <div class="mb-2">
+
                     <FieldBody ColumnSize="ColumnSize.Is8">
                         <Addons>
                             <Addon AddonType="AddonType.Body">
@@ -61,6 +65,7 @@
                             </Addon>
                         </Addons>
                     </FieldBody>
+                    </div>
                 }
             </Field>
             <Field Horizontal="true" JustifyContent="JustifyContent.End">

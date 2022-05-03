@@ -2064,6 +2064,32 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
+        /// Fetch list of all groups
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of groups</returns>
+        public IList<(Group,List<Shooter>)> FetchAllGroupsWithShootersByMatchId(string matchId)
+        {
+            // recupero i gruppi associati al match
+            var groups = FetchEntities(e => e.MatchId == matchId, null, null, x => x.Name, false, _groupRepository);
+
+            var groupsIds = groups.Select(group => group.Id).ToList();
+
+            var shooterGroup = this._groupShooterRepository.Fetch(x => groupsIds.Contains(x.GroupId));
+
+            var shooterIds = shooterGroup.Select(group => group.Id).ToList();
+
+            // recupero gli shooter
+            var shooters = FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _shooterRepository);
+
+            return groups.Select(g =>
+            {
+                var currentShooterInGroup = shooterGroup.Where(x=>x.GroupId == g.Id).Select(x=>x.ShooterId);
+                return (g,shooters.Where(s=>currentShooterInGroup.Contains(s.Id)).ToList());
+            }).ToList();
+        }
+
+        /// <summary>
         /// Fetch list of groups by provided ids
         /// </summary>
         /// <param name="ids"> groups identifier </param>
@@ -3167,13 +3193,13 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns stage or null</returns>
-        public ShooterAssociation GetShooterAssociationByShooterAndAssociationAndDivision(string shooterId, string associationId,string division)
+        public ShooterAssociation GetActiveShooterAssociationByShooterAndAssociationAndDivision(string shooterId, string associationId,string division)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
             if (string.IsNullOrEmpty(associationId)) throw new ArgumentNullException(nameof(associationId));
 
-            return _shooterAssociationRepository.GetSingle(c => c.ShooterId == shooterId && c.AssociationId == associationId && c.Division == division);
+            return _shooterAssociationRepository.GetSingle(c => c.ShooterId == shooterId && c.AssociationId == associationId && c.Division == division  && c.ExpireDate== null);
         }
 
         /// <summary>
@@ -3194,8 +3220,27 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
+            // validation
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            // check unique association number
+            var duplicate = _shooterAssociationRepository.GetSingle(x=>x.ShooterId != entity.ShooterId && x.AssociationId == entity.AssociationId && x.CardNumber == entity.CardNumber);
+            if(duplicate!= null)
+            {
+                var shooter = _shooterRepository.GetSingle(x=>x.Id == duplicate.ShooterId);
+                if(shooter!= null)
+                {
+                    validations.Add(new ValidationResult($"{entity.CardNumber} already assigned to {shooter.FirstName} {shooter.LastName}"));
+                }
+                else
+                {
+                    validations.Add(new ValidationResult($"{entity.CardNumber} already assigned to another unknown shooter"));
+                }
+                return validations;
+            }
+
             //Validazione argomenti
-            var validations = _shooterAssociationRepository.Validate(entity);
+            validations = _shooterAssociationRepository.Validate(entity);
 
             // check association classification and division
             var currentAssociation = _associationRepository.GetSingle(x => x.Id == entity.AssociationId);

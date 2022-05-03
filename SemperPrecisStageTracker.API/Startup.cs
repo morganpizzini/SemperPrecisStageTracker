@@ -50,7 +50,7 @@ namespace SemperPrecisStageTracker.API
             services.AddCors(options =>
             {
                 var blazorEndpoints = configuration.GetSection("blazorEndpoints").Get<string[]>();
-                if (blazorEndpoints.Length > 0)
+                if (blazorEndpoints != null && blazorEndpoints.Length > 0)
                 {
                     options.AddPolicy(name: corsPolicy,
                         builder => builder

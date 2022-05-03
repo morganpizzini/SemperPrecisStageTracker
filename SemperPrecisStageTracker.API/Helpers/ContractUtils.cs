@@ -18,7 +18,15 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchContract GenerateContract(Match entity,Association association = null, Place place= null, IList<Group> groups = null, IList<Stage> stages = null)
+        public static MatchContract GenerateContractCasting(Match entity,Association association = null, Place place= null, IList<Group> groups = null, IList<Stage> stages = null)
+            => GenerateContract(entity,association,place,groups.Select(g=>(g,new List<Shooter>())).ToList(),stages);
+        
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static MatchContract GenerateContract(Match entity,Association association = null, Place place= null, IList<(Group,List<Shooter>)> groups = null, IList<Stage> stages = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -35,10 +43,12 @@ namespace SemperPrecisStageTracker.API.Helpers
                 UnifyClassifications = entity.UnifyClassifications,
                 OpenMatch = entity.OpenMatch,
                 Association = association != null ? GenerateContract(association) : new AssociationContract(),
-                Groups = groups != null ? groups.Select(x=>GenerateContract(x)).ToList() : new List<GroupContract>(),
+                Groups = groups != null ? groups.Select(x=>GenerateContract(x.Item1,null,null,null,x.Item2)).ToList() : new List<GroupContract>(),
                 Stages = groups != null ? stages.Select(x=>GenerateContract(x)).ToList() : new List<StageContract>()
             };
         }
+
+
 
         /// <summary>
         /// Generate contract using entity
@@ -73,8 +83,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 AssociationId = entity.Id,
                 Name = entity.Name,
-                Divisions = entity.Divisions,
-                Classifications = entity.Classifications,
+                Divisions = entity.Divisions.OrderBy(x=>x).ToList(),
+                Classifications = entity.Classifications
             };
         }
 
@@ -140,7 +150,8 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Classification = entity.Classification,
                 Division = entity.Division,
                 SafetyOfficier = entity.SafetyOfficier,
-                RegistrationDate = entity.RegistrationDate
+                RegistrationDate = entity.RegistrationDate,
+                ExpireDate = entity.ExpireDate
             };
         }
 
