@@ -44,10 +44,16 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 await Task.Delay(200);
         }
 
-        public async Task<bool> CheckUnsavedModels() =>
-            (await _matchServiceIndexDb.GetAll<EditedEntity>()).Count > 0;
+        public async Task<int> CountUnsavedModels() =>
+            (await _matchServiceIndexDb.GetAll<EditedEntity>()).Count;
 
-        
+        public async Task<bool> CheckUnsavedModels() =>
+            (await CountUnsavedModels()) > 0;
+
+        public async Task ClearUnsavedModels()
+        {
+            await _matchServiceIndexDb.DeleteAll<EditedEntity>();
+        }
 
         public async Task UpdateModel(ClientSetting model)
         {
@@ -61,7 +67,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await _matchServiceIndexDb.DeleteAll<ShooterStageAggregationResult>();
             await _matchServiceIndexDb.DeleteAll<ShooterMatchContract>();
             await _matchServiceIndexDb.DeleteAll<ShooterSOStageContract>();
-            await _matchServiceIndexDb.DeleteAll<EditedEntity>();
 
             // download everything about model.MatchId
             var response = await _httpService.Post<MatchDataAssociationContract>("api/Aggregation/FetchDataForMatch", new MatchRequest { MatchId = model.MatchId });
@@ -73,7 +78,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await _matchServiceIndexDb.AddItems(response.ShooterSoStages.ToList());
         }
 
-        public async Task UploadData()
+        public async Task<(IList<ShooterStageContract>,IList<EditedEntityRequest>)> GetChanges()
         {
             // get changes on shooterStage
             var changes = (await _matchServiceIndexDb.GetAll<EditedEntity>())
@@ -91,17 +96,32 @@ namespace SemperPrecisStageTracker.Blazor.Services
             var entities = (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
                 .Where(x => changes.Any(y => y.EntityId == x.EditedEntityId))
                 .Select(x => x.ShooterStage).ToList();
+            return (entities,changes);
+        }
+
+        public async Task<IList<ShooterContract>> GetShooters()
+        {
+            return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
+                .Select(x=>x.GroupShooter.Shooter)
+                .DistinctBy(x=>x.ShooterId)
+                .ToList();
+        }
+
+        public async Task UploadData()
+        {
+            var changes = await GetChanges();
 
             var response = await _httpService.Post<OkResponse>("api/Aggregation/UpdateDataForMatch", new UpdateDataRequest
             {
-                ShooterStages = entities,
-                EditedEntities = changes
+                ShooterStages = changes.Item1,
+                EditedEntities = changes.Item2
             });
 
             // cleanup changes
             if (response.Status)
                 await _matchServiceIndexDb.DeleteAll<EditedEntity>();
         }
+
 
         public async Task<IList<MatchContract>> GetMatches()
         {
@@ -143,7 +163,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
                 var group = match.Groups.FirstOrDefault(x => x.GroupId == groupId);
                 group.Match = match;
-                group.Shooters = shooters.Where(x => x.GroupId == groupId).Select(x => x.Shooter).ToList();
+                group.Shooters = shooters.Where(x => x.GroupId == groupId).Select(x => x.GroupShooter)
+                    .DistinctBy(x=>x.Shooter.ShooterId)
+                    .ToList();
                 return group;
             }
             return await _httpService.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = groupId });
@@ -180,7 +202,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await CheckInitStatus();
             if (Offline)
             {
-                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageId == stageId).OrderBy(x => x.Shooter.CompleteName).ToList();
+                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
             }
             return await _httpService.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
         }
@@ -191,7 +213,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (Offline)
             {
                 var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
-                var singleEntity = entities.FirstOrDefault(x => x.ShooterStage.StageId == model.StageId && x.Shooter.ShooterId == model.ShooterId);
+                var singleEntity = entities.FirstOrDefault(x => x.ShooterStage.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
                 if (singleEntity == null)
                     return new OkResponse() { Status = false };
 

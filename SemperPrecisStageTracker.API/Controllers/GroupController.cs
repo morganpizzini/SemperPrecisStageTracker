@@ -48,12 +48,16 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());;
 
-            var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
+            //var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
+            var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(entity.Id);
+
+            var shooterIds = shooterGroup.Select(x=>x.ShooterId).ToList();
+            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,match,association,null,shooters));
+            return Reply(ContractUtils.GenerateContract(entity,match,association,null,shooterGroup,shooters));
         }
 
         /// <summary>

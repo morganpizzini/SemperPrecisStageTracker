@@ -9,6 +9,6 @@ namespace SemperPrecisStageTracker.Contracts
         [IndexDbIndex]
         public string Name { get; set; }
         public MatchContract Match { get; set; }
-        public IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
+        public IList<GroupShooterContract> Shooters { get; set; } = new List<GroupShooterContract>();
     }
 }

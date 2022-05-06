@@ -50,6 +50,7 @@ else
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Division"]</TableHeaderCell>
                                     <TableHeaderCell>@L["Total"]</TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
@@ -65,23 +66,24 @@ else
                                                         if (shooter.ShooterStage.Total < 0)
                                                         {
                                                             <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                                @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                                @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
                                                             </Button>
                                                         }
                                                         else
                                                         {
-                                                            @shooter.Shooter.LastName
-                                                            @shooter.Shooter.FirstName
+                                                            @shooter.GroupShooter.Shooter.LastName
+                                                            @shooter.GroupShooter.Shooter.FirstName
                                                         }
                                                     }
                                                     else
                                                     {
                                                         <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                            @shooter.Shooter.LastName @shooter.Shooter.FirstName
+                                                            @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
                                                         </Button>
                                                     }
                                                 }
                                             </TableRowHeader>
+                                            <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
                                             <TableRowCell>@(shooter.ShooterStage.Total > 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total < 0 ? @L["Disqualified"] : "")</TableRowCell>
                                         </TableRow>
                                         @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
@@ -91,6 +93,7 @@ else
                                                 <TableRowCell>
                                                     @shooter.ShooterStage.Notes
                                                 </TableRowCell>
+                                                <TableRowCell></TableRowCell>
                                             </TableRow>
                                         }
                                     </Virtualize>
@@ -457,8 +460,7 @@ else
         if (shooter == null)
             return;
 
-        shooterToFill = shooter.Shooter;
-        model.ShooterId = shooterToFill.ShooterId;
+        model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
         model.Disqualified = shooter.ShooterStage.Disqualified;
         model.DownPoints = shooter.ShooterStage.DownPoints;
         model.FlagrantPenalties = shooter.ShooterStage.FlagrantPenalties;

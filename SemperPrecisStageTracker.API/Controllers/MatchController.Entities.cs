@@ -50,7 +50,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAvailableMatchDirectorByMatchId(request.MatchId);
             
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x =>ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAvailableMatchDirectorByAssociaitonId(request.AssociationId);
             
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x =>ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAvailabelShooterSOByStageId(request.StageId);
             
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>

@@ -66,13 +66,20 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groupIds = groups.Select(x => x.Id).ToList();
 
-            IList<(string groupId, IList<Shooter> shooters)> groupAggregate = new List<(string groupId, IList<Shooter>)>();
+            IList<(string groupId, IList<GroupShooter> groupShooter, IList<Shooter> shooters)> groupAggregate = new List<(string groupId, IList<GroupShooter>, IList<Shooter>)>();
 
             foreach (var groupId in groupIds)
             {
-                groupAggregate.Add((groupId, BasicLayer.FetchShootersByGroupId(groupId)));
+                var groupShooter = BasicLayer.FetchGroupShootersByGroupId(groupId);
+                var shootersIds = groupShooter.Select(x => x.ShooterId).ToList();
+
+                groupAggregate.Add((groupId,
+                    groupShooter,
+                    BasicLayer.FetchShootersByIds(shootersIds)
+                    ));
             }
 
+            var groupAggregateGroupShooters = groupAggregate.SelectMany(x => x.groupShooter).ToList();
             var groupAggregateShooters = groupAggregate.SelectMany(x => x.shooters).ToList();
 
             var groupShootersIds = groupAggregateShooters.Select(x => x.Id).ToList();
@@ -106,7 +113,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Ritorno i contratti
             return Reply(new MatchDataAssociationContract
             {
-                Match = ContractUtils.GenerateContractCasting(match, association, place, groups, stages),
+                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x=>(x,groupAggregateGroupShooters.Where(g=>g.GroupId ==x.Id).ToList())).ToList(), stages),
 
                 ShooterMatches = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
 
@@ -114,10 +121,13 @@ namespace SemperPrecisStageTracker.API.Controllers
                     ContractUtils.GenerateContract(x, stageSoShooters.FirstOrDefault(s => s.Id == x.ShooterId))),
 
                 ShooterStages = finalStageResults.As(x =>
-                      ContractUtils.GenerateContract(groupAggregateShooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                      ContractUtils.GenerateContract(
+                        groupAggregateGroupShooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                        groupAggregateShooters.FirstOrDefault(y => y.Id == x.ShooterId),
                         x,
                         shooterWarnings.FirstOrDefault(y => y.ShooterId == x.ShooterId),
                         groupAggregate.FirstOrDefault(g => g.shooters.Any(c => c.Id == x.ShooterId)).groupId ?? string.Empty))
+
             });
         }
 

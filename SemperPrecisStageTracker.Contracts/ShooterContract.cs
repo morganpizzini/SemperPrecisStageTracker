@@ -24,5 +24,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string FirearmsLicence {get;set;}
         public DateTime FirearmsLicenceExpireDate {get;set;}
         public DateTime MedicalExaminationExpireDate {get;set;}
+        public IList<ShooterAssociationContract> Classifications {get;set;} = new List<ShooterAssociationContract>();
+        public IList<TeamContract> Teams {get;set;} = new List<TeamContract>();
     }
 }

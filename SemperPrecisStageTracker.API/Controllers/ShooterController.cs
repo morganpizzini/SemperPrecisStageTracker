@@ -30,7 +30,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAllShooters();
 
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x =>ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>

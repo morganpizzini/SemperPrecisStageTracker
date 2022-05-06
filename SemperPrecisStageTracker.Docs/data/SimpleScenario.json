@@ -16,7 +16,7 @@
       "matchId": "1",
       "name": "Stage 01",
       "targets": 10,
-      "index": 1,
+      "index": 0,
       "sO": "SO",
       "scenario": "scenario",
       "gunReadyCondition": "gunReadyCondition",
@@ -36,7 +36,7 @@
       "matchId": "1",
       "name": "Stage 02",
       "targets": 8,
-      "index": 2,
+      "index": 1,
       "sO": "SO",
       "scenario": "scenario",
       "gunReadyCondition": "gunReadyCondition",
@@ -56,7 +56,7 @@
       "matchId": "1",
       "name": "Stage 03",
       "targets": 11,
-      "index": 3,
+      "index": 2,
       "sO": "SO",
       "scenario": "scenario",
       "gunReadyCondition": "gunReadyCondition",
@@ -76,7 +76,7 @@
       "matchId": "1",
       "name": "Stage 04",
       "targets": 12,
-      "index": 4,
+      "index": 3,
       "sO": "SO",
       "scenario": "scenario",
       "gunReadyCondition": "gunReadyCondition",
@@ -120,28 +120,28 @@
       "groupId": "1",
       "shooterId": "1",
       "teamId": "1",
-      "divisionId": "Stock Service Pistol (SSP)"
+      "divisionId": "Stock Service Pistol idpa (SSP)"
     },
     {
       "id": "2",
       "groupId": "1",
       "shooterId": "2",
       "teamId": "2",
-      "divisionId": "Stock Service Pistol (SSP)"
+      "divisionId": "Stock Service Pistol idpa (SSP)"
     },
     {
       "id": "3",
       "groupId": "1",
       "shooterId": "3",
       "teamId": "2",
-      "divisionId": "Enhanced Service Pistol (ESP)"
+      "divisionId": "Enhanced Service Pistol idpa (ESP)"
     },
     {
       "id": "4",
       "groupId": "1",
       "shooterId": "4",
       "teamId": "2",
-      "divisionId": "Enhanced Service Pistol (ESP)"
+      "divisionId": "Enhanced Service Pistol idpa (ESP)"
     }
   ],
   "places": [
@@ -361,6 +361,16 @@
       "safetyOfficier": true,
       "classification": "Expert",
       "division": "Custom Defensive Pistol idpa (CDP)",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "31",
+      "shooterId": "2",
+      "associationId": "1",
+      "cardNumber": "789",
+      "safetyOfficier": false,
+      "classification": "Marksman",
+      "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {

@@ -18,15 +18,15 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchContract GenerateContractCasting(Match entity,Association association = null, Place place= null, IList<Group> groups = null, IList<Stage> stages = null)
-            => GenerateContract(entity,association,place,groups.Select(g=>(g,new List<Shooter>())).ToList(),stages);
+        public static MatchContract GenerateContractCasting(Match entity,Association association = null, Place place= null, IList<(Group,List<GroupShooter>)> groups = null, IList<Stage> stages = null)
+            => GenerateContract(entity,association,place,groups.Select(g=>(g.Item1,g.Item2,new List<Shooter>())).ToList(),stages);
         
         /// <summary>
         /// Generate contract using entity
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchContract GenerateContract(Match entity,Association association = null, Place place= null, IList<(Group,List<Shooter>)> groups = null, IList<Stage> stages = null)
+        public static MatchContract GenerateContract(Match entity,Association association = null, Place place= null, IList<(Group,List<GroupShooter>,List<Shooter>)> groups = null, IList<Stage> stages = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 UnifyClassifications = entity.UnifyClassifications,
                 OpenMatch = entity.OpenMatch,
                 Association = association != null ? GenerateContract(association) : new AssociationContract(),
-                Groups = groups != null ? groups.Select(x=>GenerateContract(x.Item1,null,null,null,x.Item2)).ToList() : new List<GroupContract>(),
+                Groups = groups != null ? groups.Select(x=>GenerateContract(x.Item1,null,null,null,x.Item2,x.Item3)).ToList() : new List<GroupContract>(),
                 Stages = groups != null ? stages.Select(x=>GenerateContract(x)).ToList() : new List<StageContract>()
             };
         }
@@ -219,7 +219,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterContract GenerateContract(Shooter entity)
+        public static ShooterContract GenerateContract(Shooter entity,IList<ShooterAssociation> shooterClassifications = null,IList<Team> shooterTeams = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -235,7 +235,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Username = entity.Username,
                 FirearmsLicence = entity.FirearmsLicence,
                 FirearmsLicenceExpireDate = entity.FirearmsLicenceExpireDate,
-                MedicalExaminationExpireDate = entity.MedicalExaminationExpireDate
+                MedicalExaminationExpireDate = entity.MedicalExaminationExpireDate,
+                Classifications = shooterClassifications != null ? shooterClassifications.As(s => GenerateContract(s)) : new List<ShooterAssociationContract>(),
+                Teams = shooterTeams != null ? shooterTeams.As(s => GenerateContract(s)) : new List<TeamContract>()
             };
         }
 
@@ -272,26 +274,49 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterStageAggregationResult GenerateContract(Shooter entity, ShooterStage shooterStage,ShooterStage shooterStageWarning = null,string groupId = "")
+        public static ShooterStageAggregationResult GenerateContract(GroupShooter entity, Shooter shooter, ShooterStage shooterStage,ShooterStage shooterStageWarning = null,string groupId = "")
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (shooter == null) throw new ArgumentNullException(nameof(shooter));
 
             //Ritorno il contratto
             return new ShooterStageAggregationResult()
             {
-                Shooter = GenerateContract(entity),
+                GroupShooter = GenerateContract(entity,shooter),
                 GroupId = groupId,
                 ShooterStage = shooterStage != null ? GenerateContract(shooterStage): new ShooterStageContract(),
                 ShooterStatus = shooterStageWarning == null ? ShooterStatusEnum.Nothing : shooterStageWarning.Disqualified ? ShooterStatusEnum.IsDisqualified : ShooterStatusEnum.HasWarning
             };
         }
+
         /// <summary>
         /// Generate contract using entity
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static GroupContract GenerateContract(Group entity, Match match = null,Association association = null,Place place = null,IList<Shooter> shooters = null)
+        public static GroupShooterContract GenerateContract(GroupShooter entity, Shooter shooter = null, Group group = null, Team team = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new GroupShooterContract()
+            {
+                GroupShooterId = entity.Id,
+                Shooter = shooter!= null ? GenerateContract(shooter) : new ShooterContract(),
+                Group = group!= null ? GenerateContract(group) : new GroupContract(),
+                Team = team!= null ? GenerateContract(team) : new TeamContract(),
+                Division = entity.DivisionId
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static GroupContract GenerateContract(Group entity, Match match = null,Association association = null,Place place = null,IList<GroupShooter> groupShooter= null,IList<Shooter> shooters = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -302,7 +327,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 GroupId = entity.Id,
                 Name = entity.Name,
                 Match = match != null ? GenerateContract(match,association,place) : null,
-                Shooters = shooters != null ? shooters.Select(GenerateContract).ToList() : new List<ShooterContract>(),
+                Shooters = groupShooter != null ? groupShooter.Select(x=>GenerateContract(x,shooters.FirstOrDefault(s=>s.Id == x.ShooterId))).ToList() : new List<GroupShooterContract>(),
             };
         }
 

@@ -316,7 +316,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingShooters = this.FetchShootersByIds(shooterIds);
 
-            var shooterAssociation = _shooterAssociationRepository.Fetch(x => shooterIds.Contains(x.ShooterId) && x.AssociationId == id);
+            var shooterAssociation = _shooterAssociationRepository.Fetch(x => shooterIds.Contains(x.ShooterId) && x.AssociationId == id && x.ExpireDate==null);
+
 
             var existingTeams = _teamRepository.Fetch();
 
@@ -328,7 +329,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 {
                     Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
                     TeamName = existingTeams.FirstOrDefault(e => e.Id == s.TeamId)?.Name ?? "",
-                    Classification = existingMatch.UnifyClassifications ? "Unclassified" : shooterAssociation.FirstOrDefault(e => e.ShooterId == s.ShooterId)?.Classification ?? "Unclassified",
+                    Classification = existingMatch.UnifyClassifications ? "Unclassified" : shooterAssociation.FirstOrDefault(e => e.ShooterId == s.ShooterId && e.Division == x.Division)?.Classification ?? "Unclassified",
                     Results = existingShootersResult.Where(e => e.ShooterId == s.ShooterId)
                             .Select(y =>
                                 new ShooterStageResult
@@ -2068,7 +2069,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of groups</returns>
-        public IList<(Group,List<Shooter>)> FetchAllGroupsWithShootersByMatchId(string matchId)
+        public IList<(Group,List<GroupShooter>,List<Shooter>)> FetchAllGroupsWithShootersByMatchId(string matchId)
         {
             // recupero i gruppi associati al match
             var groups = FetchEntities(e => e.MatchId == matchId, null, null, x => x.Name, false, _groupRepository);
@@ -2084,8 +2085,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return groups.Select(g =>
             {
-                var currentShooterInGroup = shooterGroup.Where(x=>x.GroupId == g.Id).Select(x=>x.ShooterId);
-                return (g,shooters.Where(s=>currentShooterInGroup.Contains(s.Id)).ToList());
+                var currentShooterInGroup = shooterGroup.Where(x=>x.GroupId == g.Id).ToList();
+                var currentShooterInGroupIds = currentShooterInGroup.Select(x=>x.ShooterId);
+
+                return (g,currentShooterInGroup,shooters.Where(s=>currentShooterInGroupIds.Contains(s.Id)).ToList());
             }).ToList();
         }
 
@@ -2709,6 +2712,16 @@ namespace SemperPrecisStageTracker.Domain.Services
             return FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _shooterRepository);
         }
         /// <summary>
+        /// Fetch list of shooters by provided ids
+        /// </summary>
+        /// <param name="id"> group identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public IList<GroupShooter> FetchGroupShootersByGroupId(string id)
+        {
+            return this._groupShooterRepository.Fetch(x => x.GroupId == id);
+        }
+
+        /// <summary>
         /// Fetch available shooter for group
         /// </summary>
         /// <param name="groupId">group id</param>
@@ -2735,6 +2748,21 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // retrieve shooter not from available user and in association
             return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)), null, null, x => x.LastName, false);
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public GroupShooter GetGroupShooterById(string id)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _groupShooterRepository);
         }
 
         /// <summary>
@@ -2832,11 +2860,21 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns stage or null</returns>
         public IList<ShooterTeam> FetchTeamsFromShooterId(string shooterId)
+                                => FetchTeamsFromShooterIds(new List<string> { shooterId });
+
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<ShooterTeam> FetchTeamsFromShooterIds(IList<string> shooterIds)
         {
             //Validazione argomenti
-            if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
+            if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
 
-            return FetchEntities(e => e.ShooterId == shooterId, null, null, null, true, _shooterTeamRepository);
+            return FetchEntities(e => shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterTeamRepository);
         }
 
         /// <summary>
@@ -3151,11 +3189,31 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns stage or null</returns>
         public IList<ShooterAssociation> FetchShooterAssociationByShooterId(string shooterId)
+            => FetchShooterAssociationByShooterIds(new List<string>{shooterId});
+        
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<ShooterAssociation> FetchShooterAssociationByShooterIds(IList<string> shooterIds, string matchId = null)
         {
             //Validazione argomenti
-            if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
+            if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
+            var associations = FetchEntities(e => shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterAssociationRepository);
+            
+            if(string.IsNullOrEmpty(matchId))
+                return associations;
 
-            return FetchEntities(e => e.ShooterId == shooterId, null, null, null, true, _shooterAssociationRepository);
+            // filter associations by match
+            var match = _matchRepository.GetSingle(x=>x.Id == matchId);
+
+            if(match == null)
+                 throw new ArgumentNullException(nameof(matchId));
+
+            return associations.Where(x=>x.AssociationId == match.AssociationId).ToList();
         }
 
         /// <summary>

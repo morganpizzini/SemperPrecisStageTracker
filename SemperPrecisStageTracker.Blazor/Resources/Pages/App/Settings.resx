@@ -135,4 +135,40 @@
   <data name="NoData" xml:space="preserve">
     <value>No data</value>
   </data>
+  <data name="PendingChanges" xml:space="preserve">
+    <value>Pending changes</value>
+  </data>
+  <data name="UploadData" xml:space="preserve">
+    <value>Upload data</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="DataDeleted" xml:space="preserve">
+    <value>Data deleted</value>
+  </data>
+  <data name="DeleteAll" xml:space="preserve">
+    <value>Delete all</value>
+  </data>
+  <data name="OfflineStatus" xml:space="preserve">
+    <value>Offline status</value>
+  </data>
+  <data name="OfflineModeChanged" xml:space="preserve">
+    <value>Offline mode changed</value>
+  </data>
+  <data name="NoPendingChanges" xml:space="preserve">
+    <value>No pending changes</value>
+  </data>
+  <data name="ClearPromptTitle" xml:space="preserve">
+    <value>Remove all stored data</value>
+  </data>
+  <data name="ClearPromptBody" xml:space="preserve">
+    <value>Remove all offline content?</value>
+  </data>
+  <data name="DeleteData" xml:space="preserve">
+    <value>Delete data</value>
+  </data>
+  <data name="ExportData" xml:space="preserve">
+    <value>Export data</value>
+  </data>
 </root>

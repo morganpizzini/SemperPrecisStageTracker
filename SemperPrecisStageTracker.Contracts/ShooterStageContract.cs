@@ -3,6 +3,14 @@ using System.Linq;
 
 namespace SemperPrecisStageTracker.Contracts
 {
+    public class GroupShooterContract
+    {
+        public string GroupShooterId {get; set;} = string.Empty;
+        public GroupContract Group { get; set; } = new GroupContract();
+        public ShooterContract Shooter { get; set; } = new ShooterContract();
+        public string Division {get; set;} = string.Empty;
+        public TeamContract Team {get; set;} = new TeamContract();
+    }
     public class ShooterStageContract
     {
         public string ShooterStageId { get; set; }

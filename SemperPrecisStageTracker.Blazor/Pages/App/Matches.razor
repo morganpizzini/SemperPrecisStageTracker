@@ -43,12 +43,12 @@
                         <TableRowCell>
                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch), match.MatchId))
                             {
-                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
+                                <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
+                            <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch), match.MatchId))
                             {
-                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(match))"><Icon Name="IconName.Delete" /></Button>
+                                <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(match))"><Icon Name="IconName.Delete" /></Button>
                             }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /></Button>
                         </TableRowCell>

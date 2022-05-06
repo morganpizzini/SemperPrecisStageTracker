@@ -46,11 +46,11 @@ else
         <Row>
             <Column ColumnSize="ColumnSize.IsFull">
                 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-                    <Validation>
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
                         <Field Horizontal="true" JustifyContent="JustifyContent.End">
                             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <Select TValue="string" @bind-SelectedValue="@model.ShooterId">
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
+                                <Select TValue="string" SelectedValue="@model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var shooter in availableShooters)
@@ -95,7 +95,7 @@ else
                                         <Select TValue="string" @bind-SelectedValue="@model.DivisionId">
                                             <ChildContent>
                                                 <SelectItem Value="@("")"></SelectItem>
-                                                @foreach (var division in group.Match.Association.Divisions)
+                                                @foreach (var division in divisions)
                                                 {
                                                     <SelectItem Value="@division">@division</SelectItem>
                                                 }
@@ -129,19 +129,21 @@ else
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Division"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             @if (group.Shooters.Count > 0)
                             {
-                                <Virtualize Items="@group.Shooters" Context="shooter">
+                                <Virtualize Items="@group.Shooters" Context="groupShooter">
                                     <TableRow>
-                                        <TableRowHeader>@shooter.LastName @shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         <TableRowCell>
                                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch), Id))
                                             {
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooter))"><Icon Name="IconName.Delete" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
                                             }
                                         </TableRowCell>
                                     </TableRow>
@@ -177,11 +179,11 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.LastName @shooterToDelete.FirstName</Text>
+                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -201,11 +203,12 @@ else
 
     // reference to the modal component
     private Modal modalRef;
-    ShooterContract shooterToDelete = new ShooterContract();
+    GroupShooterContract  shooterToDelete = new GroupShooterContract();
 
     GroupContract group = new GroupContract();
     IList<ShooterContract> availableShooters = new List<ShooterContract>();
     IList<TeamContract> teams = new List<TeamContract>();
+    IList<string> divisions = new List<string>();
 
     Validations validations;
     GroupShooterCreateRequest model = new GroupShooterCreateRequest();
@@ -216,10 +219,10 @@ else
         model.GroupId = GroupId;
         await LoadShooters();
         group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
-        if (MainServiceLayer.Online)
-        {
-            teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
-        }
+        //if (MainServiceLayer.Online)
+        //{
+        //    teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
+        //}
         await base.OnInitializedAsync();
     }
 
@@ -237,7 +240,7 @@ else
             return;
         await validations.ClearAll();
 
-        group.Shooters = await Post<IList<ShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
+        group.Shooters = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
         await LoadShooters();
         model.ShooterId = string.Empty;
         model.DivisionId = string.Empty;
@@ -245,7 +248,19 @@ else
 
     }
 
-    void DeleteShooter(ShooterContract shooter)
+    void OnSelectedShooterChanged(string value)
+    {
+        var shooter = availableShooters.FirstOrDefault(x => x.ShooterId == value);
+        if (shooter == null)
+            return;
+        model.ShooterId = value;
+        model.DivisionId = string.Empty;
+        model.TeamId = string.Empty;
+        teams = shooter.Teams;
+        divisions = shooter.Classifications.Select(x => x.Division).ToList();
+    }
+
+    void DeleteShooter(GroupShooterContract shooter)
     {
         if (shooter == null)
             return;
@@ -255,12 +270,12 @@ else
 
     private async Task HideModal(bool choice)
     {
-        if (choice && !string.IsNullOrEmpty(shooterToDelete.ShooterId))
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
         {
-            group.Shooters = await Post<IList<ShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterDeleteRequest { GroupId = GroupId, ShooterId = shooterToDelete.ShooterId });
+            group.Shooters = await Post<IList<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId });
             await LoadShooters();
         }
-        shooterToDelete = new ShooterContract();
+        shooterToDelete = new GroupShooterContract();
         await modalRef.Hide();
     }
 }

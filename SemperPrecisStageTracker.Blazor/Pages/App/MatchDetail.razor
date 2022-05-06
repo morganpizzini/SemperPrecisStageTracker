@@ -4,19 +4,19 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
+<NavLink Class="me-2" href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
 @if (PageCondition)
 {
-    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
-    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+    <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+    <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+    <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 }
 
 @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch),Id))
 {
-    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+    <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
+<Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
 @if (PageLoading)
 {
@@ -50,7 +50,7 @@ else
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
                         }
 
-                        <Table Striped="true" Hoverable="true">
+                        <Table Striped="true" Hoverable="true"  Class="mt-2">
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
@@ -111,7 +111,7 @@ else
                                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
                                         <TableRowHeader>@group.Shooters.Count</TableRowHeader>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                            <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
                                             @if (PageCondition)
                                             {
                                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>

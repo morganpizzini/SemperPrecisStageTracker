@@ -1,27 +1,28 @@
 ﻿@page "/app/settings"
 @using SemperPrecisStageTracker.Blazor.Models
 @inherits SemperPrecisBaseComponent
+@inject IJSRuntime JSRuntime
 @inject IStringLocalizer<Settings> L
 @inject ILocalStorageService localStorage
 @inject MainServiceLayer mainServiceLayer;
 <Heading Size="HeadingSize.Is1">@L["Settings"]</Heading>
 <Divider />
-<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
     <Validation Validator="@ValidationRule.None">
         <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Check TValue="bool" @bind-Checked="@model.OfflineMode">@L["Offline"]</Check>
+                <Check TValue="bool" @bind-Checked="@formModel.OfflineMode">@L["Offline"]</Check>
             </FieldBody>
         </Field>
     </Validation>
-    <Validation Validator="@ValidationRule.None">
+    <Validation Validator="@ValidationRule.None" >
         <Field Horizontal="true" JustifyContent="JustifyContent.End">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Select TValue="string" @bind-SelectedValue="@model.MatchId">
+                <Select TValue="string" @bind-SelectedValue="@formModel.MatchId">
                     <ChildContent>
-                        <SelectItem Value="@("")"></SelectItem>
+                        <SelectItem Value="@("")" Disabled></SelectItem>
                         @foreach (var match in matches)
                         {
                             <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
@@ -41,11 +42,32 @@
         </Button>
     </Field>
 </Validations>
-
-<Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading">
-    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-    <ChildContent>@L["UploadData"]</ChildContent>
-</Button>
+@if (model.OfflineMode)
+{
+    <hr/>
+    <h3>@L["OfflineStatus"]</h3>
+    <p>
+        <b>@L["Match"]:</b>&nbsp;@(matches.FirstOrDefault(x=>x.MatchId==model.MatchId)?.Name ?? L["NotFound"])
+    </p>
+    <p>
+        <b>@L["PendingChanges"]:</b>&nbsp;@(pendingChanges> 0 ? pendingChanges : L["NoPendingChanges"]) 
+    </p>
+    @if (pendingChanges > 0)
+    {
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["UploadData"]</LoadingTemplate>
+            <ChildContent>@L["UploadData"]</ChildContent>
+        </Button>    
+        <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["ExportData"]</LoadingTemplate>
+            <ChildContent>@L["ExportData"]</ChildContent>
+        </Button>    
+        <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["DeleteData"]</LoadingTemplate>
+            <ChildContent>@L["DeleteData"]</ChildContent>
+        </Button>        
+    }
+}
 
 <Modal @ref="modalRefPrompt">
     <ModalContent Centered="true">
@@ -68,50 +90,104 @@
 
     Validations validations;
     private Modal modalRefPrompt;
+    private string modalState = string.Empty;
+
+    private string modalTitle = string.Empty;
+    private string modalBody = string.Empty;
 
     ClientSetting model = new();
+    ClientSetting formModel = new();
     IList<MatchContract> matches = new List<MatchContract>();
+    private int pendingChanges = 0;
     protected override async Task OnInitializedAsync()
     {
         matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
-        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new();
+        await InitPageOps();
         await base.OnInitializedAsync();
     }
-
+    private async Task InitPageOps()
+    {
+        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new();
+        pendingChanges = await mainServiceLayer.CountUnsavedModels();
+    }
     async Task Submit()
     {
         await validations.ClearAll();
         if (! (await validations.ValidateAll()))
             return;
-        if (model.OfflineMode && string.IsNullOrEmpty(model.MatchId))
+        if (formModel.OfflineMode && string.IsNullOrEmpty(formModel.MatchId))
         {
-            model.OfflineMode = false;
+            formModel.OfflineMode = false;
             return;
         }
-
         // check status of unsaved model and prompt modal
-        if (!model.OfflineMode && await mainServiceLayer.CheckUnsavedModels())
+        if (!formModel.OfflineMode && await mainServiceLayer.CheckUnsavedModels())
         {
+            modalState = "override-conf";
+            modalTitle = L["OnlineModePromptTitle"];
+            modalBody = L["OnlineModePromptText"];
             await modalRefPrompt.Show();
             return;
         }
-        await mainServiceLayer.UpdateModel(model);
+        await mainServiceLayer.UpdateModel(formModel);
         await ShowNotification(L["DataDownloaded"], L["Success"], NotificationType.Success);
+        await InitPageOps();
     }
 
     async Task UploadData()
     {
         await mainServiceLayer.UploadData();
+        await InitPageOps();
+
         await ShowNotification(L["DataUploaded"], L["Success"], NotificationType.Success);
+    }
+
+    async Task ClearUnsavedModels()
+    {
+        modalState = "clear-conf";
+        modalTitle = L["ClearPromptTitle"];
+        modalBody = L["ClearPromptText"];
+        await modalRefPrompt.Show();
     }
 
     private async Task HideModalPrompt(bool choice)
     {
         if (choice)
         {
-            await mainServiceLayer.UpdateModel(model);
-            await ShowNotification(L["OfflineModeActive"], L["Success"], NotificationType.Success);
+            switch (modalState)
+            {
+                case "clear-conf":
+                    await mainServiceLayer.ClearUnsavedModels();
+                    await ShowNotification(L["DataDeleted"], L["Success"], NotificationType.Success);
+                    await InitPageOps();
+                    break;
+                case "override-conf":
+                    await mainServiceLayer.ClearUnsavedModels();
+                    await mainServiceLayer.UpdateModel(formModel);
+                    await ShowNotification(L["OfflineModeChanged"], L["Success"], NotificationType.Success);
+                    await InitPageOps();
+                    break;
+            }
+
         }
         await modalRefPrompt.Hide();
+    }
+
+    private async Task ExportData()
+    {
+        var changes = await mainServiceLayer.GetChanges();
+        var shooters = await mainServiceLayer.GetShooters();
+        var match = await mainServiceLayer.GetMatch(model.MatchId);
+
+        var strings = new List<string>();
+        strings.Add("Stage,Shooter,Total time,Down points,Procedurals,Hit on non threat, Flagrant penalties,Ftdr,Notes");
+        foreach(var result in changes.Item1)
+        {
+            strings.Add($"{match.Stages.FirstOrDefault(x=>x.StageId == result.StageId)?.Name ?? result.StageId},{shooters.FirstOrDefault(x=>x.ShooterId== result.ShooterId)?.CompleteName ?? result.ShooterId},{result.Time},{result.DownPoints?.DefaultIfEmpty(0).Sum() ?? 0},{result.Procedurals},{result.HitOnNonThreat},{result.FlagrantPenalties},{result.Ftdr},{result.Notes}");
+        }
+
+        var text = string.Join("\r\n", strings);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        await FileUtils.SaveAs(JSRuntime, $"{match.Name}-{DateTime.Now.ToString("s")}.csv", bytes);
     }
 }

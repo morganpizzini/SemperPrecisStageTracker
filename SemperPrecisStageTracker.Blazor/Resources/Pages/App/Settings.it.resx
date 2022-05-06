@@ -132,8 +132,8 @@
   <data name="Offline" xml:space="preserve">
     <value>Offline</value>
   </data>
-  <data name="OfflineModeActive" xml:space="preserve">
-    <value>Offline mode attiva</value>
+  <data name="OfflineModeChanged" xml:space="preserve">
+    <value>Offline mode modificata</value>
   </data>
   <data name="OnlineModePromptText" xml:space="preserve">
     <value>Ci sono dati non salvati, vuoi comunque procedere?</value>
@@ -151,12 +151,42 @@
     <value>Successo</value>
   </data>
   <data name="UploadData" xml:space="preserve">
-    <value>Caricamento dati</value>
+    <value>Carica dati</value>
   </data>
   <data name="WrongMatch" xml:space="preserve">
     <value>Errore gara</value>
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Si</value>
+  </data>
+  <data name="PendingChanges" xml:space="preserve">
+    <value>In attesa di caricamento</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Errore</value>
+  </data>
+  <data name="DataDeleted" xml:space="preserve">
+    <value>Dati eliminati</value>
+  </data>
+  <data name="DeleteAll" xml:space="preserve">
+    <value>Elimina tutti</value>
+  </data>
+  <data name="OfflineStatus" xml:space="preserve">
+    <value>Stato offline</value>
+  </data>
+  <data name="NoPendingChanges" xml:space="preserve">
+    <value>Nessun cambiamento</value>
+  </data>
+  <data name="ClearPromptTitle" xml:space="preserve">
+    <value>Rimozione dei dati offline</value>
+  </data>
+  <data name="ClearPromptBody" xml:space="preserve">
+    <value>Rimuovere tutti i dati salvati offline?</value>
+  </data>
+  <data name="DeleteData" xml:space="preserve">
+    <value>Rimuovi dati</value>
+  </data>
+  <data name="ExportData" xml:space="preserve">
+    <value>Esporta dati</value>
   </data>
 </root>

@@ -123,40 +123,43 @@ else
                     <CardText>@stage.GunReadyCondition</CardText>
                     <CardTitle>@L["StageProcedure"]</CardTitle>
                     <CardText>@stage.StageProcedure</CardText>
-                    <CardTitle>@L["Notes"]</CardTitle>
-                    <CardText>@stage.StageProcedureNotes</CardText>
+                    @if (!string.IsNullOrEmpty(stage.StageProcedureNotes))
+                    {
+                        <CardTitle>@L["Notes"]</CardTitle>
+                        <CardText>@stage.StageProcedureNotes</CardText>
+                    }
                 </Column>
                 <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Strings</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Scoring</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.TargetsDescription</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.ScoredHits</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.StartStop</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Rules</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Distance</CardText>
                     </Row>
                     <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]</CardTitle>:&nbsp;
+                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]:</CardTitle>
                         <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@(stage.CoverGarment ? @L["Yes"] : @L["No"])</CardText>
                     </Row>
                 </Column>
