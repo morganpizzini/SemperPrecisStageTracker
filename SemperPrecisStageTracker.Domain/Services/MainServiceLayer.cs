@@ -3256,6 +3256,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
             if (string.IsNullOrEmpty(associationId)) throw new ArgumentNullException(nameof(associationId));
+            if (string.IsNullOrEmpty(division)) throw new ArgumentNullException(nameof(division));
 
             return _shooterAssociationRepository.GetSingle(c => c.ShooterId == shooterId && c.AssociationId == associationId && c.Division == division  && c.ExpireDate== null);
         }
@@ -3282,8 +3283,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             // check unique association number
-            var duplicate = _shooterAssociationRepository.GetSingle(x=>x.ShooterId != entity.ShooterId && x.AssociationId == entity.AssociationId && x.CardNumber == entity.CardNumber);
-            if(duplicate!= null)
+            var duplicate = _shooterAssociationRepository.Fetch(x=>x.ShooterId != entity.ShooterId && x.AssociationId == entity.AssociationId && x.CardNumber == entity.CardNumber).FirstOrDefault();
+            if(duplicate != null)
             {
                 var shooter = _shooterRepository.GetSingle(x=>x.Id == duplicate.ShooterId);
                 if(shooter!= null)
