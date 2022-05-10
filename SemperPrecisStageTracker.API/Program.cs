@@ -98,7 +98,9 @@ public class Program
                 config.AddAzureKeyVault(vaultName, keyVaultClient, new DefaultKeyVaultSecretManager());
             }
         });
-
+        // register configuration across application
+        ServiceResolver.Register<IConfiguration>(builder.Configuration);
+        
         builder.Services.AddCors(options =>
         {
             var blazorEndpoints = builder.Configuration.GetSection("blazorEndpoints").Get<string[]>();
