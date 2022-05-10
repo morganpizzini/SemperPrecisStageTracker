@@ -35,7 +35,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// <param name="from">base date</param>
         /// <param name="dayOfWeek">day of the week, default sunday</param>
         /// <returns>Datetime</returns>
-        public static DateTime NextDay(this DateTime from, DayOfWeek dayOfWeek = DayOfWeek.Sunday )
+        public static DateTime NextDay(this DateTime from, DayOfWeek dayOfWeek = DayOfWeek.Sunday)
         {
             var start = (int)from.DayOfWeek;
             var target = (int)dayOfWeek;
@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 target += 7;
             return from.AddDays(target - start);
         }
-        
+
         /// <summary>
         /// Get first day of next week
         /// </summary>

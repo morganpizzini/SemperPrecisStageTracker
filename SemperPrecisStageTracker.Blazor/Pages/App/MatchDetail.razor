@@ -88,54 +88,56 @@ else
             </Column>
         }
     </Row>
+    @if (MainServiceLayer.Online)
+    {
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Shooters.Count) @L["Shooters"] )</CardTitle>
 
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Shooters.Count) @L["Shooters"] )</CardTitle>
-
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Count"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (match.Groups.Count > 0)
-                            {
-                                <Virtualize Items="@match.Groups" Context="group">
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Count"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (match.Groups.Count > 0)
+                                {
+                                    <Virtualize Items="@match.Groups" Context="group">
+                                        <TableRow>
+                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
+                                            <TableRowHeader>@group.Shooters.Count</TableRowHeader>
+                                            <TableRowCell>
+                                                <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                                @if (PageCondition)
+                                                {
+                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                                }
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+                                else
+                                {
                                     <TableRow>
-                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
-                                        <TableRowHeader>@group.Shooters.Count</TableRowHeader>
-                                        <TableRowCell>
-                                            <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
-                                            @if (PageCondition)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
-                                            }
+                                        <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                            @L["NoGroups"]
                                         </TableRowCell>
                                     </TableRow>
-                                </Virtualize>
-                            }
-                            else
-                            {
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
-                                        @L["NoGroups"]
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
+                                }
+                            </TableBody>
 
-                    </Table>
+                        </Table>
 
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
 
     <Row>
         <Column ColumnSize="ColumnSize.IsFull">
@@ -455,7 +457,7 @@ else
             //update available match director
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
         }
-        matchesDirectorToEdit = new();
+        matchesDirectorToEdit = new ShooterMatchCreateRequest();
         await modalRefMatchDirectorToEdit.Hide();
     }
 
@@ -470,7 +472,7 @@ else
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
             //await LoadMatchDirectors();
         }
-        matchDirectorToDelete = new();
+        matchDirectorToDelete = new ShooterMatchContract();
         await modalRefMatchDirectorToDelete.Hide();
     }
 }

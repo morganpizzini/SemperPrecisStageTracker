@@ -5,7 +5,7 @@ namespace SemperPrecisStageTracker.Domain.Utils
 {
     public class RandomUtils
     {
-        private static Random random = new Random();
+        private static Random random = new();
         public static string RandomString(int length = 5)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

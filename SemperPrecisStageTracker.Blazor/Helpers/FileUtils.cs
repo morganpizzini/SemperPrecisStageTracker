@@ -13,6 +13,6 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
                 "customFunctions.saveAsFile",
                 filename,
                 Convert.ToBase64String(data));
-        }      
+        }
     }
 }

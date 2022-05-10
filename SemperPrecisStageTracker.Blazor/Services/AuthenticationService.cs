@@ -26,10 +26,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         private string userKey => nameof(_stateService.User);
         private string permissionKey => nameof(_stateService.Permissions);
-        
+
 
         private CustomAuthStateProvider _customAuthenticationStateProvider => _authenticationStateProvider as CustomAuthStateProvider;
-        
+
         public AuthenticationService(
             IHttpService httpService,
             NavigationManager navigationManager,
@@ -79,7 +79,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             //override
             _stateService.User = user;
-            await _localStorageService.SetItem(userKey,_stateService.User);
+            await _localStorageService.SetItem(userKey, _stateService.User);
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
         }
 
@@ -93,7 +93,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         }
 
         public bool CheckPermissions(string roles, string resourceId = "") =>
-            CheckPermissions(new List<string> {roles}, resourceId);
+            CheckPermissions(new List<string> { roles }, resourceId);
 
         public bool CheckPermissions(IEnumerable<string> roles, string resourceId = "")
         {
@@ -105,11 +105,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (_stateService.Permissions.EntityPermissions.Any())
             {
                 var existingPermissionOnResource = _stateService.Permissions.EntityPermissions.AsQueryable();
-                
-                if(!string.IsNullOrEmpty(resourceId))
+
+                if (!string.IsNullOrEmpty(resourceId))
                     existingPermissionOnResource.Where(sp => sp.EntityId == resourceId);
-                
-                if (existingPermissionOnResource.Select(x=>x.Permission).Any(roles.Contains))
+
+                if (existingPermissionOnResource.Select(x => x.Permission).Any(roles.Contains))
                     return true;
             }
 

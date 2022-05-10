@@ -28,14 +28,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamHoldersFromTeamId(request.TeamId);
-            var shooterIds = entities.Select(x=>x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-            
+
             //Return contract
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(t=>t.Id== x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(t => t.Id == x.ShooterId))));
         }
 
-        
+
         /// <summary>
         /// Creates a teamHolder on platform
         /// </summary>
@@ -46,17 +46,19 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> UpsertTeamHolder(TeamHolderCreateRequest request)
         {
-            var entity = this.BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId,request.ShooterId);
-            
-            if (entity == null){
-                entity = new TeamHolder{
+            var entity = this.BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId, request.ShooterId);
+
+            if (entity == null)
+            {
+                entity = new TeamHolder
+                {
                     ShooterId = request.ShooterId,
                     TeamId = request.TeamId
                 };
             }
-            
+
             entity.Description = request.Description;
-            
+
             //Invocazione del service layer
             var validations = BasicLayer.UpsertTeamHolder(entity);
 
@@ -78,12 +80,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> DeleteTeamHolder(TeamHolderDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId,request.ShooterId);
+            var entity = BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId, request.ShooterId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             }
             //Invocazione del service layer
@@ -93,7 +95,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
     }
 }

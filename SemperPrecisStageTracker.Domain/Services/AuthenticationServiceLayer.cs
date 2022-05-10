@@ -177,8 +177,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        private (IList<string> adminPermissions, IList<EntityPermission> entityPermissions) userPermissions = 
-            (new List<string>(),new List<EntityPermission>());
+        private (IList<string> adminPermissions, IList<EntityPermission> entityPermissions) userPermissions =
+            (new List<string>(), new List<EntityPermission>());
         /// <summary>
         /// Get user permissions
         /// </summary>
@@ -373,11 +373,11 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return validations;
         }
-        public Task<bool> ValidateUserPermissions(string userId,AdministrationPermissions adminPermission)
+        public Task<bool> ValidateUserPermissions(string userId, AdministrationPermissions adminPermission)
         {
-            return ValidateUserPermissions(userId, new List<AdministrationPermissions>{adminPermission });
+            return ValidateUserPermissions(userId, new List<AdministrationPermissions> { adminPermission });
         }
-        public Task<bool> ValidateUserPermissions(string userId,IList<AdministrationPermissions> adminPermission)
+        public Task<bool> ValidateUserPermissions(string userId, IList<AdministrationPermissions> adminPermission)
         {
             return ValidateUserPermissions(userId, string.Empty, adminPermission, new List<EntityPermissions>());
         }

@@ -30,7 +30,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             _privateKey = configuration["webPushPrivate"];
             _vapidUser = configuration["webPushUser"];
         }
-        
+
         [HttpPost]
         [Route("CreateNotificationSubscription")]
         [ProducesResponseType(typeof(object), 200)]
@@ -98,11 +98,11 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return NotFound();
 
             var subscriptions = BasicLayer.FetchNotificationSubscriptionsByUserId(request.ShooterId);
-            
+
             var vapidDetails = new VapidDetails($"mailto:{_vapidUser}", _publicKey, _privateKey);
 
 
-            var pushSubscriptions = subscriptions.Select(x=>new PushSubscription(x.Url, x.P256dh, x.Auth)).ToList();
+            var pushSubscriptions = subscriptions.Select(x => new PushSubscription(x.Url, x.P256dh, x.Auth)).ToList();
             var webPushClient = new WebPushClient();
             try
             {
@@ -124,11 +124,11 @@ namespace SemperPrecisStageTracker.API.Controllers
                 });
                 if (pushSubscriptions.Count == 0)
                 {
-                    return Ok(new OkResponse{ Status = false, Errors = new List<string>{"NoSubscriptions"}});
+                    return Ok(new OkResponse { Status = false, Errors = new List<string> { "NoSubscriptions" } });
                 }
-                var tasks = pushSubscriptions.Select(pushSubscription=>webPushClient.SendNotificationAsync(pushSubscription, payload, vapidDetails)).ToList();
+                var tasks = pushSubscriptions.Select(pushSubscription => webPushClient.SendNotificationAsync(pushSubscription, payload, vapidDetails)).ToList();
                 await Task.WhenAll(tasks);
-                return Ok(new OkResponse(){ Status = true});
+                return Ok(new OkResponse() { Status = true });
             }
             catch (Exception ex)
             {

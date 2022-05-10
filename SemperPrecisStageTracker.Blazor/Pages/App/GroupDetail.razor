@@ -130,6 +130,7 @@ else
                             <TableRow>
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                 <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>
                         </TableHeader>
@@ -140,6 +141,7 @@ else
                                     <TableRow>
                                         <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                         <TableRowCell>
                                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch), Id))
                                             {
@@ -152,7 +154,7 @@ else
                             else
                             {
                                 <TableRow>
-                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
                                         @L["NoShooters"]
                                     </TableRowCell>
                                 </TableRow>
@@ -203,15 +205,15 @@ else
 
     // reference to the modal component
     private Modal modalRef;
-    GroupShooterContract  shooterToDelete = new GroupShooterContract();
+    GroupShooterContract  shooterToDelete = new();
 
-    GroupContract group = new GroupContract();
+    GroupContract group = new();
     IList<ShooterContract> availableShooters = new List<ShooterContract>();
     IList<TeamContract> teams = new List<TeamContract>();
     IList<string> divisions = new List<string>();
 
     Validations validations;
-    GroupShooterCreateRequest model = new GroupShooterCreateRequest();
+    GroupShooterCreateRequest model = new();
 
 
     protected override async Task OnInitializedAsync()

@@ -97,7 +97,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of team holders
         /// </summary>
         public IList<TeamHolder> TeamHolders { get; set; } = new List<TeamHolder>();
-        
+
         /// <summary>
         /// List of Shooter Team Payments
         /// </summary>

@@ -113,7 +113,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Ritorno i contratti
             return Reply(new MatchDataAssociationContract
             {
-                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x=>(x,groupAggregateGroupShooters.Where(g=>g.GroupId ==x.Id).ToList())).ToList(), stages),
+                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x => (x, groupAggregateGroupShooters.Where(g => g.GroupId == x.Id).ToList())).ToList(), stages),
 
                 ShooterMatches = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
 

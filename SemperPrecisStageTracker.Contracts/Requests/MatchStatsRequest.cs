@@ -4,7 +4,7 @@
     {
         public string MatchId { get; set; }
 
-        public string ShortLink {get; set;}
-       
+        public string ShortLink { get; set; }
+
     }
 }

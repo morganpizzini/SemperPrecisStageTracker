@@ -28,11 +28,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShooterTeamPaymentsFromTeamId(request.TeamId);
-            var shooterIds = entities.Select(x=>x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-            
+
             //Return contract
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(t=>t.Id== x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(t => t.Id == x.ShooterId))));
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> FetchShooterTeamPaymentByShooterAndTeam(ShooterTeamRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entities = BasicLayer.FetchShooterTeamPaymentByTeamAndShooterId(request.TeamId,request.ShooterId);
-            
+            var entities = BasicLayer.FetchShooterTeamPaymentByTeamAndShooterId(request.TeamId, request.ShooterId);
+
             //Return contract
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
 
         }
 
@@ -76,11 +76,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreateShooterTeamPayment(model,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreateShooterTeamPayment(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
             //Return contract
             return Ok(ContractUtils.GenerateContract(model));
         }
@@ -93,7 +93,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateShooterTeamPayment")]
         [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
-        public async Task<IActionResult> UpdateShooterTeamPayment([EntityId]ShooterTeamPaymentUpdateRequest request)
+        public async Task<IActionResult> UpdateShooterTeamPayment([EntityId] ShooterTeamPaymentUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamPayment(request.ShooterTeamPaymentId);
@@ -110,7 +110,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.PaymentDateTime = request.PaymentDateTime;
             entity.ExpireDateTime = request.ExpireDateTime;
             entity.NotifyExpiration = request.NotifyExpiration;
-            
+
             //Salvataggio
             var validations = await BasicLayer.UpdateShooterTeamPayment(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
@@ -136,7 +136,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             }
             //Invocazione del service layer
@@ -146,7 +146,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
     }
 }

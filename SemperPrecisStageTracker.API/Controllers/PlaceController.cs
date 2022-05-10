@@ -58,7 +58,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreatePlace")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManagePlaces,AdministrationPermissions.CreatePlaces)]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManagePlaces, AdministrationPermissions.CreatePlaces)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> CreatePlace(PlaceCreateRequest request)
         {
@@ -77,11 +77,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreatePlace(model,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreatePlace(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
             //Return contract
             return Ok(ContractUtils.GenerateContract(model));
         }
@@ -93,9 +93,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdatePlace")]
-        [ApiAuthorizationFilter(new[]{EntityPermissions.EditPlace},new [] {AdministrationPermissions.ManagePlaces})]
+        [ApiAuthorizationFilter(new[] { EntityPermissions.EditPlace }, new[] { AdministrationPermissions.ManagePlaces })]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> UpdatePlace([EntityId]PlaceUpdateRequest request)
+        public async Task<IActionResult> UpdatePlace([EntityId] PlaceUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
@@ -114,12 +114,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Region = request.Region;
             entity.PostalZipCode = request.PostalZipCode;
             entity.Country = request.Country;
-            
+
             //Salvataggio
-            var validations = await BasicLayer.UpdatePlace(entity,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.UpdatePlace(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
             //Confermo
             return Ok(ContractUtils.GenerateContract(entity));
         }
@@ -131,9 +131,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeletePlace")]
-        [ApiAuthorizationFilter(new[]{EntityPermissions.DeletePlace},new [] {AdministrationPermissions.ManagePlaces})]
+        [ApiAuthorizationFilter(new[] { EntityPermissions.DeletePlace }, new[] { AdministrationPermissions.ManagePlaces })]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> DeletePlace([EntityId]PlaceRequest request)
+        public async Task<IActionResult> DeletePlace([EntityId] PlaceRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
@@ -146,7 +146,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeletePlace(entity,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.DeletePlace(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 

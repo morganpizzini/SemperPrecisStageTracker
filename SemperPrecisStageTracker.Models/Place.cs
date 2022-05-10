@@ -21,7 +21,7 @@ namespace SemperPrecisStageTracker.Models
         public string PostalZipCode { get; set; }
         [Required]
         public string Country { get; set; }
-        
-        
+
+
     }
 }

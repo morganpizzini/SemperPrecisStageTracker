@@ -27,9 +27,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllGroupsByMatchId(request.MatchId);
-            
+
             //Ritorno i contratti
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -46,18 +46,18 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //verifico validità dell'entità
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(entity.Id);
 
-            var shooterIds = shooterGroup.Select(x=>x.ShooterId).ToList();
+            var shooterIds = shooterGroup.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,match,association,null,shooterGroup,shooters));
+            return Reply(ContractUtils.GenerateContract(entity, match, association, null, shooterGroup, shooters));
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -133,7 +133,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
             }
 
             //Invocazione del service layer

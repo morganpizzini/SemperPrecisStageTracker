@@ -10,13 +10,13 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string LastName { get; set; }
         [Required]
-        public DateTime BirthDate { get; set; } = new DateTime(1980,1,1);
+        public DateTime BirthDate { get; set; } = new(1980, 1, 1);
         [Required]
-        public string Username {get;set;}
+        public string Username { get; set; }
         [Required]
-        public string Email {get;set;}
-        public string FirearmsLicence {get;set;}
-        public DateTime FirearmsLicenceExpireDate {get;set;} = DateTime.Now.AddYears(1);
+        public string Email { get; set; }
+        public string FirearmsLicence { get; set; }
+        public DateTime FirearmsLicenceExpireDate { get; set; } = DateTime.Now.AddYears(1);
 
     }
 }

@@ -38,13 +38,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         {
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Shooters.Count;
-            
+
             //Composizione della request
             var request = new ShooterCreateRequest
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
@@ -83,7 +83,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10)
             };
@@ -97,7 +97,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterContract>(response);
             Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore,countAfter);
+            Assert.AreEqual(countBefore, countAfter);
         }
 
         [TestMethod]
@@ -137,7 +137,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateShooters}));
+            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateShooters }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.EntityPermissions.Count;
 
@@ -146,7 +146,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10)
             };
@@ -160,17 +160,17 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterContract>(response);
             Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore+2,countAfter);
+            Assert.AreEqual(countBefore + 2, countAfter);
         }
 
-         [TestMethod]
+        [TestMethod]
         public async Task ShouldGetShooterBeOkHavingProvidedData()
         {
             //Recupero una Shooter esistente
             var existing = Scenario.Shooters.FirstOrDefault();
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
-            
+
             //conteggio esistenti
             var countBefore = Scenario.Shooters.Count;
 
@@ -212,7 +212,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existing = Scenario.Shooters.FirstOrDefault();
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
-            
+
             //conteggio esistenti
             var countBefore = Scenario.Shooters.Count;
 
@@ -223,7 +223,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 ShooterId = existing.Id,
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
@@ -262,13 +262,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.Shooters.Count;
             //Recupero una Shooter esistente
             var existing = Scenario.Shooters.FirstOrDefault();
-            
+
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
             //Recupero una Shooter esistente
-            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x=>x.Id!= existing.Id);
-            
+            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.Id);
+
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
@@ -279,7 +279,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 FirearmsLicence = existing.FirearmsLicence,
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10)
             };
@@ -310,9 +310,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new ShooterUpdateRequest
             {
                 ShooterId = RandomizationUtils.GenerateRandomString(10),
-                 Email = RandomizationUtils.GenerateRandomEmail(),
+                Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
-                FirstName= RandomizationUtils.GenerateRandomString(10),
+                FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10)
             };
@@ -371,13 +371,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
-            
+
             //Recupero una Shooter esistente non utilizzato
-            var existing = Scenario.Shooters.FirstOrDefault(x=>x.Id == permission.EntityId);
+            var existing = Scenario.Shooters.FirstOrDefault(x => x.Id == permission.EntityId);
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
-            
+
 
             //Composizione della request
             var request = new ShooterRequest { ShooterId = existing.Id };
@@ -389,7 +389,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<ShooterContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
-            var countPermissionAfter = Scenario.EntityPermissions.Count(x => 
+            var countPermissionAfter = Scenario.EntityPermissions.Count(x =>
                 x.EntityId == permission.EntityId &&
                 (x.Permission == nameof(EntityPermissions.EditShooter) ||
                  x.Permission == nameof(EntityPermissions.DeleteShooter)));

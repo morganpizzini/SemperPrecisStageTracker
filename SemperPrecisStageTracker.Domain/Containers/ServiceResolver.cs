@@ -10,8 +10,8 @@ namespace SemperPrecisStageTracker.Domain.Containers
     public class ServiceResolver
     {
         //Inizializzazione statica
-        private static readonly Lazy<IKernel> Kernel = new (() => new StandardKernel());
-        
+        private static readonly Lazy<IKernel> Kernel = new(() => new StandardKernel());
+
         /// <summary>
         /// Registers provided interface to concrete type
         /// </summary>
@@ -25,7 +25,7 @@ namespace SemperPrecisStageTracker.Domain.Containers
             var bindingToSyntax = Kernel.Value.Rebind<TServiceInterface>();
 
             //Eseguo il binding della sintassi al target
-            var bindingOnSyntax = bindingToSyntax.ToMethod((_)=>instance);
+            var bindingOnSyntax = bindingToSyntax.ToMethod((_) => instance);
 
             //Applico la policy di singleton per la cache
             bindingOnSyntax.InSingletonScope();

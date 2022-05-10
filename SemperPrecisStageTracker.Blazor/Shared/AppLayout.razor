@@ -19,17 +19,11 @@
         <div class="top-row px-4 auth">
             @if (ShowNotificationAlertStatus)
             {
-                <Button Class="mr-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
+                <Button Class="me-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
             }
-            <strong>@L["Theme"]:</strong>
-            <select class="form-control" @bind="CurrentTheme" style="width:150px; margin: 0 10px;">
-                <option value="light">@L["Light"]</option>
-                <option value="dark">@L["Dark"]</option>
-            </select>
-            <CultureSelector />
             <AuthorizeView>
                 <Authorized>
-                    <span>@L["Hello"]&nbsp;<NavLink Class="ml-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
+                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
                 </Authorized>
                 <NotAuthorized>
@@ -72,16 +66,9 @@
     private Modal modalInstallRef;
     private static Action actionNotification;
     private bool ShowNotificationAlertStatus;
-    string _currentTheme;
-    string CurrentTheme
-    {
-        get => _currentTheme;
-        set
-        {
-            _currentTheme = value;
-            localStorage.SetItem("theme",_currentTheme);
-        }
-    }
+
+    string CurrentTheme = string.Empty;
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -92,7 +79,7 @@
 
 
         // set theme
-        _currentTheme = await localStorage.GetItem<string>("theme");
+        CurrentTheme = await localStorage.GetItem<string>("theme");
 
 
         await base.OnInitializedAsync();

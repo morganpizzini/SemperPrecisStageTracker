@@ -21,8 +21,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterTeamPaymentBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.ShooterId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x=>!shooterIds.Contains(x.Id));
-            if(existing == null){
+            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            if (existing == null)
+            {
                 Assert.Inconclusive("No shooter team payment without association exists");
             }
             //Conteggio gli elementi prima della creazione
@@ -55,15 +56,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && countAfter == countBefore + 1
                           && updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Amount ==request.Amount
-                          && updatedEntity.Reason ==request.Reason
+                          && updatedEntity.Amount == request.Amount
+                          && updatedEntity.Reason == request.Reason
                           && updatedEntity.PaymentDateTime == request.PaymentDateTime
                           && updatedEntity.ExpireDateTime == request.ExpireDateTime
                           && updatedEntity.NotifyExpiration == request.NotifyExpiration
             );
 
         }
-        
+
         [TestMethod]
         public async Task ShouldUpdateShooterTeamPaymentBeOkHavingProvidedData()
         {
@@ -82,7 +83,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 ShooterTeamPaymentId = existing.Id,
                 TeamId = existing.TeamId,
                 ShooterId = existing.ShooterId,
-                Reason= RandomizationUtils.GenerateRandomString(5),
+                Reason = RandomizationUtils.GenerateRandomString(5),
                 Amount = 1,
                 PaymentDateTime = existing.PaymentDateTime
             };
@@ -99,12 +100,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
 
             Assert.IsNotNull(parsed);
-            Assert.AreEqual(countAfter,countBefore);
+            Assert.AreEqual(countAfter, countBefore);
             Assert.IsTrue(updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Reason ==request.Reason
-                          && updatedEntity.PaymentDateTime ==request.PaymentDateTime
-                          && updatedEntity.Amount ==request.Amount
+                          && updatedEntity.Reason == request.Reason
+                          && updatedEntity.PaymentDateTime == request.PaymentDateTime
+                          && updatedEntity.Amount == request.Amount
                           && updatedEntity.ExpireDateTime == request.ExpireDateTime
                           && updatedEntity.NotifyExpiration == request.NotifyExpiration
             );
@@ -133,10 +134,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<OkResponse>(response);
 
-            
+
             Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
-                          && countAfter == countBefore -1
+                          // the old one should be closed with end date
+                          && countAfter == countBefore - 1
             );
 
         }

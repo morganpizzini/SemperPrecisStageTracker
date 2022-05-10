@@ -21,8 +21,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateTeamHolderBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.TeamHolders.Select(x => x.ShooterId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x=>!shooterIds.Contains(x.Id));
-            if(existing == null){
+            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            if (existing == null)
+            {
                 Assert.Inconclusive("No shooter without association exists");
             }
             //Conteggio gli elementi prima della creazione
@@ -53,11 +54,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && countAfter == countBefore + 1
                           && updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Description ==request.Description
+                          && updatedEntity.Description == request.Description
             );
 
         }
-        
+
         [TestMethod]
         public async Task ShouldUpdateTeamHolderBeOkHavingProvidedData()
         {
@@ -70,7 +71,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 TeamId = existing.TeamId,
                 ShooterId = existing.ShooterId,
-                Description= RandomizationUtils.GenerateRandomString(5)
+                Description = RandomizationUtils.GenerateRandomString(5)
             };
 
             //Invoke del metodo
@@ -84,10 +85,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var updatedEntity = Scenario.TeamHolders.FirstOrDefault(x => x.Id == parsed.Data.TeamHolderId);
             Assert.IsNotNull(parsed);
-            Assert.AreEqual(countAfter,countBefore);
+            Assert.AreEqual(countAfter, countBefore);
             Assert.IsTrue(updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Description ==request.Description
+                          && updatedEntity.Description == request.Description
             );
 
         }
@@ -115,10 +116,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<OkResponse>(response);
 
-            
+
             Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
-                          && countAfter == countBefore -1
+                          // the old one should be closed with end date
+                          && countAfter == countBefore - 1
             );
 
         }

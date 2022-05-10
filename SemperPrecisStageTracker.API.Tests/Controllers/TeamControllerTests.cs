@@ -30,7 +30,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<TeamContract>>(response);
-            Assert.AreEqual(countBefore,parsed.Data.Count);
+            Assert.AreEqual(countBefore, parsed.Data.Count);
         }
 
         [TestMethod]

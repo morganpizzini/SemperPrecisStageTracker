@@ -37,16 +37,17 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldGetAMatchesBeOkHavingElements()
         {
             var existing = Scenario.Matches.FirstOrDefault();
-            if(existing == null)
+            if (existing == null)
             {
                 Assert.Inconclusive("No match found");
                 return;
             }
-            var groups = Scenario.Groups.Where(x=>x.MatchId== existing.Id).Select(x=>x.Id).ToList();
-            
-            var shooterGroups = Scenario.GroupShooters.Where(x=>groups.Contains(x.GroupId)).ToList();
+            var groups = Scenario.Groups.Where(x => x.MatchId == existing.Id).Select(x => x.Id).ToList();
 
-            if(shooterGroups.Count == 0){
+            var shooterGroups = Scenario.GroupShooters.Where(x => groups.Contains(x.GroupId)).ToList();
+
+            if (shooterGroups.Count == 0)
+            {
                 Assert.Inconclusive("No shooter in group");
                 return;
             }
@@ -62,7 +63,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
-            Assert.IsTrue(parsed.Data.Groups.SelectMany(x=>x.Shooters).Any());
+            Assert.IsTrue(parsed.Data.Groups.SelectMany(x => x.Shooters).Any());
         }
 
         [TestMethod]
@@ -172,9 +173,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
             Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore+1,countAfter);
+            Assert.AreEqual(countBefore + 1, countAfter);
             // because is made by an admin the permissions should be the same
-            Assert.AreEqual(countBeforePermission,countAfterPermission);
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
         }
 
         [TestMethod]
@@ -340,13 +341,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
-            
+
             //Recupero una Match esistente non utilizzato
-            var existing = Scenario.Matches.FirstOrDefault(x=>x.Id == permission.EntityId);
+            var existing = Scenario.Matches.FirstOrDefault(x => x.Id == permission.EntityId);
 
             if (existing == null)
                 Assert.Inconclusive("Match does not exists");
-            
+
             //Composizione della request
             var request = new MatchRequest { MatchId = existing.Id };
 
@@ -355,8 +356,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta
             var parsed = ParseExpectedOk<MatchContract>(response);
-            
-            var countPermissionAfter = Scenario.EntityPermissions.Count(x => 
+
+            var countPermissionAfter = Scenario.EntityPermissions.Count(x =>
                 x.EntityId == permission.EntityId &&
                 (x.Permission == nameof(EntityPermissions.EditMatch) ||
                  x.Permission == nameof(EntityPermissions.DeleteMatch)));
@@ -364,7 +365,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             Assert.IsTrue(parsed.Data.MatchId == existing.Id);
 
-            Assert.AreEqual(0,countPermissionAfter);
+            Assert.AreEqual(0, countPermissionAfter);
         }
 
 

@@ -125,7 +125,7 @@ else
     public bool PageLoading { get; set; } = true;
 
     bool interactive => string.IsNullOrEmpty(ShortLink);
-    MatchStatsResultContract stats = new MatchStatsResultContract();
+    MatchStatsResultContract stats = new();
 
     protected override async Task OnInitializedAsync()
     {

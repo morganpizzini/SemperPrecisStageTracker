@@ -32,7 +32,7 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
             }
 
             // route functions
-            
+
             async Task<HttpResponseMessage> authenticate()
             {
                 var bodyJson = await request.Content.ReadAsStringAsync();
@@ -42,7 +42,8 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
                 if (user == null)
                     return await error("Username or password is incorrect");
 
-                return await ok(new {
+                return await ok(new
+                {
                     Id = user.Id,
                     Username = user.Username,
                     FirstName = user.FirstName,
@@ -80,7 +81,7 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
                     StatusCode = statusCode,
                     Content = new StringContent(JsonSerializer.Serialize(content), Encoding.UTF8, "application/json")
                 };
-                
+
                 // delay to simulate real api call
                 await Task.Delay(500);
 
@@ -90,7 +91,7 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
             bool isLoggedIn()
             {
                 return request.Headers.Authorization?.Parameter == "test:test".EncodeBase64();
-            } 
+            }
         }
     }
 }

@@ -14,13 +14,13 @@ namespace SemperPrecisStageTracker.Blazor
         {
             _authService = authService;
         }
-        
+
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
             RolesAuthorizationRequirement requirement)
         {
-            
-            if (context.User.Identity is {IsAuthenticated: false})
+
+            if (context.User.Identity is { IsAuthenticated: false })
             {
                 context.Fail();
                 return Task.CompletedTask;
@@ -34,11 +34,11 @@ namespace SemperPrecisStageTracker.Blazor
             }
 
             var roles = requirement.AllowedRoles;
-            
+
             // get profile id from resource, passed in from blazor 
             //  page component
             var resourceId = context.Resource?.ToString() ?? string.Empty;
-            
+
             if (_authService.CheckPermissions(roles, resourceId))
             {
                 context.Succeed(requirement);

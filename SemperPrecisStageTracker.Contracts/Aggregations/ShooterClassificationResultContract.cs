@@ -2,7 +2,8 @@
 
 namespace SemperPrecisStageTracker.Contracts
 {
-    public class ShooterClassificationResultContract{
+    public class ShooterClassificationResultContract
+    {
         public string Classification { get; set; }
         public IList<ShooterMatchResultContract> Shooters { get; set; } = new List<ShooterMatchResultContract>();
 

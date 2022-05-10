@@ -24,7 +24,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
         {
-            var shooterStage = new ShooterStage{
+            var shooterStage = new ShooterStage
+            {
                 StageId = request.StageId,
                 Time = request.Time,
                 ShooterId = request.ShooterId,
@@ -44,7 +45,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{ Status= true});
+            return Reply(new OkResponse { Status = true });
         }
 
     }

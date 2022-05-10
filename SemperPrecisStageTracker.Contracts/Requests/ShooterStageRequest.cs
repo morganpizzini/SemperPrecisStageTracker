@@ -5,8 +5,9 @@ using System.Linq;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterStageRequest{
-        
+    public class ShooterStageRequest
+    {
+
         [Required]
         public string StageId { get; set; }
         [Required]
@@ -19,7 +20,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Range(1, Double.MaxValue,
         ErrorMessage = "minValueError| {1}")]
         public decimal Time { get; set; }
-        
+
         public int Procedurals { get; set; }
         /// <summary>
         /// X5
@@ -33,13 +34,13 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// X20
         /// </summary>
         public int Ftdr { get; set; }
-        public bool Warning  { get; set; }
+        public bool Warning { get; set; }
 
-        public bool Disqualified  { get; set; }
+        public bool Disqualified { get; set; }
 
-        public string Notes  { get; set; }
+        public string Notes { get; set; }
 
-        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
+        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
 
     }
 }

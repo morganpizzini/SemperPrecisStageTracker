@@ -2,9 +2,9 @@
 {
     public enum ShooterRoleEnum
     {
-        PSO= 1,
+        PSO = 1,
         CSO = 2,
-        MatchDirector= 3,
+        MatchDirector = 3,
         SSO = 4
     }
 }

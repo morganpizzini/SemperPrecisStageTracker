@@ -101,13 +101,13 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-                        modelBuilder.Entity<ShooterTeamPayment>()
-                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterTeamPayment>()
+    .HasKey(f => f.Id);
             modelBuilder.Entity<ShooterTeamPayment>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
-                        
-                        
+
+
             modelBuilder.Entity<Shooter>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Shooter>()
@@ -163,7 +163,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            
+
             modelBuilder.Entity<BasePermission>().ToTable("ShooterPermissions")
                 .HasKey(f => f.Id);
 

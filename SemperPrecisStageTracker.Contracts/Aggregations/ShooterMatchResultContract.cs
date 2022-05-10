@@ -11,6 +11,6 @@ namespace SemperPrecisStageTracker.Contracts
         public string TeamName { get; set; }
 
         public IList<ShooterStageResultContract> Results { get; set; } = new List<ShooterStageResultContract>();
-        public decimal Total => Results.Any(x=> x.Total<0) ? -99 : Results.Sum(x=>x.Total);
+        public decimal Total => Results.Any(x => x.Total < 0) ? -99 : Results.Sum(x => x.Total);
     }
 }

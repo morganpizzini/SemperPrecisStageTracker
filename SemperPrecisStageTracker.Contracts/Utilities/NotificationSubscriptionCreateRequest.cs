@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Contracts.Utilities
 {
-  public class NotificationSubscriptionCreateRequest
-  {
+    public class NotificationSubscriptionCreateRequest
+    {
         [Required]
         public string Url { get; set; }
         [Required]

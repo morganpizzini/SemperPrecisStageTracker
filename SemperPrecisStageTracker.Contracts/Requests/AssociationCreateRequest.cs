@@ -8,8 +8,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         [Required]
-        public IList<string> Divisions {get;set;} = new List<string>();
+        public IList<string> Divisions { get; set; } = new List<string>();
         [Required]
-        public IList<string> Classifications {get;set;} = new List<string>();
+        public IList<string> Classifications { get; set; } = new List<string>();
     }
 }

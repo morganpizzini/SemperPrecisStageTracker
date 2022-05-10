@@ -40,7 +40,7 @@ namespace SemperPrecisStageTracker.Blazor
                         var trimSpace = message.IndexOf('|');
                         if (trimSpace > 0)
                         {
-                            message= message.Substring(0,trimSpace);
+                            message = message.Substring(0, trimSpace);
                         }
                         return stringLocalizer != null
                             ? string.Format(stringLocalizer[message], arguments?.ToArray() ?? new string[0])

@@ -80,7 +80,7 @@ namespace SemperPrecisStageTracker.API.Helpers
 
             var entityId = GetPermissionIdValue(context);
 
-            var valueFound = await CheckPermissionsOnUser(userId,entityId);
+            var valueFound = await CheckPermissionsOnUser(userId, entityId);
 
             if (valueFound)
             {
@@ -103,7 +103,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Service layer base
             using var authServiceLayer = new AuthenticationServiceLayer(isolatedSession);
 
-            return authServiceLayer.ValidateUserPermissions(userId,entityId,_adminPermission,_entityPermission);
+            return authServiceLayer.ValidateUserPermissions(userId, entityId, _adminPermission, _entityPermission);
         }
     }
 }

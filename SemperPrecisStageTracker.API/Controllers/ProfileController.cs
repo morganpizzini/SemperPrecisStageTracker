@@ -104,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(validations);
 
             //Confermo
-            return Ok(new BooleanResponse(){ Value = true});
+            return Ok(new BooleanResponse() { Value = true });
         }
     }
 }

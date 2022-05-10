@@ -9,10 +9,10 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public string AssociationId {get;set;}
+        public string AssociationId { get; set; }
         [Required]
         public string ShortLink { get; set; }
-        public string PlaceId {get;set;}
+        public string PlaceId { get; set; }
         public DateTime MatchDateTime { get; set; }
         ///
         // Unify classification and remove any difference between Novice, Marksman, Sharpshooter, Expert, Master
@@ -21,6 +21,6 @@ namespace SemperPrecisStageTracker.Models
         ///
         // Allow any shooter to partecipate to the match
         ///
-        public bool OpenMatch {get; set; }
+        public bool OpenMatch { get; set; }
     }
 }

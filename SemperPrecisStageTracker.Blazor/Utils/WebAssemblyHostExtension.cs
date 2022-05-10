@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
         {
             var jsInterop = host.Services.GetRequiredService<IJSRuntime>();
             var result = await jsInterop.InvokeAsync<string>("blazorCulture.get");
-            
+
             var culture = result != null ? new CultureInfo(result) : new CultureInfo("en-US");
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;

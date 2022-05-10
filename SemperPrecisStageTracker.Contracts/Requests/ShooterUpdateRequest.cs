@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterUpdateRequest: ShooterRequest
+    public class ShooterUpdateRequest : ShooterRequest
     {
         //[Required]
         //public string ShooterId { get; set; }
@@ -14,12 +14,12 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public DateTime BirthDate { get; set; }
         [Required]
-        public string Username {get;set;}
+        public string Username { get; set; }
         [Required]
-        public string Email {get;set;}
-        
-        public string FirearmsLicence {get;set;}
-        public DateTime FirearmsLicenceExpireDate {get;set;}
-        public DateTime MedicalExaminationExpireDate {get;set;}
+        public string Email { get; set; }
+
+        public string FirearmsLicence { get; set; }
+        public DateTime FirearmsLicenceExpireDate { get; set; }
+        public DateTime MedicalExaminationExpireDate { get; set; }
     }
 }

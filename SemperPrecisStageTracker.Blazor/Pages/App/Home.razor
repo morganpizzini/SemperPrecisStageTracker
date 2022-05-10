@@ -12,29 +12,47 @@
     @matches.Count
 
     <ul>
-
-        /matches/:id/stats
-        caricare gli stage per nome e non per indice (metodo GetMatchStats)
-        controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)
-
-        /app/shooters/new
-        gli errori 500 bloccano l'interfaccia
-        aggiungere visita medica, non obbligatoria
-
-        creare interfaccia per creare più di un gruppo alla volta
-
-        /app/matches/:id/groups/:id
-        mostrare la classificazione nella tabella
-        aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore
-        nella lista degli shooter mostrare classificazione e divisione e il pagamento, aggiungere bottone per aggiornare stato pagamento e possibilità di cambiare la categoria senza dover eliminare il tiratore
-        tra gli shooter estrapolare solo quelli con classificazione attiva nell'associazione del match
+        <li>Il match è in un range di date, non in una sola</li>
+        <li>/matches/:id/stats
+            <ul>
+                <li>caricare gli stage per nome e non per indice (metodo GetMatchStats)</li>
+                <li>controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)</li>
+            </ul>
+        </li>
+        <li>/app/shooters/new
+            <ul>
+                <li>gli errori 500 bloccano l'interfaccia</li>
+                <li>aggiungere visita medica, non obbligatoria</li>
+            </ul>
+        </li>
+        <li>creare interfaccia per creare più di un gruppo alla volta</li>
+        <li>/app/matches/:id/groups/:id
+            <ul>
+                <li>mostrare la classificazione nella tabella</li>
+                <li>aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore</li>
+                <li>nella lista degli shooter mostrare classificazione e divisione e il pagamento, aggiungere bottone per aggiornare stato pagamento e possibilità di cambiare la categoria senza dover eliminare il tiratore</li>
+                <li>tra gli shooter estrapolare solo quelli con classificazione attiva nell'associazione del match</li>
+            </ul>
+        </li>
+        <li>app/matches/:id/stages/:id/group/:id
+            <ul>
+                <li>mostrare classificazione e divisione, probabilmente con un toggle che abilita/disabilita</li>
+            </ul>
+        </li>
         
-        app/matches/:id/stages/:id/group/:id
-        mostrare classificazione e divisione, probabilmente con un toggle che abilita/disabilita
 
+        <li>Gestire parimerito con punti down</li>
+        <li>Togliere gruppi quando offline</li>
+        <li>Gestione lady</li>
+        <li>Gestione senior/supersenior (impostare data all'interno dell'associzione)</li>
+        <li>Spostamento tiratore in altra squadra</li>
+        <li>Controllare top bar in mobile</li>
+
+        <li>Creare un test UI per verificare l'aggiunta di uno shooter in un gruppo</li>
+        <li>Inserire state management per controllare il tema -> impostato in settings, ma utilizzato in AppLayout</li>
 
         @*rimuovere i Validator="@ValidationRule.IsNotEmpty"*@
-
+        <li>Nelle associazioni e società inserire regolamento, link e allegato (creare un servizio che carica su blob storage e uno mock che salva in locale)</li>
         <li>All'aggiunta di un punteggio inviare una notifica al tiratore, ogni match ha una flag che permette di disabilitare questo meccanismo, aggiungere anche un pulsante che permette di aggiornare tutti i tiratori in 1 colpo solo</li>
         <li>Form di iscrizione alla gara, con squad</li>
         <li>Gestire le string multiple sugli stage</li>
@@ -59,7 +77,6 @@
 
         <li>upload foto https://www.aspitalia.com/script/1376/Effettuare-Upload-File-Blazor-Azure-Blob-Storage.aspx</li>
 
-        <li>Index db http://www.quadaph.com/BlazorIndexDB https://github.com/amuste/DnetIndexedDb</li>
 
         <li>Gestire classificazione multipla: ogni associazione può consentire classificazione generica o per categoria d'armi</li>
         <li>Rimuovere PSO da classificazione e farne entità a parte</li>

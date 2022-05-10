@@ -46,7 +46,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //verifico validità dell'entità
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity));
@@ -59,7 +59,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateAssociation")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManageAssociations,AdministrationPermissions.CreateAssociations)]
+        [ApiAuthorizationFilter(AdministrationPermissions.ManageAssociations, AdministrationPermissions.CreateAssociations)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
         public async Task<IActionResult> CreateAssociation(AssociationCreateRequest request)
         {
@@ -72,7 +72,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreateAssociation(model,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreateAssociation(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
@@ -89,9 +89,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateAssociation")]
-        [ApiAuthorizationFilter(new[]{EntityPermissions.EditAssociation},new [] {AdministrationPermissions.ManageAssociations})]
+        [ApiAuthorizationFilter(new[] { EntityPermissions.EditAssociation }, new[] { AdministrationPermissions.ManageAssociations })]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public async Task<IActionResult> UpdateAssociation([EntityId]AssociationUpdateRequest request)
+        public async Task<IActionResult> UpdateAssociation([EntityId] AssociationUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
@@ -106,10 +106,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Divisions = request.Divisions;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdateAssociation(entity,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.UpdateAssociation(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
             //Confermo
             return Ok(ContractUtils.GenerateContract(entity));
         }
@@ -121,9 +121,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteAssociation")]
-        [ApiAuthorizationFilter(new[]{EntityPermissions.DeleteAssociation},new [] {AdministrationPermissions.ManageAssociations})]
+        [ApiAuthorizationFilter(new[] { EntityPermissions.DeleteAssociation }, new[] { AdministrationPermissions.ManageAssociations })]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public async Task<IActionResult> DeleteAssociation([EntityId]AssociationRequest request)
+        public async Task<IActionResult> DeleteAssociation([EntityId] AssociationRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
@@ -135,7 +135,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeleteAssociation(entity,PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.DeleteAssociation(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 

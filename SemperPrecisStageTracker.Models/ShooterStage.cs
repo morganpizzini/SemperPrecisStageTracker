@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public decimal Time { get; set; }
         //https://stackoverflow.com/questions/20711986/entity-framework-code-first-cant-store-liststring
-        public IList<int> DownPoints {get;set;}
+        public IList<int> DownPoints { get; set; }
         /// <summary>
         /// X3
         /// </summary>
@@ -32,10 +32,10 @@ namespace SemperPrecisStageTracker.Models
         /// X20
         /// </summary>
         public int Ftdr { get; set; }
-        public bool Warning  { get; set; }
-        public bool Disqualified  { get; set; }
+        public bool Warning { get; set; }
+        public bool Disqualified { get; set; }
         public string Notes { get; set; }
         [NotMapped]
-        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
+        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
     }
 }

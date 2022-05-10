@@ -29,12 +29,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchShooterMatchesByMatchId(request.MatchId);
-            
+
             var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAvailableMatchDirectorByMatchId(request.MatchId);
-            
+
             //Ritorno i contratti
-            return Reply(entities.As(x =>ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -64,9 +64,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAvailableMatchDirectorByAssociaitonId(request.AssociationId);
-            
+
             //Ritorno i contratti
-            return Reply(entities.As(x =>ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
 
         /// <summary>
@@ -79,11 +79,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(MatchContract), 200)]
         public Task<IActionResult> CreateMatchDirector(ShooterMatchCreateRequest request)
         => this.CreateMatchDirectors(new ShooterMatchesCreateRequest()
-            {
-                MatchId = request.MatchId,
-                ShooterIds = new List<string>{request.ShooterId}
-            });
-        
+        {
+            MatchId = request.MatchId,
+            ShooterIds = new List<string> { request.ShooterId }
+        });
+
         /// <summary>
         /// Creates a match on platform
         /// </summary>
@@ -109,12 +109,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             });
 
             //Invocazione del service layer
-            var validations = entities.As(BasicLayer.UpsertShooterMatch).SelectMany(x=>x).ToList();
+            var validations = entities.As(BasicLayer.UpsertShooterMatch).SelectMany(x => x).ToList();
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
 
-            return this.FetchAllMatchDirector(new MatchRequest {MatchId = existingMatch.Id});
+            return this.FetchAllMatchDirector(new MatchRequest { MatchId = existingMatch.Id });
             //var shooterMatches = BasicLayer.FetchShooterMatchesByMatchId(existingMatch.Id);
             //var shooterIds = shooterMatches.Select(x => x.ShooterId).ToList();
             //var shooters = BasicLayer.FetchShootersByIds(shooterIds);
@@ -144,7 +144,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequestTask(validations);
 
-            return this.FetchAllMatchDirector(new MatchRequest {MatchId = entity.MatchId});
+            return this.FetchAllMatchDirector(new MatchRequest { MatchId = entity.MatchId });
 
             //var shooterMatches = BasicLayer.FetchShooterMatchesByMatchId(entity.MatchId);
             //var shooterIds = shooterMatches.Select(x => x.ShooterId).ToList();
@@ -164,12 +164,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchShooterSOStagesByStageId(request.StageId);
-            
+
             var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
         }
 
 
@@ -184,7 +184,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAvailabelShooterSOByStageId(request.StageId);
-            
+
             //Ritorno i contratti
             return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
@@ -201,7 +201,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             => this.CreateStageSOs(new ShooterSOStagesCreateRequest()
             {
                 StageId = request.StageId,
-                Shooters = new List<ShooterSOStageShooterContract>{request.Shooter}
+                Shooters = new List<ShooterSOStageShooterContract> { request.Shooter }
             });
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             });
 
             //Invocazione del service layer
-            var validations = entities.As(BasicLayer.UpsertShooterSOStage).SelectMany(x=>x).ToList();
+            var validations = entities.As(BasicLayer.UpsertShooterSOStage).SelectMany(x => x).ToList();
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
@@ -239,7 +239,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Return contract
-            return Reply(shooterSOStagees.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
+            return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
         }
         /// <summary>
         /// Deletes existing match on platform
@@ -267,7 +267,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterIds = shooterSOStagees.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
             //Return contract
-            return Reply(shooterSOStagees.As(x=> ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=> s.Id == x.ShooterId))));
+            return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
         }
     }
 }

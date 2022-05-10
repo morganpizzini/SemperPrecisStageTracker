@@ -28,7 +28,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<PlaceContract>>(response);
-            Assert.AreEqual(countBefore,parsed.Data.Count);
+            Assert.AreEqual(countBefore, parsed.Data.Count);
         }
 
         [TestMethod]
@@ -324,7 +324,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 City = RandomizationUtils.GenerateRandomString(15),
                 Region = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15)
-                
+
             };
 
             //Invoke del metodo

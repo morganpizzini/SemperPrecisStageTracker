@@ -8,7 +8,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
     /// <typeparam name="TActionResult">Type of action result implementation</typeparam>
     /// <typeparam name="TData">Type of data expected</typeparam>
     public class ActionResultStructure<TActionResult, TData>
-        where TActionResult: IActionResult
+        where TActionResult : IActionResult
     {
         /// <summary>
         /// Response

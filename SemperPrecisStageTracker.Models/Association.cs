@@ -4,13 +4,14 @@ using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.Models
 {
-   
-    public class Association : SemperPrecisEntity {
+
+    public class Association : SemperPrecisEntity
+    {
         [Required]
         public string Name { get; set; }
         [Required]
-        public IList<string> Divisions {get;set;}
+        public IList<string> Divisions { get; set; }
         [Required]
-        public IList<string> Classifications {get;set;}
+        public IList<string> Classifications { get; set; }
     }
 }

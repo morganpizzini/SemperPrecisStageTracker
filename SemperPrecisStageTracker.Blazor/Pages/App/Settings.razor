@@ -68,6 +68,8 @@
         </Button>        
     }
 }
+<CultureSelector />
+<LanguageSelector />
 
 <Modal @ref="modalRefPrompt">
     <ModalContent Centered="true">
@@ -107,7 +109,7 @@
     }
     private async Task InitPageOps()
     {
-        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new();
+        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
         pendingChanges = await mainServiceLayer.CountUnsavedModels();
     }
     async Task Submit()

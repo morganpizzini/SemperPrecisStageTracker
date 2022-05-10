@@ -51,6 +51,7 @@ else
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                     <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                                     <TableHeaderCell>@L["Total"]</TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
@@ -84,6 +85,7 @@ else
                                                 }
                                             </TableRowHeader>
                                             <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
+                                            <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
                                             <TableRowCell>@(shooter.ShooterStage.Total > 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total < 0 ? @L["Disqualified"] : "")</TableRowCell>
                                         </TableRow>
                                         @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
@@ -101,7 +103,7 @@ else
                                 else
                                 {
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
                                             @L["NoShooters"]
                                         </TableRowCell>
                                     </TableRow>

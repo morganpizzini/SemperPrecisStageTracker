@@ -23,8 +23,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
             HttpClient httpClient,
             NavigationManager navigationManager,
             StateService stateService
-            //ILocalStorageService localStorageService
-        ) {
+        //ILocalStorageService localStorageService
+        )
+        {
             _httpClient = httpClient;
             _navigationManager = navigationManager;
             _stateService = stateService;
@@ -37,7 +38,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return await sendRequest<T>(request);
         }
 
-        public Task<T> Post<T>(string uri) => Post<T>(uri,new{ });
+        public Task<T> Post<T>(string uri) => Post<T>(uri, new { });
 
         public async Task<T> Post<T>(string uri, object value)
         {

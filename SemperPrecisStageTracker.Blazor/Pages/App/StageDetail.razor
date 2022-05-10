@@ -364,7 +364,7 @@ else
 
     void NewStageSo()
     {
-        stageSoToEdit = new() { StageId = StageId };
+        stageSoToEdit = new ShooterSOStageCreateRequest { StageId = StageId };
         modalRefStageSoToEdit.Show();
     }
 
@@ -387,7 +387,7 @@ else
             //update available match director
             availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
         }
-        stageSoToEdit = new();
+        stageSoToEdit = new ShooterSOStageCreateRequest();
         await modalRefStageSoToEdit.Hide();
     }
 
@@ -402,7 +402,7 @@ else
             availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
             //await LoadSO();
         }
-        stageSoToDelete = new();
+        stageSoToDelete = new ShooterSOStageContract();
         await modalRefStageSoToDelete.Hide();
     }
 

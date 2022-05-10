@@ -6,7 +6,7 @@ namespace SemperPrecisStageTracker.Models
     public class Group : SemperPrecisEntity
     {
         [Required]
-        public string MatchId {get; set;}
+        public string MatchId { get; set; }
         [Required]
         public string Name { get; set; }
     }

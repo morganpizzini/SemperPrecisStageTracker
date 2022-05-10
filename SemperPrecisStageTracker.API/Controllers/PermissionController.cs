@@ -26,12 +26,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> FetchAllUserPermissions()
         {
             var userId = PlatformUtils.GetIdentityUserId(User);
-            
+
             //Recupero la lista dal layer
             var entities = await AuthorizationLayer.GetUserPermissionById(userId);
 
             //Ritorno i contratti
-            return Ok(ContractUtils.GenerateContract(entities.adminPermissions,entities.entityPermissions));
+            return Ok(ContractUtils.GenerateContract(entities.adminPermissions, entities.entityPermissions));
         }
     }
 }

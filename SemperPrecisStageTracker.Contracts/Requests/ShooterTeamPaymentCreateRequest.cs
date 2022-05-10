@@ -6,7 +6,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     public class ShooterTeamPaymentCreateRequest
     {
         [Required]
-        public string TeamId { get; set; }= string.Empty;
+        public string TeamId { get; set; } = string.Empty;
         [Required]
         public string ShooterId { get; set; } = string.Empty;
         [Required]

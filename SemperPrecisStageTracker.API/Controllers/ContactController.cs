@@ -31,10 +31,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
 
             var captchaCheck = await captchaService.ValidateToken(request.Token);
-            
+
             if (!string.IsNullOrEmpty(captchaCheck))
             {
-                return BadRequest(new List<ValidationResult> {new(captchaCheck)});
+                return BadRequest(new List<ValidationResult> { new(captchaCheck) });
             }
 
             var model = new Contact()
@@ -51,7 +51,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-            return Ok(new OkResponse() {Status = true});
+            return Ok(new OkResponse() { Status = true });
         }
     }
 }

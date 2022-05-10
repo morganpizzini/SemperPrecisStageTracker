@@ -102,8 +102,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         }
 
         protected Shooter GetUserWithoutPermission(IList<AdministrationPermissions> adminPermissions)
-            => GetUserWithPermission(adminPermissions,false);
-        
+            => GetUserWithPermission(adminPermissions, false);
+
         /// <summary>
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>

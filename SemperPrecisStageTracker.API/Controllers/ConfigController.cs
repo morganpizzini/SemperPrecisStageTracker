@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
-        public ConfigController(IConfiguration configuration,IWebHostEnvironment env)
+        public ConfigController(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
             _env = env;
@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpGet]
         [Route("GetConfig")]
         [ProducesResponseType(typeof(object), 200)]
-        [ResponseCache(Duration = 86400,Location = ResponseCacheLocation.Client)]
+        [ResponseCache(Duration = 86400, Location = ResponseCacheLocation.Client)]
         public IActionResult GetConfig()
         {
             return Ok(

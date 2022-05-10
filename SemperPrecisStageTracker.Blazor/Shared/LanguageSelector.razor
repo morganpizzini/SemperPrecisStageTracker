@@ -1,0 +1,28 @@
+﻿@inject IStringLocalizer<CultureSelector> L
+@inject ILocalStorageService localStorage
+<strong>@L["Theme"]:</strong>
+<select class="form-control" @bind="CurrentTheme" style="width:150px; margin: 0 10px;">
+    <option value="light">@L["Light"]</option>
+    <option value="dark">@L["Dark"]</option>
+</select>
+
+@code{
+    string _currentTheme;
+    string CurrentTheme
+    {
+        get => _currentTheme;
+        set
+        {
+            _currentTheme = value;
+            localStorage.SetItem("theme",_currentTheme);
+        }
+    }
+
+     protected override async Task OnInitializedAsync()
+    {
+        // set theme
+        _currentTheme = await localStorage.GetItem<string>("theme");
+        
+        await base.OnInitializedAsync();
+    }
+}

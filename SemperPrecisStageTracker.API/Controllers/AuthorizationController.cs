@@ -32,18 +32,18 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se non ho utente, unauthorized
             if (result == null)
                 return Unauthorized();
-            
+
             var permissions = await AuthorizationLayer.GetUserPermissionById(result.Id);
-            
+
             // recupero il profilo
             //var profile = AuthorizationLayer.FetchProfilesOnUser(result.Username).FirstOrDefault();
-            
+
             //Se è tutto ok, serializzo il contratto
             return Ok(
                 new SignInResponse
                 {
                     Shooter = ContractUtils.GenerateContract(result),
-                    Permissions = ContractUtils.GenerateContract(permissions.adminPermissions,permissions.entityPermissions)
+                    Permissions = ContractUtils.GenerateContract(permissions.adminPermissions, permissions.entityPermissions)
                 });
         }
 
@@ -63,9 +63,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Tento il signin ed ottengo l'utente se è completato
             var result = AuthorizationLayer.SyncPasswords();
-            
+
             //Se è tutto ok, serializzo il contratto
-            return Reply(new OkResponse{ Status = result.Count == 0, Errors = result.Select(x=> x.ErrorMessage).ToList() });
+            return Reply(new OkResponse { Status = result.Count == 0, Errors = result.Select(x => x.ErrorMessage).ToList() });
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(validations);
 
             //Se è tutto ok, serializzo e restituisco
-            return Ok(new StringResponse{Value = request.Password});
+            return Ok(new StringResponse { Value = request.Password });
         }
     }
 }

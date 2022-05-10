@@ -147,7 +147,7 @@
     [Parameter]
     public string Id { get; set; }
     Validations validations;
-    PlaceUpdateRequest model = new PlaceUpdateRequest();
+    PlaceUpdateRequest model = new();
 
     protected override async Task OnInitializedAsync()
     {

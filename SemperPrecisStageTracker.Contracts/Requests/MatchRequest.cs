@@ -12,6 +12,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// </summary>
         [Required]
         public string MatchId { get; set; }
-       
+
     }
 }

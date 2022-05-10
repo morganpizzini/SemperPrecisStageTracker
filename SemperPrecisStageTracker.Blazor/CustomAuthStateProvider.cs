@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Blazor
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
-        private ClaimsPrincipal claimsPrincipal = new (new ClaimsIdentity());
+        private ClaimsPrincipal claimsPrincipal = new(new ClaimsIdentity());
 
         public void LoginNotify(ShooterContract user)
         {

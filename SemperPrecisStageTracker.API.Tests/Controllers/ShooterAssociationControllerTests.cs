@@ -22,8 +22,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterAssociationBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.ShooterAssociations.Select(x => x.ShooterId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x=>!shooterIds.Contains(x.Id));
-            if(existing == null){
+            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            if (existing == null)
+            {
                 Assert.Inconclusive("No shooter without association exists");
             }
             //Conteggio gli elementi prima della creazione
@@ -37,8 +38,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 AssociationId = existingAssociation.Id,
                 ShooterId = existing.Id,
                 SafetyOfficier = true,
-                CardNumber= RandomizationUtils.GenerateRandomString(5),
-                RegistrationDate= DateTime.Now,
+                CardNumber = RandomizationUtils.GenerateRandomString(5),
+                RegistrationDate = DateTime.Now,
                 Classification = existingAssociation.Classifications.FirstOrDefault(),
                 Division = existingAssociation.Divisions.FirstOrDefault()
             };
@@ -59,11 +60,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.SafetyOfficier ==request.SafetyOfficier
-                          && updatedEntity.CardNumber==request.CardNumber
-                          && updatedEntity.RegistrationDate ==request.RegistrationDate
-                          && updatedEntity.Classification==request.Classification
-                          && updatedEntity.Division ==request.Division
+                          && updatedEntity.SafetyOfficier == request.SafetyOfficier
+                          && updatedEntity.CardNumber == request.CardNumber
+                          && updatedEntity.RegistrationDate == request.RegistrationDate
+                          && updatedEntity.Classification == request.Classification
+                          && updatedEntity.Division == request.Division
             );
 
         }
@@ -72,12 +73,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldFetchShooterAssociationBeOkHavingProvidedData()
         {
             var existing = Scenario.ShooterAssociations.FirstOrDefault();
-            
-            if(existing == null){
+
+            if (existing == null)
+            {
                 Assert.Inconclusive("No shooter association exists");
             }
-            
-            var count = Scenario.ShooterAssociations.Count(x=>x.ShooterId == existing.ShooterId);
+
+            var count = Scenario.ShooterAssociations.Count(x => x.ShooterId == existing.ShooterId);
 
             var request = new ShooterRequest
             {
@@ -91,8 +93,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<ShooterAssociationContract>>(response);
 
-            Assert.AreEqual(count,parsed.Data.Count);
-            Assert.IsTrue(parsed.Data.All(x=>!string.IsNullOrEmpty(x.Association.Name)));
+            Assert.AreEqual(count, parsed.Data.Count);
+            Assert.IsTrue(parsed.Data.All(x => !string.IsNullOrEmpty(x.Association.Name)));
 
         }
         [TestMethod]
@@ -108,8 +110,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
                 SafetyOfficier = !existing.SafetyOfficier,
-                CardNumber= RandomizationUtils.GenerateRandomString(5),
-                RegistrationDate= DateTime.Now,
+                CardNumber = RandomizationUtils.GenerateRandomString(5),
+                RegistrationDate = DateTime.Now,
                 Classification = existing.Classification,
                 Division = existing.Division
             };
@@ -127,17 +129,17 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.ShooterId == request.ShooterId && !x.ExpireDate.HasValue);
 
-            Assert.AreEqual(countBefore + 1,countAfter);
+            Assert.AreEqual(countBefore + 1, countAfter);
             Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
+                          // the old one should be closed with end date
                           && oldEntity.ExpireDate != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.SafetyOfficier ==request.SafetyOfficier
-                          && updatedEntity.CardNumber==request.CardNumber
-                          && updatedEntity.RegistrationDate ==request.RegistrationDate
-                          && updatedEntity.Classification==request.Classification
-                          && updatedEntity.Division==request.Division
+                          && updatedEntity.SafetyOfficier == request.SafetyOfficier
+                          && updatedEntity.CardNumber == request.CardNumber
+                          && updatedEntity.RegistrationDate == request.RegistrationDate
+                          && updatedEntity.Classification == request.Classification
+                          && updatedEntity.Division == request.Division
             );
 
         }
@@ -146,7 +148,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldUpdateShooterAssociationBeBadRequestHavingProvidedSameCardId()
         {
             var existing = Scenario.ShooterAssociations.FirstOrDefault();
-            var another = Scenario.ShooterAssociations.FirstOrDefault(x=>x.ShooterId!= existing.ShooterId && x.AssociationId == existing.AssociationId);
+            var another = Scenario.ShooterAssociations.FirstOrDefault(x => x.ShooterId != existing.ShooterId && x.AssociationId == existing.AssociationId);
             if (another == null)
             {
                 Assert.Inconclusive("Another shooter association not found");
@@ -160,8 +162,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
                 SafetyOfficier = !existing.SafetyOfficier,
-                CardNumber= another.CardNumber,
-                RegistrationDate= DateTime.Now,
+                CardNumber = another.CardNumber,
+                RegistrationDate = DateTime.Now,
                 Classification = existing.Classification,
                 Division = existing.Division
             };
@@ -176,9 +178,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedBadRequest(response);
 
 
-            Assert.AreEqual(countBefore,countAfter);
+            Assert.AreEqual(countBefore, countAfter);
             Assert.IsTrue(parsed != null &&
-                            // the old one should be closed with end date
+                          // the old one should be closed with end date
                           parsed.Data.Any()
             );
 
@@ -206,10 +208,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<OkResponse>(response);
 
-            
+
             Assert.IsTrue(parsed != null
-                            // the old one should be closed with end date
-                          && countAfter == countBefore -1
+                          // the old one should be closed with end date
+                          && countAfter == countBefore - 1
             );
 
         }

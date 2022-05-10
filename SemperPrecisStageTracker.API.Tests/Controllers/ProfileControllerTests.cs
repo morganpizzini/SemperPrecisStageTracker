@@ -114,7 +114,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Recupero un user esistente
             var existing = GetAdminUser();
 
-          
+
             //Recupero un altro utente esistente
             var anotherExisting = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.Id);
             if (anotherExisting == null)
@@ -199,13 +199,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new UserPasswordUpdateRequest
             {
                 UserId = existing.Id,
-                Password= RandomizationUtils.GenerateRandomString(10)
+                Password = RandomizationUtils.GenerateRandomString(10)
             };
 
             //Invoke del metodo
             var response = Controller.UpdateUserPassword(request);
 
-            var newPassword = Scenario.Shooters.FirstOrDefault(x=>x.Id== existing.Id)?.Password;
+            var newPassword = Scenario.Shooters.FirstOrDefault(x => x.Id == existing.Id)?.Password;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<BooleanResponse>(response);

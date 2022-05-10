@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
@@ -35,19 +36,19 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Invocazione del service layer
             var shooters = BasicLayer.FetchAvailableShooters(entity);
-            
+
             var shooterIds = shooters.Select(s => s.Id).ToList();
 
-            var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds,entity.MatchId);
+            var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds, entity.MatchId);
             var shooterTeams = BasicLayer.FetchTeamsFromShooterIds(shooterIds);
 
-            var teamsIds = shooterTeams.Select(x=>x.TeamId).ToList();
+            var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
 
             //Return contract
-            return Reply(shooters.As(x=>ContractUtils.GenerateContract(x,
-                shooterAssociation.Where(s=>s.ShooterId == x.Id).ToList(),
-                teams.Where(s=> shooterTeams.Where(st=>st.ShooterId == x.Id).Select(st=>st.TeamId).Contains(s.Id)).ToList())));
+            return Reply(shooters.As(x => ContractUtils.GenerateContract(x,
+                shooterAssociation.Where(s => s.ShooterId == x.Id).ToList(),
+                teams.Where(s => shooterTeams.Where(st => st.ShooterId == x.Id).Select(st => st.TeamId).Contains(s.Id)).ToList())));
         }
 
         /// <summary>
@@ -62,19 +63,19 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Invocazione del service layer
             var groupShooter = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
-            var shooterIds = groupShooter.Select(x=>x.ShooterId).ToList();
+            var shooterIds = groupShooter.Select(x => x.ShooterId).ToList();
 
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-            
-            var shooterStages = BasicLayer.FetchShootersResultsOnStage(request.StageId,shooterIds);
 
-            var shooterWarning = BasicLayer.FetchShootersWarningsDisqualifiedOnStage(request.StageId,shooterIds);
+            var shooterStages = BasicLayer.FetchShootersResultsOnStage(request.StageId, shooterIds);
+
+            var shooterWarning = BasicLayer.FetchShootersWarningsDisqualifiedOnStage(request.StageId, shooterIds);
 
             //Return contract
-            return Reply(groupShooter.As(x=>ContractUtils.GenerateContract(x,
-                shooters.FirstOrDefault(y=> y.Id == x.ShooterId ),
-                shooterStages.FirstOrDefault(y=>y.ShooterId == x.ShooterId ),
-                shooterWarning.FirstOrDefault(y=>y.ShooterId == x.ShooterId ))));
+            return Reply(groupShooter.As(x => ContractUtils.GenerateContract(x,
+                shooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                shooterStages.FirstOrDefault(y => y.ShooterId == x.ShooterId),
+                shooterWarning.FirstOrDefault(y => y.ShooterId == x.ShooterId))));
         }
 
         /// <summary>
@@ -87,26 +88,52 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
         public Task<IActionResult> UpsertGroupShooter(GroupShooterCreateRequest request)
         {
-            var entity = this.BasicLayer.GetGroupShooterByShooterAndGroup(request.ShooterId,request.GroupId);
-            
-            if (entity == null){
-                entity = new GroupShooter{
+            var entity = this.BasicLayer.GetGroupShooterByShooterAndGroup(request.ShooterId, request.GroupId);
+
+            if (entity == null)
+            {
+                entity = new GroupShooter
+                {
                     ShooterId = request.ShooterId,
                     GroupId = request.GroupId
                 };
             }
-            
-            entity.DivisionId = request.DivisionId;
+
+            var group = this.BasicLayer.GetGroup(entity.GroupId);
+            if (group == null)
+            {
+                return Task.FromResult(BadRequest(new List<ValidationResult>
+                {
+                    new ("Group not found")
+                }));
+            }
+
+            var match = BasicLayer.GetMatch(group.MatchId);
+
+            var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.ShooterId, match.Id);
+
+            var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.Division == request.DivisionId && x.ExpireDate == null);
+
+            if (currentShooterAssociation == null)
+            {
+                return Task.FromResult(BadRequest(new List<ValidationResult>
+                {
+                    new ($"Shooter has no {request.DivisionId} division")
+                }));
+            }
+
+            entity.DivisionId = currentShooterAssociation.Division;
+            entity.Classification = currentShooterAssociation.Classification;
             entity.TeamId = request.TeamId;
-            
-            //Invocazione del service layer
+
+            // Invocazione del service layer
             var validations = BasicLayer.UpsertGroupShooter(entity);
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
 
-            //Return contract
-            return Reply(GetGroupShooterContractByGroupId(entity.Id));
+            // Return contract
+            return Reply(GetGroupShooterContractByGroupId(entity.GroupId));
         }
 
         /// <summary>
@@ -124,8 +151,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
-
+                return Task.FromResult<IActionResult>(NotFound());
             }
             var groupId = entity.GroupId;
             //Invocazione del service layer
@@ -142,9 +168,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(groupId);
 
-            var shooterIds = shooterGroup.Select(x=>x.ShooterId).ToList();
+            var shooterIds = shooterGroup.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-            return shooterGroup.As(x =>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=>s.Id == x.ShooterId)));
+            return shooterGroup.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))).OrderBy(x => x.Shooter.LastName).ToList();
         }
     }
 }

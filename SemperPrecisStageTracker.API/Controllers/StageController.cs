@@ -35,14 +35,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             //recupero gli utenti
             var matches = this.BasicLayer.FetchMatchesByIds(matchIds);
 
-            var associationIds = matches.Select(x=>x.AssociationId).ToList();
+            var associationIds = matches.Select(x => x.AssociationId).ToList();
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
 
             //Ritorno i contratti
             return Reply(entities.As(x =>
             {
                 var match = matches.FirstOrDefault(p => p.Id == x.MatchId);
-                return ContractUtils.GenerateContract(x,match, associations.FirstOrDefault(p => p.Id == match.AssociationId));
+                return ContractUtils.GenerateContract(x, match, associations.FirstOrDefault(p => p.Id == match.AssociationId));
             }));
         }
 
@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //verifico validità dell'entità
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity));
@@ -124,7 +124,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
@@ -171,7 +171,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             }
 

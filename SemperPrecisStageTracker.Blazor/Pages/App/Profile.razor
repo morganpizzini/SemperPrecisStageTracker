@@ -120,9 +120,9 @@ else
     </Row>
 }
 @code {
-    ShooterContract user = new ShooterContract();
+    ShooterContract user = new();
     Validations validations;
-    UserUpdateRequest model = new UserUpdateRequest();
+    UserUpdateRequest model = new();
     bool showEditModel;
 
     protected override async Task OnInitializedAsync()

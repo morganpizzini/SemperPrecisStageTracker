@@ -50,7 +50,7 @@ namespace SemperPrecisStageTracker.Blazor.Pages
 
         protected Task ShowNotification(string message, string title = "", NotificationType notificationType = NotificationType.Info)
         {
-            if(string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(message))
             {
                 return Task.CompletedTask;
             }

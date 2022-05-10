@@ -19,8 +19,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         private readonly string[] cors;
 
         public DiagnosticController(IConfiguration configuration)
-        {   
-            adminUser= configuration["adminUsername"];
+        {
+            adminUser = configuration["adminUsername"];
             cors = configuration.GetSection("blazorEndpoints").Get<string[]>();
         }
 
@@ -33,7 +33,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(object), 200)]
         public Task<IActionResult> GetDiagnostic()
         {
-            return Reply(new {
+            return Reply(new
+            {
                 EnvironmentName = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName,
                 Provider = ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.Storage.Provider,
                 Cors = cors
@@ -54,7 +55,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 return BadRequest(validations);
             }
-            return Ok(new OkResponse() {Status = true});
+            return Ok(new OkResponse() { Status = true });
         }
     }
 }

@@ -200,12 +200,12 @@ else
     private Modal modalRefEntityToDelete;
 
     IList<ShooterContract> shooters = new List<ShooterContract>();
-    TeamContract team = new TeamContract();
+    TeamContract team = new();
     Validations shooterValidations;
     private Modal modalRefShooterToDelete;
-    ShooterTeamContract shooterToDelete = new ShooterTeamContract();
+    ShooterTeamContract shooterToDelete = new();
     private Modal modalRefShooterToEdit;
-    ShooterTeamCreateRequest shooterToEdit = new ShooterTeamCreateRequest();
+    ShooterTeamCreateRequest shooterToEdit = new();
     IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
 
     protected override async Task OnInitializedAsync()

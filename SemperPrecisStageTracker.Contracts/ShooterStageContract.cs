@@ -5,11 +5,12 @@ namespace SemperPrecisStageTracker.Contracts
 {
     public class GroupShooterContract
     {
-        public string GroupShooterId {get; set;} = string.Empty;
-        public GroupContract Group { get; set; } = new GroupContract();
-        public ShooterContract Shooter { get; set; } = new ShooterContract();
-        public string Division {get; set;} = string.Empty;
-        public TeamContract Team {get; set;} = new TeamContract();
+        public string GroupShooterId { get; set; } = string.Empty;
+        public GroupContract Group { get; set; } = new();
+        public ShooterContract Shooter { get; set; } = new();
+        public string Division { get; set; } = string.Empty;
+        public TeamContract Team { get; set; } = new();
+        public string Classification { get; set; }
     }
     public class ShooterStageContract
     {
@@ -20,7 +21,7 @@ namespace SemperPrecisStageTracker.Contracts
 
         public decimal Time { get; set; }
 
-        public IList<int> DownPoints {get;set;} = new List<int>();
+        public IList<int> DownPoints { get; set; } = new List<int>();
         /// <summary>
         /// X3
         /// </summary>
@@ -38,10 +39,10 @@ namespace SemperPrecisStageTracker.Contracts
         /// </summary>
         public int Ftdr { get; set; }
 
-        public bool Warning  { get; set; }
+        public bool Warning { get; set; }
         public string Notes { get; set; }
-        public bool Disqualified  { get; set; }
+        public bool Disqualified { get; set; }
 
-        public decimal Total => Disqualified ? -99 : Time + DownPoints?.DefaultIfEmpty(0).Sum() ?? 0 + Procedurals*3 + HitOnNonThreat*5 + FlagrantPenalties*10 + Ftdr*20;
+        public decimal Total => Disqualified ? -99 : Time + DownPoints?.DefaultIfEmpty(0).Sum() ?? 0 + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
     }
 }

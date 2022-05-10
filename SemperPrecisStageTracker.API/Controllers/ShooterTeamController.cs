@@ -28,10 +28,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamsFromShooterId(request.ShooterId);
-            var teamIds = entities.Select(x=>x.TeamId).ToList();
+            var teamIds = entities.Select(x => x.TeamId).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamIds);
             //Return contract
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,teams.FirstOrDefault(t=>t.Id== x.TeamId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, teams.FirstOrDefault(t => t.Id == x.TeamId))));
         }
 
         /// <summary>
@@ -46,15 +46,15 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShootersFromTeamId(request.TeamId);
-            var shooterIds = entities.Select(x=>x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-            
+
             //Return contract
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,null,shooters.FirstOrDefault(t=>t.Id== x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, null, shooters.FirstOrDefault(t => t.Id == x.ShooterId))));
 
         }
 
-        
+
         /// <summary>
         /// Creates a shooterteam on platform
         /// </summary>
@@ -65,17 +65,19 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> UpsertShooterTeam(ShooterTeamCreateRequest request)
         {
-            var entity = this.BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId,request.ShooterId);
-            
-            if (entity == null){
-                entity = new ShooterTeam{
+            var entity = this.BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId, request.ShooterId);
+
+            if (entity == null)
+            {
+                entity = new ShooterTeam
+                {
                     ShooterId = request.ShooterId,
                     TeamId = request.TeamId
                 };
             }
-            
+
             entity.RegistrationDate = request.RegistrationDate;
-            
+
             //Invocazione del service layer
             var validations = BasicLayer.UpsertShooterTeam(entity);
 
@@ -83,7 +85,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
 
         /// <summary>
@@ -97,12 +99,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> DeleteShooterTeam(ShooterTeamDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId,request.ShooterId);
+            var entity = BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId, request.ShooterId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
             {
-                return Task.FromResult<IActionResult>(NotFound());;
+                return Task.FromResult<IActionResult>(NotFound());
 
             }
             //Invocazione del service layer
@@ -112,7 +114,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             //Return contract
-            return Reply(new OkResponse{Status= true});
+            return Reply(new OkResponse { Status = true });
         }
     }
 }

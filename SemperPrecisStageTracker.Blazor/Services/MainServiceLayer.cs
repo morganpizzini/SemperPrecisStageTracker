@@ -78,7 +78,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await _matchServiceIndexDb.AddItems(response.ShooterSoStages.ToList());
         }
 
-        public async Task<(IList<ShooterStageContract>,IList<EditedEntityRequest>)> GetChanges()
+        public async Task<(IList<ShooterStageContract>, IList<EditedEntityRequest>)> GetChanges()
         {
             // get changes on shooterStage
             var changes = (await _matchServiceIndexDb.GetAll<EditedEntity>())
@@ -96,14 +96,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             var entities = (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
                 .Where(x => changes.Any(y => y.EntityId == x.EditedEntityId))
                 .Select(x => x.ShooterStage).ToList();
-            return (entities,changes);
+            return (entities, changes);
         }
 
         public async Task<IList<ShooterContract>> GetShooters()
         {
             return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
-                .Select(x=>x.GroupShooter.Shooter)
-                .DistinctBy(x=>x.ShooterId)
+                .Select(x => x.GroupShooter.Shooter)
+                .DistinctBy(x => x.ShooterId)
                 .ToList();
         }
 
@@ -164,7 +164,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 var group = match.Groups.FirstOrDefault(x => x.GroupId == groupId);
                 group.Match = match;
                 group.Shooters = shooters.Where(x => x.GroupId == groupId).Select(x => x.GroupShooter)
-                    .DistinctBy(x=>x.Shooter.ShooterId)
+                    .DistinctBy(x => x.Shooter.ShooterId)
                     .ToList();
                 return group;
             }

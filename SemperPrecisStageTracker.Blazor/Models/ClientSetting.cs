@@ -4,8 +4,8 @@ namespace SemperPrecisStageTracker.Blazor.Models
 {
     public class ClientSetting
     {
-        public bool OfflineMode { get; set; } 
+        public bool OfflineMode { get; set; }
         [Required]
-        public string MatchId { get; set; }= string.Empty;
+        public string MatchId { get; set; } = string.Empty;
     }
 }

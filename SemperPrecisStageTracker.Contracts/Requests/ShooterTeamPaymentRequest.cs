@@ -2,7 +2,8 @@
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterTeamPaymentRequest{
+    public class ShooterTeamPaymentRequest
+    {
         [Required]
         public string ShooterTeamPaymentId { get; set; }
     }

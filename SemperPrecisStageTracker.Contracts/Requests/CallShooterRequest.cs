@@ -9,7 +9,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 
         [Required]
         public string ShooterId { get; set; }
-        
+
         [Required]
         public CallShooterContextEnum Context { get; set; }
     }
