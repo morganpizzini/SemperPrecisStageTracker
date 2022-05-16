@@ -189,4 +189,10 @@
   <data name="ExportData" xml:space="preserve">
     <value>Esporta dati</value>
   </data>
+  <data name="Username" xml:space="preserve">
+    <value>Nome utente</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>Non ci sono dati!</value>
+  </data>
 </root>

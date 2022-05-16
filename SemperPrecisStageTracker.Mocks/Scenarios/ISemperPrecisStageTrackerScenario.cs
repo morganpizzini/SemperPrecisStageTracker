@@ -94,16 +94,46 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// List of contact
         /// </summary>
         IList<Contact> Contacts { get; set; }
-
+        
         /// <summary>
-        /// List of administration permissions
+        /// List of entity permissions
         /// </summary>
-        IList<AdministrationPermission> AdministrationPermissions { get; set; }
+        IList<Permission> Permissions { get; set; }
+
+        
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<PermissionsRole> PermissionsRoles { get; set; }
 
         /// <summary>
         /// List of entity permissions
         /// </summary>
-        IList<EntityPermission> EntityPermissions { get; set; }
+        IList<Role> Roles { get; set; }
 
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<UserRole> UserRoles { get; set; }
+
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<UserPermission> UserPermissions { get; set; }
+
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<PermissionGroup> PermissionGroups { get; set; }
+
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<UserPermissionGroup> UserPermissionGroups { get; set; }
+
+        /// <summary>
+        /// List of entity permissions
+        /// </summary>
+        IList<PermissionGroupRole> PermissionGroupRoles { get; set; }
     }
 }

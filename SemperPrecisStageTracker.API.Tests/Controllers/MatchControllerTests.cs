@@ -108,10 +108,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateMatchBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateMatches }));
+            UpdateIdentityUser(GetUserWithPermission(new List<Permissions> { Permissions.CreateMatches }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.EntityPermissions.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -132,7 +132,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.EntityPermissions.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
@@ -144,10 +144,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
         {
             UpdateIdentityUser(
-                GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageMatches }));
+                GetUserWithPermission(new List<Permissions> { Permissions.ManageMatches }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.EntityPermissions.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -168,7 +168,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.EntityPermissions.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
@@ -181,11 +181,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateMatchBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageMatches, AdministrationPermissions.CreateMatches }));
+            UpdateIdentityUser(GetUserWithoutPermission(new List<Permissions> { Permissions.ManageMatches, Permissions.CreateMatches }));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.EntityPermissions.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -206,7 +206,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.EntityPermissions.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -337,13 +337,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldDeleteMatchBeOkAndDeletePermissions()
         {
             var permission =
-                Scenario.EntityPermissions.FirstOrDefault(x => x.Permission == nameof(EntityPermissions.EditMatch));
+                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditMatch));
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
 
             //Recupero una Match esistente non utilizzato
-            var existing = Scenario.Matches.FirstOrDefault(x => x.Id == permission.EntityId);
+            var existing = Scenario.Matches.FirstOrDefault();
 
             if (existing == null)
                 Assert.Inconclusive("Match does not exists");
@@ -357,10 +357,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta
             var parsed = ParseExpectedOk<MatchContract>(response);
 
-            var countPermissionAfter = Scenario.EntityPermissions.Count(x =>
-                x.EntityId == permission.EntityId &&
-                (x.Permission == nameof(EntityPermissions.EditMatch) ||
-                 x.Permission == nameof(EntityPermissions.DeleteMatch)));
+            var countPermissionAfter = Scenario.Permissions.Count(x =>
+                //x.EntityId == permission.EntityId &&
+                (x.Name == nameof(Permissions.EditMatch) ||
+                 x.Name == nameof(Permissions.DeleteMatch)));
 
 
             Assert.IsTrue(parsed.Data.MatchId == existing.Id);

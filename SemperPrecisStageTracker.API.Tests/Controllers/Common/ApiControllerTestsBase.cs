@@ -101,22 +101,23 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 .FirstOrDefault(u => !userIds.Contains(u.Id));
         }
 
-        protected Shooter GetUserWithoutPermission(IList<AdministrationPermissions> adminPermissions)
+        protected Shooter GetUserWithoutPermission(IList<Permissions> adminPermissions)
             => GetUserWithPermission(adminPermissions, false);
 
         /// <summary>
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetUserWithPermission(IList<AdministrationPermissions> adminPermissions, bool inOrOut = true)
+        protected Shooter GetUserWithPermission(IList<Permissions> adminPermissions, bool inOrOut = true)
         {
+            //TODO: sistemare permessi
             var userWIthPermissionsIds = new List<string>();
             if (adminPermissions != null)
-                userWIthPermissionsIds.AddRange(Scenario.AdministrationPermissions
+                userWIthPermissionsIds.AddRange(Scenario.Permissions
                 .Select(x => new
                 {
                     x.ShooterId,
-                    Permission = x.Permission.ParseEnum<AdministrationPermissions>()
+                    Permission = x.Name.ParseEnum<Permissions>()
                 })
                 .Where(x => adminPermissions.Contains(x.Permission))
                 .Select(x => x.ShooterId)

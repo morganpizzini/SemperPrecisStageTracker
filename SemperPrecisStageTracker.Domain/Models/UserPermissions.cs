@@ -5,10 +5,7 @@ namespace SemperPrecisStageTracker.Domain.Models
 {
     public class UserPermissions
     {
-        public ICollection<AdministrationPermissions> AdministratorPermissions { get; set; } =
-            new List<AdministrationPermissions>();
-
-        public IDictionary<string, List<EntityPermissions>> EntityPermissions { get; set; } =
-            new Dictionary<string, List<EntityPermissions>>();
+        public IDictionary<string, List<Permissions>> EntityPermissions { get; set; } =
+            new Dictionary<string, List<Permissions>>();
     }
 }

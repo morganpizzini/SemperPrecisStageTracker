@@ -24,8 +24,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #region Private fields
         private readonly IShooterRepository _userRepository;
-        private readonly IEntityPermissionRepository _entityPermissionRepository;
-        private readonly IAdministrationPermissionRepository _administrationPermissionRepository;
+        private readonly IPermissionRepository _permissionRepository;
         private readonly IIdentityClient _identityClient;
         #endregion
 
@@ -38,8 +37,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Inizializzazioni
             _userRepository = dataSession.ResolveRepository<IShooterRepository>();
-            _entityPermissionRepository = dataSession.ResolveRepository<IEntityPermissionRepository>();
-            _administrationPermissionRepository = dataSession.ResolveRepository<IAdministrationPermissionRepository>();
+            _permissionRepository = dataSession.ResolveRepository<IPermissionRepository>();
             _identityClient = ServiceResolver.Resolve<IIdentityClient>();
         }
 
@@ -177,31 +175,26 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        private (IList<string> adminPermissions, IList<EntityPermission> entityPermissions) userPermissions =
-            (new List<string>(), new List<EntityPermission>());
+        
+
         /// <summary>
         /// Get user permissions
         /// </summary>
         /// <param name="userId">User identifier</param>
         /// <returns>Return user permissions list</returns>
-        public Task<(IList<string> adminPermissions, IList<EntityPermission> entityPermissions)> GetUserPermissionById(string userId)
+        public Task<IList<Permission>> GetUserPermissionById(string userId)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            if (userPermissions.entityPermissions.Count == 0 && userPermissions.adminPermissions.Count == 0)
-            {
-                userPermissions = (
-                    _administrationPermissionRepository.FetchWithProjection(x => x.Permission, x => x.ShooterId == userId),
-                    _entityPermissionRepository.Fetch(x => x.ShooterId == userId)
-                );
-            }
 
+            var userPermissions = _permissionRepository.Fetch(x => x.ShooterId == userId);
+            
             //Recupero i dati, commit ed uscita
             return Task.FromResult(userPermissions);
         }
 
-        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<EntityPermissions> permissions, string entityId)
+        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<Permissions> permissions, string entityId)
         {
             var permissionsAsStringList = permissions.Select(x => x.ToDescriptionString()).ToList();
             return this.DeletePermissionsOnEntity(permissionsAsStringList, entityId);
@@ -220,11 +213,11 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //retrieve elements
             var existing =
-                _entityPermissionRepository.Fetch(x => x.EntityId == entityId && permissions.Contains(x.Permission));
+                _permissionRepository.Fetch(x => x.EntityId == entityId && permissions.Contains(x.Name));
 
             foreach (var entityPermission in existing)
             {
-                _entityPermissionRepository.Delete(entityPermission);
+                _permissionRepository.Delete(entityPermission);
             }
 
             //Recupero i dati, commit ed uscita
@@ -236,36 +229,16 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="newEntityPermissions"></param>
         /// <returns></returns>
-        public IList<ValidationResult> SaveUserPermissions(IList<AdministrationPermission> newEntityPermissions)
+        public IList<ValidationResult> SaveUserPermissions(IList<Permission> newEntityPermissions)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
             foreach (var newEntityPermission in newEntityPermissions)
             {
-                validations = _administrationPermissionRepository.Validate(newEntityPermission);
+                validations = _permissionRepository.Validate(newEntityPermission);
                 if (validations.Count > 0)
                     return validations;
 
-                _administrationPermissionRepository.Save(newEntityPermission);
-
-            }
-            return validations;
-        }
-
-        /// <summary>
-        /// Operation without transaction
-        /// </summary>
-        /// <param name="newEntityPermissions"></param>
-        /// <returns></returns>
-        public IList<ValidationResult> SaveUserPermissions(IList<EntityPermission> newEntityPermissions)
-        {
-            IList<ValidationResult> validations = new List<ValidationResult>();
-            foreach (var newEntityPermission in newEntityPermissions)
-            {
-                validations = _entityPermissionRepository.Validate(newEntityPermission);
-                if (validations.Count > 0)
-                    return validations;
-
-                _entityPermissionRepository.Save(newEntityPermission);
+                _permissionRepository.Save(newEntityPermission);
 
             }
             return validations;
@@ -373,16 +346,17 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return validations;
         }
-        public Task<bool> ValidateUserPermissions(string userId, AdministrationPermissions adminPermission)
+        public Task<bool> ValidateUserPermissions(string userId, Permissions adminPermission)
         {
-            return ValidateUserPermissions(userId, new List<AdministrationPermissions> { adminPermission });
+            return ValidateUserPermissions(userId, new List<Permissions> { adminPermission });
         }
-        public Task<bool> ValidateUserPermissions(string userId, IList<AdministrationPermissions> adminPermission)
+        public Task<bool> ValidateUserPermissions(string userId, IList<Permissions> adminPermission)
         {
-            return ValidateUserPermissions(userId, string.Empty, adminPermission, new List<EntityPermissions>());
+            return ValidateUserPermissions(userId, string.Empty, adminPermission);
         }
-        public async Task<bool> ValidateUserPermissions(string userId, string entityId, IList<AdministrationPermissions> adminPermission, IList<EntityPermissions> shooterPermission)
+        public async Task<bool> ValidateUserPermissions(string userId, string entityId, IList<Permissions> shooterPermission)
         {
+            //TODO: fix validate user
             if (string.IsNullOrEmpty(userId))
             {
                 return false;
@@ -392,19 +366,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             // Convert user permission in application enum permissions
             var permissions = new UserPermissions()
             {
-                AdministratorPermissions =
-                    rawUserPermissions.adminPermissions.Select(x => x.ParseEnum<AdministrationPermissions>()).ToList(),
-                EntityPermissions = rawUserPermissions.entityPermissions.GroupBy(x => x.EntityId)
+                EntityPermissions = rawUserPermissions.GroupBy(x => x.EntityId)
                     .ToDictionary(
                         x => x.Key,
-                        x => x.Select(e => e.Permission.ParseEnum<EntityPermissions>()).ToList())
+                        x => x.Select(e => e.Name.ParseEnum<Permissions>()).ToList())
             };
-
-            // check for permissions
-            if (permissions.AdministratorPermissions.Any(adminPermission.Contains))
-            {
-                return true;
-            }
 
             if (!string.IsNullOrEmpty(entityId) && shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(entityId))
             {

@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["NewTeam"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageTeams).And(nameof(AdministrationPermissions.CreateTeams)))">
+<AuthorizeView Roles="@(nameof(Permissions.ManageTeams).And(nameof(Permissions.CreateTeams)))">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>

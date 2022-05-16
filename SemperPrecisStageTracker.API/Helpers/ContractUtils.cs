@@ -491,25 +491,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static AdministrationPermissionContract GenerateContract(AdministrationPermission entity)
-        {
-            //Validazione argomenti
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            //Ritorno il contratto
-            return new AdministrationPermissionContract()
-            {
-                AdministrationPermissionId = entity.Id,
-                Permission = entity.Permission
-            };
-        }
-
-        /// <summary>
-        /// Generate contract using entity
-        /// </summary>
-        /// <param name="entity">Source entity</param>
-        /// <returns>Returns contract</returns>
-        public static EntityPermissionContract GenerateContract(EntityPermission entity)
+        public static EntityPermissionContract GenerateContract(Permission entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -518,8 +500,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new EntityPermissionContract()
             {
                 EntityPermissionId = entity.Id,
-                EntityId = entity.Id,
-                Permission = entity.Permission
+                Name = entity.Name
             };
         }
 
@@ -529,7 +510,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// <param name="adminPermissions">Admin permissions list</param>
         /// <param name="entityPermissions">Entity permission list</param>
         /// <returns>Returns contract</returns>
-        public static PermissionsResponse GenerateContract(IList<string> adminPermissions, IList<EntityPermission> entityPermissions)
+        public static PermissionsResponse GenerateContract(IList<string> adminPermissions, IList<Permission> entityPermissions)
         {
             //Validazione argomenti
             if (adminPermissions == null) throw new ArgumentNullException(nameof(adminPermissions));

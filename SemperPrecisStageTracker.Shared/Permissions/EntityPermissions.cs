@@ -2,8 +2,37 @@
 
 namespace SemperPrecisStageTracker.Shared.Permissions
 {
-    public enum EntityPermissions
+    public enum Permissions
     {
+        // admin
+        [Description("ManageMatches")]
+        ManageMatches = 901,
+        [Description("ManageShooters")]
+        ManageShooters = 902,
+        [Description("ManageTeams")]
+        ManageTeams = 903,
+        [Description("ManageAssociations")]
+        ManageAssociations = 904,
+        [Description("ManagePlaces")]
+        ManagePlaces = 905,
+        [Description("ManageStages")]
+        ManageStages = 906,
+        [Description("CreateMatches")]
+        CreateMatches = 907,
+        [Description("CreateShooters")]
+        CreateShooters = 908,
+        [Description("CreateTeams")]
+        CreateTeams = 909,
+        [Description("CreateStages")]
+        CreateStages = 910,
+        [Description("CreateAssociations")]
+        CreateAssociations = 911,
+        [Description("CreatePlaces")]
+        CreatePlaces = 912,
+        [Description("ShowShooters")]
+        ShowShooters = 913,
+
+        // entity
         [Description("EditShooter")]
         EditShooter = 1,
         [Description("DeleteShooter")]

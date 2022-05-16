@@ -76,7 +76,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterBeOkAndNotCreatePermissions()
         {
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.EntityPermissions.Count;
+            var countBefore = Scenario.Permissions.Count;
 
             //Composizione della request
             var request = new ShooterCreateRequest
@@ -92,7 +92,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.EntityPermissions.Count;
+            var countAfter = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterContract>(response);
@@ -103,11 +103,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(new List<AdministrationPermissions> { AdministrationPermissions.ManageShooters, AdministrationPermissions.CreateShooters }));
+            UpdateIdentityUser(GetUserWithoutPermission(new List<Permissions> { Permissions.ManageShooters, Permissions.CreateShooters }));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Shooters.Count;
-            var countBeforePermission = Scenario.EntityPermissions.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
 
             //Composizione della request
             var request = new ShooterCreateRequest
@@ -124,7 +124,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Shooters.Count;
-            var countAfterPermission = Scenario.EntityPermissions.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -137,9 +137,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetUserWithPermission(new List<AdministrationPermissions> { AdministrationPermissions.CreateShooters }));
+            UpdateIdentityUser(GetUserWithPermission(new List<Permissions> { Permissions.CreateShooters }));
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.EntityPermissions.Count;
+            var countBefore = Scenario.Permissions.Count;
 
             //Composizione della request
             var request = new ShooterCreateRequest
@@ -155,7 +155,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.EntityPermissions.Count;
+            var countAfter = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterContract>(response);
@@ -367,13 +367,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldDeleteShooterBeOkAndDeletePermissions()
         {
             var permission =
-                Scenario.EntityPermissions.FirstOrDefault(x => x.Permission == nameof(EntityPermissions.EditShooter));
+                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditShooter));
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
 
             //Recupero una Shooter esistente non utilizzato
-            var existing = Scenario.Shooters.FirstOrDefault(x => x.Id == permission.EntityId);
+            var existing = Scenario.Shooters.FirstOrDefault();
+            //var existing = Scenario.Shooters.FirstOrDefault(x => x.Id == permission.EntityId);
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
@@ -389,10 +390,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<ShooterContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
-            var countPermissionAfter = Scenario.EntityPermissions.Count(x =>
-                x.EntityId == permission.EntityId &&
-                (x.Permission == nameof(EntityPermissions.EditShooter) ||
-                 x.Permission == nameof(EntityPermissions.DeleteShooter)));
+            var countPermissionAfter = Scenario.Permissions.Count(x =>
+                //x.EntityId == permission.EntityId &&
+                (x.Name == nameof(Permissions.EditShooter) ||
+                 x.Name == nameof(Permissions.DeleteShooter)));
 
             Assert.IsTrue(
                 parsed.Data.ShooterId == existing.Id);

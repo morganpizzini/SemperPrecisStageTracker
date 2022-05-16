@@ -194,7 +194,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.EditTeam), Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.EditTeam), Id);
     
 
     private Modal modalRefEntityToDelete;

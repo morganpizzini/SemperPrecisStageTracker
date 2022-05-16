@@ -164,10 +164,10 @@ namespace SemperPrecisStageTracker.EF.Context
                 .ValueGeneratedOnAdd();
 
 
-            modelBuilder.Entity<BasePermission>().ToTable("ShooterPermissions")
+            modelBuilder.Entity<Permission>().ToTable("ShooterPermissions")
                 .HasKey(f => f.Id);
 
-            modelBuilder.Entity<BasePermission>().Property(f => f.Id)
+            modelBuilder.Entity<Permission>().Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
         }
@@ -261,12 +261,42 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of entity permission
         /// </summary>
-        public DbSet<EntityPermission> EntityPermissions { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<PermissionsRole> PermissionsRoles { get; set; }
 
         /// <summary>
-        /// List of administration permission
+        /// List of entity permission
         /// </summary>
-        public DbSet<AdministrationPermission> AdministrationPermissions { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<UserRole> UserRoles { get; set; }
+
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<UserPermission> UserPermissions { get; set; }
+
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<PermissionGroup> PermissionGroups { get; set; }
+
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
+
+        /// <summary>
+        /// List of entity permission
+        /// </summary>
+        public DbSet<PermissionGroupRole> PermissionGroupRoles { get; set; }
 
     }
 }
