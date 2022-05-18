@@ -491,7 +491,25 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static EntityPermissionContract GenerateContract(Permission entity)
+        public static UserPermissionContract GenerateContract(UserPermissionDto entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new UserPermissionContract()
+            {
+                GenericPermissions = entity.GenericPermissions,
+                EntityPermissions = entity.EntityPermissions.As(GenerateContract).ToList()
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static EntityPermissionContract GenerateContract(EntityPermission entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -499,31 +517,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Ritorno il contratto
             return new EntityPermissionContract()
             {
-                EntityPermissionId = entity.Id,
-                Name = entity.Name
-            };
-        }
-
-        /// <summary>
-        /// Generate contract using entity
-        /// </summary>
-        /// <param name="adminPermissions">Admin permissions list</param>
-        /// <param name="entityPermissions">Entity permission list</param>
-        /// <returns>Returns contract</returns>
-        public static PermissionsResponse GenerateContract(IList<string> adminPermissions, IList<Permission> entityPermissions)
-        {
-            //Validazione argomenti
-            if (adminPermissions == null) throw new ArgumentNullException(nameof(adminPermissions));
-            if (entityPermissions == null) throw new ArgumentNullException(nameof(entityPermissions));
-
-            //Ritorno il contratto
-            return new PermissionsResponse
-            {
-                AdministrationPermissions = adminPermissions.Select(x => new AdministrationPermissionContract
-                {
-                    Permission = x
-                }).ToList(),
-                EntityPermissions = entityPermissions.As(GenerateContract)
+                Permissions = entity.Permissions,
+                EntityId = entity.EntityId
             };
         }
 

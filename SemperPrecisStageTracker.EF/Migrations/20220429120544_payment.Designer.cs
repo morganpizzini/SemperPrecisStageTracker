@@ -622,21 +622,21 @@ namespace SemperPrecisStageTracker.EF.Migrations
                     b.ToTable("TeamHolders");
                 });
 
-            modelBuilder.Entity("SemperPrecisStageTracker.Models.AdministrationPermission", b =>
+            modelBuilder.Entity("SemperPrecisStageTracker.Models.Permission", b =>
                 {
                     b.HasBaseType("SemperPrecisStageTracker.Models.BasePermission");
 
-                    b.HasDiscriminator().HasValue("AdministrationPermission");
+                    b.HasDiscriminator().HasValue("Permission");
                 });
 
-            modelBuilder.Entity("SemperPrecisStageTracker.Models.EntityPermission", b =>
+            modelBuilder.Entity("SemperPrecisStageTracker.Models.Permission", b =>
                 {
                     b.HasBaseType("SemperPrecisStageTracker.Models.BasePermission");
 
                     b.Property<string>("EntityId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasDiscriminator().HasValue("EntityPermission");
+                    b.HasDiscriminator().HasValue("Permission");
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterMatch", b =>

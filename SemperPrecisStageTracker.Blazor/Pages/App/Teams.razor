@@ -4,7 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Teams"]</Heading>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(AdministrationPermissions.CreateTeams)))
+@if (AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.CreateTeams)))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
 }
@@ -37,7 +37,7 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))">@team.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.EditTeam), team.TeamId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.EditTeam), team.TeamId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamEdit>(new {id = team.TeamId}))"><Icon Name="IconName.Pen" /></Button>
                             }

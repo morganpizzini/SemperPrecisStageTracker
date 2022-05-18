@@ -9,11 +9,11 @@
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
 }
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
+@if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.CreateShooters)))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 }
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageTeams.AndList(EntityPermissions.DeleteTeam), Id))
+@if (AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.DeleteTeam), Id))
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }

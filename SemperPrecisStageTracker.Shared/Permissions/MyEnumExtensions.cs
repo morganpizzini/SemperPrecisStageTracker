@@ -1,36 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace SemperPrecisStageTracker.Shared.Permissions
 {
     public static class MyEnumExtensions
     {
-        public static IList<string> AndList(this object value, object newValue)
-        {
-            if (value is IList<string> list)
+        public static IList<T> AndList<T>(this T value, params T[] newValues) =>
+            new List<T>
             {
-                list.Add(newValue.ToString());
-                return list;
-            }
-            return new List<string>
-            {
-                value.ToString(),
-                newValue.ToString()
-            };
-        }
+                value
+            }.AndList(newValues);
+        
 
-        public static IList<T> AndList<T>(this IList<T> value, T newValue)
+        public static IList<T> AndList<T>(this IList<T> value, params T[] newValues)
         {
-            value.Add(newValue);
+            foreach (var newValue in newValues)
+            {
+                value.Add(newValue);
+            }
             return value;
         }
 
+        //public static IList<T> AndList<T>(this IList<T> value, T newValue)
+        //{
+        //    value.Add(newValue);
+        //    return value;
+        //}
 
-        public static string And(this string value, string newValue)
+
+        public static string And(this Permissions value,params Permissions[] newValues)
         {
-            return $"{value},{newValue}";
+            return $"{value.ToDescriptionString()},{string.Join(",",newValues.Select(ToDescriptionString))}";
         }
+
+        //public static string And(this string value,params string[] newValue)
+        //{
+        //    return $"{value},{string.Join(",",newValue)}";
+        //}
+
+
         public static T ParseEnum<T>(this string value)
         {
             return (T)Enum.Parse(typeof(T), value, true);

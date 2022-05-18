@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditShooter"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(EntityPermissions.EditShooter)))" Resource="@Id">
+<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.EditShooter))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -136,7 +136,7 @@
     ShooterUpdateRequest model = new ();
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageShooters).AndList(nameof(EntityPermissions.EditShooter)), Id))
+        if (!AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), Id))
         {
             await base.OnInitializedAsync();
             return;

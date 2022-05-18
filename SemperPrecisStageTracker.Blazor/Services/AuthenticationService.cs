@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Pages.App;
 using SemperPrecisStageTracker.Blazor.Utils;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -48,7 +49,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public async Task Initialize()
         {
             _stateService.User = await _localStorageService.GetItem<ShooterContract>(userKey);
-            _stateService.Permissions = await _localStorageService.GetItem<PermissionsResponse>(permissionKey);
+            _stateService.Permissions = await _localStorageService.GetItem<UserPermissionContract>(permissionKey);
             if (_stateService.User != null)
             {
                 _customAuthenticationStateProvider.LoginNotify(_stateService.User);
@@ -91,29 +92,25 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }
+        
 
-        public bool CheckPermissions(string roles, string resourceId = "") =>
-            CheckPermissions(new List<string> { roles }, resourceId);
+        public bool CheckPermissions(Permissions permission, string entityId = "") =>
+            CheckPermissions(new List<Permissions> { permission }, entityId);
 
-        public bool CheckPermissions(IEnumerable<string> roles, string resourceId = "")
+        public bool CheckPermissions(IList<Permissions> permissions, string entityId = "")
         {
-            if (_stateService.Permissions.AdministrationPermissions.Any(p => roles.Contains(p.Permission)))
+            if (permissions == null || permissions.Count==0)
+                return false;
+
+            if (_stateService.Permissions.GenericPermissions.Any(permissions.Contains))
             {
                 return true;
             }
 
-            if (_stateService.Permissions.EntityPermissions.Any())
-            {
-                var existingPermissionOnResource = _stateService.Permissions.EntityPermissions.AsQueryable();
-
-                if (!string.IsNullOrEmpty(resourceId))
-                    existingPermissionOnResource.Where(sp => sp.EntityId == resourceId);
-
-                if (existingPermissionOnResource.Select(x => x.Permission).Any(roles.Contains))
-                    return true;
-            }
-
-            return false;
+            if (string.IsNullOrEmpty(entityId) || _stateService.Permissions.EntityPermissions.Count == 0)
+                return false;
+            
+            return _stateService.Permissions.EntityPermissions.Any(x=>x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
         }
     }
 }

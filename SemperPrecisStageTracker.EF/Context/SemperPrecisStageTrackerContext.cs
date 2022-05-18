@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SemperPrecisStageTracker.Models;
 using Microsoft.Extensions.Configuration;
 using SemperPrecisStageTracker.Domain.Containers;
@@ -43,6 +45,19 @@ namespace SemperPrecisStageTracker.EF.Context
         {
             optionsBuilder.UseSqlServer(ConnectionString);
             base.OnConfiguring(optionsBuilder);
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            base.ConfigureConventions(configurationBuilder);
+
+            configurationBuilder.Properties<string>()
+                //.AreUnicode(false)
+                //.AreFixedLength()
+                .HaveMaxLength(255);
+
+            configurationBuilder.Properties<decimal>()
+                .HavePrecision(5, 2);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,6 +110,8 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
+            
+
             modelBuilder.Entity<TeamHolder>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<TeamHolder>()
@@ -132,6 +149,31 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList());
 
+            var valueComparerString = new ValueComparer<IList<string>>(
+                (c1, c2) => c1.SequenceEqual(c2),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToList());
+
+            var valueComparerInt = new ValueComparer<IList<int>>(
+                (c1, c2) => c1.SequenceEqual(c2),
+                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                c => c.ToList());
+
+            modelBuilder.Entity<Association>()
+                .Property(e => e.Divisions)
+                .Metadata
+                .SetValueComparer(valueComparerString);
+
+            modelBuilder.Entity<ShooterStage>()
+                .Property(e => e.DownPoints)
+                .Metadata
+                .SetValueComparer(valueComparerInt);
+
+            modelBuilder.Entity<Association>()
+                .Property(e => e.Classifications)
+                .Metadata
+                .SetValueComparer(valueComparerString);
+
             modelBuilder.Entity<Team>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Team>()
@@ -168,6 +210,49 @@ namespace SemperPrecisStageTracker.EF.Context
                 .HasKey(f => f.Id);
 
             modelBuilder.Entity<Permission>().Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            
+            modelBuilder.Entity<PermissionRole>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<PermissionRole>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Role>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Role>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<UserRole>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<UserRole>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<UserPermission>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<UserPermission>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<PermissionGroup>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<PermissionGroup>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<UserPermissionGroup>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<UserPermissionGroup>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<PermissionGroupRole>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<PermissionGroupRole>()
+                .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
         }
@@ -239,7 +324,7 @@ namespace SemperPrecisStageTracker.EF.Context
         public DbSet<NotificationSubscription> NotificationSubscriptions { get; set; }
 
         /// <summary>
-        /// List of shooter matches
+        /// List of shooter matches directors
         /// </summary>
         public DbSet<ShooterMatch> ShooterMatches { get; set; }
 
@@ -266,7 +351,7 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of entity permission
         /// </summary>
-        public DbSet<PermissionsRole> PermissionsRoles { get; set; }
+        public DbSet<PermissionRole> PermissionsRoles { get; set; }
 
         /// <summary>
         /// List of entity permission

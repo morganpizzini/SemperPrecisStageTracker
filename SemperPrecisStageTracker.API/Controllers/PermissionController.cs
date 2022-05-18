@@ -23,15 +23,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllUserPermissions")]
         [ProducesResponseType(typeof(PermissionsResponse), 200)]
-        public async Task<IActionResult> FetchAllUserPermissions()
-        {
-            var userId = PlatformUtils.GetIdentityUserId(User);
-
-            //Recupero la lista dal layer
-            var entities = await AuthorizationLayer.GetUserPermissionById(userId);
-
-            //Ritorno i contratti
-            return Ok(ContractUtils.GenerateContract(entities.adminPermissions, entities.entityPermissions));
-        }
+        public async Task<IActionResult> FetchAllUserPermissions() =>
+            Ok(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(PlatformUtils.GetIdentityUserId(User))));
+        
     }
 }

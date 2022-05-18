@@ -18,10 +18,10 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
 
     
 [Repository]
-    public class MockPermissionsRoleRepository : MockRepositoryBase<PermissionsRole, ISemperPrecisStageTrackerScenario>, IPermissionsRoleRepository
+    public class MockPermissionsRoleRepository : MockRepositoryBase<PermissionRole, ISemperPrecisStageTrackerScenario>, IPermissionsRoleRepository
     {
         public MockPermissionsRoleRepository(IDataSession dataSession)
-            : base(dataSession, c => c.PermissionsRoles)
+            : base(dataSession, c => c.PermissionRoles)
         {
         }
     }

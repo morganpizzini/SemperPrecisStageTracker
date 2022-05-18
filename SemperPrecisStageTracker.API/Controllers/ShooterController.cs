@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateShooter")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManageShooters, AdministrationPermissions.CreateShooters)]
+        [ApiAuthorizationFilter(Permissions.ManageShooters, Permissions.CreateShooters)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> CreateShooter(ShooterCreateRequest request)
         {
@@ -93,7 +93,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateShooter")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.EditShooter }, new[] { AdministrationPermissions.ManageShooters })]
+        [ApiAuthorizationFilter(Permissions.EditShooter ,Permissions.ManageShooters )]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> UpdateShooter([EntityId] ShooterUpdateRequest request)
         {
@@ -130,7 +130,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooter")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.DeleteShooter }, new[] { AdministrationPermissions.ManageShooters })]
+        [ApiAuthorizationFilter(Permissions.DeleteShooter , Permissions.ManageShooters )]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> DeleteShooter([EntityId] ShooterRequest request)
         {

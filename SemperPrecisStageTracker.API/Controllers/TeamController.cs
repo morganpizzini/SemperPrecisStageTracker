@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateTeam")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManageTeams, AdministrationPermissions.CreateTeams)]
+        [ApiAuthorizationFilter(Permissions.ManageTeams, Permissions.CreateTeams)]
         [ProducesResponseType(typeof(TeamContract), 200)]
         public async Task<IActionResult> CreateTeam(TeamCreateRequest request)
         {
@@ -89,7 +89,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.EditTeam }, new[] { AdministrationPermissions.ManageTeams })]
+        [ApiAuthorizationFilter(new[] { Permissions.EditTeam, Permissions.ManageTeams })]
         public async Task<IActionResult> UpdateTeam([EntityId] TeamUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -118,8 +118,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteTeam")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.DeleteTeam },
-            new[] { AdministrationPermissions.ManageTeams })]
+        [ApiAuthorizationFilter(new[] { Permissions.DeleteTeam , Permissions.ManageTeams })]
         [ProducesResponseType(typeof(TeamContract), 200)]
         public async Task<IActionResult> DeleteTeam([EntityId] TeamRequest request)
         {

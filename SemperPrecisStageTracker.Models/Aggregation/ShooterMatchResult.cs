@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker
 {
@@ -12,5 +13,16 @@ namespace SemperPrecisStageTracker
         public string TeamName { get; set; }
         public IList<ShooterStageResult> Results { get; set; }
         public decimal TotalTime => Results.Sum(x => x.Total);
+    }
+
+    public class UserPermissionDto
+    {
+        public List<Permissions> GenericPermissions { get; set; } = new ();
+        public List<EntityPermission> EntityPermissions { get; set; } = new ();
+    }
+    public class EntityPermission
+    {
+        public string EntityId { get; set; } = string.Empty;
+        public List<Permissions> Permissions { get; set; } = new ();
     }
 }

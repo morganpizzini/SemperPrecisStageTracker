@@ -1,7 +1,9 @@
 ﻿namespace SemperPrecisStageTracker.Contracts
 {
-    public abstract class BasePermissionContract
+    public class PermissionContract
     {
-        public string Permission { get; set; }
+
+        public string PermissionId { get; set; }
+        public string Name { get; set; }
     }
 }

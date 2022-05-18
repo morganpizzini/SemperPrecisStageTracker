@@ -17,7 +17,7 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
     }
     
     [Repository]
-    public class PermissionsRoleRepository : EntityFrameworkRepositoryBase<PermissionsRole, SemperPrecisStageTrackerContext>, IPermissionsRoleRepository
+    public class PermissionsRoleRepository : EntityFrameworkRepositoryBase<PermissionRole, SemperPrecisStageTrackerContext>, IPermissionsRoleRepository
     {
         public PermissionsRoleRepository(IDataSession dataSession)
             : base(dataSession, c => c.PermissionsRoles)

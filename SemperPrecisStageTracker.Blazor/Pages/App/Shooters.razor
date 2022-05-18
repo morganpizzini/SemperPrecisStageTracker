@@ -6,7 +6,7 @@
 
 <Heading Size="HeadingSize.Is1">@L["Shooters"]</Heading>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.CreateShooters)).And(nameof(EntityPermissions.EditShooter)).And(nameof(EntityPermissions.DeleteShooter)))">
+<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.CreateShooters,Permissions.EditShooter,Permissions.DeleteShooter))">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -18,7 +18,7 @@
             <input @ref="searchInput" class="form-control" @bind-value="SearchText"
                    @bind-value:event="oninput" placeholder="@L["Search"]" />
         </div>
-        @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.CreateShooters)))
+        @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.CreateShooters)))
         {
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
         }
@@ -53,7 +53,7 @@
                             <TableRow>
                                 <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.CompleteName</NavLink></TableRowHeader>
                                 <TableRowCell>@shooter.Username</TableRowCell>
-                                @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(AdministrationPermissions.ShowShooters).AndList(EntityPermissions.EditShooter), shooter.ShooterId))
+                                @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.ShowShooters).AndList(Permissions.EditShooter), shooter.ShooterId))
                         {
                             <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
                         }
@@ -62,18 +62,18 @@
                             <TableRowCell></TableRowCell>
                         }
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(EntityPermissions.EditShooter), shooter.ShooterId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), shooter.ShooterId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Pen" /></Button>
                             }
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters
-                            .AndList(AdministrationPermissions.ShowShooters)
-                            .AndList(EntityPermissions.EditShooter), shooter.ShooterId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageShooters
+                            .AndList(Permissions.ShowShooters)
+                            .AndList(Permissions.EditShooter), shooter.ShooterId))
                             {
                                 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Search" /></Button>
                             }
 
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(EntityPermissions.DeleteShooter), shooter.ShooterId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.DeleteShooter), shooter.ShooterId))
                             {
                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(shooter))"><Icon Name="IconName.Delete" /></Button>
                             }

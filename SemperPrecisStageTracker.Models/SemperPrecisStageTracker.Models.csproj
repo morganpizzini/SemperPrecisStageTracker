@@ -9,4 +9,8 @@
     <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

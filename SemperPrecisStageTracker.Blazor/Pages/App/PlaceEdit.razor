@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditPlace"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManagePlaces).And(nameof(EntityPermissions.EditPlace)))" Resource="@Id">
+<AuthorizeView Roles="@(Permissions.ManagePlaces.And(Permissions.EditPlace))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -151,7 +151,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManagePlaces).AndList(nameof(EntityPermissions.EditPlace)),Id))
+        if (!AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.EditPlace),Id))
         {
             await base.OnInitializedAsync();
             return;

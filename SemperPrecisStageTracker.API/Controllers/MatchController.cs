@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllMatches")]
-        //[ApiAuthorizationFilter(AdministrationPermissions.ManageMatches)]
+        //[ApiAuthorizationFilter(Permissions.ManageMatches)]
         [ProducesResponseType(typeof(IList<MatchContract>), 200)]
         public Task<IActionResult> FetchAllMatches()
         {
@@ -106,7 +106,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateMatch")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManageMatches, AdministrationPermissions.CreateMatches)]
+        [ApiAuthorizationFilter(Permissions.ManageMatches, Permissions.CreateMatches)]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> CreateMatch(MatchCreateRequest request)
         {
@@ -141,7 +141,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.EditMatch }, new[] { AdministrationPermissions.ManageMatches })]
+        [ApiAuthorizationFilter(Permissions.EditMatch,Permissions.ManageMatches )]
         public async Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -177,8 +177,8 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.DeleteMatch },
-                                new[] { AdministrationPermissions.ManageMatches })]
+        [ApiAuthorizationFilter(Permissions.DeleteMatch,
+                                Permissions.ManageMatches )]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {

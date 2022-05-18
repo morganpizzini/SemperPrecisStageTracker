@@ -12,7 +12,7 @@
     <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
 }
 
-@if (MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.DeleteMatch),Id))
+@if (MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.DeleteMatch),Id))
 {
     <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
@@ -337,7 +337,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= MainServiceLayer.Online && AuthService.CheckPermissions(AdministrationPermissions.ManageMatches.AndList(EntityPermissions.EditMatch),Id);
+    private bool PageCondition => pageCondition ??= MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.EditMatch),Id);
 
     // reference to the modal component
     private Modal modalRefGroup;

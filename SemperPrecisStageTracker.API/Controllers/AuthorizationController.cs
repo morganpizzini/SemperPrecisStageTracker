@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts.Requests;
+using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -32,18 +33,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Se non ho utente, unauthorized
             if (result == null)
                 return Unauthorized();
-
-            var permissions = await AuthorizationLayer.GetUserPermissionById(result.Id);
-
-            // recupero il profilo
-            //var profile = AuthorizationLayer.FetchProfilesOnUser(result.Username).FirstOrDefault();
-
+            
             //Se è tutto ok, serializzo il contratto
             return Ok(
                 new SignInResponse
                 {
                     Shooter = ContractUtils.GenerateContract(result),
-                    Permissions = ContractUtils.GenerateContract(permissions.adminPermissions, permissions.entityPermissions)
+                    Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(result.Id))
                 });
         }
 

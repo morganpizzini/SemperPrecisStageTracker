@@ -5,7 +5,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Associations"]</Heading>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(AdministrationPermissions.CreateAssociations)))
+@if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.CreateAssociations)))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
 }
@@ -38,12 +38,12 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))">@association.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.EditAssociation), association.AssociationId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation), association.AssociationId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new {id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
                             }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationDetail>(new {id = association.AssociationId}))"><Icon Name="IconName.Search" /></Button>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.DeleteAssociation), association.AssociationId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.DeleteAssociation), association.AssociationId))
                             {
                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(association))"><Icon Name="IconName.Delete" /></Button>
                             }

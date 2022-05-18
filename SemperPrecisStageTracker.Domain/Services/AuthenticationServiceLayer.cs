@@ -8,6 +8,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using log4net.Util;
+using Microsoft.Extensions.Caching.Memory;
+using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
@@ -25,7 +28,15 @@ namespace SemperPrecisStageTracker.Domain.Services
         #region Private fields
         private readonly IShooterRepository _userRepository;
         private readonly IPermissionRepository _permissionRepository;
+        private readonly IPermissionsRoleRepository _permissionRoleRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IUserRoleRepository _userRoleRepository;
+        private readonly IUserPermissionRepository _userPermissionRepository;
+        private readonly IPermissionGroupRepository _permissionGroupRepository;
+        private readonly IUserPermissionGroupRepository _userPermissionGroupRepository;
+        private readonly IPermissionGroupRoleRepository _permissionGroupRoleRepository;
         private readonly IIdentityClient _identityClient;
+        private readonly ISemperPrecisMemoryCache _cache;
         #endregion
 
         /// <summary>
@@ -37,8 +48,17 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Inizializzazioni
             _userRepository = dataSession.ResolveRepository<IShooterRepository>();
-            _permissionRepository = dataSession.ResolveRepository<IPermissionRepository>();
+            _permissionRepository = dataSession.ResolveRepository<IPermissionRepository>();            
+            _permissionRoleRepository = dataSession.ResolveRepository<IPermissionsRoleRepository>();
+            _roleRepository = dataSession.ResolveRepository<IRoleRepository>();
+            _userRoleRepository = dataSession.ResolveRepository<IUserRoleRepository>();
+            _userPermissionRepository = dataSession.ResolveRepository<IUserPermissionRepository>();
+            _permissionGroupRepository = dataSession.ResolveRepository<IPermissionGroupRepository>();
+            _userPermissionGroupRepository = dataSession.ResolveRepository<IUserPermissionGroupRepository>();
+            _permissionGroupRoleRepository = dataSession.ResolveRepository<IPermissionGroupRoleRepository>();
+
             _identityClient = ServiceResolver.Resolve<IIdentityClient>();
+            _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
         }
 
         /// <summary>
@@ -182,17 +202,123 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId">User identifier</param>
         /// <returns>Return user permissions list</returns>
-        public Task<IList<Permission>> GetUserPermissionById(string userId)
+        public Task<UserPermissionDto> GetUserPermissionById(string userId)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
+            var cached = _cache.GetValue<UserPermissionDto>(userId);
+            if (cached != null)
+                return Task.FromResult(cached);
+            // user group TODO to be implemented
+            // var permissionGroupIds = _userPermissionGroupRepository.FetchWithProjection(x=>x.PermissionGroupId,x => x.UserId == userId);
 
-            var userPermissions = _permissionRepository.Fetch(x => x.ShooterId == userId);
             
+            // user permission
+            var userPermissions = _userPermissionRepository.Fetch(x => x.UserId == userId);
+            // extract permission
+            var permissionIds = userPermissions.Select(x => x.PermissionId).ToList();
+            
+            // user roles
+            var userRoles = _userRoleRepository.Fetch(x => x.UserId == userId);
+            var rolesIds = userRoles.Select(x => x.RoleId).ToList();
+            var permissionRoles = _permissionRoleRepository.Fetch(x => rolesIds.Contains(x.RoleId));
+            permissionIds.AddRange(permissionRoles.Select(x=>x.PermissionId));
+
+            // permission applied
+            var permissions = _permissionRepository.Fetch(x => permissionIds.Contains(x.Id));
+
+            var genericPermissionsDto = new List<string>();
+
+            // split permission between entities and general
+            // general
+            // - roles
+            var generalRoles = userRoles.Where(x => string.IsNullOrEmpty(x.EntityId));
+            var generalRolesId = generalRoles.Select(x => x.RoleId).ToList();
+            var permissionsFromRole = permissionRoles.Where(x => generalRolesId.Contains(x.RoleId))
+                .Select(x => x.PermissionId).ToList();
+
+            // - permissions
+            var generalPermissionIds = userPermissions.Where(x => string.IsNullOrEmpty(x.EntityId)).Select(x=>x.PermissionId).ToList();
+            permissionsFromRole.AddRange(generalPermissionIds);
+            
+            genericPermissionsDto.AddRange(permissions.Where(x=>permissionsFromRole.Contains(x.Id)).Select(x=>x.Name));
+            var genericPermissions = genericPermissionsDto
+                                                    .Distinct()
+                                                    .Select(x=>x.ParseEnum<Permissions>())
+                                                    .ToList();
+            
+            // entities
+            // group by entityId 
+            // entity type is not relevant because a the permission name is unique, an entityid associated to 'edit match' will be for sure related to match entity
+            // - roles
+            var targetingRoles = userRoles.Where(x => !string.IsNullOrEmpty(x.EntityId));
+            var tr = targetingRoles.GroupBy(x => x.EntityId).Select(x => new
+                EntityPermissionTmp {
+                EntityId = x.Key,
+                Permissions = permissionRoles.Where(pr => x.Select(r => r.RoleId).ToList().Contains(pr.RoleId))
+                                .Select(pr =>  pr.PermissionId).ToList()
+            }).ToList();
+
+            // - permissions
+            var targetingPermissions = userPermissions.Where(x => !string.IsNullOrEmpty(x.EntityId));
+            var tp = targetingPermissions.GroupBy(x => x.EntityId).Select(x => new
+                EntityPermissionTmp{
+                EntityId = x.Key,
+                Permissions  = x.Select(c=>c.PermissionId).ToList()
+            }).ToList();
+
+            // merge lists
+            var entityPermissionList = new List<EntityPermission>();
+            foreach (var t in tp)
+            {
+                var tmp = tr.FirstOrDefault(x => x.EntityId == t.EntityId);
+                if (tmp == null)
+                {
+                    entityPermissionList.Add(new EntityPermission()
+                    {
+                        EntityId = t.EntityId,
+                        Permissions = permissions.Where(x => t.Permissions.Contains(x.Id))
+                                        .Select(x => x.Name)
+                                        .Distinct()
+                                        .Select(x=>x.ParseEnum<Permissions>())
+                                        .ToList()
+                    });
+                    continue;
+                }
+                
+                tmp.Permissions.AddRange(t.Permissions);
+
+                entityPermissionList.Add(new EntityPermission()
+                {
+                    EntityId = tmp.EntityId,
+                    Permissions = permissions.Where(x => tmp.Permissions.Contains(x.Id))
+                        .Select(x => x.Name)
+                        .Distinct()
+                        .Select(x=>x.ParseEnum<Permissions>())
+                        .ToList()
+                });
+            }
+
+            var result = new UserPermissionDto
+            {
+                GenericPermissions = genericPermissions,
+                EntityPermissions = entityPermissionList
+            };
+
+            _cache.SetValue(userId,result);
             //Recupero i dati, commit ed uscita
-            return Task.FromResult(userPermissions);
+            return Task.FromResult(result);
         }
+
+        public class EntityPermissionTmp
+        {
+            public string EntityId { get; set; } = string.Empty;
+            public List<string> Permissions { get; set; } = new ();
+        }
+
+        
+
 
         public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<Permissions> permissions, string entityId)
         {
@@ -201,7 +327,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
-        /// Delete user permissions
+        /// Delete all user permissions applied to a single entity
         /// </summary>
         /// <param name="userId">User identifier</param>
         /// <returns>Return user permissions list</returns>
@@ -211,13 +337,31 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(entityId)) throw new ArgumentNullException(nameof(entityId));
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            //retrieve elements
-            var existing =
-                _permissionRepository.Fetch(x => x.EntityId == entityId && permissions.Contains(x.Name));
+            var permissionIds = _permissionRepository.FetchWithProjection(x => x.Id, x => permissions.Contains(x.Name));
 
-            foreach (var entityPermission in existing)
+            //retrieve elements
+            var userPermissions = _userPermissionRepository.Fetch(x => x.EntityId == entityId && permissionIds.Contains(x.PermissionId));
+            
+            foreach (var entityPermission in userPermissions)
             {
-                _permissionRepository.Delete(entityPermission);
+                _userPermissionRepository.Delete(entityPermission);
+            }
+
+            // get role permission on entity
+            var rolePermissions = _userRoleRepository.Fetch(x => x.EntityId == entityId);
+
+            var roleIds = rolePermissions.Select(x => x.RoleId);
+
+            var rolePermission =
+                _permissionRoleRepository
+                    .FetchWithProjection(x=>x.RoleId,
+                        // filter by permissions
+                        x => roleIds.Contains(x.RoleId) && permissionIds.Contains(x.PermissionId));
+
+            // delete every role with entityId and the role which contains the required permission
+            foreach (var userRole in rolePermissions.Where(x=>rolePermission.Contains(x.RoleId)))
+            {
+                _userRoleRepository.Delete(userRole);
             }
 
             //Recupero i dati, commit ed uscita
@@ -227,20 +371,88 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <summary>
         /// Operation without transaction
         /// </summary>
-        /// <param name="newEntityPermissions"></param>
+        /// <param name="newPermissions"></param>
         /// <returns></returns>
-        public IList<ValidationResult> SaveUserPermissions(IList<Permission> newEntityPermissions)
+        public IList<ValidationResult> SaveUserPermissions(IList<UserPermission> newPermissions)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
-            foreach (var newEntityPermission in newEntityPermissions)
+            foreach (var newPermission in newPermissions)
             {
-                validations = _permissionRepository.Validate(newEntityPermission);
+                validations = _userPermissionRepository.Validate(newPermission);
                 if (validations.Count > 0)
                     return validations;
 
-                _permissionRepository.Save(newEntityPermission);
+                _userPermissionRepository.Save(newPermission);
 
             }
+            return validations;
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newPermissions"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> SavePermission(Permission entity)
+        {
+            var validations = _permissionRepository.Validate(entity);
+            if (validations.Count > 0)
+                return validations;
+
+            _permissionRepository.Save(entity);
+
+            
+            return validations;
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newPermissions"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> SavePermissionRole(PermissionRole entity)
+        {
+            
+            var validations = _permissionRoleRepository.Validate(entity);
+            if (validations.Count > 0)
+                return validations;
+
+            _permissionRoleRepository.Save(entity);
+
+            return validations;
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newPermissions"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> SaveUserRole(UserRole entity)
+        {
+            
+            var validations = _userRoleRepository.Validate(entity);
+            if (validations.Count > 0)
+                return validations;
+
+            _userRoleRepository.Save(entity);
+
+            return validations;
+        }
+
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> SaveRole(Role role)
+        {
+            var validations = _roleRepository.Validate(role);
+
+            if (validations.Count > 0)
+                return validations;
+
+            _roleRepository.Save(role);
+
             return validations;
         }
 
@@ -310,6 +522,13 @@ namespace SemperPrecisStageTracker.Domain.Services
             return false;
         }
 
+        public IList<Permission> FetchPermissionByNames(IList<string> names)
+        {
+            //Validazione argomenti
+            if (names == null) throw new ArgumentNullException(nameof(names));
+
+            return _permissionRepository.Fetch(x => names.Contains(x.Name));
+        }
 
         public IList<ValidationResult> SyncPasswords()
         {
@@ -346,6 +565,37 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             return validations;
         }
+
+        
+        public PermissionRole GetPermissionRole(string permissionId, string roleId)
+        {
+            if (string.IsNullOrEmpty(permissionId)) throw new ArgumentNullException(nameof(permissionId));
+            if (string.IsNullOrEmpty(roleId)) throw new ArgumentNullException(nameof(roleId));
+
+            return _permissionRoleRepository.GetSingle(x => x.PermissionId == permissionId && x.RoleId == roleId);
+        }
+
+        public UserRole GetUserRole(string userId, string roleId)
+        {
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+            if (string.IsNullOrEmpty(roleId)) throw new ArgumentNullException(nameof(roleId));
+
+            return _userRoleRepository.GetSingle(x => x.UserId == userId && x.RoleId == roleId);
+        }
+
+        public Permission GetPermissionByName(Permissions role) => GetPermissionByName(role.ToDescriptionString());
+
+        public Permission GetPermissionByName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+            return _permissionRepository.GetSingle(x => x.Name == name);
+        }
+        public Role GetRoleByName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+            return _roleRepository.GetSingle(x => x.Name == name);
+        }
+
         public Task<bool> ValidateUserPermissions(string userId, Permissions adminPermission)
         {
             return ValidateUserPermissions(userId, new List<Permissions> { adminPermission });
@@ -356,30 +606,21 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
         public async Task<bool> ValidateUserPermissions(string userId, string entityId, IList<Permissions> shooterPermission)
         {
-            //TODO: fix validate user
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId) || shooterPermission == null || shooterPermission.Count == 0)
             {
                 return false;
             }
-            var rawUserPermissions = await GetUserPermissionById(userId);
+            var userPermissions = await GetUserPermissionById(userId);
+            
+            if (userPermissions == null)
+                return false;
 
-            // Convert user permission in application enum permissions
-            var permissions = new UserPermissions()
-            {
-                EntityPermissions = rawUserPermissions.GroupBy(x => x.EntityId)
-                    .ToDictionary(
-                        x => x.Key,
-                        x => x.Select(e => e.Name.ParseEnum<Permissions>()).ToList())
-            };
-
-            if (!string.IsNullOrEmpty(entityId) && shooterPermission.Any() && permissions.EntityPermissions.ContainsKey(entityId))
-            {
-                var existingPermission = permissions.EntityPermissions
-                    .First(sp => sp.Key == entityId).Value;
-
-                if (existingPermission.Any(shooterPermission.Contains))
-                    return true;
-            }
+            //looking for generic permission
+            if (userPermissions.GenericPermissions.Any(shooterPermission.Contains))
+                return true;
+            
+            if (!string.IsNullOrEmpty(entityId))
+                return userPermissions.EntityPermissions.FirstOrDefault(x=>x.EntityId == entityId && x.Permissions.Any(shooterPermission.Contains)) != null;
 
             return false;
         }

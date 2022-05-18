@@ -89,7 +89,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// </summary>
         public IList<Permission> Permissions { get; set; } = new List<Permission>();
 
-        public IList<PermissionsRole> PermissionsRoles { get; set; } = new List<PermissionsRole>();
+        public IList<PermissionRole> PermissionRoles { get; set; } = new List<PermissionRole>();
         public IList<Role> Roles { get; set; } = new List<Role>();
         public IList<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public IList<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();

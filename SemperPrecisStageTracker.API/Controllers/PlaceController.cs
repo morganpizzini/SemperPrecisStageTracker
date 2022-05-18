@@ -58,7 +58,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreatePlace")]
-        [ApiAuthorizationFilter(AdministrationPermissions.ManagePlaces, AdministrationPermissions.CreatePlaces)]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.CreatePlaces)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> CreatePlace(PlaceCreateRequest request)
         {
@@ -93,7 +93,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdatePlace")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.EditPlace }, new[] { AdministrationPermissions.ManagePlaces })]
+        [ApiAuthorizationFilter(Permissions.EditPlace, Permissions.ManagePlaces )]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> UpdatePlace([EntityId] PlaceUpdateRequest request)
         {
@@ -131,7 +131,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeletePlace")]
-        [ApiAuthorizationFilter(new[] { EntityPermissions.DeletePlace }, new[] { AdministrationPermissions.ManagePlaces })]
+        [ApiAuthorizationFilter(Permissions.DeletePlace, Permissions.ManagePlaces )]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> DeletePlace([EntityId] PlaceRequest request)
         {

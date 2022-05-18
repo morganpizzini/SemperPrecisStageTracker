@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Services;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.Blazor
 {
@@ -19,7 +20,6 @@ namespace SemperPrecisStageTracker.Blazor
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
             RolesAuthorizationRequirement requirement)
         {
-
             if (context.User.Identity is { IsAuthenticated: false })
             {
                 context.Fail();
@@ -33,13 +33,15 @@ namespace SemperPrecisStageTracker.Blazor
                 return Task.CompletedTask;
             }
 
-            var roles = requirement.AllowedRoles;
+            var permissions = requirement.AllowedRoles
+                .Select(x=>x.ParseEnum<Permissions>())
+                .ToList();
 
             // get profile id from resource, passed in from blazor 
             //  page component
             var resourceId = context.Resource?.ToString() ?? string.Empty;
 
-            if (_authService.CheckPermissions(roles, resourceId))
+            if (_authService.CheckPermissions(permissions, resourceId))
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;

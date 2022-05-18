@@ -4,7 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Places"]</Heading>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(AdministrationPermissions.CreatePlaces)))
+@if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.CreatePlaces)))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<PlaceNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewPlace"]</Button>
 }
@@ -41,12 +41,12 @@
                         <TableRowCell>@place.Holder</TableRowCell>
                         <TableRowCell>@place.City</TableRowCell>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.EditPlace), place.PlaceId))
+                            @if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.EditPlace), place.PlaceId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new {id = place.PlaceId}))"><Icon Name="IconName.Pen"/></Button>
                             }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new {id = place.PlaceId}))"><Icon Name="IconName.Search"/></Button>
-                            @if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.DeletePlace), place.PlaceId))
+                            @if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.DeletePlace), place.PlaceId))
                             {
                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(place))"><Icon Name="IconName.Delete" /></Button>
                             }

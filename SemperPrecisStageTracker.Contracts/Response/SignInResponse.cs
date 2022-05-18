@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
     /// <summary>
@@ -6,6 +9,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     public class SignInResponse
     {
         public ShooterContract Shooter { get; set; }
-        public PermissionsResponse Permissions { get; set; }
+        public UserPermissionContract Permissions { get; set; }
     }
 }

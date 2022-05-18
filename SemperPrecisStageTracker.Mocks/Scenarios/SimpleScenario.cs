@@ -70,7 +70,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterMatches = scenarioClone.ShooterMatches;
             ShooterSOStages = scenarioClone.ShooterSOStages;
             Contacts = scenarioClone.Contacts;
-            AdministrationPermissions = scenarioClone.AdministrationPermissions;
+            Permissions = scenarioClone.Permissions;
             Permissions = scenarioClone.Permissions;
             TeamHolders = scenarioClone.TeamHolders;
             ShooterTeamPayments = scenarioClone.ShooterTeamPayments;

@@ -5,11 +5,11 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.EditPlace), Id))
+@if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.EditPlace), Id))
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
 }
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManagePlaces.AndList(EntityPermissions.DeletePlace), Id))
+@if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.DeletePlace), Id))
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }

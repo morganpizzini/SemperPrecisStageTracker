@@ -12,8 +12,7 @@ namespace SemperPrecisStageTracker.API.Helpers
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute
     {
-        private readonly List<AdministrationPermissions> _adminPermission = new();
-        private readonly List<EntityPermissions> _entityPermission = new();
+        private readonly List<Permissions> _permissions = new();
         //private readonly List<MatchPermissions> _matchPermissions = new();
 
         public string PermissionsString
@@ -21,35 +20,18 @@ namespace SemperPrecisStageTracker.API.Helpers
             get
             {
                 var result = string.Empty;
-                if (_adminPermission.Any())
-                    result += string.Join(" ", _adminPermission);
-
-                if (_entityPermission.Any())
-                    result += " " + string.Join(" ", _entityPermission);
+                
+                if (_permissions.Any())
+                    result += " " + string.Join(" ", _permissions);
 
                 return result;
             }
         }
-
-
-        public ApiAuthorizationFilter(params EntityPermissions[] permissions)
+        
+        public ApiAuthorizationFilter(params Permissions[] entityPermissions)
         {
-            _entityPermission.Clear();
-            _entityPermission.AddRange(permissions);
-        }
-
-        public ApiAuthorizationFilter(params AdministrationPermissions[] permissions)
-        {
-            _adminPermission.Clear();
-            _adminPermission.AddRange(permissions);
-        }
-
-        public ApiAuthorizationFilter(EntityPermissions[] entityPermissions, AdministrationPermissions[] adminPermissions)
-        {
-            _entityPermission.Clear();
-            _adminPermission.Clear();
-            _entityPermission.AddRange(entityPermissions);
-            _adminPermission.AddRange(adminPermissions);
+            _permissions.Clear();
+            _permissions.AddRange(entityPermissions);
         }
 
         /// <summary>
@@ -103,7 +85,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Service layer base
             using var authServiceLayer = new AuthenticationServiceLayer(isolatedSession);
 
-            return authServiceLayer.ValidateUserPermissions(userId, entityId, _adminPermission, _entityPermission);
+            return authServiceLayer.ValidateUserPermissions(userId, entityId, _permissions);
         }
     }
 }

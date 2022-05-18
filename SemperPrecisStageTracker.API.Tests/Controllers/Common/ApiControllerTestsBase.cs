@@ -105,27 +105,35 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             => GetUserWithPermission(adminPermissions, false);
 
         /// <summary>
-        /// Get admin that will be used for ASP.NET Identity
+        /// Get User with Permission
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetUserWithPermission(IList<Permissions> adminPermissions, bool inOrOut = true)
+        protected Shooter GetUserWithPermission(IList<Permissions> permissions, bool inOrOut = true)
         {
-            //TODO: sistemare permessi
-            var userWIthPermissionsIds = new List<string>();
-            if (adminPermissions != null)
-                userWIthPermissionsIds.AddRange(Scenario.Permissions
-                .Select(x => new
-                {
-                    x.ShooterId,
-                    Permission = x.Name.ParseEnum<Permissions>()
-                })
-                .Where(x => adminPermissions.Contains(x.Permission))
-                .Select(x => x.ShooterId)
-                .ToList());
+            if (permissions == null || permissions.Count == 0)
+            {
+                Assert.Inconclusive("No permission provided");
+                return null;
+            }
+            var permissionIds =Scenario.Permissions
+                .Where(x => permissions.Contains(x.Name.ParseEnum<Permissions>()))
+                .Select(x=>x.Id)
+                .ToList();
+
+
+            var userPermissionIds = Scenario.UserPermissions.Where(x => permissionIds.Contains(x.PermissionId))
+                    .Select(x => x.UserId).ToList();
+            var rolePermissionIds = Scenario.PermissionRoles.Where(x => permissionIds.Contains(x.PermissionId))
+                    .Select(x => x.RoleId).ToList();
+            // merge user role permission with user permission
+            userPermissionIds.AddRange(
+                Scenario.UserRoles.Where(x => rolePermissionIds.Contains(x.RoleId))
+                    .Select(x => x.UserId).ToList()
+                );
 
             if (inOrOut)
             {
-                var selectedUser = userWIthPermissionsIds.FirstOrDefault();
+                var selectedUser = userPermissionIds.FirstOrDefault();
                 if (selectedUser == null)
                 {
                     Assert.Inconclusive("no user with privileges found");
@@ -135,7 +143,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             }
             else
             {
-                return GetUserNotIn(userWIthPermissionsIds);
+                return GetUserNotIn(userPermissionIds);
             }
         }
 

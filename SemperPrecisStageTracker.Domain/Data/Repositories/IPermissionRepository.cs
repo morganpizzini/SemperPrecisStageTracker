@@ -10,9 +10,9 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
     }
     /// <summary>
-    /// Repository interface for "PermissionsRole"
+    /// Repository interface for "PermissionRole"
     /// </summary>
-    public interface IPermissionsRoleRepository : IRepository<PermissionsRole>
+    public interface IPermissionsRoleRepository : IRepository<PermissionRole>
     {
     }
 

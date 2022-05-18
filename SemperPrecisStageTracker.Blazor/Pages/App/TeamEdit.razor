@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditTeam"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageTeams).And(nameof(EntityPermissions.EditTeam)))" Resource="@Id">
+<AuthorizeView Roles="@(Permissions.ManageTeams.And(Permissions.EditTeam))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageTeams).AndList(nameof(EntityPermissions.EditTeam)),Id))
+        if (!AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.EditTeam),Id))
         {
             await base.OnInitializedAsync();
             return;

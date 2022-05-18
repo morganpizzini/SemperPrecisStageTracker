@@ -12,7 +12,7 @@ namespace SemperPrecisStageTracker.Models
         public string Name { get; set; }
     }
 
-    public class PermissionsRole : SemperPrecisEntity
+    public class PermissionRole : SemperPrecisEntity
     {
         public string PermissionId { get; set; } = string.Empty;
         public string RoleId { get; set; } = string.Empty;
@@ -59,7 +59,6 @@ namespace SemperPrecisStageTracker.Models
     public class PermissionGroup : SemperPrecisEntity
     {
         public string Name { get; set; } = string.Empty;
-        public string RoleId { get; set; } = string.Empty;
     }
 
     public class UserPermissionGroup : SemperPrecisEntity

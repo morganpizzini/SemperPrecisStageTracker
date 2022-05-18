@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.API.Helpers;
@@ -124,6 +125,7 @@ public class Program
         builder.Services
             .AddAuthentication(o => o.DefaultScheme = BasicAuthenticationOptions.Scheme)
             .AddBasicAuthentication();
+        
 
         builder.Services.AddControllers().AddJsonOptions(options =>
         {

@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageAssociations).And(nameof(EntityPermissions.EditAssociation)))" Resource="@Id">
+<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.EditAssociation))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -97,11 +97,11 @@
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.EditAssociation),Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation),Id);
 
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageAssociations).AndList(nameof(EntityPermissions.EditAssociation)),Id))
+        if (!AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation),Id))
         {
             await base.OnInitializedAsync();
             return;

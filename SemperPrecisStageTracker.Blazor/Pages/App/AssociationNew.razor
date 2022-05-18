@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["NewAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageAssociations).And(nameof(AdministrationPermissions.CreateAssociations)))">
+<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.CreateAssociations))">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>

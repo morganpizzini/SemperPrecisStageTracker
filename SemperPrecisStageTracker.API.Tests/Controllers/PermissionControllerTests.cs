@@ -24,10 +24,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<PermissionsResponse>(response);
             Assert.IsTrue(parsed != null &&
-                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == nameof(AdministrationPermissions.ManageMatches)) &&
-                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == nameof(AdministrationPermissions.ManageShooters)) &&
-                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == nameof(AdministrationPermissions.ManageShooters)) &&
-                          parsed.Data.AdministrationPermissions.Any(x => x.Permission == nameof(AdministrationPermissions.ManageTeams))
+                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageMatches)) &&
+                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageShooters)) &&
+                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageShooters)) &&
+                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageTeams))
             );
         }
 
@@ -41,8 +41,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<PermissionsResponse>(response);
 
+            // TODO: controllare permesso su entità
             Assert.IsTrue(parsed != null &&
-                          parsed.Data.EntityPermissions.Any(x => x.Permission == nameof(EntityPermissions.EditShooter) && x.EntityId == "1")
+                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.EditShooter))
             );
         }
 

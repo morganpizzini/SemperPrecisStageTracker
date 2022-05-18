@@ -7,7 +7,7 @@
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.ShowShooters)).And(nameof(EntityPermissions.EditShooter)))" Resource="@Id">
+<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.ShowShooters, Permissions.EditShooter))" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -437,7 +437,7 @@
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(AdministrationPermissions.ManageShooters.AndList(EntityPermissions.EditShooter), Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), Id);
 
 
     private Modal modalRefEntityToDelete;
@@ -466,7 +466,7 @@
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(nameof(AdministrationPermissions.ManageTeams).AndList(nameof(AdministrationPermissions.ShowShooters)).AndList(nameof(EntityPermissions.EditShooter)), Id))
+        if (!AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.ShowShooters,Permissions.EditShooter), Id))
         {
             await base.OnInitializedAsync();
             return;

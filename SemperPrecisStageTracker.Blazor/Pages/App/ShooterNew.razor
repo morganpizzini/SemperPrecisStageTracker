@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["NewShooter"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManageShooters).And(nameof(AdministrationPermissions.CreateShooters)))">
+<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.CreateShooters))">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>

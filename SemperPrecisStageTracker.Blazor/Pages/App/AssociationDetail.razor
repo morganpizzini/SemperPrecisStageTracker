@@ -5,11 +5,11 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.EditAssociation), Id))
+@if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation), Id))
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
 }
-@if (AuthService.CheckPermissions(AdministrationPermissions.ManageAssociations.AndList(EntityPermissions.DeleteAssociation), Id))
+@if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.DeleteAssociation), Id))
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }

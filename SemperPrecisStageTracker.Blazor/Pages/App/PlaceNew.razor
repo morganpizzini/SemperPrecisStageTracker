@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["NewPlace"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(nameof(AdministrationPermissions.ManagePlaces).And(nameof(AdministrationPermissions.CreatePlaces)))">
+<AuthorizeView Roles="@(Permissions.ManagePlaces.And(Permissions.CreatePlaces))">
 <Authorizing>
     <h3 class="mt-5">@L["Loading"]</h3>
 </Authorizing>
