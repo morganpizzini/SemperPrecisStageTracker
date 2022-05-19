@@ -5,6 +5,6 @@ namespace SemperPrecisStageTracker.Models.Commons
 {
     public class SemperPrecisEntity : ModernEntityBase
     {
-        public DateTime CreationDateTime { get; set; }
+        public DateTime CreationDateTime { get; set; } = DateTime.Now;
     }
 }

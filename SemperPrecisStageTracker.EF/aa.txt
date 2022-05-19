@@ -1,0 +1,891 @@
+﻿BEGIN TRANSACTION;
+GO
+
+DECLARE @var0 sysname;
+SELECT @var0 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterPermissions]') AND [c].[name] = N'Discriminator');
+IF @var0 IS NOT NULL EXEC(N'ALTER TABLE [ShooterPermissions] DROP CONSTRAINT [' + @var0 + '];');
+ALTER TABLE [ShooterPermissions] DROP COLUMN [Discriminator];
+GO
+
+DECLARE @var1 sysname;
+SELECT @var1 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterPermissions]') AND [c].[name] = N'EntityId');
+IF @var1 IS NOT NULL EXEC(N'ALTER TABLE [ShooterPermissions] DROP CONSTRAINT [' + @var1 + '];');
+ALTER TABLE [ShooterPermissions] DROP COLUMN [EntityId];
+GO
+
+DECLARE @var2 sysname;
+SELECT @var2 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterPermissions]') AND [c].[name] = N'Permission');
+IF @var2 IS NOT NULL EXEC(N'ALTER TABLE [ShooterPermissions] DROP CONSTRAINT [' + @var2 + '];');
+ALTER TABLE [ShooterPermissions] DROP COLUMN [Permission];
+GO
+
+EXEC sp_rename N'[ShooterPermissions].[ShooterId]', N'Name', N'COLUMN';
+GO
+
+ALTER TABLE [GroupShooters] ADD [Classification] nvarchar(max) NOT NULL DEFAULT N'';
+GO
+
+CREATE TABLE [PermissionGroupRoles] (
+    [Id] nvarchar(255) NOT NULL,
+    [GroupId] nvarchar(max) NULL,
+    [RoleId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_PermissionGroupRoles] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [PermissionGroups] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_PermissionGroups] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [PermissionsRoles] (
+    [Id] nvarchar(255) NOT NULL,
+    [PermissionId] nvarchar(max) NULL,
+    [RoleId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_PermissionsRoles] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Roles] (
+    [Id] nvarchar(255) NOT NULL,
+    [Name] nvarchar(max) NULL,
+    [Description] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_Roles] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [UserPermissionGroups] (
+    [Id] nvarchar(255) NOT NULL,
+    [PermissionGroupId] nvarchar(max) NULL,
+    [UserId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_UserPermissionGroups] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [UserPermissions] (
+    [Id] nvarchar(255) NOT NULL,
+    [UserId] nvarchar(max) NULL,
+    [PermissionId] nvarchar(max) NULL,
+    [EntityId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_UserPermissions] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [UserRoles] (
+    [Id] nvarchar(255) NOT NULL,
+    [UserId] nvarchar(max) NULL,
+    [RoleId] nvarchar(max) NULL,
+    [EntityId] nvarchar(max) NULL,
+    [CreationDateTime] datetime2 NOT NULL,
+    CONSTRAINT [PK_UserRoles] PRIMARY KEY ([Id])
+);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20220518223120_Permissions', N'6.0.4');
+GO
+
+COMMIT;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+DECLARE @var3 sysname;
+SELECT @var3 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserRoles]') AND [c].[name] = N'UserId');
+IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [UserRoles] DROP CONSTRAINT [' + @var3 + '];');
+ALTER TABLE [UserRoles] ALTER COLUMN [UserId] nvarchar(255) NULL;
+GO
+
+DECLARE @var4 sysname;
+SELECT @var4 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserRoles]') AND [c].[name] = N'RoleId');
+IF @var4 IS NOT NULL EXEC(N'ALTER TABLE [UserRoles] DROP CONSTRAINT [' + @var4 + '];');
+ALTER TABLE [UserRoles] ALTER COLUMN [RoleId] nvarchar(255) NULL;
+GO
+
+DECLARE @var5 sysname;
+SELECT @var5 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserRoles]') AND [c].[name] = N'EntityId');
+IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [UserRoles] DROP CONSTRAINT [' + @var5 + '];');
+ALTER TABLE [UserRoles] ALTER COLUMN [EntityId] nvarchar(255) NULL;
+GO
+
+DECLARE @var6 sysname;
+SELECT @var6 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserPermissions]') AND [c].[name] = N'UserId');
+IF @var6 IS NOT NULL EXEC(N'ALTER TABLE [UserPermissions] DROP CONSTRAINT [' + @var6 + '];');
+ALTER TABLE [UserPermissions] ALTER COLUMN [UserId] nvarchar(255) NULL;
+GO
+
+DECLARE @var7 sysname;
+SELECT @var7 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserPermissions]') AND [c].[name] = N'PermissionId');
+IF @var7 IS NOT NULL EXEC(N'ALTER TABLE [UserPermissions] DROP CONSTRAINT [' + @var7 + '];');
+ALTER TABLE [UserPermissions] ALTER COLUMN [PermissionId] nvarchar(255) NULL;
+GO
+
+DECLARE @var8 sysname;
+SELECT @var8 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserPermissions]') AND [c].[name] = N'EntityId');
+IF @var8 IS NOT NULL EXEC(N'ALTER TABLE [UserPermissions] DROP CONSTRAINT [' + @var8 + '];');
+ALTER TABLE [UserPermissions] ALTER COLUMN [EntityId] nvarchar(255) NULL;
+GO
+
+DECLARE @var9 sysname;
+SELECT @var9 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserPermissionGroups]') AND [c].[name] = N'UserId');
+IF @var9 IS NOT NULL EXEC(N'ALTER TABLE [UserPermissionGroups] DROP CONSTRAINT [' + @var9 + '];');
+ALTER TABLE [UserPermissionGroups] ALTER COLUMN [UserId] nvarchar(255) NULL;
+GO
+
+DECLARE @var10 sysname;
+SELECT @var10 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[UserPermissionGroups]') AND [c].[name] = N'PermissionGroupId');
+IF @var10 IS NOT NULL EXEC(N'ALTER TABLE [UserPermissionGroups] DROP CONSTRAINT [' + @var10 + '];');
+ALTER TABLE [UserPermissionGroups] ALTER COLUMN [PermissionGroupId] nvarchar(255) NULL;
+GO
+
+DECLARE @var11 sysname;
+SELECT @var11 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Teams]') AND [c].[name] = N'Name');
+IF @var11 IS NOT NULL EXEC(N'ALTER TABLE [Teams] DROP CONSTRAINT [' + @var11 + '];');
+ALTER TABLE [Teams] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var12 sysname;
+SELECT @var12 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[TeamHolders]') AND [c].[name] = N'TeamId');
+IF @var12 IS NOT NULL EXEC(N'ALTER TABLE [TeamHolders] DROP CONSTRAINT [' + @var12 + '];');
+ALTER TABLE [TeamHolders] ALTER COLUMN [TeamId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var13 sysname;
+SELECT @var13 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[TeamHolders]') AND [c].[name] = N'ShooterId');
+IF @var13 IS NOT NULL EXEC(N'ALTER TABLE [TeamHolders] DROP CONSTRAINT [' + @var13 + '];');
+ALTER TABLE [TeamHolders] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var14 sysname;
+SELECT @var14 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[TeamHolders]') AND [c].[name] = N'Description');
+IF @var14 IS NOT NULL EXEC(N'ALTER TABLE [TeamHolders] DROP CONSTRAINT [' + @var14 + '];');
+ALTER TABLE [TeamHolders] ALTER COLUMN [Description] nvarchar(255) NULL;
+GO
+
+DECLARE @var15 sysname;
+SELECT @var15 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'TargetsDescription');
+IF @var15 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var15 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [TargetsDescription] nvarchar(255) NULL;
+GO
+
+DECLARE @var16 sysname;
+SELECT @var16 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'StartStop');
+IF @var16 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var16 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [StartStop] nvarchar(255) NULL;
+GO
+
+DECLARE @var17 sysname;
+SELECT @var17 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'StageProcedureNotes');
+IF @var17 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var17 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [StageProcedureNotes] nvarchar(255) NULL;
+GO
+
+DECLARE @var18 sysname;
+SELECT @var18 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'StageProcedure');
+IF @var18 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var18 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [StageProcedure] nvarchar(255) NULL;
+GO
+
+DECLARE @var19 sysname;
+SELECT @var19 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'Scoring');
+IF @var19 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var19 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [Scoring] nvarchar(255) NULL;
+GO
+
+DECLARE @var20 sysname;
+SELECT @var20 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'ScoredHits');
+IF @var20 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var20 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [ScoredHits] nvarchar(255) NULL;
+GO
+
+DECLARE @var21 sysname;
+SELECT @var21 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'Scenario');
+IF @var21 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var21 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [Scenario] nvarchar(255) NULL;
+GO
+
+DECLARE @var22 sysname;
+SELECT @var22 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'SO');
+IF @var22 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var22 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [SO] nvarchar(255) NULL;
+GO
+
+DECLARE @var23 sysname;
+SELECT @var23 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'Rules');
+IF @var23 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var23 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [Rules] nvarchar(255) NULL;
+GO
+
+DECLARE @var24 sysname;
+SELECT @var24 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'Name');
+IF @var24 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var24 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [Name] nvarchar(255) NULL;
+GO
+
+DECLARE @var25 sysname;
+SELECT @var25 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'MatchId');
+IF @var25 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var25 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [MatchId] nvarchar(255) NULL;
+GO
+
+DECLARE @var26 sysname;
+SELECT @var26 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'GunReadyCondition');
+IF @var26 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var26 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [GunReadyCondition] nvarchar(255) NULL;
+GO
+
+DECLARE @var27 sysname;
+SELECT @var27 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Stages]') AND [c].[name] = N'Distance');
+IF @var27 IS NOT NULL EXEC(N'ALTER TABLE [Stages] DROP CONSTRAINT [' + @var27 + '];');
+ALTER TABLE [Stages] ALTER COLUMN [Distance] nvarchar(255) NULL;
+GO
+
+DECLARE @var28 sysname;
+SELECT @var28 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterTeams]') AND [c].[name] = N'TeamId');
+IF @var28 IS NOT NULL EXEC(N'ALTER TABLE [ShooterTeams] DROP CONSTRAINT [' + @var28 + '];');
+ALTER TABLE [ShooterTeams] ALTER COLUMN [TeamId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var29 sysname;
+SELECT @var29 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterTeams]') AND [c].[name] = N'ShooterId');
+IF @var29 IS NOT NULL EXEC(N'ALTER TABLE [ShooterTeams] DROP CONSTRAINT [' + @var29 + '];');
+ALTER TABLE [ShooterTeams] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var30 sysname;
+SELECT @var30 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterTeamPayments]') AND [c].[name] = N'TeamId');
+IF @var30 IS NOT NULL EXEC(N'ALTER TABLE [ShooterTeamPayments] DROP CONSTRAINT [' + @var30 + '];');
+ALTER TABLE [ShooterTeamPayments] ALTER COLUMN [TeamId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var31 sysname;
+SELECT @var31 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterTeamPayments]') AND [c].[name] = N'ShooterId');
+IF @var31 IS NOT NULL EXEC(N'ALTER TABLE [ShooterTeamPayments] DROP CONSTRAINT [' + @var31 + '];');
+ALTER TABLE [ShooterTeamPayments] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var32 sysname;
+SELECT @var32 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterTeamPayments]') AND [c].[name] = N'Reason');
+IF @var32 IS NOT NULL EXEC(N'ALTER TABLE [ShooterTeamPayments] DROP CONSTRAINT [' + @var32 + '];');
+ALTER TABLE [ShooterTeamPayments] ALTER COLUMN [Reason] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var33 sysname;
+SELECT @var33 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterStages]') AND [c].[name] = N'Time');
+IF @var33 IS NOT NULL EXEC(N'ALTER TABLE [ShooterStages] DROP CONSTRAINT [' + @var33 + '];');
+ALTER TABLE [ShooterStages] ALTER COLUMN [Time] decimal(5,2) NOT NULL;
+GO
+
+DECLARE @var34 sysname;
+SELECT @var34 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterStages]') AND [c].[name] = N'StageId');
+IF @var34 IS NOT NULL EXEC(N'ALTER TABLE [ShooterStages] DROP CONSTRAINT [' + @var34 + '];');
+ALTER TABLE [ShooterStages] ALTER COLUMN [StageId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var35 sysname;
+SELECT @var35 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterStages]') AND [c].[name] = N'ShooterId');
+IF @var35 IS NOT NULL EXEC(N'ALTER TABLE [ShooterStages] DROP CONSTRAINT [' + @var35 + '];');
+ALTER TABLE [ShooterStages] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var36 sysname;
+SELECT @var36 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterStages]') AND [c].[name] = N'Notes');
+IF @var36 IS NOT NULL EXEC(N'ALTER TABLE [ShooterStages] DROP CONSTRAINT [' + @var36 + '];');
+ALTER TABLE [ShooterStages] ALTER COLUMN [Notes] nvarchar(255) NULL;
+GO
+
+DECLARE @var37 sysname;
+SELECT @var37 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'Username');
+IF @var37 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var37 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [Username] nvarchar(255) NULL;
+GO
+
+DECLARE @var38 sysname;
+SELECT @var38 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'Password');
+IF @var38 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var38 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [Password] nvarchar(255) NULL;
+GO
+
+DECLARE @var39 sysname;
+SELECT @var39 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'LastName');
+IF @var39 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var39 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [LastName] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var40 sysname;
+SELECT @var40 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'FirstName');
+IF @var40 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var40 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [FirstName] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var41 sysname;
+SELECT @var41 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'FirearmsLicence');
+IF @var41 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var41 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [FirearmsLicence] nvarchar(255) NULL;
+GO
+
+DECLARE @var42 sysname;
+SELECT @var42 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Shooters]') AND [c].[name] = N'Email');
+IF @var42 IS NOT NULL EXEC(N'ALTER TABLE [Shooters] DROP CONSTRAINT [' + @var42 + '];');
+ALTER TABLE [Shooters] ALTER COLUMN [Email] nvarchar(255) NULL;
+GO
+
+DECLARE @var43 sysname;
+SELECT @var43 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterRoles]') AND [c].[name] = N'StageId');
+IF @var43 IS NOT NULL EXEC(N'ALTER TABLE [ShooterRoles] DROP CONSTRAINT [' + @var43 + '];');
+ALTER TABLE [ShooterRoles] ALTER COLUMN [StageId] nvarchar(255) NULL;
+GO
+
+DECLARE @var44 sysname;
+SELECT @var44 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterRoles]') AND [c].[name] = N'ShooterId');
+IF @var44 IS NOT NULL EXEC(N'ALTER TABLE [ShooterRoles] DROP CONSTRAINT [' + @var44 + '];');
+ALTER TABLE [ShooterRoles] ALTER COLUMN [ShooterId] nvarchar(255) NULL;
+GO
+
+DECLARE @var45 sysname;
+SELECT @var45 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterRoles]') AND [c].[name] = N'MatchId');
+IF @var45 IS NOT NULL EXEC(N'ALTER TABLE [ShooterRoles] DROP CONSTRAINT [' + @var45 + '];');
+ALTER TABLE [ShooterRoles] ALTER COLUMN [MatchId] nvarchar(255) NULL;
+GO
+
+DECLARE @var46 sysname;
+SELECT @var46 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterRoles]') AND [c].[name] = N'Discriminator');
+IF @var46 IS NOT NULL EXEC(N'ALTER TABLE [ShooterRoles] DROP CONSTRAINT [' + @var46 + '];');
+ALTER TABLE [ShooterRoles] ALTER COLUMN [Discriminator] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var47 sysname;
+SELECT @var47 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterPermissions]') AND [c].[name] = N'Name');
+IF @var47 IS NOT NULL EXEC(N'ALTER TABLE [ShooterPermissions] DROP CONSTRAINT [' + @var47 + '];');
+ALTER TABLE [ShooterPermissions] ALTER COLUMN [Name] nvarchar(255) NULL;
+GO
+
+DECLARE @var48 sysname;
+SELECT @var48 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterAssociations]') AND [c].[name] = N'ShooterId');
+IF @var48 IS NOT NULL EXEC(N'ALTER TABLE [ShooterAssociations] DROP CONSTRAINT [' + @var48 + '];');
+ALTER TABLE [ShooterAssociations] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var49 sysname;
+SELECT @var49 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterAssociations]') AND [c].[name] = N'Division');
+IF @var49 IS NOT NULL EXEC(N'ALTER TABLE [ShooterAssociations] DROP CONSTRAINT [' + @var49 + '];');
+ALTER TABLE [ShooterAssociations] ALTER COLUMN [Division] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var50 sysname;
+SELECT @var50 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterAssociations]') AND [c].[name] = N'Classification');
+IF @var50 IS NOT NULL EXEC(N'ALTER TABLE [ShooterAssociations] DROP CONSTRAINT [' + @var50 + '];');
+ALTER TABLE [ShooterAssociations] ALTER COLUMN [Classification] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var51 sysname;
+SELECT @var51 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterAssociations]') AND [c].[name] = N'CardNumber');
+IF @var51 IS NOT NULL EXEC(N'ALTER TABLE [ShooterAssociations] DROP CONSTRAINT [' + @var51 + '];');
+ALTER TABLE [ShooterAssociations] ALTER COLUMN [CardNumber] nvarchar(255) NULL;
+GO
+
+DECLARE @var52 sysname;
+SELECT @var52 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[ShooterAssociations]') AND [c].[name] = N'AssociationId');
+IF @var52 IS NOT NULL EXEC(N'ALTER TABLE [ShooterAssociations] DROP CONSTRAINT [' + @var52 + '];');
+ALTER TABLE [ShooterAssociations] ALTER COLUMN [AssociationId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var53 sysname;
+SELECT @var53 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Roles]') AND [c].[name] = N'Name');
+IF @var53 IS NOT NULL EXEC(N'ALTER TABLE [Roles] DROP CONSTRAINT [' + @var53 + '];');
+ALTER TABLE [Roles] ALTER COLUMN [Name] nvarchar(255) NULL;
+GO
+
+DECLARE @var54 sysname;
+SELECT @var54 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Roles]') AND [c].[name] = N'Description');
+IF @var54 IS NOT NULL EXEC(N'ALTER TABLE [Roles] DROP CONSTRAINT [' + @var54 + '];');
+ALTER TABLE [Roles] ALTER COLUMN [Description] nvarchar(255) NULL;
+GO
+
+DECLARE @var55 sysname;
+SELECT @var55 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Region');
+IF @var55 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var55 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Region] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var56 sysname;
+SELECT @var56 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'PostalZipCode');
+IF @var56 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var56 + '];');
+ALTER TABLE [Places] ALTER COLUMN [PostalZipCode] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var57 sysname;
+SELECT @var57 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Phone');
+IF @var57 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var57 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Phone] nvarchar(255) NULL;
+GO
+
+DECLARE @var58 sysname;
+SELECT @var58 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Name');
+IF @var58 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var58 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var59 sysname;
+SELECT @var59 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Holder');
+IF @var59 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var59 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Holder] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var60 sysname;
+SELECT @var60 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Email');
+IF @var60 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var60 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Email] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var61 sysname;
+SELECT @var61 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Country');
+IF @var61 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var61 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Country] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var62 sysname;
+SELECT @var62 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'City');
+IF @var62 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var62 + '];');
+ALTER TABLE [Places] ALTER COLUMN [City] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var63 sysname;
+SELECT @var63 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Places]') AND [c].[name] = N'Address');
+IF @var63 IS NOT NULL EXEC(N'ALTER TABLE [Places] DROP CONSTRAINT [' + @var63 + '];');
+ALTER TABLE [Places] ALTER COLUMN [Address] nvarchar(255) NULL;
+GO
+
+DECLARE @var64 sysname;
+SELECT @var64 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[PermissionsRoles]') AND [c].[name] = N'RoleId');
+IF @var64 IS NOT NULL EXEC(N'ALTER TABLE [PermissionsRoles] DROP CONSTRAINT [' + @var64 + '];');
+ALTER TABLE [PermissionsRoles] ALTER COLUMN [RoleId] nvarchar(255) NULL;
+GO
+
+DECLARE @var65 sysname;
+SELECT @var65 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[PermissionsRoles]') AND [c].[name] = N'PermissionId');
+IF @var65 IS NOT NULL EXEC(N'ALTER TABLE [PermissionsRoles] DROP CONSTRAINT [' + @var65 + '];');
+ALTER TABLE [PermissionsRoles] ALTER COLUMN [PermissionId] nvarchar(255) NULL;
+GO
+
+DECLARE @var66 sysname;
+SELECT @var66 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[PermissionGroups]') AND [c].[name] = N'Name');
+IF @var66 IS NOT NULL EXEC(N'ALTER TABLE [PermissionGroups] DROP CONSTRAINT [' + @var66 + '];');
+ALTER TABLE [PermissionGroups] ALTER COLUMN [Name] nvarchar(255) NULL;
+GO
+
+DECLARE @var67 sysname;
+SELECT @var67 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[PermissionGroupRoles]') AND [c].[name] = N'RoleId');
+IF @var67 IS NOT NULL EXEC(N'ALTER TABLE [PermissionGroupRoles] DROP CONSTRAINT [' + @var67 + '];');
+ALTER TABLE [PermissionGroupRoles] ALTER COLUMN [RoleId] nvarchar(255) NULL;
+GO
+
+DECLARE @var68 sysname;
+SELECT @var68 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[PermissionGroupRoles]') AND [c].[name] = N'GroupId');
+IF @var68 IS NOT NULL EXEC(N'ALTER TABLE [PermissionGroupRoles] DROP CONSTRAINT [' + @var68 + '];');
+ALTER TABLE [PermissionGroupRoles] ALTER COLUMN [GroupId] nvarchar(255) NULL;
+GO
+
+DECLARE @var69 sysname;
+SELECT @var69 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[NotificationSubscriptions]') AND [c].[name] = N'UserId');
+IF @var69 IS NOT NULL EXEC(N'ALTER TABLE [NotificationSubscriptions] DROP CONSTRAINT [' + @var69 + '];');
+ALTER TABLE [NotificationSubscriptions] ALTER COLUMN [UserId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var70 sysname;
+SELECT @var70 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[NotificationSubscriptions]') AND [c].[name] = N'Url');
+IF @var70 IS NOT NULL EXEC(N'ALTER TABLE [NotificationSubscriptions] DROP CONSTRAINT [' + @var70 + '];');
+ALTER TABLE [NotificationSubscriptions] ALTER COLUMN [Url] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var71 sysname;
+SELECT @var71 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[NotificationSubscriptions]') AND [c].[name] = N'P256dh');
+IF @var71 IS NOT NULL EXEC(N'ALTER TABLE [NotificationSubscriptions] DROP CONSTRAINT [' + @var71 + '];');
+ALTER TABLE [NotificationSubscriptions] ALTER COLUMN [P256dh] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var72 sysname;
+SELECT @var72 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[NotificationSubscriptions]') AND [c].[name] = N'Auth');
+IF @var72 IS NOT NULL EXEC(N'ALTER TABLE [NotificationSubscriptions] DROP CONSTRAINT [' + @var72 + '];');
+ALTER TABLE [NotificationSubscriptions] ALTER COLUMN [Auth] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var73 sysname;
+SELECT @var73 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Matches]') AND [c].[name] = N'ShortLink');
+IF @var73 IS NOT NULL EXEC(N'ALTER TABLE [Matches] DROP CONSTRAINT [' + @var73 + '];');
+ALTER TABLE [Matches] ALTER COLUMN [ShortLink] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var74 sysname;
+SELECT @var74 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Matches]') AND [c].[name] = N'PlaceId');
+IF @var74 IS NOT NULL EXEC(N'ALTER TABLE [Matches] DROP CONSTRAINT [' + @var74 + '];');
+ALTER TABLE [Matches] ALTER COLUMN [PlaceId] nvarchar(255) NULL;
+GO
+
+DECLARE @var75 sysname;
+SELECT @var75 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Matches]') AND [c].[name] = N'Name');
+IF @var75 IS NOT NULL EXEC(N'ALTER TABLE [Matches] DROP CONSTRAINT [' + @var75 + '];');
+ALTER TABLE [Matches] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var76 sysname;
+SELECT @var76 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Matches]') AND [c].[name] = N'AssociationId');
+IF @var76 IS NOT NULL EXEC(N'ALTER TABLE [Matches] DROP CONSTRAINT [' + @var76 + '];');
+ALTER TABLE [Matches] ALTER COLUMN [AssociationId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var77 sysname;
+SELECT @var77 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[GroupShooters]') AND [c].[name] = N'TeamId');
+IF @var77 IS NOT NULL EXEC(N'ALTER TABLE [GroupShooters] DROP CONSTRAINT [' + @var77 + '];');
+ALTER TABLE [GroupShooters] ALTER COLUMN [TeamId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var78 sysname;
+SELECT @var78 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[GroupShooters]') AND [c].[name] = N'ShooterId');
+IF @var78 IS NOT NULL EXEC(N'ALTER TABLE [GroupShooters] DROP CONSTRAINT [' + @var78 + '];');
+ALTER TABLE [GroupShooters] ALTER COLUMN [ShooterId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var79 sysname;
+SELECT @var79 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[GroupShooters]') AND [c].[name] = N'GroupId');
+IF @var79 IS NOT NULL EXEC(N'ALTER TABLE [GroupShooters] DROP CONSTRAINT [' + @var79 + '];');
+ALTER TABLE [GroupShooters] ALTER COLUMN [GroupId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var80 sysname;
+SELECT @var80 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[GroupShooters]') AND [c].[name] = N'DivisionId');
+IF @var80 IS NOT NULL EXEC(N'ALTER TABLE [GroupShooters] DROP CONSTRAINT [' + @var80 + '];');
+ALTER TABLE [GroupShooters] ALTER COLUMN [DivisionId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var81 sysname;
+SELECT @var81 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[GroupShooters]') AND [c].[name] = N'Classification');
+IF @var81 IS NOT NULL EXEC(N'ALTER TABLE [GroupShooters] DROP CONSTRAINT [' + @var81 + '];');
+ALTER TABLE [GroupShooters] ALTER COLUMN [Classification] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var82 sysname;
+SELECT @var82 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Groups]') AND [c].[name] = N'Name');
+IF @var82 IS NOT NULL EXEC(N'ALTER TABLE [Groups] DROP CONSTRAINT [' + @var82 + '];');
+ALTER TABLE [Groups] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var83 sysname;
+SELECT @var83 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Groups]') AND [c].[name] = N'MatchId');
+IF @var83 IS NOT NULL EXEC(N'ALTER TABLE [Groups] DROP CONSTRAINT [' + @var83 + '];');
+ALTER TABLE [Groups] ALTER COLUMN [MatchId] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var84 sysname;
+SELECT @var84 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Contacts]') AND [c].[name] = N'Subject');
+IF @var84 IS NOT NULL EXEC(N'ALTER TABLE [Contacts] DROP CONSTRAINT [' + @var84 + '];');
+ALTER TABLE [Contacts] ALTER COLUMN [Subject] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var85 sysname;
+SELECT @var85 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Contacts]') AND [c].[name] = N'Name');
+IF @var85 IS NOT NULL EXEC(N'ALTER TABLE [Contacts] DROP CONSTRAINT [' + @var85 + '];');
+ALTER TABLE [Contacts] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var86 sysname;
+SELECT @var86 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Contacts]') AND [c].[name] = N'Email');
+IF @var86 IS NOT NULL EXEC(N'ALTER TABLE [Contacts] DROP CONSTRAINT [' + @var86 + '];');
+ALTER TABLE [Contacts] ALTER COLUMN [Email] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var87 sysname;
+SELECT @var87 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Contacts]') AND [c].[name] = N'Description');
+IF @var87 IS NOT NULL EXEC(N'ALTER TABLE [Contacts] DROP CONSTRAINT [' + @var87 + '];');
+ALTER TABLE [Contacts] ALTER COLUMN [Description] nvarchar(255) NOT NULL;
+GO
+
+DECLARE @var88 sysname;
+SELECT @var88 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Associations]') AND [c].[name] = N'Name');
+IF @var88 IS NOT NULL EXEC(N'ALTER TABLE [Associations] DROP CONSTRAINT [' + @var88 + '];');
+ALTER TABLE [Associations] ALTER COLUMN [Name] nvarchar(255) NOT NULL;
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20220518225040_convention', N'6.0.4');
+GO
+
+COMMIT;
+GO
+

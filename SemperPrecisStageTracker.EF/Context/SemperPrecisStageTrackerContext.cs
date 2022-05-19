@@ -12,6 +12,7 @@ namespace SemperPrecisStageTracker.EF.Context
     // cd SemperPrecisStageTracker.EF/
     // dotnet ef migrations add InitialCreate --startup-project ../SemperPrecisStageTracker.API
     // dotnet ef database update --startup-project ../SemperPrecisStageTracker.API
+    // dotnet ef migrations script <latest-migration-name> --startup-project  ../SemperPrecisStageTracker.API -o aa.txt
     /// <summary>
     /// Context for SemperPrecisStageTracker
     /// </summary>
@@ -58,6 +59,7 @@ namespace SemperPrecisStageTracker.EF.Context
 
             configurationBuilder.Properties<decimal>()
                 .HavePrecision(5, 2);
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -147,7 +149,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(e => e.DownPoints)
                 .HasConversion(
                     v => string.Join(',', v),
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList());
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList());
 
             var valueComparerString = new ValueComparer<IList<string>>(
                 (c1, c2) => c1.SequenceEqual(c2),

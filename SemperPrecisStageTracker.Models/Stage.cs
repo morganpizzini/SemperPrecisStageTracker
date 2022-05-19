@@ -1,4 +1,5 @@
-﻿using SemperPrecisStageTracker.Models.Commons;
+﻿using System.ComponentModel.DataAnnotations;
+using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.Models
 {
@@ -13,9 +14,13 @@ namespace SemperPrecisStageTracker.Models
         public int Targets { get; set; }
 
         public string SO { get; set; }
+        [StringLength(1000)]
         public string Scenario { get; set; }
+        [StringLength(1000)]
         public string GunReadyCondition { get; set; }
+        [StringLength(1000)]
         public string StageProcedure { get; set; }
+        [StringLength(1000)]
         public string StageProcedureNotes { get; set; }
         public int Strings { get; set; }
 
