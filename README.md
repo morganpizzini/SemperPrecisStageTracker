@@ -4,6 +4,11 @@
 
 Add specified KeyVault secret for enable production environment, for develop purpose add that in API project secrets
 
+```bash
+dotnet user-secrets list
+dotnet user-secrets set "adminUsername" "Shooter01"
+```
+
 ```json
 {
   "backDoorPassword": "",

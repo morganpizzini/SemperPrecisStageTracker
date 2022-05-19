@@ -33,7 +33,7 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
-                    <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTime.ToString("d")</CardText>
+                    <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTimeStart.ToString("d") / @match.MatchDateTimeEnd.ToString("d")</CardText>
 
                     <CardTitle>@L["MatchDirectors"]</CardTitle>
 
@@ -217,7 +217,7 @@ else
         </ModalHeader>
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@stageSoToEdit">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -236,7 +236,7 @@ else
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation>
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">

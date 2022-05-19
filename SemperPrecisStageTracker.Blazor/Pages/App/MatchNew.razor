@@ -30,9 +30,9 @@
             </Validation>
             <Validation Validator="@ValidateDate">
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Date"]</FieldLabel>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FromDate"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTime">
+                        <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTimeStart">
                             <Feedback>
                                 <ValidationError>@L["WrongValidDate"]</ValidationError>
                             </Feedback>
@@ -40,7 +40,19 @@
                     </FieldBody>
                 </Field>
             </Validation>
-            <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Validation Validator="@ValidateDate">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ToDate"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTimeEnd">
+                            <Feedback>
+                                <ValidationError>@L["WrongValidDate"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.IsSelected">
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Place"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -59,7 +71,7 @@
                     </FieldBody>
                 </Field>
             </Validation>
-            <Validation Validator="@ValidationRule.IsNotEmpty">
+            <Validation Validator="@ValidationRule.IsSelected">
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">

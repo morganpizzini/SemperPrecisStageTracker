@@ -360,7 +360,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Match> FetchAllMatches()
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, s => s.MatchDateTime, true, _matchRepository);
+            return FetchEntities(null, null, null, s => s.MatchDateTimeStart, true, _matchRepository);
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Match> FetchMatchesByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.MatchDateTime, true, _matchRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.MatchDateTimeStart, true, _matchRepository);
         }
 
         /// <summary>

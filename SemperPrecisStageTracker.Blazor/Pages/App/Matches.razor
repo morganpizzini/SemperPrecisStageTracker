@@ -39,7 +39,7 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink></TableRowHeader>
                         <TableRowCell>@match.Association.Name</TableRowCell>
-                        <TableRowCell>@match.MatchDateTime.ToString("d")<br />@match.Place.Name</TableRowCell>
+                        <TableRowCell>@match.MatchDateTimeStart.ToString("d") / @match.MatchDateTimeEnd.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.EditMatch), match.MatchId))
                             {
@@ -80,7 +80,7 @@
                 </Field>
                 <Field>
                     <FieldLabel>@L["Date"]</FieldLabel>
-                    <Text>@entityToDelete.MatchDateTime.ToString("d")</Text>
+                    <Text>@entityToDelete.MatchDateTimeStart.ToString("d") / @entityToDelete.MatchDateTimeEnd.ToString("d")</Text>
                 </Field>
             }
         </ModalBody>

@@ -8,7 +8,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         [Required]
-        public DateTime MatchDateTime { get; set; } = DateTime.Now;
+        public DateTime MatchDateTimeStart { get; set; } = DateTime.Now;
+        public DateTime MatchDateTimeEnd { get; set; } = DateTime.Now;
         [Required]
         public string AssociationId { get; set; }
         [Required]

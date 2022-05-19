@@ -9,7 +9,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string MatchId { get; set; }
         [IndexDbIndex]
         public string Name { get; set; }
-        public DateTime MatchDateTime { get; set; }
+        public DateTime MatchDateTimeStart { get; set; }
+        public DateTime MatchDateTimeEnd { get; set; }
         public string ShortLink { get; set; }
 
         public DateTime CreationDateTime { get; set; }

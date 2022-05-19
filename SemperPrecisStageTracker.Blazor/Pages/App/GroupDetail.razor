@@ -34,7 +34,7 @@ else
                         <CardTitle>@L["Association"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = group.Match.Association.AssociationId}))">@group.Match.Association.Name</NavLink></CardText>
                         <CardTitle>@L["Match"]</CardTitle>
-                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTime.ToString("d")</CardText>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTimeStart.ToString("d") / @group.Match.MatchDateTimeEnd.ToString("d")</CardText>
                     </CardBody>
                 </Card>
             </Column>
@@ -46,7 +46,7 @@ else
         <Row>
             <Column ColumnSize="ColumnSize.IsFull">
                 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Validation Validator="@ValidationRule.IsSelected">
                         <Field Horizontal="true" JustifyContent="JustifyContent.End">
                             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
                             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
@@ -67,7 +67,7 @@ else
                     </Validation>
                     <Row>
                         <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Validation Validator="@ValidationRule.IsSelected">
                                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -88,7 +88,7 @@ else
                             </Validation>
                         </Column>
                         <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsNotEmpty">
+                            <Validation Validator="@ValidationRule.IsSelected">
                                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">

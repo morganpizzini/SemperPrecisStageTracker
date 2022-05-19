@@ -114,7 +114,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Match
             {
                 Name = request.Name,
-                MatchDateTime = request.MatchDateTime,
+                MatchDateTimeStart = request.MatchDateTimeStart,
+                MatchDateTimeEnd = request.MatchDateTimeEnd,
                 AssociationId = request.AssociationId,
                 PlaceId = request.PlaceId,
                 OpenMatch = request.OpenMatch,
@@ -153,7 +154,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            entity.MatchDateTime = request.MatchDateTime;
+            entity.MatchDateTimeStart = request.MatchDateTime;
             entity.AssociationId = request.AssociationId;
             entity.PlaceId = request.PlaceId;
             entity.OpenMatch = request.OpenMatch;

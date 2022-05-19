@@ -21,13 +21,13 @@ else
                         @if (interactive)
                         {
                             <text>
-                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTime.ToString("d")
+                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
                             </text>
                         }
                         else
                         {
                             <text>
-                                @stats.Match.Name - @stats.Match.MatchDateTime.ToString("d")
+                                @stats.Match.Name - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
                             </text>
                         }
                     </CardText>

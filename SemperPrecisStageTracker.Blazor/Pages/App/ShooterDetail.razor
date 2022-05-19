@@ -204,7 +204,7 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -223,7 +223,7 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["division"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -242,7 +242,7 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["classification"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -331,7 +331,7 @@
         </ModalHeader>
         <ModalBody>
             <Validations @ref="teamValidations" Mode="ValidationMode.Manual" Model="@teamToEdit">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">

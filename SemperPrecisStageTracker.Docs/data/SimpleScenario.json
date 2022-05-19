@@ -3,7 +3,8 @@
     {
       "id": "1",
       "name": "Match 01",
-      "matchDateTime": "2021-05-23T18:25:43.511Z",
+      "matchDateTimeStart": "2021-05-23T18:25:43.511Z",
+      "matchDateTimeEnd": "2021-05-24T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
       "placeId": "1",

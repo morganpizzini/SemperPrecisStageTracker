@@ -81,7 +81,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = true,
                 UnifyClassifications = true
             };
@@ -99,7 +100,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.Name == request.Name
                           && parsed.Data.Association.AssociationId == request.AssociationId
                            && parsed.Data.Place.PlaceId == request.PlaceId
-                            && parsed.Data.MatchDateTime == request.MatchDateTime
+                            && parsed.Data.MatchDateTimeStart == request.MatchDateTimeStart
+                            && parsed.Data.MatchDateTimeEnd == request.MatchDateTimeEnd
                             && parsed.Data.OpenMatch == request.OpenMatch
                             && parsed.Data.UnifyClassifications == request.UnifyClassifications
                           );
@@ -122,7 +124,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = true,
                 UnifyClassifications = true
             };
@@ -158,7 +161,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = true,
                 UnifyClassifications = true
             };
@@ -196,7 +200,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = true,
                 UnifyClassifications = true
             };
@@ -238,7 +243,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = !existing.OpenMatch,
                 UnifyClassifications = !existing.UnifyClassifications
             };
@@ -257,7 +263,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.Name == request.Name
                           && parsed.Data.Association.AssociationId == request.AssociationId
                            && parsed.Data.Place.PlaceId == request.PlaceId
-                            && parsed.Data.MatchDateTime == request.MatchDateTime
+                            && parsed.Data.MatchDateTimeStart == request.MatchDateTimeStart
+                            && parsed.Data.MatchDateTimeEnd == request.MatchDateTimeEnd
                             && parsed.Data.OpenMatch == request.OpenMatch
                             && parsed.Data.UnifyClassifications == request.UnifyClassifications);
 
@@ -282,7 +289,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Name = RandomizationUtils.GenerateRandomString(50),
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
-                MatchDateTime = DateTime.Now,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
                 OpenMatch = false,
                 UnifyClassifications = false
             };
