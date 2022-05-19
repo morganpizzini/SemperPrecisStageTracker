@@ -68,7 +68,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 Name = request.Name,
                 Classifications = request.Classifications,
-                Divisions = request.Divisions
+                Divisions = request.Divisions,
+                Categories = request.Categories
             };
 
             //Invocazione del service layer
@@ -103,6 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             entity.Classifications = request.Classifications;
+            entity.Categories = request.Categories;
             entity.Divisions = request.Divisions;
 
             //Salvataggio

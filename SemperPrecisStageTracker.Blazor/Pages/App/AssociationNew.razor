@@ -68,6 +68,27 @@
                     </div>
                 }
             </Field>
+            <Field>
+                <FieldLabel ColumnSize="ColumnSize.Is4">@L["Categories"]&nbsp;<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Categories.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                @for (int i = 0; i < model.Categories.Count; i++)
+                {
+                    var tmp = i;
+                    <div class="mb-2">
+
+                    <FieldBody ColumnSize="ColumnSize.Is8">
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@model.Categories[tmp]" class="form-control"
+                                       @onchange="@(e => model.Categories[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Categories.Remove(model.Categories[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    </FieldBody>
+                    </div>
+                }
+            </Field>
             <Field Horizontal="true" JustifyContent="JustifyContent.End">
                 <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
                     <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">

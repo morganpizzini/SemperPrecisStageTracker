@@ -333,13 +333,72 @@
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     }
   ],
-  "shooterAssociations": [
+  "shooterAssociationInfos": [
     {
       "id": "1",
       "shooterId": "1",
       "associationId": "1",
       "cardNumber": "123",
       "safetyOfficier": true,
+      "categories": [ "Senior", "Military" ]
+    },
+    {
+      "id": "2",
+      "shooterId": "1",
+      "associationId": "2",
+      "cardNumber": "456",
+      "safetyOfficier": true
+    },
+    {
+      "id": "3",
+      "shooterId": "2",
+      "associationId": "1",
+      "cardNumber": "789",
+      "safetyOfficier": true,
+      "categories": [ "lady", "Industry" ]
+    },
+    {
+      "id": "4",
+      "shooterId": "4",
+      "associationId": "1",
+      "cardNumber": "111",
+      "safetyOfficier": true,
+      "categories": [ "lady" ]
+    },
+    {
+      "id": "5",
+      "shooterId": "5",
+      "associationId": "2",
+      "cardNumber": "1114",
+      "safetyOfficier": true
+    },
+    {
+      "id": "6",
+      "shooterId": "6",
+      "associationId": "1",
+      "cardNumber": "111422",
+      "safetyOfficier": true
+    },
+    {
+      "id": "7",
+      "shooterId": "7",
+      "associationId": "1",
+      "cardNumber": "1114227",
+      "safetyOfficier": false
+    },
+    {
+      "id": "8",
+      "shooterId": "8",
+      "associationId": "1",
+      "cardNumber": "111428",
+      "safetyOfficier": true
+    }
+  ],
+  "shooterAssociations": [
+    {
+      "id": "1",
+      "shooterId": "1",
+      "associationId": "1",
       "classification": "Novice",
       "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -348,8 +407,6 @@
       "id": "2",
       "shooterId": "1",
       "associationId": "2",
-      "cardNumber": "456",
-      "safetyOfficier": true,
       "classification": "Sharpshooter",
       "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-29T18:25:43.511Z"
@@ -358,8 +415,6 @@
       "id": "3",
       "shooterId": "2",
       "associationId": "1",
-      "cardNumber": "789",
-      "safetyOfficier": true,
       "classification": "Expert",
       "division": "Custom Defensive Pistol idpa (CDP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -368,8 +423,6 @@
       "id": "31",
       "shooterId": "2",
       "associationId": "1",
-      "cardNumber": "789",
-      "safetyOfficier": false,
       "classification": "Marksman",
       "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -378,8 +431,6 @@
       "id": "4",
       "shooterId": "4",
       "associationId": "1",
-      "cardNumber": "111",
-      "safetyOfficier": true,
       "classification": "Expert",
       "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -388,8 +439,6 @@
       "id": "5",
       "shooterId": "5",
       "associationId": "2",
-      "cardNumber": "1114",
-      "safetyOfficier": true,
       "classification": "Novice",
       "division": "Enhanced Service Pistol (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -398,8 +447,6 @@
       "id": "6",
       "shooterId": "6",
       "associationId": "1",
-      "cardNumber": "111422",
-      "safetyOfficier": true,
       "classification": "Expert",
       "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -408,8 +455,6 @@
       "id": "7",
       "shooterId": "7",
       "associationId": "1",
-      "cardNumber": "1114227",
-      "safetyOfficier": false,
       "classification": "SharpShooter",
       "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -418,8 +463,6 @@
       "id": "8",
       "shooterId": "8",
       "associationId": "1",
-      "cardNumber": "111428",
-      "safetyOfficier": true,
       "classification": "Marksman",
       "division": "Enhanced Service Pistol idpa (ESP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
@@ -530,6 +573,19 @@
         "Expert",
         "Master",
         "Distinguished Master"
+      ],
+      "categories": [
+        "Junior",
+        "Senior",
+        "Distinguished",
+        "Senior",
+        "Lady",
+        "International",
+        "Industry",
+        "Press",
+        "Military",
+        "Law",
+        "Enforcement"
       ]
     },
     {
@@ -550,6 +606,19 @@
         "Expert",
         "Master",
         "Distinguished Master"
+      ],
+      "category": [
+        "Junior",
+        "Senior",
+        "Distinguished",
+        "Senior",
+        "Lady",
+        "International",
+        "Industry",
+        "Press",
+        "Military",
+        "Law",
+        "Enforcement"
       ]
     }
   ],

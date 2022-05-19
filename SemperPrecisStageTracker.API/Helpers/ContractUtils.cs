@@ -85,7 +85,8 @@ namespace SemperPrecisStageTracker.API.Helpers
                 AssociationId = entity.Id,
                 Name = entity.Name,
                 Divisions = entity.Divisions.OrderBy(x => x).ToList(),
-                Classifications = entity.Classifications
+                Classifications = entity.Classifications,
+                Categories = entity.Categories
             };
         }
 
@@ -132,6 +133,27 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Description = entity.Description
             };
         }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static ShooterAssociationInfoContract GenerateContract(ShooterAssociationInfo entity, Association association = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new ShooterAssociationInfoContract()
+            {
+                ShooterAssociationInfoId = entity.Id,
+                Association = association != null ? GenerateContract(association) : new AssociationContract(),
+                CardNumber = entity.CardNumber,
+                Categories = entity.Categories,
+                SafetyOfficier = entity.SafetyOfficier
+            };
+        }
         /// <summary>
         /// Generate contract using entity
         /// </summary>
@@ -147,10 +169,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 ShooterAssociationId = entity.Id,
                 Association = association != null ? GenerateContract(association) : new AssociationContract(),
-                CardNumber = entity.CardNumber,
                 Classification = entity.Classification,
                 Division = entity.Division,
-                SafetyOfficier = entity.SafetyOfficier,
                 RegistrationDate = entity.RegistrationDate,
                 ExpireDate = entity.ExpireDate
             };

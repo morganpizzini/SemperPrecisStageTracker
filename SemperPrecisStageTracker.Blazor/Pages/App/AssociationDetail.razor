@@ -76,6 +76,28 @@ else
                 </CardBody>
             </Card>
         </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Categories"]</CardTitle>
+                    <CardText>
+                        @if (association.Categories.Count == 0)
+                        {
+                            @L["NoCategories"]
+                        }
+                        else
+                        {
+                            <ul>
+                                <Virtualize Items="@association.Categories" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
+                        }
+
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
     </Row>
 }
 <Modal @ref="modalRefEntityToDelete">
