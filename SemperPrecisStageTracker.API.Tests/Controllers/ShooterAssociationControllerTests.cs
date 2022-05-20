@@ -37,8 +37,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 AssociationId = existingAssociation.Id,
                 ShooterId = existing.Id,
-                SafetyOfficier = true,
-                CardNumber = RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate = DateTime.Now,
                 Classification = existingAssociation.Classifications.FirstOrDefault(),
                 Division = existingAssociation.Divisions.FirstOrDefault()
@@ -60,8 +58,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.SafetyOfficier == request.SafetyOfficier
-                          && updatedEntity.CardNumber == request.CardNumber
                           && updatedEntity.RegistrationDate == request.RegistrationDate
                           && updatedEntity.Classification == request.Classification
                           && updatedEntity.Division == request.Division
@@ -109,8 +105,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
-                SafetyOfficier = !existing.SafetyOfficier,
-                CardNumber = RandomizationUtils.GenerateRandomString(5),
                 RegistrationDate = DateTime.Now,
                 Classification = existing.Classification,
                 Division = existing.Division
@@ -135,53 +129,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && oldEntity.ExpireDate != null
                           && updatedEntity.AssociationId == request.AssociationId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.SafetyOfficier == request.SafetyOfficier
-                          && updatedEntity.CardNumber == request.CardNumber
                           && updatedEntity.RegistrationDate == request.RegistrationDate
                           && updatedEntity.Classification == request.Classification
                           && updatedEntity.Division == request.Division
-            );
-
-        }
-
-        [TestMethod]
-        public async Task ShouldUpdateShooterAssociationBeBadRequestHavingProvidedSameCardId()
-        {
-            var existing = Scenario.ShooterAssociations.FirstOrDefault();
-            var another = Scenario.ShooterAssociations.FirstOrDefault(x => x.ShooterId != existing.ShooterId && x.AssociationId == existing.AssociationId);
-            if (another == null)
-            {
-                Assert.Inconclusive("Another shooter association not found");
-            }
-            //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.ShooterAssociations.Count;
-
-            //Composizione della request
-            var request = new ShooterAssociationCreateRequest
-            {
-                AssociationId = existing.AssociationId,
-                ShooterId = existing.ShooterId,
-                SafetyOfficier = !existing.SafetyOfficier,
-                CardNumber = another.CardNumber,
-                RegistrationDate = DateTime.Now,
-                Classification = existing.Classification,
-                Division = existing.Division
-            };
-
-            //Invoke del metodo
-            var response = await Controller.UpsertShooterAssociation(request);
-
-            //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.ShooterAssociations.Count;
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedBadRequest(response);
-
-
-            Assert.AreEqual(countBefore, countAfter);
-            Assert.IsTrue(parsed != null &&
-                          // the old one should be closed with end date
-                          parsed.Data.Any()
             );
 
         }

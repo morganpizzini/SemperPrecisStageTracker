@@ -2180,12 +2180,29 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
+        /// Fetch list of all shooters
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public IList<ShooterAssociationInfo> FetchShooterAssociationInfoByShooterId(string id)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return FetchEntities(x=>x.ShooterId== id, null, null, null, true, _shooterAssociationInfoRepository);
+        }
+        
+        /// <summary>
         /// Fetch list of shooters by provided ids
         /// </summary>
         /// <param name="ids"> shooters identifier </param>
         /// <returns>Returns list of shooters</returns>
         public IList<ShooterAssociationInfo> FetchShootersAssociationInfoByIds(IList<string> ids)
         {
+            //Validazione argomenti
+            if (ids == null) throw new ArgumentNullException(nameof(ids));
+
             //Utilizzo il metodo base
             return FetchEntities(s => ids.Contains(s.Id), null, null, null, true, _shooterAssociationInfoRepository);
         }
@@ -2363,6 +2380,14 @@ namespace SemperPrecisStageTracker.Domain.Services
                 return validations;
             }
 
+            // check for replicate association detail
+            duplicate = _shooterAssociationInfoRepository.GetSingle(x => x.Id != entity.Id
+                                                              && x.ShooterId == entity.ShooterId
+                                                              && x.AssociationId == entity.AssociationId);
+            if (duplicate != null)
+            {
+                validations.Add(new ValidationResult($"User has already yhis association info"));
+            }
             return validations;
         }
 

@@ -14,8 +14,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Classification { get; set; }
         [Required]
         public string Division { get; set; }
-        public bool SafetyOfficier { get; set; }
-        public string CardNumber { get; set; }
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
     }

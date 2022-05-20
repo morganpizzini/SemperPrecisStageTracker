@@ -72,8 +72,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity = new ShooterAssociation();
             entity.ShooterId = request.ShooterId;
             entity.AssociationId = request.AssociationId;
-            entity.CardNumber = request.CardNumber;
-            entity.SafetyOfficier = request.SafetyOfficier;
             entity.Classification = request.Classification;
             entity.Division = request.Division;
             entity.RegistrationDate = request.RegistrationDate;

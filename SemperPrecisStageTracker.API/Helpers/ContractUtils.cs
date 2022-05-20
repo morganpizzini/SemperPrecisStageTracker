@@ -139,7 +139,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterAssociationInfoContract GenerateContract(ShooterAssociationInfo entity, Association association = null)
+        public static ShooterAssociationInfoContract GenerateContract(ShooterAssociationInfo entity, Association association = null, Shooter shooter = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -149,6 +149,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 ShooterAssociationInfoId = entity.Id,
                 Association = association != null ? GenerateContract(association) : new AssociationContract(),
+                Shooter = shooter != null ? GenerateContract(shooter) : new ShooterContract(),
                 CardNumber = entity.CardNumber,
                 Categories = entity.Categories,
                 SafetyOfficier = entity.SafetyOfficier

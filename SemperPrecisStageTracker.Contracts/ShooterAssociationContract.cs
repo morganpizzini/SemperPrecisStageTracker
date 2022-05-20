@@ -15,6 +15,7 @@ namespace SemperPrecisStageTracker.Contracts
     {
         public string ShooterAssociationInfoId { get; set; }
         public AssociationContract Association { get; set; }
+        public ShooterContract Shooter { get; set; }
         public IList<string> Categories { get; set; } = new List<string>();
         public string CardNumber { get; set; }
         public bool SafetyOfficier { get; set; }

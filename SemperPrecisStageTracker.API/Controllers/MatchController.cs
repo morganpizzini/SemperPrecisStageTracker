@@ -154,7 +154,8 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            entity.MatchDateTimeStart = request.MatchDateTime;
+            entity.MatchDateTimeStart = request.MatchDateTimeStart;
+            entity.MatchDateTimeEnd = request.MatchDateTimeEnd;
             entity.AssociationId = request.AssociationId;
             entity.PlaceId = request.PlaceId;
             entity.OpenMatch = request.OpenMatch;
