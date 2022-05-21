@@ -33,6 +33,25 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
+        /// Fetch list of all associations
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAllAssociationsForShooter")]
+        [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
+        public Task<IActionResult> FetchAllAssociationsForShooter(ShooterRequest request)
+        {
+            var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
+                .Select(x => x.AssociationId)
+                .ToList();
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAssociationsByIds(associationIds);
+
+            //Ritorno i contratti
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
+        }
+        
+        /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>

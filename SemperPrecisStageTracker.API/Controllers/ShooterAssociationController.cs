@@ -56,9 +56,17 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
+            var availableAssociationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId).Select(x=>x.AssociationId);
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            if (!availableAssociationIds.Contains(request.AssociationId))
+            {
+                validations.Add(new ValidationResult("User is not registered for the selected association"));
+                return BadRequestTask(validations);
+            }
+
             var entity = this.BasicLayer.GetActiveShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
 
-            IList<ValidationResult> validations;
 
             if (entity != null)
             {

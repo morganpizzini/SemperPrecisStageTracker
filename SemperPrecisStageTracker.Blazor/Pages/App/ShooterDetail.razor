@@ -192,18 +192,6 @@
         </ModalHeader>
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@associationToEdit">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CardNumber"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationToEdit.CardNumber">
-                                <Feedback>
-                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
                 <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
@@ -261,14 +249,14 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.None">
+                @*<Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is8">
                             <Check TValue="bool" @bind-Checked="@associationToEdit.SafetyOfficier">@L["SafetyOfficier"]</Check>
                         </FieldBody>
                     </Field>
-                </Validation>
+                </Validation>*@
                 <Validation Validator="@ValidateDate">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
@@ -471,8 +459,9 @@
             await base.OnInitializedAsync();
             return;
         }
-        shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        var request = new ShooterRequest() { ShooterId = Id };
+        shooter = await Post<ShooterContract>("api/Shooter/GetShooter", request);
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociationsForShooter", request);
         teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
         await LoadShooterClassifications();
         await LoadShooterTeams();
@@ -530,7 +519,6 @@
         associationToEdit.AssociationId = value;
         associationToEdit.Classification = string.Empty;
         associationToEdit.Division = string.Empty;
-        associationToEdit.SafetyOfficier = false;
         SelectClassificationBasedOnAssociationId(value);
     }
     void SelectClassificationBasedOnAssociationId(string value)
@@ -557,8 +545,7 @@
             AssociationId = shooterAssociation.Association.AssociationId,
             Classification = shooterAssociation.Classification,
             Division = shooterAssociation.Division,
-            RegistrationDate = shooterAssociation.RegistrationDate,
-            CardNumber = shooterAssociation.CardNumber
+            RegistrationDate = shooterAssociation.RegistrationDate
         };
 
         modalRefAssociationToEdit.Show();

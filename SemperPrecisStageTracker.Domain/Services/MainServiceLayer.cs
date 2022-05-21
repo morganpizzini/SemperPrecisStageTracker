@@ -479,6 +479,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 ).ToList()
             }).ToList();
 
+            // move to botton shooters with DQ or DNF
             foreach (var item in results)
             {
                 foreach (var classification in item.Classifications)
@@ -492,6 +493,19 @@ namespace SemperPrecisStageTracker.Domain.Services
                     }
                 }
             }
+
+            var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId &&
+                                            x.Categories.Any());
+            
+            if (shooterInCategories.Count > 0)
+            {
+                // creare gruppi per ogni categoria
+                // attenzione se shooter ha più di una cateogoria
+                // ricercare il risultato all'interno della lista e matcharlo in una graduatoria a parte
+            }
+
+
+
             _cache.SetValue(CacheKeys.ComposeKey(CacheKeys.Stats, id), results);
             return results;
         }
@@ -1909,7 +1923,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<Shooter> FetchAllShooters()
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, null, true, _shooterRepository);
+            return FetchEntities(null, null, null,x => x.LastName, false, _shooterRepository);
         }
 
         /// <summary>
@@ -2173,10 +2187,12 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of shooters</returns>
-        public IList<ShooterAssociationInfo> FetchAllShooterAssociationInfos()
+        public IList<ShooterAssociationInfo> FetchAllShooterAssociationInfos(string shooterId)
         {
+            if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
+
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, null, true, _shooterAssociationInfoRepository);
+            return FetchEntities(x=>x.ShooterId == shooterId, null, null, null, true, _shooterAssociationInfoRepository);
         }
 
         /// <summary>

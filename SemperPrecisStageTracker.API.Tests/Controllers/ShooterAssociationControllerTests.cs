@@ -21,22 +21,29 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterAssociationBeOkHavingProvidedData()
         {
-            var shooterIds = Scenario.ShooterAssociations.Select(x => x.ShooterId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
-            if (existing == null)
+            // select a shooter with shooterassociationInfo but withtout any classification
+            var match = Scenario.ShooterAssociationInfos.Select(x => new { x.ShooterId, x.AssociationId })
+                        .GroupJoin(Scenario.ShooterAssociations,x=>x,x=> new { x.ShooterId, x.AssociationId },
+                        (x,y)=>new
+                        {
+                            x,
+                            match = y.DefaultIfEmpty()
+                        }).FirstOrDefault(x=>x.match== null)?.x;
+
+            if (match == null)
             {
                 Assert.Inconclusive("No shooter without association exists");
             }
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterAssociations.Count;
 
-            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingAssociation = Scenario.Associations.FirstOrDefault(x=>x.Id == match.AssociationId);
 
             //Composizione della request
             var request = new ShooterAssociationCreateRequest
             {
                 AssociationId = existingAssociation.Id,
-                ShooterId = existing.Id,
+                ShooterId = match.ShooterId,
                 RegistrationDate = DateTime.Now,
                 Classification = existingAssociation.Classifications.FirstOrDefault(),
                 Division = existingAssociation.Divisions.FirstOrDefault()
@@ -93,6 +100,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.IsTrue(parsed.Data.All(x => !string.IsNullOrEmpty(x.Association.Name)));
 
         }
+
+
         [TestMethod]
         public async Task ShouldUpdateShooterAssociationBeOkHavingProvidedData()
         {
@@ -133,7 +142,38 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && updatedEntity.Classification == request.Classification
                           && updatedEntity.Division == request.Division
             );
+        }
 
+        [TestMethod]
+        public async Task ShouldCreateShooterAssociationBeBadRequestHaavingProvidedWrongAssociation()
+        {
+            var existing = Scenario.Shooters.FirstOrDefault();
+            
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterAssociations.Count;
+
+            //Composizione della request
+            var request = new ShooterAssociationCreateRequest
+            {
+                AssociationId = RandomizationUtils.GenerateRandomString(5),
+                ShooterId = existing.Id,
+                RegistrationDate = DateTime.Now,
+                Classification = RandomizationUtils.GenerateRandomString(5),
+                Division = RandomizationUtils.GenerateRandomString(5)
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpsertShooterAssociation(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterAssociations.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            Assert.AreEqual(countBefore, countAfter);
+            Assert.IsTrue(parsed != null
+                            && parsed.Data.Count > 0);
         }
 
         [TestMethod]
