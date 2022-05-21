@@ -97,16 +97,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             // create permissions
-
-            var manageAssociationPerm = authenticationService.GetPermissionByName(Permissions.ManageAssociations);
-            if (manageAssociationPerm == null)
-            {
-                manageAssociationPerm = new Permission()
-                {
-                    Name = Permissions.ManageAssociations.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageAssociationPerm);
-            }
+            
 
             var managePlacesPerm = authenticationService.GetPermissionByName(Permissions.ManagePlaces);
             if (managePlacesPerm == null)
@@ -182,13 +173,13 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // attach permissions to admin role
 
-            var rolePermission = authenticationService.GetPermissionRole(manageAssociationPerm.Id,role.Id);
+            var rolePermission = authenticationService.GetPermissionRole(manageAssociationsPerm.Id,role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageAssociationPerm.Id
+                    PermissionId = manageAssociationsPerm.Id
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
@@ -270,27 +261,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                 };
                 authenticationService.SaveUserRole(userRole);
             }
-
-            // manage associations
-            var hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageAssociations);
-
-            // manage places
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManagePlaces);
-
-            // manage matches
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageMatches);
-
-            // manage associations
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageAssociations);
-
-            // manage shooters
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageShooters);
-
-            // manage teams
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageTeams);
-
-            // manage stages
-            hasPermissions = await authenticationService.ValidateUserPermissions(user.Id, Permissions.ManageStages);
 
             if (validations.Count > 0)
             {
@@ -2122,6 +2092,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
+                Permissions.ManageShooters,
                 Permissions.EditShooter
             }))
             {
@@ -2426,6 +2397,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
+                Permissions.ManageShooters,
                 Permissions.EditShooter
             }))
             {

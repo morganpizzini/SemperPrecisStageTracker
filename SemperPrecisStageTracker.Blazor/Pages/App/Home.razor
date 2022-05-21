@@ -12,18 +12,14 @@
     @matches.Count
 
     <ul>
-        da verificare:
-        <li>Ordinamento alfabetico tiratori nella pagina tiratori e nel menu di aggiunta tiratore nel team detail</li>
-        <li>Il match è in un range di date, non in una sola</li>
-        <li>obbligatorietà associazione alla creazione di un match / verifica validazione select</li>
-        <li>filtrare classificazioni sulla base di shooterassociationinfo (aggiungere anche test)</li>
-
         interfaccia grafica:
-        <li>il safety officier è esterno così come il numero di tessera, e le categorie</li>
-        <li>quando cambio lingua manda errore</li>
+        <li>Shooter association info</li>
+        <li>quando cambio lingua manda errore (verificare in prod)</li>
 
         nella graduatoria mostrare le classifiche basate sulle categorie
         Gestione DNF (quando non ho punteggi per 1 stage)
+        l'installazione dell'applicazione deve essere possibile tramite un menù nel setting, lavorando sull'oggetto nel local storage
+        settare tutte le stringhe a 255 di lunghezza, togliere convenzione da ef, rifare la migrazione
         <li>/matches/:id/stats
             <ul>
                 <li>caricare gli stage per nome e non per indice (metodo GetMatchStats)</li>
@@ -61,7 +57,7 @@
 
         <li>Creare un test UI per verificare l'aggiunta di uno shooter in un gruppo</li>
         <li>Inserire state management per controllare il tema -> impostato in settings, ma utilizzato in AppLayout</li>
-
+        
         @*rimuovere i Validator="@ValidationRule.IsNotEmpty"*@
         <li>Nelle associazioni e società inserire regolamento, link e allegato (creare un servizio che carica su blob storage e uno mock che salva in locale)</li>
         <li>All'aggiunta di un punteggio inviare una notifica al tiratore, ogni match ha una flag che permette di disabilitare questo meccanismo, aggiungere anche un pulsante che permette di aggiornare tutti i tiratori in 1 colpo solo</li>

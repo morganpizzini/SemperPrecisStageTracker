@@ -18,6 +18,7 @@ namespace SemperPrecisStageTracker.Contracts
         public ShooterContract Shooter { get; set; }
         public IList<string> Categories { get; set; } = new List<string>();
         public string CardNumber { get; set; }
+        public DateTime RegistrationDate { get; set; }
         public bool SafetyOfficier { get; set; }
     }
     public class ShooterAssociationContract
@@ -26,8 +27,6 @@ namespace SemperPrecisStageTracker.Contracts
         public AssociationContract Association { get; set; }
         public string Classification { get; set; }
         public string Division { get; set; }
-        public string CardNumber { get; set; }
-        public bool SafetyOfficier { get; set; }
         public DateTime RegistrationDate { get; set; }
         public DateTime? ExpireDate { get; set; }
     }

@@ -13,6 +13,7 @@ namespace SemperPrecisStageTracker.Models
         public string ShooterId { get; set; }
         public IList<string> Categories { get; set; } = new List<string>();
         public bool SafetyOfficier { get; set; }
+        public DateTime RegistrationDate { get; set; }
         [Required]
         public string CardNumber { get; set; } = string.Empty;
     }

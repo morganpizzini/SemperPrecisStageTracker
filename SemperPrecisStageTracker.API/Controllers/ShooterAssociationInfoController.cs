@@ -53,18 +53,22 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(ShooterAssociationInfoContract), 200)]
         public async Task<IActionResult> CreateShooterAssociationInfo(ShooterAssociationInfoCreateRequest request)
         {
-            var (validations,shooter,association) = CheckRequest(request.ShooterId, request.AssociationId);
+            var (validations,shooter,association) = CheckRequest(request.ShooterId, request.AssociationId,request.Categories);
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-            var entity = new ShooterAssociationInfo();
-            entity.ShooterId = request.ShooterId;
-            entity.AssociationId = request.AssociationId;
-            entity.CardNumber = request.CardNumber;
-            entity.SafetyOfficier = request.SafetyOfficier;
+            var entity = new ShooterAssociationInfo
+            {
+                ShooterId = request.ShooterId,
+                AssociationId = request.AssociationId,
+                CardNumber = request.CardNumber,
+                SafetyOfficier = request.SafetyOfficier,
+                RegistrationDate = request.RegistrationDate,
+                Categories = request.Categories
+            };
 
             //Invocazione del service layer
-            validations = await BasicLayer.UpdateShooterAssociationInfo(entity, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.CreateShooterAssociationInfo(entity, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
@@ -90,15 +94,16 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return NotFound();
             }
 
-            var (validations, shooter, association) = CheckRequest(request.ShooterId, request.AssociationId);
+            var (validations, shooter, association) = CheckRequest(request.ShooterId, request.AssociationId, request.Categories);
             if (validations.Count > 0)
                 return BadRequest(validations);
-
-            entity = new ShooterAssociationInfo();
+            
             entity.ShooterId = request.ShooterId;
             entity.AssociationId = request.AssociationId;
             entity.CardNumber = request.CardNumber;
             entity.SafetyOfficier = request.SafetyOfficier;
+            entity.Categories = request.Categories;
+            entity.RegistrationDate = request.RegistrationDate;
             
 
             //Invocazione del service layer
@@ -112,7 +117,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
 
-        private (IList<ValidationResult> validations, Shooter shooter,Association association) CheckRequest(string shooterId,string associationId)
+        private (IList<ValidationResult> validations, Shooter shooter,Association association) CheckRequest(string shooterId,string associationId,IList<string> categories)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -123,7 +128,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             // check association
             var association = BasicLayer.GetAssociation(associationId);
             if (association == null)
+            {
                 validations.Add(new ValidationResult("Association not found"));
+                return (validations,shooter,association);
+            }
+
+            if (!categories.All(x => association.Categories.Contains(x)))
+                validations.Add(new ValidationResult("Some categories were not found in association"));
+
             return (validations,shooter,association);
         }
 

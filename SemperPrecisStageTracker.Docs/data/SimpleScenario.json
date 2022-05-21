@@ -285,6 +285,18 @@
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     },
     {
+      "id": "41",
+      "firstName": "Shooter",
+      "lastName": "A04",
+      "email": "Shooter@A04.it",
+      "username": "ShooterA04",
+      "password": "ShooterA04",
+      "birthDate": "2021-05-23T18:25:43.511Z",
+      "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
+      "firearmsLicence": "ABCD3",
+      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
+    },
+    {
       "id": "5",
       "firstName": "Shooter",
       "lastName": "05",
@@ -340,6 +352,7 @@
       "associationId": "1",
       "cardNumber": "123",
       "safetyOfficier": true,
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "categories": [ "Senior", "Military" ]
     },
     {
@@ -347,13 +360,15 @@
       "shooterId": "1",
       "associationId": "2",
       "cardNumber": "456",
-      "safetyOfficier": true
+      "safetyOfficier": true,
+      "registrationDate": "2021-05-02T18:25:43.511Z"
     },
     {
       "id": "3",
       "shooterId": "2",
       "associationId": "1",
       "cardNumber": "789",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true,
       "categories": [ "lady", "Industry" ]
     },
@@ -362,6 +377,7 @@
       "shooterId": "4",
       "associationId": "1",
       "cardNumber": "111",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true,
       "categories": [ "lady" ]
     },
@@ -370,6 +386,7 @@
       "shooterId": "5",
       "associationId": "2",
       "cardNumber": "1114",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true
     },
     {
@@ -377,6 +394,7 @@
       "shooterId": "6",
       "associationId": "1",
       "cardNumber": "111422",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true
     },
     {
@@ -384,6 +402,7 @@
       "shooterId": "7",
       "associationId": "1",
       "cardNumber": "1114227",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": false
     },
     {
@@ -391,6 +410,7 @@
       "shooterId": "8",
       "associationId": "1",
       "cardNumber": "111428",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true
     }
   ],
@@ -576,8 +596,7 @@
       ],
       "categories": [
         "Junior",
-        "Senior",
-        "Distinguished",
+        "Distinguished Senior",
         "Senior",
         "Lady",
         "International",
@@ -620,6 +639,22 @@
         "Law",
         "Enforcement"
       ]
+    },
+    {
+      "id": "3",
+      "name": "trs",
+      "divisions": [
+        "Division 1",
+        "Division 2"
+      ],
+      "classifications": [
+        "Classification 1",
+        "Classification 2"
+      ],
+      "categories": [
+        "Category 1",
+        "Category 2"
+      ]
     }
   ],
   "teamHolders": [
@@ -654,60 +689,107 @@
       "paymentDateTime": "2021-06-20T18:25:43.511Z"
     }
   ],
-  "administrationPermissions": [
+  "permissions": [
     {
       "id": "1",
-      "shooterId": "1",
-      "permission": "ManageMatches"
-    },
-    {
-      "id": "11",
-      "shooterId": "1",
-      "permission": "ManagePlaces"
-    },
-    {
-      "id": "12",
-      "shooterId": "1",
-      "permission": "ManageAssociations"
+      "name": "ManageMatches"
     },
     {
       "id": "2",
-      "shooterId": "2",
-      "permission": "CreateMatches"
+      "name": "ManagePlaces"
     },
     {
       "id": "3",
-      "shooterId": "1",
-      "permission": "ManageShooters"
+      "name": "ManageAssociations"
     },
     {
       "id": "4",
-      "shooterId": "2",
-      "permission": "CreateShooters"
+      "name": "CreateMatches"
     },
     {
       "id": "5",
-      "shooterId": "1",
-      "permission": "ManageTeams"
+      "name": "ManageShooters"
     },
     {
       "id": "6",
-      "shooterId": "1",
-      "permission": "ManageStages"
+      "name": "CreateShooters"
+    },
+    {
+      "id": "7",
+      "name": "ManageTeams"
+    },
+    {
+      "id": "8",
+      "name": "ManageStages"
+    },
+    {
+      "id": "9",
+      "name": "CreatePlaces"
+    },
+    {
+      "id": "10",
+      "name": "CreateAssociations"
+    },
+    {
+      "id": "11",
+      "name": "CreateStages"
+    },
+    {
+      "id": "12",
+      "name": "EditShooter"
     }
   ],
-  "entityPermissions": [
+  "roles": [
     {
       "id": "1",
-      "shooterId": "2",
+      "name": "Admin"
+    }
+  ],
+  "userPermissions": [
+    {
+      "id": "1",
+      "permissionId": "12",
       "entityId": "1",
-      "permission": "EditShooter"
+      "userId": "2"
+    }
+  ],
+  "permissionRoles": [
+    {
+      "id": "1",
+      "roleId": "1",
+      "permissionId": "1"
     },
     {
       "id": "2",
-      "shooterId": "3",
-      "entityId": "1",
-      "permission": "EditMatch"
+      "roleId": "1",
+      "permissionId": "2"
+    },
+    {
+      "id": "3",
+      "roleId": "1",
+      "permissionId": "3"
+    },
+    {
+      "id": "4",
+      "roleId": "1",
+      "permissionId": "5"
+    },
+    {
+      "id": "5",
+      "roleId": "1",
+      "permissionId": "7"
+    },
+    {
+      "id": "6",
+      "roleId": "1",
+      "permissionId": "8"
+    }
+  ],
+  "userRoles": [
+    {
+      "id": "1",
+      "roleId": "1",
+      "userId": "1"
     }
   ]
 }

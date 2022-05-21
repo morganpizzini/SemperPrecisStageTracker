@@ -69,17 +69,17 @@
     }
 }
 <CultureSelector />
-<LanguageSelector />
+<ThemeSelector />
 
 <Modal @ref="modalRefPrompt">
     <ModalContent Centered="true">
         <ModalHeader>
-            <ModalTitle>@L["OnlineModePromptTitle"]</ModalTitle>
+            <ModalTitle>@modalTitle</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
             <Field>
-                <FieldLabel>@L["OnlineModePromptText"]</FieldLabel>
+                <FieldLabel>@modalBody</FieldLabel>
             </Field>
         </ModalBody>
         <ModalFooter>
@@ -110,7 +110,8 @@
     private async Task InitPageOps()
     {
         model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
-        pendingChanges = await mainServiceLayer.CountUnsavedModels();
+        if(model.OfflineMode)
+            pendingChanges = await mainServiceLayer.CountUnsavedModels();
     }
     async Task Submit()
     {

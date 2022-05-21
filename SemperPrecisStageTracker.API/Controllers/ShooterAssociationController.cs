@@ -101,7 +101,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooterAssociation")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationRequest request)
         {
             //Recupero l'elemento dal business layer

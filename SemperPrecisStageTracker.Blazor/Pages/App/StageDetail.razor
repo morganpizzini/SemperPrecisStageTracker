@@ -33,7 +33,7 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
-                    <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTimeStart.ToString("d") / @match.MatchDateTimeEnd.ToString("d")</CardText>
+                    <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
 
                     <CardTitle>@L["MatchDirectors"]</CardTitle>
 

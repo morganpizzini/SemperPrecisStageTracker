@@ -58,6 +58,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Groups = scenarioClone.Groups;
             Matches = scenarioClone.Matches;
             ShooterStages = scenarioClone.ShooterStages;
+            ShooterStages = scenarioClone.ShooterStages;
             Stages = scenarioClone.Stages;
             Associations = scenarioClone.Associations;
             Shooters = scenarioClone.Shooters;
@@ -65,15 +66,23 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterTeams = scenarioClone.ShooterTeams;
             Teams = scenarioClone.Teams;
             ShooterAssociations = scenarioClone.ShooterAssociations;
+            ShooterAssociationInfos = scenarioClone.ShooterAssociationInfos;
             NotificationSubscriptions = scenarioClone.NotificationSubscriptions;
             Places = scenarioClone.Places;
             ShooterMatches = scenarioClone.ShooterMatches;
             ShooterSOStages = scenarioClone.ShooterSOStages;
             Contacts = scenarioClone.Contacts;
             Permissions = scenarioClone.Permissions;
-            Permissions = scenarioClone.Permissions;
+            PermissionRoles = scenarioClone.PermissionRoles;
+            Roles = scenarioClone.Roles;
+            UserRoles = scenarioClone.UserRoles;
+            UserPermissions = scenarioClone.UserPermissions;
+            PermissionGroups = scenarioClone.PermissionGroups;
+            UserPermissionGroups = scenarioClone.UserPermissionGroups;
+            PermissionGroupRoles = scenarioClone.PermissionGroupRoles;
             TeamHolders = scenarioClone.TeamHolders;
             ShooterTeamPayments = scenarioClone.ShooterTeamPayments;
+            
         }
     }
 }

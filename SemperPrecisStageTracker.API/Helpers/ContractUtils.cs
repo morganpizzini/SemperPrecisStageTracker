@@ -152,6 +152,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Shooter = shooter != null ? GenerateContract(shooter) : new ShooterContract(),
                 CardNumber = entity.CardNumber,
                 Categories = entity.Categories,
+                RegistrationDate = entity.RegistrationDate,
                 SafetyOfficier = entity.SafetyOfficier
             };
         }

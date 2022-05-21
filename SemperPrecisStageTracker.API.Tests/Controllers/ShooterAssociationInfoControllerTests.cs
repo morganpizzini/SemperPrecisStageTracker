@@ -60,6 +60,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 AssociationId = existingAssociation.Id,
                 ShooterId = existing.Id,
                 SafetyOfficier = true,
+                RegistrationDate = RandomizationUtils.GetRandomDate(),
                 CardNumber = RandomizationUtils.GenerateRandomString(5),
                 Categories = new List<string> { existingAssociation.Categories.FirstOrDefault() }
             };
@@ -78,6 +79,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed != null
                           && parsed.Data.Association.AssociationId == request.AssociationId
                           && parsed.Data.Shooter.ShooterId == request.ShooterId
+                          && parsed.Data.RegistrationDate == request.RegistrationDate
                           && parsed.Data.SafetyOfficier == request.SafetyOfficier
                           && parsed.Data.CardNumber == request.CardNumber
                           && parsed.Data.Categories.All(x => request.Categories.Contains(x))
@@ -128,6 +130,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 ShooterAssociationInfoId = existing.Id,
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
+                RegistrationDate = RandomizationUtils.GetRandomDate(),
                 SafetyOfficier = !existing.SafetyOfficier,
                 CardNumber = RandomizationUtils.GenerateRandomString(5),
                 Categories = new List<string> { existingAssociation.Categories.LastOrDefault() }
@@ -141,15 +144,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterAssociationInfoContract>(response);
-
-            var oldEntity = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.Id == existing.Id);
-
             
-
-            Assert.AreEqual(countBefore + 1, countAfter);
+            Assert.AreEqual(countBefore, countAfter);
             Assert.IsTrue(parsed != null
                           && parsed.Data.Association.AssociationId == request.AssociationId
                           && parsed.Data.Shooter.ShooterId == request.ShooterId
+                          && parsed.Data.RegistrationDate == request.RegistrationDate
                           && parsed.Data.SafetyOfficier == request.SafetyOfficier
                           && parsed.Data.CardNumber == request.CardNumber
                           && parsed.Data.Categories.All(x=>request.Categories.Contains(x))
@@ -168,6 +168,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Composizione della request
             var request = new ShooterAssociationInfoUpdateRequest
             {
+                ShooterAssociationInfoId = existing.Id,
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
                 SafetyOfficier = !existing.SafetyOfficier,
@@ -251,6 +252,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Composizione della request
             var request = new ShooterAssociationInfoUpdateRequest
             {
+                ShooterAssociationInfoId = existing.Id,
                 AssociationId = existing.AssociationId,
                 ShooterId = existing.ShooterId,
                 SafetyOfficier = !existing.SafetyOfficier,

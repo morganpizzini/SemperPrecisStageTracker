@@ -31,7 +31,7 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
-                    <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") / @match.MatchDateTimeEnd.ToString("d")</CardText>
+                    <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
                     <CardTitle>@L["Location"]</CardTitle>
                     <CardText>@match.Place.Name</CardText>
 
@@ -318,7 +318,7 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Date"]</FieldLabel>
-                    <Text>@match.MatchDateTimeStart.ToString("d") / @match.MatchDateTimeEnd.ToString("d")</Text>
+                    <Text>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</Text>
                 </Field>
             }
         </ModalBody>

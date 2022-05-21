@@ -33,13 +33,13 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
-        /// Fetch list of all associations
+        /// Fetch list of all associations available, used for create classifications
         /// </summary>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [Route("FetchAllAssociationsForShooter")]
+        [Route("FetchAvailableAssociationsForShooter")]
         [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
-        public Task<IActionResult> FetchAllAssociationsForShooter(ShooterRequest request)
+        public Task<IActionResult> FetchAvailableAssociationsForShooter(ShooterRequest request)
         {
             var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
                 .Select(x => x.AssociationId)
@@ -51,6 +51,25 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
         }
         
+        /// <summary>
+        /// Fetch list of all associations
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAssociationsNotAssignedForShooter")]
+        [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
+        public Task<IActionResult> FetchAssociationsNotAssignedForShooter(ShooterRequest request)
+        {
+            var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
+                .Select(x => x.AssociationId)
+                .ToList();
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAllAssociations();
+
+            //Ritorno i contratti
+            return Reply(entities.Where(x=> !associationIds.Contains(x.Id)).As(ContractUtils.GenerateContract));
+        }
+
         /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
