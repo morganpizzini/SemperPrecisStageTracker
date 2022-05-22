@@ -91,7 +91,7 @@
                         </CardBody>
                     </Card>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsFull">
+                <Column ColumnSize="ColumnSize.Is5">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Associations"]</CardTitle>
@@ -111,7 +111,7 @@
                                     {
                                         <Virtualize Items="@shooterAssociationInfos" Context="classification">
                                             <TableRow>
-                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
+                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SO"]})")</TableRowHeader>
                                                 <TableRowCell>@classification.CardNumber</TableRowCell>
                                                 <TableRowCell>@string.Join(", ",classification.Categories)</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
@@ -139,7 +139,7 @@
                         </CardBody>
                     </Card>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsFull">
+                <Column ColumnSize="ColumnSize.Is7">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Classifications"]</CardTitle>

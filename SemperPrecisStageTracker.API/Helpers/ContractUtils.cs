@@ -394,17 +394,18 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static MatchStatsResultContract GenerateContract(Match entity, Association association, Place place, IList<DivisionMatchResult> divisionMatchResults)
+        public static MatchStatsResultContract GenerateContract(Match entity, Association association, Place place, MatchResultData matchResult)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (divisionMatchResults == null) throw new ArgumentNullException(nameof(divisionMatchResults));
+            if (matchResult == null) throw new ArgumentNullException(nameof(matchResult));
 
             //Ritorno il contratto
             return new MatchStatsResultContract()
             {
                 Match = GenerateContract(entity, association, place),
-                DivisionMatchResults = divisionMatchResults.As(GenerateContract),
+                DivisionMatchResults = matchResult.Results.As(GenerateContract),
+                CategoryResults =  matchResult.CategoryResults.As(GenerateContract)
             };
         }
 

@@ -382,9 +382,9 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns stats</returns>
-        public IList<DivisionMatchResult> GetMatchStats(string id, string userId = null)
+        public MatchResultData GetMatchStats(string id, string userId = null)
         {
-            var cached = _cache.GetValue<IList<DivisionMatchResult>>(CacheKeys.ComposeKey(CacheKeys.Stats, id));
+            var cached = _cache.GetValue<MatchResultData>(CacheKeys.ComposeKey(CacheKeys.Stats, id));
             if (cached != null)
             {
                 return cached;
@@ -400,6 +400,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingShooterGroups = this._groupShooterRepository.Fetch(x => existingGroupsIds.Contains(x.GroupId));
 
+            
             var groupDivisions = existingShooterGroups.GroupBy(x => x.DivisionId).Select(x => new
             {
                 Division = x.Key,
@@ -410,49 +411,115 @@ namespace SemperPrecisStageTracker.Domain.Services
                 })
             });
 
+            
+
             var existingStageIds = existingStages.Select(x => x.Id);
 
             var existingShootersResult = this._shooterStageRepository.Fetch(x => existingStageIds.Contains(x.StageId));
 
             var shooterIds = existingShooterGroups.Select(x => x.ShooterId).ToList();
 
+            var flatResults = shooterIds.SelectMany(s => existingShootersResult.Where(e => e.ShooterId == s)
+                .Select(y =>
+                    new ShooterStageResult
+                    {
+                        ShooterId = s,
+                        StageIndex = existingStages.First(z => z.Id == y.StageId).Index,
+                        Total = y.Total
+                    }).OrderBy(y => y.StageIndex).ToList());
+
             var existingShooters = this.FetchShootersByIds(shooterIds);
 
-            //var shooterAssociation = _shooterAssociationRepository.Fetch(x => shooterIds.Contains(x.ShooterId) && x.AssociationId == id && x.ExpireDate==null);
+            var existingTeamsIds = existingShooterGroups.Select(x => x.TeamId).ToList();
+            var existingTeams = _teamRepository.Fetch(x=>existingTeamsIds.Contains(x.Id));
 
-
-            var existingTeams = _teamRepository.Fetch();
-
-            var results = groupDivisions.Select(x => new DivisionMatchResult
+            var matchResult = new MatchResultData
             {
-                Name = x.Division,
-                StageNumber = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
-                Classifications = x.Shooters.Select(s => new ShooterMatchResult
+                Results = groupDivisions.Select(x => new DivisionMatchResult
                 {
-                    Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
-                    TeamName = existingTeams.FirstOrDefault(e => e.Id == s.TeamId)?.Name ?? "",
-                    Classification = existingMatch.UnifyClassifications ? "Unclassified" : existingShooterGroups.FirstOrDefault(e => e.ShooterId == s.ShooterId && e.DivisionId == x.Division)?.Classification ?? "Unclassified",
-                    Results = existingShootersResult.Where(e => e.ShooterId == s.ShooterId)
-                            .Select(y =>
-                                new ShooterStageResult
-                                {
-                                    StageIndex = existingStages.First(z => z.Id == y.StageId).Index,
-                                    Total = y.Total
-                                }).OrderBy(y => y.StageIndex).ToList()
-                })
-                .GroupBy(e => e.Classification).Select(
-                    s => new ShooterClassificationResult
-                    {
-                        Classification = s.Key,
-                        Shooters = s.OrderBy(e => e.TotalTime).ToList()
-                    }
-                ).ToList()
-            }).ToList();
+                    Name = x.Division,
+                    StageNumber = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
+                    Classifications = x.Shooters.Select(s => new ShooterMatchResult
+                        {
+                            Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
+                            TeamName = existingTeams.FirstOrDefault(e => e.Id == s.TeamId)?.Name ?? "",
+                            Classification = existingMatch.UnifyClassifications
+                                ? "Unclassified"
+                                : existingShooterGroups
+                                    .FirstOrDefault(e => e.ShooterId == s.ShooterId && e.DivisionId == x.Division)
+                                    ?.Classification ?? "Unclassified",
+                            Results = flatResults.Where(e => e.ShooterId == s.ShooterId).ToList()
+                        })
+                        .GroupBy(e => e.Classification).Select(
+                            s => new ShooterClassificationResult
+                            {
+                                Classification = s.Key,
+                                Shooters = s.OrderBy(e => e.TotalTime).ToList()
+                            }
+                        ).ToList()
+                }).ToList()
+            };
+            
 
             // move to botton shooters with DQ or DNF
-            foreach (var item in results)
+            MoveDivisionResultToBottom(matchResult.Results);
+            
+            var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId &&
+                                            x.Categories.Any());
+            
+            if (shooterInCategories.Count > 0)
             {
-                foreach (var classification in item.Classifications)
+                // creare gruppi per ogni categoria
+                matchResult.CategoryResults = shooterInCategories.SelectMany(x => x.Categories).Distinct()
+                        .SelectMany(category => 
+                                // find shooter with category
+                            shooterInCategories.Where(x => x.Categories.Contains(category))
+                                //get shooter results
+                            .SelectMany(s =>
+                                flatResults.Where(x => s.ShooterId == x.ShooterId))
+                            // group by shooter for create results
+                            .GroupBy(x => x.ShooterId)
+                                // create shooter match result for shooter
+                            .Select(s => new ShooterMatchResult
+                            {
+                                Shooter = existingShooters.FirstOrDefault(e => e.Id == s.Key),
+                                TeamName = existingTeams.FirstOrDefault(e =>
+                                               e.Id == existingShooterGroups.FirstOrDefault(x => x.ShooterId == s.Key)?.TeamId)
+                                           ?.Name ??
+                                           "",
+                                Classification = category,
+                                Results = s.ToList()
+                            })
+                                // group by classification
+                            .GroupBy(x => x.Classification)
+                                // create result
+                            .Select(s => new ShooterClassificationResult
+                            {
+                                Classification = s.Key,
+                                Shooters= s.OrderBy(x=>x.TotalTime).ToList()
+                            })
+                            .ToList()
+                        ).ToList();
+                MoveClassificationResultToBottom(matchResult.CategoryResults);
+            }
+
+
+
+            _cache.SetValue(CacheKeys.ComposeKey(CacheKeys.Stats, id), matchResult);
+            return matchResult;
+
+            void MoveDivisionResultToBottom(IList<DivisionMatchResult> list)
+            {
+                // move to botton shooters with DQ or DNF
+                foreach (var item in list)
+                {
+                    MoveClassificationResultToBottom(item.Classifications);
+                }
+            }
+
+            void MoveClassificationResultToBottom(IList<ShooterClassificationResult> list)
+            {
+                foreach (var classification in list)
                 {
                     if (classification.Shooters.Any(x => x.TotalTime > 0) && classification.Shooters.Any(x => x.TotalTime <= 0))
                     {
@@ -463,21 +530,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                     }
                 }
             }
-
-            var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId &&
-                                            x.Categories.Any());
-            
-            if (shooterInCategories.Count > 0)
-            {
-                // creare gruppi per ogni categoria
-                // attenzione se shooter ha più di una cateogoria
-                // ricercare il risultato all'interno della lista e matcharlo in una graduatoria a parte
-            }
-
-
-
-            _cache.SetValue(CacheKeys.ComposeKey(CacheKeys.Stats, id), results);
-            return results;
         }
 
 

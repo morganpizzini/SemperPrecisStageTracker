@@ -115,6 +115,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 .HasConversion(
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            
 
             modelBuilder.Entity<TeamHolder>()
                 .HasKey(f => f.Id);
@@ -139,6 +140,10 @@ namespace SemperPrecisStageTracker.EF.Context
             modelBuilder.Entity<Stage>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Stage>().Property(f => f.Scenario).HasMaxLength(1000);
+            modelBuilder.Entity<Stage>().Property(f => f.StageProcedureNotes).HasMaxLength(1000);
+            modelBuilder.Entity<Stage>().Property(f => f.StageProcedure).HasMaxLength(1000);
 
             modelBuilder.Entity<ShooterStage>()
                 .HasKey(f => f.Id);
@@ -198,6 +203,17 @@ namespace SemperPrecisStageTracker.EF.Context
             modelBuilder.Entity<ShooterAssociationInfo>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<ShooterAssociationInfo>()
+                .Property(e => e.Categories)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+
+            modelBuilder.Entity<ShooterAssociationInfo>()
+                .Property(e => e.Categories)
+                .Metadata
+                .SetValueComparer(valueComparerString);
 
             modelBuilder.Entity<NotificationSubscription>()
                 .HasKey(f => f.Id);

@@ -12,7 +12,7 @@ namespace SemperPrecisStageTracker
         public string Classification { get; set; }
         public string TeamName { get; set; }
         public IList<ShooterStageResult> Results { get; set; }
-        public decimal TotalTime => Results.Sum(x => x.Total);
+        public decimal TotalTime => Results.Any(x=>x.Total<=0) ? -99 : Results.Sum(x => x.Total);
     }
 
     public class UserPermissionDto
