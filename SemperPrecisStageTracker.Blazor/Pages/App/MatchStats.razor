@@ -21,13 +21,13 @@ else
                         @if (interactive)
                         {
                             <text>
-                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTime.ToString("d")
+                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
                             </text>
                         }
                         else
                         {
                             <text>
-                                @stats.Match.Name - @stats.Match.MatchDateTime.ToString("d")
+                                @stats.Match.Name - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
                             </text>
                         }
                     </CardText>
@@ -62,58 +62,90 @@ else
                     <CardBody>
                         <CardTitle>@division.Name</CardTitle>
                         @foreach (var classification in division.Classifications)
-                        {
-                            <CardText>@classification.Classification</CardText>
-                            <Table Striped="true" Hoverable="true">
-                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                    {
+                        <CardText>@classification.Classification</CardText>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                    @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                    {
+                                        var tmp = division.StageNumber[i];
+                                        <TableHeaderCell>@(tmp)</TableHeaderCell>
+                                    }
+                                    <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var shooter in classification.Shooters)
+                                {
                                     <TableRow>
-                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                        <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                        <TableRowCell>@shooter.TeamName</TableRowCell>
                                         @for (int i = 0; i < division.StageNumber.Count(); i++)
                                         {
-                                            var tmp = division.StageNumber[i];
-                                            <TableHeaderCell>@(tmp)</TableHeaderCell>
-                                        }
-                                        <TableHeaderCell>@L["Total"]</TableHeaderCell>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    @foreach (var shooter in classification.Shooters)
-                                    {
-                                        <TableRow>
-                                            <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
-                                            <TableRowCell>@shooter.TeamName</TableRowCell>
-                                            @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                            var current = shooter.Results.FirstOrDefault(x => x.StageIndex == i);
+                                            if (current != null)
                                             {
-                                                var current = shooter.Results.FirstOrDefault(x => x.StageIndex == i);
-                                                if (current != null)
-                                                {
-                                                    @if (current.Total < 0)
-                                                    {
-                                                        <TableRowCell>-</TableRowCell>
-                                                    }
-                                                    else
-                                                    {
-                                                        <TableRowCell>@($"{current.Total:f2}")</TableRowCell>
-                                                    }
-                                                }
-                                                else
+                                                @if (current.Total < 0)
                                                 {
                                                     <TableRowCell>-</TableRowCell>
                                                 }
+                                                else
+                                                {
+                                                    <TableRowCell>@($"{current.Total:f2}")</TableRowCell>
+                                                }
                                             }
-                                            <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
-                                        </TableRow>
-                                    }
-                                </TableBody>
-                            </Table>
-                        }
-                    </CardBody>
-                </Card>
-            </Virtualize>
+                                            else
+                                            {
+                                                <TableRowCell>-</TableRowCell>
+                                            }
+                                        }
+                                        <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    }
+                </CardBody>
+            </Card>
+        </Virtualize>
 
+    </Column>
+</Row>
+    <Row>
+        <h3>@L["Categories"]</h3>
+        <Virtualize Items="@stats.CategoryResults" Context="division">
+            <Column ColumnSize="ColumnSize.Is6">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@division.Classification</CardTitle>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var shooter in division.Shooters)
+                            {
+                                <TableRow>
+                                    <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                    <TableRowCell>@shooter.TeamName</TableRowCell>
+                                    <TableRowCell>@(shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
         </Column>
-    </Row>
+    </Virtualize>
+
+</Row>
 }
 @code {
 

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SemperPrecisStageTracker.API.Controllers;
+using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
@@ -22,12 +23,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAllUserPermissions();
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<PermissionsResponse>(response);
+            var parsed = ParseExpectedOk<UserPermissionContract>(response);
             Assert.IsTrue(parsed != null &&
-                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageMatches)) &&
-                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageShooters)) &&
-                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageShooters)) &&
-                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.ManageTeams))
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageMatches) &&
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageShooters) &&
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageShooters) &&
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageTeams)
             );
         }
 
@@ -39,11 +40,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAllUserPermissions();
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<PermissionsResponse>(response);
+            var parsed = ParseExpectedOk<UserPermissionContract>(response);
 
             // TODO: controllare permesso su entità
             Assert.IsTrue(parsed != null &&
-                          parsed.Data.Permissions.Any(x => x.Name == nameof(Permissions.EditShooter))
+                          parsed.Data.EntityPermissions.Any(x => x.Permissions.Contains(Permissions.EditShooter))
             );
         }
 

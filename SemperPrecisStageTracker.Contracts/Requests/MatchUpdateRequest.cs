@@ -11,7 +11,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
 
         [Required]
-        public DateTime MatchDateTime { get; set; }
+        public DateTime MatchDateTimeStart { get; set; }
+        [Required]
+        [DateGreaterThan(nameof(MatchDateTimeStart))]
+        public DateTime MatchDateTimeEnd { get; set; }
         [Required]
         public string AssociationId { get; set; }
         [Required]

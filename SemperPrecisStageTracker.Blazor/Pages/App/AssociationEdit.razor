@@ -77,6 +77,27 @@
                         </FieldBody>
                     }
                 </Field>
+                <Field>
+                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Categories"]<Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Categories.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                    @for (int i = 0; i < model.Categories.Count; i++)
+                    {
+                        var tmp = i;
+                        <FieldBody ColumnSize="ColumnSize.Is8">
+                            <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <input value="@model.Categories[tmp]" class="form-control"
+                                           @onchange="@(e => model.Categories[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    @if (PageCondition)
+                                    {
+                                        <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Categories.Remove(model.Categories[tmp]); })"><Icon Name="IconName.Delete"/></Button>
+                                    }
+                                </Addon>
+                            </Addons>
+                        </FieldBody>
+                    }
+                </Field>
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
                         <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
@@ -111,6 +132,7 @@
         model.Name = existing.Name;
         model.Divisions = existing.Divisions;
         model.Classifications = existing.Classifications;
+        model.Categories = existing.Categories;
 
         await base.OnInitializedAsync();
     }

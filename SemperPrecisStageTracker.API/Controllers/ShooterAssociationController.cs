@@ -56,9 +56,17 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
         public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
         {
+            var availableAssociationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId).Select(x=>x.AssociationId);
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            if (!availableAssociationIds.Contains(request.AssociationId))
+            {
+                validations.Add(new ValidationResult("User is not registered for the selected association"));
+                return BadRequestTask(validations);
+            }
+
             var entity = this.BasicLayer.GetActiveShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
 
-            IList<ValidationResult> validations;
 
             if (entity != null)
             {
@@ -72,8 +80,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity = new ShooterAssociation();
             entity.ShooterId = request.ShooterId;
             entity.AssociationId = request.AssociationId;
-            entity.CardNumber = request.CardNumber;
-            entity.SafetyOfficier = request.SafetyOfficier;
             entity.Classification = request.Classification;
             entity.Division = request.Division;
             entity.RegistrationDate = request.RegistrationDate;
@@ -95,7 +101,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooterAssociation")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationRequest request)
         {
             //Recupero l'elemento dal business layer

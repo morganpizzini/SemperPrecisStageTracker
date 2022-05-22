@@ -33,6 +33,44 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
+        /// Fetch list of all associations available, used for create classifications
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAvailableAssociationsForShooter")]
+        [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
+        public Task<IActionResult> FetchAvailableAssociationsForShooter(ShooterRequest request)
+        {
+            var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
+                .Select(x => x.AssociationId)
+                .ToList();
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAssociationsByIds(associationIds);
+
+            //Ritorno i contratti
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
+        }
+        
+        /// <summary>
+        /// Fetch list of all associations
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAssociationsNotAssignedForShooter")]
+        [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
+        public Task<IActionResult> FetchAssociationsNotAssignedForShooter(ShooterRequest request)
+        {
+            var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
+                .Select(x => x.AssociationId)
+                .ToList();
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAllAssociations();
+
+            //Ritorno i contratti
+            return Reply(entities.Where(x=> !associationIds.Contains(x.Id)).As(ContractUtils.GenerateContract));
+        }
+
+        /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>
@@ -68,7 +106,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 Name = request.Name,
                 Classifications = request.Classifications,
-                Divisions = request.Divisions
+                Divisions = request.Divisions,
+                Categories = request.Categories
             };
 
             //Invocazione del service layer
@@ -103,6 +142,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             entity.Classifications = request.Classifications;
+            entity.Categories = request.Categories;
             entity.Divisions = request.Divisions;
 
             //Salvataggio

@@ -13,5 +13,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public IList<string> Divisions { get; set; } = new List<string>();
         [Required]
         public IList<string> Classifications { get; set; } = new List<string>();
+        [Required]
+        public IList<string> Categories { get; set; } = new List<string>();
     }
 }

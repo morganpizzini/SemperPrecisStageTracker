@@ -19,7 +19,12 @@
         {
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
+            @if (associationNotAssigned.Count > 0)
+            {
+                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
+            }
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+            <Button Size="Size.Small" Color="Color.Danger" Type="ButtonType.Button" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /> @L["DeleteShooter"]</Button>
         }
         @if (PageLoading)
         {
@@ -86,10 +91,58 @@
                         </CardBody>
                     </Card>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsFull">
+                <Column ColumnSize="ColumnSize.Is5">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Associations"]</CardTitle>
+
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["CardNumber"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Categories"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (shooterAssociationInfos.Count > 0)
+                                    {
+                                        <Virtualize Items="@shooterAssociationInfos" Context="classification">
+                                            <TableRow>
+                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SO"]})")</TableRowHeader>
+                                                <TableRowCell>@classification.CardNumber</TableRowCell>
+                                                <TableRowCell>@string.Join(", ",classification.Categories)</TableRowCell>
+                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                @L["NoAssociations"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+
+                        </CardBody>
+                    </Card>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is7">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Classifications"]</CardTitle>
 
                             <Table Striped="true" Hoverable="true">
                                 <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -105,7 +158,7 @@
                                     {
                                         <Virtualize Items="@activeShooterClassifications" Context="classification">
                                             <TableRow>
-                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
+                                                <TableRowHeader>@classification.Association.Name</TableRowHeader>
                                                 <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
@@ -152,7 +205,7 @@
                                     {
                                         <Virtualize Items="@expiredShooterClassifications" Context="classification">
                                             <TableRow>
-                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SafetyOfficier"]})")</TableRowHeader>
+                                                <TableRowHeader>@classification.Association.Name</TableRowHeader>
                                                 <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>@classification.ExpireDate.Value.ToString("d")</TableRowCell>
@@ -184,6 +237,114 @@
         }
     </Authorized>
 </AuthorizeView>
+
+<Modal @ref="modalRefAssociationInfoToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["EditAssociationInfo"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="validationInfos" Mode="ValidationMode.Manual" Model="@associationInfoToEdit">
+                @if (string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId))
+                {
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" SelectedValue="@associationInfoToEdit.AssociationId" SelectedValueChanged="@OnSelectedAssociationInfoChanged">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                        @foreach (var association in associationNotAssigned)
+                                        {
+                                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongAssociation"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                }
+                else
+                {
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        @(associations.FirstOrDefault(x=>x.AssociationId == associationInfoToEdit.AssociationId)?.Name ?? string.Empty)
+                    </FieldBody>
+                }
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["cardNumber"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationInfoToEdit.CardNumber">
+                                <Feedback>
+                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["categories"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValues="@categoriesEdit" Multiple>
+                                <ChildContent>
+                                @if (string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId))
+                                {
+                                    @foreach (var category in associationNotAssigned.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
+                                    {
+                                        <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                    }
+                                }
+                                else
+                                {
+                                    @foreach (var category in associations.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
+                                    {
+                                        <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                    }
+                                }
+                                 
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongCategories"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is8">
+                            <Check TValue="bool" @bind-Checked="@associationInfoToEdit.SafetyOfficier">@L["SafetyOfficier"]</Check>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@associationInfoToEdit.RegistrationDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongValidRegistrationDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAssociationInfoToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAssociationInfoToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 <Modal @ref="modalRefAssociationToEdit">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -192,19 +353,7 @@
         </ModalHeader>
         <ModalBody>
             <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@associationToEdit">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CardNumber"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["CardNumber"]" @bind-Text="@associationToEdit.CardNumber">
-                                <Feedback>
-                                    <ValidationError>@L["WrongCardNumber"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -223,7 +372,7 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["division"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -242,7 +391,7 @@
                         </FieldBody>
                     </Field>
                 </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["classification"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -258,14 +407,6 @@
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
                                 </Feedback>
                             </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.Is8">
-                            <Check TValue="bool" @bind-Checked="@associationToEdit.SafetyOfficier">@L["SafetyOfficier"]</Check>
                         </FieldBody>
                     </Field>
                 </Validation>
@@ -286,6 +427,35 @@
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAssociationToEdit(false))">@L["Close"]</Button>
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAssociationToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefAssociationInfoToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteAssociation"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (associationInfoToDelete.Association != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@associationInfoToDelete.Association.Name</Text>
+                </Field>
+            }
+            <Field>
+                <FieldLabel>@L["CardNumber"]</FieldLabel>
+                <Text>@associationInfoToDelete.CardNumber</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAssociationInfoToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAssociationInfoToDelete(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -331,7 +501,7 @@
         </ModalHeader>
         <ModalBody>
             <Validations @ref="teamValidations" Mode="ValidationMode.Manual" Model="@teamToEdit">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Validation Validator="@ValidationRule.IsSelected">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
@@ -438,20 +608,28 @@
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), Id);
-
-
+    
+    
     private Modal modalRefEntityToDelete;
 
     ShooterContract shooter = new();
     Validations validations;
+    Validations validationInfos;
     Validations teamValidations;
     private Modal modalRefAssociationToDelete;
+    private Modal modalRefAssociationInfoToDelete;
     ShooterAssociationContract associationToDelete = new();
+    ShooterAssociationInfoContract associationInfoToDelete = new();
     private Modal modalRefAssociationToEdit;
+    private Modal modalRefAssociationInfoToEdit;
+    private IReadOnlyList<string> categoriesEdit = new List<string>();
     ShooterAssociationCreateRequest associationToEdit = new();
+    ShooterAssociationInfoUpdateRequest associationInfoToEdit = new();
     IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
     IList<ShooterAssociationContract> activeShooterClassifications => shooterClassifications.Where(x => x.ExpireDate == null).ToList();
     IList<ShooterAssociationContract> expiredShooterClassifications => shooterClassifications.Where(x => x.ExpireDate != null).ToList();
+    IList<ShooterAssociationInfoContract> shooterAssociationInfos = new List<ShooterAssociationInfoContract>();
+    IList<AssociationContract> associationNotAssigned = new List<AssociationContract>();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
 
@@ -471,9 +649,10 @@
             await base.OnInitializedAsync();
             return;
         }
+        
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
         teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+        await LoadShooterAssociationInfo();
         await LoadShooterClassifications();
         await LoadShooterTeams();
         await base.OnInitializedAsync();
@@ -486,6 +665,16 @@
     async Task LoadShooterClassifications()
     {
         shooterClassifications = await Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+    }
+
+    async Task LoadShooterAssociationInfo()
+    {
+        categoriesEdit = new List<string>();
+        var request = new ShooterRequest() { ShooterId = Id };
+        associationNotAssigned  = await Post<IList<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAvailableAssociationsForShooter", request);
+        shooterAssociationInfos = await Post<IList<ShooterAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
+
     }
 
     void DeleteEntity()
@@ -525,12 +714,16 @@
         }
     }
 
+    void OnSelectedAssociationInfoChanged(string value)
+    {
+        associationInfoToEdit.AssociationId = value;
+    }
+
     void OnSelectedAssociationChanged(string value)
     {
         associationToEdit.AssociationId = value;
         associationToEdit.Classification = string.Empty;
         associationToEdit.Division = string.Empty;
-        associationToEdit.SafetyOfficier = false;
         SelectClassificationBasedOnAssociationId(value);
     }
     void SelectClassificationBasedOnAssociationId(string value)
@@ -547,9 +740,31 @@
         associationToEdit = new ShooterAssociationCreateRequest { ShooterId = shooter.ShooterId };
         modalRefAssociationToEdit.Show();
     }
+
+    void NewAssociationInfo()
+    {
+        associationInfoToEdit = new ShooterAssociationInfoUpdateRequest { ShooterId = shooter.ShooterId };
+        modalRefAssociationInfoToEdit.Show();
+    }
+
+    void EditAssociationInfo(ShooterAssociationInfoContract shooterAssociation)
+    {
+        associationInfoToEdit = new ShooterAssociationInfoUpdateRequest
+        {
+            ShooterAssociationInfoId = shooterAssociation.ShooterAssociationInfoId,
+            ShooterId = shooter.ShooterId,
+            AssociationId = shooterAssociation.Association.AssociationId,
+            CardNumber = shooterAssociation.CardNumber,
+            Categories = shooterAssociation.Categories,
+            SafetyOfficier = shooterAssociation.SafetyOfficier,
+            RegistrationDate = shooterAssociation.RegistrationDate
+        };
+        categoriesEdit = shooterAssociation.Categories.ToList();
+        modalRefAssociationInfoToEdit.Show();
+    }
+
     void EditClassification(ShooterAssociationContract shooterAssociation)
     {
-
         SelectClassificationBasedOnAssociationId(shooterAssociation.Association.AssociationId);
         associationToEdit = new ShooterAssociationCreateRequest
         {
@@ -557,11 +772,25 @@
             AssociationId = shooterAssociation.Association.AssociationId,
             Classification = shooterAssociation.Classification,
             Division = shooterAssociation.Division,
-            RegistrationDate = shooterAssociation.RegistrationDate,
-            CardNumber = shooterAssociation.CardNumber
+            RegistrationDate = shooterAssociation.RegistrationDate
         };
 
         modalRefAssociationToEdit.Show();
+    }
+
+    private async Task HideModalAssociationInfoToEdit(bool choice)
+    {
+        if (choice)
+        {
+            if (! (await validationInfos.ValidateAll()))
+                return;
+            await validationInfos.ClearAll();
+            associationInfoToEdit.Categories = categoriesEdit.ToList();
+            var response = await Post<ShooterAssociationInfoContract>(string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId) ? "/api/ShooterAssociationInfo/CreateShooterAssociationInfo" : "/api/ShooterAssociationInfo/UpdateShooterAssociationInfo", associationInfoToEdit);
+            await LoadShooterAssociationInfo();
+        }
+        associationInfoToEdit = new ShooterAssociationInfoUpdateRequest();
+        await modalRefAssociationInfoToEdit.Hide();
     }
 
     private async Task HideModalAssociationToEdit(bool choice)
@@ -578,6 +807,14 @@
         await modalRefAssociationToEdit.Hide();
     }
 
+    void DeleteAssociationInfo(ShooterAssociationInfoContract association)
+    {
+        if (association == null)
+            return;
+        associationInfoToDelete = association;
+        modalRefAssociationInfoToDelete.Show();
+    }
+
     void DeleteClassification(ShooterAssociationContract association)
     {
         if (association == null)
@@ -585,11 +822,24 @@
         associationToDelete = association;
         modalRefAssociationToDelete.Show();
     }
+    private async Task HideModalAssociationInfoToDelete(bool choice)
+    {
+        if (choice && associationInfoToDelete.Association != null)
+        {
+            await Post<OkResponse>("/api/ShooterAssociationInfo/DeleteShooterAssociationInfo", new ShooterAssociationInfoRequest
+            {
+                ShooterAssociationInfoId = associationInfoToDelete.ShooterAssociationInfoId
+            });
+            await LoadShooterAssociationInfo();
+        }
+        associationInfoToDelete = new ShooterAssociationInfoContract();
+        await modalRefAssociationInfoToDelete.Hide();
+    }
     private async Task HideModalAssociationToDelete(bool choice)
     {
         if (choice && associationToDelete.Association != null)
         {
-            await Post<GroupContract>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
+            await Post<OkResponse>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
             {
                 ShooterAssociationId = associationToDelete.ShooterAssociationId
             });

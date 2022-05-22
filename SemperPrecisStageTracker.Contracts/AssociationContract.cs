@@ -33,6 +33,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string Name { get; set; }
         public IList<string> Divisions { get; set; } = new List<string>();
         public IList<string> Classifications { get; set; } = new List<string>();
+        public IList<string> Categories { get; set; } = new List<string>();
     }
 
     public class EditedEntityRequest

@@ -27,7 +27,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
@@ -76,7 +76,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
@@ -234,7 +234,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
@@ -294,7 +294,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
@@ -311,9 +311,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //look for shooter not in association
-            var shooterAssociationId = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier).GroupBy(x => x.ShooterId)
-                .Where(x => x.All(a => a.AssociationId != existingMatch.AssociationId))
-                .Select(x => x.Key).FirstOrDefault();
+            var shooterAssociationId = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.ShooterId;
 
             if (shooterAssociationId == null)
                 Assert.Inconclusive("Shooter not in association not found");
@@ -368,7 +366,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             // not a match director
@@ -494,7 +492,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
@@ -533,7 +531,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existingAssociation == null)
                 Assert.Inconclusive("Association not found");
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingAssociation.Id)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingAssociation.Id)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterIds = Scenario.Shooters.Where(x =>
@@ -569,7 +567,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterMatches.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
@@ -615,7 +613,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterMatches.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.AssociationId == existingMatch.AssociationId && x.SafetyOfficier)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.AssociationId == existingMatch.AssociationId && x.SafetyOfficier)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
@@ -657,7 +655,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterMatches.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
@@ -704,9 +702,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             //look for shooter not in association
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier).GroupBy(x => x.ShooterId)
-                .Where(x => x.All(a => a.AssociationId != existingMatch.AssociationId))
-                .Select(x => x.Key).ToList();
+            var shooterAssociations = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.ShooterId;
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
 
@@ -747,7 +743,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterMatches.Count;
 
-            var shooterAssociations = Scenario.ShooterAssociations.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
+            var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
                 .Select(x => x.ShooterId).ToList();
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
