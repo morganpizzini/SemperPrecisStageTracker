@@ -25,8 +25,8 @@ namespace SemperPrecisStageTracker.Contracts
         public DateTime FirearmsLicenceExpireDate { get; set; }
         public DateTime MedicalExaminationExpireDate { get; set; }
 
-        public bool HasWarning => FirearmsLicenceExpireDate.Date > DateTime.Now &&
-                                    MedicalExaminationExpireDate.Date > DateTime.Now;
+        public bool HasWarning => FirearmsLicenceExpireDate.Date <= DateTime.Now ||
+                                    MedicalExaminationExpireDate.Date <= DateTime.Now;
         public IList<ShooterAssociationContract> Classifications { get; set; } = new List<ShooterAssociationContract>();
         public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();
     }

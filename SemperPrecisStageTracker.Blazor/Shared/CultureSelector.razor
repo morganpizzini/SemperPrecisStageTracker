@@ -1,6 +1,6 @@
 ﻿@inject IStringLocalizer<CultureSelector> L
 <strong>@L["Culture"]:</strong>
-<select class="form-control" @bind="Culture" style="width:150px; margin: 0 10px;">
+<select class="form-control" @bind="Culture">
     @foreach (var culture in cultures)
     {
         <option value="@culture">@culture.DisplayName</option>

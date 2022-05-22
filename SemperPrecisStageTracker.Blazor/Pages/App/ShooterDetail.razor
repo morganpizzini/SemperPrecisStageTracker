@@ -47,7 +47,7 @@
                             <CardText>@shooter.Email</CardText>
                             <CardTitle>@L["FireArmLicence"]</CardTitle>
                             <CardText>
-                                @if (shooter.FirearmsLicenceExpireDate.Date > DateTime.Now)
+                                @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
                                 {
                                     <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
                                 }
@@ -55,7 +55,7 @@
                             </CardText>
                             <CardTitle>@L["MedicalExaminationExpireDate"]</CardTitle>
                             <CardText>
-                                @if (shooter.FirearmsLicenceExpireDate.Date > DateTime.Now)
+                                @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
                                 {
                                     <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
                                 }

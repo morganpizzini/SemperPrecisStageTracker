@@ -1,7 +1,7 @@
 ﻿@inject IStringLocalizer<ThemeSelector> L
 @inject ILocalStorageService localStorage
 <strong>@L["Theme"]:</strong>
-<select class="form-control" @bind="CurrentTheme" style="width:150px; margin: 0 10px;">
+<select class="form-control" @bind="CurrentTheme">
     <option value="light">@L["Light"]</option>
     <option value="dark">@L["Dark"]</option>
 </select>

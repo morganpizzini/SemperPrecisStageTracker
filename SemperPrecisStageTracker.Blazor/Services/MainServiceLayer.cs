@@ -55,13 +55,22 @@ namespace SemperPrecisStageTracker.Blazor.Services
             await _matchServiceIndexDb.DeleteAll<EditedEntity>();
         }
 
-        public async Task UpdateModel(ClientSetting model)
+        public async Task<OkResponse> UpdateModel(ClientSetting model)
         {
             await _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
 
             Offline = model.OfflineMode;
-            if (!model.OfflineMode || string.IsNullOrEmpty(model.MatchId))
-                return;
+            if (!Offline)
+                return new OkResponse()
+                {
+                    Status = true
+                };
+            if (string.IsNullOrEmpty(model.MatchId))
+                return new OkResponse()
+                {
+                    Status = false,
+                    Errors = new List<string>(){"Match id is null"}
+                };
             // clean up datas
             await _matchServiceIndexDb.DeleteAll<MatchContract>();
             await _matchServiceIndexDb.DeleteAll<ShooterStageAggregationResult>();
@@ -72,12 +81,20 @@ namespace SemperPrecisStageTracker.Blazor.Services
             var response = await _httpService.Post<MatchDataAssociationContract>("api/Aggregation/FetchDataForMatch", new MatchRequest { MatchId = model.MatchId });
 
             if (response is not { WentWell: true })
-                return;
+                return new OkResponse()
+                {
+                    Status = false,
+                    Errors = new List<string>(){response?.Error ?? "Generic error"}
+                };
             await _matchServiceIndexDb.AddItems(new List<MatchContract> { response.Result.Match });
 
             await _matchServiceIndexDb.AddItems(response.Result.ShooterStages.ToList());
             await _matchServiceIndexDb.AddItems(response.Result.ShooterMatches.ToList());
             await _matchServiceIndexDb.AddItems(response.Result.ShooterSoStages.ToList());
+            return new OkResponse()
+            {
+                Status = true
+            };
         }
 
         public async Task<(IList<ShooterStageContract>, IList<EditedEntityRequest>)> GetChanges()
