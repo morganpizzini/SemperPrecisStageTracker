@@ -2410,11 +2410,11 @@ namespace SemperPrecisStageTracker.Domain.Services
                 var shooter = _shooterRepository.GetSingle(x => x.Id == duplicate.ShooterId);
                 if (shooter != null)
                 {
-                    validations.Add(new ValidationResult($"{entity.CardNumber} already assigned to {shooter.FirstName} {shooter.LastName}"));
+                    validations.Add(new ValidationResult($"Card number {entity.CardNumber} already assigned to {shooter.FirstName} {shooter.LastName}"));
                 }
                 else
                 {
-                    validations.Add(new ValidationResult($"{entity.CardNumber} already assigned to another unknown shooter"));
+                    validations.Add(new ValidationResult($"Card number {entity.CardNumber} already assigned to another unknown shooter"));
                 }
                 return validations;
             }

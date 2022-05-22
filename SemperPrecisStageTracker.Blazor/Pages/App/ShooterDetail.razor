@@ -818,6 +818,10 @@
             await validationInfos.ClearAll();
             associationInfoToEdit.Categories = categoriesEdit.ToList();
             var response = await Post<ShooterAssociationInfoContract>(string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId) ? "/api/ShooterAssociationInfo/CreateShooterAssociationInfo" : "/api/ShooterAssociationInfo/UpdateShooterAssociationInfo", associationInfoToEdit);
+            if (response == null)
+            {
+                return;
+            }
             await LoadShooterAssociationInfo();
         }
         associationInfoToEdit = new ShooterAssociationInfoUpdateRequest();
@@ -832,6 +836,10 @@
                 return;
             await validations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
+            if (response is not {Status: true })
+            {
+                return;
+            }
             await LoadShooterClassifications();
         }
         associationToEdit = new ShooterAssociationCreateRequest();
@@ -857,10 +865,14 @@
     {
         if (choice && associationInfoToDelete.Association != null)
         {
-            await Post<OkResponse>("/api/ShooterAssociationInfo/DeleteShooterAssociationInfo", new ShooterAssociationInfoRequest
+            var response = await Post<OkResponse>("/api/ShooterAssociationInfo/DeleteShooterAssociationInfo", new ShooterAssociationInfoRequest
             {
                 ShooterAssociationInfoId = associationInfoToDelete.ShooterAssociationInfoId
             });
+            if (response is not { Status: true})
+            {
+                return;
+            }
             await LoadShooterAssociationInfo();
         }
         associationInfoToDelete = new ShooterAssociationInfoContract();
@@ -870,10 +882,14 @@
     {
         if (choice && associationToDelete.Association != null)
         {
-            await Post<OkResponse>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
+            var response = await Post<OkResponse>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
             {
                 ShooterAssociationId = associationToDelete.ShooterAssociationId
             });
+            if (response is not { Status: true})
+            {
+                return;
+            }
             await LoadShooterClassifications();
         }
         associationToDelete = new ShooterAssociationContract();
@@ -905,6 +921,10 @@
                 return;
             await teamValidations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
+            if (response is not { Status: true})
+            {
+                return;
+            }
             await LoadShooterTeams();
         }
         teamToEdit = new ShooterTeamCreateRequest();
@@ -921,11 +941,15 @@
     {
         if (choice && teamToDelete.Team != null)
         {
-            await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
+            var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
             {
                 TeamId = teamToDelete.Team.TeamId,
                 ShooterId = shooter.ShooterId
             });
+            if (response == null)
+            {
+                return;
+            }
             await LoadShooterTeams();
         }
         teamToDelete = new ShooterTeamContract();

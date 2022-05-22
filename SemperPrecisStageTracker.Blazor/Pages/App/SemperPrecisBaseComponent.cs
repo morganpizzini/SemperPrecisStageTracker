@@ -54,8 +54,6 @@ namespace SemperPrecisStageTracker.Blazor.Pages
                     {
                         result = apiResponse.Result;
                     }
-
-                    
                 }
             ApiLoading = false;    
             return result;
