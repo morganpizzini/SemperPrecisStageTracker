@@ -64,21 +64,21 @@
                 <p>
                     <b>@L["PendingChanges"]:</b>&nbsp;@(pendingChanges> 0 ? pendingChanges : L["NoPendingChanges"])
                 </p>
-                <Button Size="Size.Small" Color="Color.Info" Clicked="@SwitchOnline" Loading="ApiLoading" Disabled="ApiLoading">
+                <Button Size="Size.Small" Color="Color.Info" Clicked="@SwitchOnline" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
                     <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["SyncData"]</LoadingTemplate>
                     <ChildContent>@L["BackOnline"]</ChildContent>
                 </Button>
                 @if (pendingChanges > 0)
                 {
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading">
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
                         <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["UploadData"]</LoadingTemplate>
                         <ChildContent>@L["UploadData"]</ChildContent>
                     </Button>
-                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading">
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
                         <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["ExportData"]</LoadingTemplate>
                         <ChildContent>@L["ExportData"]</ChildContent>
                     </Button>
-                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading">
+                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
                         <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["DeleteData"]</LoadingTemplate>
                         <ChildContent>@L["DeleteData"]</ChildContent>
                     </Button>
