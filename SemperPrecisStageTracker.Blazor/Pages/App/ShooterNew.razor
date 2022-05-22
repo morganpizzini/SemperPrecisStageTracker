@@ -138,6 +138,7 @@
             return;
         await validations.ClearAll();
         var response = await Post<ShooterContract>("/api/Shooter/CreateShooter", model);
-        UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
+        if (response != null)
+            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
     }
 }

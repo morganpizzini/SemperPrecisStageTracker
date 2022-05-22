@@ -1,5 +1,6 @@
 ﻿@page "/app/matches/{id}/stats"
 @page "/app/stats/{shortLink}"
+@using SemperPrecisStageTracker.Blazor.Services.Models
 @inject IHttpService Client
 @inject IStringLocalizer<MatchStats> L
 
@@ -161,16 +162,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        ApiResponse<MatchStatsResultContract> response;
         if (!string.IsNullOrEmpty(ShortLink))
         {
-            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
+            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
         }
         else
         {
-            stats = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
+            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
         }
 
-
+        if (response is { WentWell: true })
+        {
+            stats = response.Result;
+        }
+        
         PageLoading = false;
 
         await base.OnInitializedAsync();

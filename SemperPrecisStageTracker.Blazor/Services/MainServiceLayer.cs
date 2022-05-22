@@ -71,11 +71,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
             // download everything about model.MatchId
             var response = await _httpService.Post<MatchDataAssociationContract>("api/Aggregation/FetchDataForMatch", new MatchRequest { MatchId = model.MatchId });
 
-            await _matchServiceIndexDb.AddItems(new List<MatchContract> { response.Match });
+            if (response is not { WentWell: true })
+                return;
+            await _matchServiceIndexDb.AddItems(new List<MatchContract> { response.Result.Match });
 
-            await _matchServiceIndexDb.AddItems(response.ShooterStages.ToList());
-            await _matchServiceIndexDb.AddItems(response.ShooterMatches.ToList());
-            await _matchServiceIndexDb.AddItems(response.ShooterSoStages.ToList());
+            await _matchServiceIndexDb.AddItems(response.Result.ShooterStages.ToList());
+            await _matchServiceIndexDb.AddItems(response.Result.ShooterMatches.ToList());
+            await _matchServiceIndexDb.AddItems(response.Result.ShooterSoStages.ToList());
         }
 
         public async Task<(IList<ShooterStageContract>, IList<EditedEntityRequest>)> GetChanges()
@@ -117,8 +119,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 EditedEntities = changes.Item2
             });
 
+            if (response is not { WentWell: true })
+                return;
             // cleanup changes
-            if (response.Status)
+            if (response.Result.Status)
                 await _matchServiceIndexDb.DeleteAll<EditedEntity>();
         }
 
@@ -130,7 +134,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 return await _matchServiceIndexDb.GetAll<MatchContract>();
             }
-            return await _httpService.Post<IList<MatchContract>>("api/Match/FetchAllMatches");
+            var response = await _httpService.Post<IList<MatchContract>>("api/Match/FetchAllMatches");
+            
+            return response is not { WentWell: true } ? new List<MatchContract>() : response.Result;
         }
 
         public async Task<MatchContract> GetMatch(string id)
@@ -140,7 +146,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 return await _matchServiceIndexDb.GetByKey<string, MatchContract>(nameof(MatchContract), id);
             }
-            return await _httpService.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = id });
+            var response = await _httpService.Post<MatchContract>("api/Match/GetMatch", new MatchRequest() { MatchId = id });
+            return response is not { WentWell: true } ? new MatchContract() : response.Result;
         }
 
         public async Task<IList<ShooterMatchContract>> FetchAllMatchDirector(string id)
@@ -150,7 +157,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 return await _matchServiceIndexDb.GetAll<ShooterMatchContract>();
             }
-            return await _httpService.Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = id });
+            var response = await _httpService.Post<IList<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = id });
+            return response is not { WentWell: true } ? new List<ShooterMatchContract>() : response.Result;
         }
 
         public async Task<GroupContract> GetGroup(string matchId, string groupId)
@@ -168,7 +176,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     .ToList();
                 return group;
             }
-            return await _httpService.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = groupId });
+            var response = await _httpService.Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = groupId });
+            return response is not { WentWell: true } ? new GroupContract() : response.Result;
         }
 
         public async Task<StageContract> GetStage(string matchId, string stageId)
@@ -184,7 +193,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 return stage;
             }
 
-            return await _httpService.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = stageId });
+            var response = await _httpService.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = stageId });
+            return response is not { WentWell: true } ? new StageContract() : response.Result;
         }
 
         public async Task<IList<ShooterSOStageContract>> FetchAllShooterSOStages(string stageId)
@@ -194,7 +204,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 return (await _matchServiceIndexDb.GetAll<ShooterSOStageContract>()).Where(x => x.Stage.StageId == stageId).ToList();
             }
-            return await _httpService.Post<IList<ShooterSOStageContract>>("api/Match/FetchAllShooterSOStages", new StageRequest() { StageId = stageId });
+            var response = await _httpService.Post<IList<ShooterSOStageContract>>("api/Match/FetchAllShooterSOStages", new StageRequest() { StageId = stageId });
+            return response is not { WentWell: true } ? new List<ShooterSOStageContract>() : response.Result;
         }
 
         public async Task<IList<ShooterStageAggregationResult>> FetchGroupShooterStage(string groupId, string stageId)
@@ -204,7 +215,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
             }
-            return await _httpService.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
+            var response = await _httpService.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
+            return response is not { WentWell: true } ? new List<ShooterStageAggregationResult>() : response.Result;
         }
 
         public async Task<OkResponse> UpsertShooterStage(ShooterStageRequest model)
@@ -238,7 +250,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
                 return new OkResponse() { Status = true };
             }
-            return await _httpService.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+            var response = await _httpService.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+            return response is not { WentWell: true } ? new OkResponse(){ Errors = new List<string>{response?.Error?? "Generic error"}, Status = false} : response.Result;
         }
 
     }

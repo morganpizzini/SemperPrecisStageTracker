@@ -51,7 +51,13 @@
                     {
                         <Virtualize Items="@FilteredList" Context="shooter">
                             <TableRow>
-                                <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId}))">@shooter.CompleteName</NavLink></TableRowHeader>
+                                <TableRowHeader>
+                                    @if (shooter.HasWarning)
+                                    {
+                                        <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
+                                    }
+                                    <NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId }))">@shooter.CompleteName</NavLink>
+                                </TableRowHeader>
                                 <TableRowCell>@shooter.Username</TableRowCell>
                                 @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.ShowShooters).AndList(Permissions.EditShooter), shooter.ShooterId))
                         {

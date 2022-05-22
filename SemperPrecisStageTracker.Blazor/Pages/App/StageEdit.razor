@@ -260,6 +260,7 @@ else
             return;
         await validations.ClearAll();
         var response = await Post<StageContract>("/api/Stage/UpdateStage", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<StageDetail>(new { id = Id, stageId = response.StageId }));
     }
 }

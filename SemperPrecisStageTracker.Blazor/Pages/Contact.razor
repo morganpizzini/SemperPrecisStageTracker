@@ -122,7 +122,7 @@
 
         model.Token = await JS.InvokeAsync<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contactSubmit" });
         var response = await service.Post<OkResponse>("/api/Contact/CreateContact", model);
-        if (response.Status)
+        if (response is { WentWell: true } && response.Result.Status)
         {
             resultMessage = L["ContactOk"];
             model = new ContactCreateRequest();

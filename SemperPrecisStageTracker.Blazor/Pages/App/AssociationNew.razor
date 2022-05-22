@@ -112,6 +112,7 @@
 
         await validations.ClearAll();
         var response = await Post<AssociationContract>("/api/Association/CreateAssociation", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<AssociationDetail>(new { id = response.AssociationId }));
     }
 }

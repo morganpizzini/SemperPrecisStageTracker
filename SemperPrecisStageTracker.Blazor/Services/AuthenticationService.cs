@@ -60,12 +60,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             var response = await _httpService.Post<SignInResponse>("/api/Authorization/SignIn", new SignInRequest { Username = username, Password = password });
 
-            _stateService.User = response.Shooter;
+            if (response is not { WentWell: true })
+                return false;
+
+            _stateService.User = response.Result.Shooter;
             _stateService.User.AuthData = $"{username}:{password}".EncodeBase64();
-            _stateService.Permissions = response.Permissions;
+            _stateService.Permissions = response.Result.Permissions;
 
             await _localStorageService.SetItem(userKey, _stateService.User);
-            await _localStorageService.SetItem(permissionKey, response.Permissions);
+            await _localStorageService.SetItem(permissionKey, response.Result.Permissions);
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
 
             return true;

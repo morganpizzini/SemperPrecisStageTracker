@@ -231,6 +231,7 @@
             return;
         await validations.ClearAll();
         var response = await Post<GroupContract>("/api/Stage/CreateStage", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}));
     }
 }

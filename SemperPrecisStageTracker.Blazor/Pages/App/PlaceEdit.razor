@@ -177,6 +177,7 @@
             return;
         await validations.ClearAll();
         var response = await Post<PlaceContract>("/api/Place/UpdatePlace", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceDetail>(new { id = response.PlaceId }));
     }
 }

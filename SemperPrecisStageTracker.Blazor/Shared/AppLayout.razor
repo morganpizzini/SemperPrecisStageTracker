@@ -126,10 +126,8 @@
         try
         {
             var response = await httpService.Post<OkResponse>("api/notification/CreateNotificationSubscription", subscription);
-            if (response.Status)
-            {
+            if (response is { WentWell: true } && response.Result.Status)
                 ShowNotificationAlertStatus = false;
-            }
         }
         catch (AccessTokenNotAvailableException ex)
         {

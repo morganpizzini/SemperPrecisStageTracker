@@ -73,6 +73,7 @@
             return;
         await validations.ClearAll();
         var response = await Post<TeamContract>("/api/Team/UpdateTeam", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<TeamDetail>(new { id = response.TeamId }));
     }
 }

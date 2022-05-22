@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Configuration;
-using SemperPrecisStageTracker.Contracts;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -10,6 +8,8 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using SemperPrecisStageTracker.Blazor.Services.Models;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -19,6 +19,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly NavigationManager _navigationManager;
         //private ILocalStorageService _localStorageService;
         private readonly StateService _stateService;
+        
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
@@ -32,15 +33,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
             //_localStorageService = localStorageService;
         }
 
-        public async Task<T> Get<T>(string uri)
+        public async Task<ApiResponse<T>> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             return await sendRequest<T>(request);
         }
 
-        public Task<T> Post<T>(string uri) => Post<T>(uri, new { });
+        public Task<ApiResponse<T>> Post<T>(string uri) => Post<T>(uri, new { });
 
-        public async Task<T> Post<T>(string uri, object value)
+        public async Task<ApiResponse<T>> Post<T>(string uri, object value)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
@@ -49,7 +50,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         // helper methods
 
-        private async Task<T> sendRequest<T>(HttpRequestMessage request)
+        private async Task<ApiResponse<T>> sendRequest<T>(HttpRequestMessage request)
         {
             // add basic auth header if user is logged in and request is to the api url
             //var user = _authenticationService.User
@@ -69,11 +70,17 @@ namespace SemperPrecisStageTracker.Blazor.Services
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                throw new Exception(error["message"]);
+                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
+                
+                return new ApiResponse<T>()
+                {
+                    Error = string.Join(", ",error?.SelectMany(x=>x.Value) ?? new List<string>{"Generic error"})
+                };
             }
-
-            return await response.Content.ReadFromJsonAsync<T>();
+            return new ApiResponse<T>()
+            {
+                Result = await response.Content.ReadFromJsonAsync<T>()
+            };
         }
     }
 }

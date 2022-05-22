@@ -18,12 +18,6 @@
         @if (PageCondition)
         {
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
-            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
-            @if (associationNotAssigned.Count > 0)
-            {
-                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
-            }
-            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
             <Button Size="Size.Small" Color="Color.Danger" Type="ButtonType.Button" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /> @L["DeleteShooter"]</Button>
         }
         @if (PageLoading)
@@ -35,7 +29,7 @@
         else
         {
             <Row>
-                <Column ColumnSize="ColumnSize.IsFull">
+                <Column ColumnSize="ColumnSize.Is6">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Shooter"]</CardTitle>
@@ -45,10 +39,39 @@
                         </CardBody>
                     </Card>
                 </Column>
+                
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Email"]</CardTitle>
+                            <CardText>@shooter.Email</CardText>
+                            <CardTitle>@L["FireArmLicence"]</CardTitle>
+                            <CardText>
+                                @if (shooter.FirearmsLicenceExpireDate.Date > DateTime.Now)
+                                {
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
+                                }
+                                @shooter.FirearmsLicence (@shooter.FirearmsLicenceExpireDate.ToString("d"))
+                            </CardText>
+                            <CardTitle>@L["MedicalExaminationExpireDate"]</CardTitle>
+                            <CardText>
+                                @if (shooter.FirearmsLicenceExpireDate.Date > DateTime.Now)
+                                {
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
+                                }
+                                @shooter.MedicalExaminationExpireDate.ToString("d")
+                            </CardText>
+                        </CardBody>
+                    </Card>
+                </Column>
             </Row>
 
             <Row>
                 <Column ColumnSize="ColumnSize.IsFull">
+                    @if (PageCondition)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+                    }
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Teams"]</CardTitle>
@@ -71,8 +94,8 @@
                                                 <TableRowCell>
                                                     @if (PageCondition)
                                                     {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen"/></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
                                                     }
                                                 </TableRowCell>
                                             </TableRow>
@@ -92,6 +115,10 @@
                     </Card>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is5">
+                    @if (PageCondition && associationNotAssigned.Count> 0)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
+                    }
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Associations"]</CardTitle>
@@ -113,13 +140,13 @@
                                             <TableRow>
                                                 <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SO"]})")</TableRowHeader>
                                                 <TableRowCell>@classification.CardNumber</TableRowCell>
-                                                <TableRowCell>@string.Join(", ",classification.Categories)</TableRowCell>
+                                                <TableRowCell>@string.Join(", ", classification.Categories)</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
                                                     {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen" /></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen"/></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete"/></Button>
                                                     }
                                                 </TableRowCell>
                                             </TableRow>
@@ -140,6 +167,10 @@
                     </Card>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is7">
+                    @if (PageCondition)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
+                    }
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
                             <CardTitle>@L["Classifications"]</CardTitle>
@@ -164,8 +195,8 @@
                                                 <TableRowCell>
                                                     @if (PageCondition)
                                                     {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen"/></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete"/></Button>
                                                     }
                                                 </TableRowCell>
                                             </TableRow>

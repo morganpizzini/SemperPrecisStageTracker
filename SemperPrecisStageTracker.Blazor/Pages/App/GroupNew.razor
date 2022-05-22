@@ -42,6 +42,7 @@
         await validations.ClearAll();
         model.MatchId = Id;
         var response = await Post<GroupContract>("/api/Group/CreateGroup", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<GroupDetail>(new { id = Id, groupId = response.GroupId }));
     }
 }

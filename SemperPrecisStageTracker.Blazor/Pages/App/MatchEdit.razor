@@ -200,6 +200,7 @@
             return;
         await validations.ClearAll();
         var response = await Post<MatchContract>("/api/Match/UpdateMatch", model);
+        if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new { id = response.MatchId }));
     }
 }
