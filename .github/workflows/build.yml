@@ -11,6 +11,7 @@ on:
     - "SemperPrecisStageTracker.Models/**"
     - "SemperPrecisStageTracker.EF/**"
     - "SemperPrecisStageTracker.Shared/**"
+    - "SemperPrecisStageTracker.API.Tests/**"
   workflow_dispatch:  
 
 env:
