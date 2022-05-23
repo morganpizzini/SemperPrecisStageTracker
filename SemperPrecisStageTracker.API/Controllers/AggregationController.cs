@@ -122,7 +122,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
                 ShooterStages = finalStageResults.As(x =>
                       ContractUtils.GenerateContract(
-                        groupAggregateGroupShooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                        groupAggregateGroupShooters.FirstOrDefault(y => y.ShooterId == x.ShooterId),
                         groupAggregateShooters.FirstOrDefault(y => y.Id == x.ShooterId),
                         x,
                         shooterWarnings.FirstOrDefault(y => y.ShooterId == x.ShooterId),
