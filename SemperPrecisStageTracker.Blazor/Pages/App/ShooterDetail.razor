@@ -20,7 +20,7 @@
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
             <Button Size="Size.Small" Color="Color.Danger" Type="ButtonType.Button" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /> @L["DeleteShooter"]</Button>
         }
-        @if (PageLoading)
+        @if (ApiLoading)
         {
             <p class="text-center">
                 <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
@@ -49,7 +49,7 @@
                             <CardText>
                                 @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
                                 {
-                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
                                 }
                                 @shooter.FirearmsLicence (@shooter.FirearmsLicenceExpireDate.ToString("d"))
                             </CardText>
@@ -57,7 +57,7 @@
                             <CardText>
                                 @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
                                 {
-                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
                                 }
                                 @shooter.MedicalExaminationExpireDate.ToString("d")
                             </CardText>

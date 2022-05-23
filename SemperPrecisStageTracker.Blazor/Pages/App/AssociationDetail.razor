@@ -13,7 +13,7 @@
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />

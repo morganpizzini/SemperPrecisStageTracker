@@ -6,7 +6,7 @@
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new { id = Id, stageId = StageId }))"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />

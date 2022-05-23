@@ -14,144 +14,13 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
-        <div class="form-group">
-            <input @ref="searchInput" class="form-control" @bind-value="SearchText"
-                   @bind-value:event="oninput" placeholder="@L["Search"]" />
-        </div>
-        @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.CreateShooters)))
-        {
-            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
-        }
-        <Divider />
-        <Table Striped="true" Hoverable="true">
-            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                <TableRow>
-                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                    <TableHeaderCell>@L["Username"]</TableHeaderCell>
-                    <TableHeaderCell>@L["BirthDate"]</TableHeaderCell>
-                    <TableHeaderCell></TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                @if (PageLoading)
-                {
-                    <TableRow>
-                        <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
-                    </TableRow>
-                }
-                else
-                {
-                    @if (FilteredList.Count == 0)
-                    {
-                        <TableRow>
-                            <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
-                        </TableRow>
-                    }
-                    else
-                    {
-                        <Virtualize Items="@FilteredList" Context="shooter">
-                            <TableRow>
-                                <TableRowHeader>
-                                    @if (shooter.HasWarning)
-                                    {
-                                        <Icon Name="FontAwesomeIcons.ExclamationTriangle" class="me-2"/>
-                                    }
-                                    <NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId }))">@shooter.CompleteName</NavLink>
-                                </TableRowHeader>
-                                <TableRowCell>@shooter.Username</TableRowCell>
-                                @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.ShowShooters).AndList(Permissions.EditShooter), shooter.ShooterId))
-                        {
-                            <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
-                        }
-                        else
-                        {
-                            <TableRowCell></TableRowCell>
-                        }
-                        <TableRowCell>
-                            @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), shooter.ShooterId))
-                            {
-                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Pen" /></Button>
-                            }
-                            @if (AuthService.CheckPermissions(Permissions.ManageShooters
-                            .AndList(Permissions.ShowShooters)
-                            .AndList(Permissions.EditShooter), shooter.ShooterId))
-                            {
-                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new {id = shooter.ShooterId}))"><Icon Name="IconName.Search" /></Button>
-                            }
-
-                            @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.DeleteShooter), shooter.ShooterId))
-                            {
-                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(shooter))"><Icon Name="IconName.Delete" /></Button>
-                            }
-                        </TableRowCell>
-                    </TableRow>
-                </Virtualize>
-                    }
-                }
-            </TableBody>
-        </Table>
-        <Modal @ref="modalRefEntityToDelete">
-            <ModalContent Centered="true">
-                <ModalHeader>
-                    <ModalTitle>@L["DeleteShooter"]</ModalTitle>
-                    <CloseButton />
-                </ModalHeader>
-                <ModalBody>
-                    <Field>
-                        <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
-                    </Field>
-                    @if (entityToDelete != null)
-                    {
-                        <Field>
-                            <FieldLabel>@L["Name"]</FieldLabel>
-                            <Text>@entityToDelete.CompleteName</Text>
-                        </Field>
-                        <Field>
-                            <FieldLabel>@L["Username"]</FieldLabel>
-                            <Text>@entityToDelete.Username</Text>
-                        </Field>
-                        <Field>
-                            <FieldLabel>@L["BirthDate"]</FieldLabel>
-                            <Text>@entityToDelete.BirthDate.ToString("d")</Text>
-                        </Field>
-                    }
-                </ModalBody>
-                <ModalFooter>
-                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
-                </ModalFooter>
-            </ModalContent>
-        </Modal>
+        <ShootersList ApiLoading="ApiLoading" ReloadListCallback="LoadEntities" Shooters="shooters" DeleteShooterCallback="DeleteShooter"></ShootersList>
     </Authorized>
 </AuthorizeView>
 @code {
-    ElementReference searchInput;
-    public string SearchText = "";
-
-    IList<ShooterContract> FilteredList
-    {
-        get
-        {
-            var search = SearchText.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(s => s.ToLower().Trim()).ToArray();
-            return shooters.Where( tags =>
-                search.All(s => tags.Searchable.Any(t => t.Contains(s)))).ToList();
-        }
-    }
-
+    
     IList<ShooterContract> shooters = new List<ShooterContract>();
-
-    private Modal modalRefEntityToDelete;
-    ShooterContract entityToDelete = new();
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.DebounceEvent(searchInput, "input", TimeSpan.FromMilliseconds(500));
-        }
-    }
-
+    
     protected override async Task OnInitializedAsync()
     {
         await LoadEntities();
@@ -164,28 +33,14 @@
         shooters = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
         ApiLoading = false;
     }
-
-    void DeleteEntity(ShooterContract entity)
+    private async Task DeleteShooter(string id)
     {
-        if (entity == null)
-            return;
-        entityToDelete = entity;
-        modalRefEntityToDelete.Show();
-    }
-
-    private async Task HideModalEntityToDelete(bool choice)
-    {
-        if (choice && entityToDelete != null)
+        
+        await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
         {
-            await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
-                {
-                    ShooterId = entityToDelete.ShooterId
-                });
+            ShooterId = id
+        });
 
-            await LoadEntities();
-        }
-        entityToDelete = new ShooterContract();
-        await modalRefEntityToDelete.Hide();
+        LoadEntities();
     }
-
 }

@@ -18,7 +18,7 @@
 }
 <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />

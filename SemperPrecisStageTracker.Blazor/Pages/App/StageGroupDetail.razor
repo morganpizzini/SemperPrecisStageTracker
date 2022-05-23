@@ -7,7 +7,7 @@
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = StageId}))">@L["BackToStage"]</NavLink>
 <Divider />
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />

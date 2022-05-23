@@ -21,7 +21,7 @@
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = TeamId}))"><Icon Name="IconName.Pen" /> @L["DetailTeam"]</Button>
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewPayment"]</Button>
         }
-        @if (PageLoading)
+        @if (ApiLoading)
         {
             <p class="text-center">
                 <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />

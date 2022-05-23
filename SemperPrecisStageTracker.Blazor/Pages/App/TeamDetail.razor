@@ -17,7 +17,7 @@
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
@@ -55,15 +55,38 @@ else
                             {
                                 <Virtualize Items="@teamShooters" Context="shooterTeam">
                                     <TableRow>
-                                        <TableRowHeader>@shooterTeam.Shooter.FirstName @shooterTeam.Shooter.LastName</TableRowHeader>
+                                        <TableRowHeader>
+                                            @if (shooterTeam.Shooter.HasWarning)
+                                            {
+                                                <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
+                                            }
+                                            @shooterTeam.Shooter.FirstName @shooterTeam.Shooter.LastName
+                                        </TableRowHeader>
                                         <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
                                         <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                         <TableRowCell>
-                                        @if (PageCondition)
-                                        {
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new {id = shooterTeam.Shooter.ShooterId, teamId = Id}))"><Icon Name="IconName.DollarSign" /></Button>
-                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
-                                        }
+                                            
+                                            <Buttons Role="ButtonsRole.Toolbar">
+                                                <Buttons Margin="Margin.Is2.FromEnd">
+                                                    @if (AuthService.CheckPermissions(Permissions.ManageShooters
+                                                        .AndList(Permissions.ShowShooters)
+                                                        .AndList(Permissions.EditShooter), shooterTeam.Shooter.ShooterId))
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                                    }
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.Shooter.ShooterId, teamId = Id }))"><Icon Name="IconName.DollarSign"/></Button>
+                                                    }
+                                                </Buttons>
+                                                <Buttons>
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                                    }
+                                                </Buttons>
+                                            </Buttons>
+                                            
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>

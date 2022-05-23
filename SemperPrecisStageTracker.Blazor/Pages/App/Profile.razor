@@ -4,7 +4,7 @@
 @inject IAuthenticationService authService
 
 <Heading Size="HeadingSize.Is1">@L["Profile"]</Heading>
-@if (PageLoading)
+@if (ApiLoading)
 {
     <p class="text-center">
         <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
