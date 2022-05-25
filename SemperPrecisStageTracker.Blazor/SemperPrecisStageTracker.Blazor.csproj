@@ -11,6 +11,10 @@
     <UserSecretsId>c9affa99-8b4b-4380-9c44-4d869955bc4b</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <RunAOTCompilation>true</RunAOTCompilation>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Content Remove="compilerconfig.json" />
   </ItemGroup>

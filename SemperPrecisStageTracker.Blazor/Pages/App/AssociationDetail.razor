@@ -22,11 +22,27 @@
 else
 {
     <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
+        <Column ColumnSize="ColumnSize.IsHalf">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Association"]</CardTitle>
                     <CardText>@association.Name</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Penalties"]</CardTitle>
+                    <CardText>@association.FirstPenaltyLabel: @association.FirstPenaltyDownPoints @L["seconds"]</CardText>
+                    @if (association.SecondPenaltyDownPoints> 0)
+                    {
+                        <CardText>@association.SecondPenaltyLabel: @association.SecondPenaltyDownPoints @L["seconds"]</CardText>
+                    }
+                    @if (association.ThirdPenaltyDownPoints> 0)
+                    {
+                        <CardText>@association.ThirdPenaltyLabel: @association.ThirdPenaltyDownPoints @L["seconds"]</CardText>
+                    }
                 </CardBody>
             </Card>
         </Column>
@@ -89,6 +105,28 @@ else
                         {
                             <ul>
                                 <Virtualize Items="@association.Categories" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
+                        }
+
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["SoRoles"]</CardTitle>
+                    <CardText>
+                        @if (association.SoRoles.Count == 0)
+                        {
+                            @L["NoSoRoles"]
+                        }
+                        else
+                        {
+                            <ul>
+                                <Virtualize Items="@association.SoRoles" Context="s">
                                     <li>@s</li>
                                 </Virtualize>
                             </ul>

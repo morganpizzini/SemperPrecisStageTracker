@@ -17,11 +17,11 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         //[Range(1, Double.MaxValue, 
         //ErrorMessage = "minValueError {0}{1}{2}")]
-        [Range(1, Double.MaxValue,
-        ErrorMessage = "minValueError| {1}")]
+        [Range(1, Double.MaxValue, ErrorMessage = "minValueError| {1}")]
         public decimal Time { get; set; }
 
         public int Procedurals { get; set; }
+        public int Bonus { get; set; }
         /// <summary>
         /// X5
         /// </summary>
@@ -40,7 +40,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 
         public string Notes { get; set; }
 
-        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
+        public decimal Total => Disqualified ? -99 : Time - Bonus + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
 
     }
 }

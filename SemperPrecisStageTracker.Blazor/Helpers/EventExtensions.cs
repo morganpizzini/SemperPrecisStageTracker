@@ -9,13 +9,13 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
     {
         public static async Task DebounceEvent(this IJSRuntime jsRuntime, ElementReference element, string eventName, TimeSpan delay)
         {
-            await using var module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/events.js");
+            await using var module = ((IJSInProcessRuntime)jsRuntime).Invoke<IJSObjectReference>("import", "./js/events.js");
             await module.InvokeVoidAsync("debounceEvent", element, eventName, (long)delay.TotalMilliseconds);
         }
 
         public static async Task ThrottleEvent(this IJSRuntime jsRuntime, ElementReference element, string eventName, TimeSpan delay)
         {
-            await using var module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/events.js");
+            await using var module = ((IJSInProcessRuntime)jsRuntime).Invoke<IJSObjectReference>("import", "./js/events.js");
             await module.InvokeVoidAsync("throttleEvent", element, eventName, (long)delay.TotalMilliseconds);
         }
     }

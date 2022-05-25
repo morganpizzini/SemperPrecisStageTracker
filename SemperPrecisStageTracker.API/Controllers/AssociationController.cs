@@ -107,7 +107,14 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Name = request.Name,
                 Classifications = request.Classifications,
                 Divisions = request.Divisions,
-                Categories = request.Categories
+                Categories = request.Categories,
+                FirstPenaltyLabel = request.FirstPenaltyLabel,
+                FirstPenaltyDownPoints = request.FirstPenaltyDownPoints,
+                SecondPenaltyLabel = request.SecondPenaltyLabel,
+                SecondPenaltyDownPoints = request.SecondPenaltyDownPoints,
+                ThirdPenaltyLabel = request.ThirdPenaltyLabel,
+                ThirdPenaltyDownPoints = request.ThirdPenaltyDownPoints,
+                SoRoles = request.SoRoles
             };
 
             //Invocazione del service layer
@@ -144,6 +151,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Classifications = request.Classifications;
             entity.Categories = request.Categories;
             entity.Divisions = request.Divisions;
+
+            entity.FirstPenaltyLabel = request.FirstPenaltyLabel;
+            entity.FirstPenaltyDownPoints = request.FirstPenaltyDownPoints;
+            entity.SecondPenaltyLabel = request.SecondPenaltyLabel;
+            entity.SecondPenaltyDownPoints = request.SecondPenaltyDownPoints;
+            entity.ThirdPenaltyLabel = request.ThirdPenaltyLabel;
+            entity.ThirdPenaltyDownPoints = request.ThirdPenaltyDownPoints;
+            entity.SoRoles = request.SoRoles;
 
             //Salvataggio
             var validations = await BasicLayer.UpdateAssociation(entity, PlatformUtils.GetIdentityUserId(User));

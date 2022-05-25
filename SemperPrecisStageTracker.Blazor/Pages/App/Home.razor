@@ -13,14 +13,49 @@
 
     <ul>
         verificare in prod:
-        <li>quando cambio lingua manda errore</li>
-        <li>Gestione DNF (quando non ho punteggi per 1 stage)</li>
+        Gestione DNF (quando non ho punteggi per 1 stage)
+        Match stats togliere s.Categories.Any(), non letto da sql
+        Ogni associazione ha i suoi ruoli per SO CSO SSO [mettere i test]
+        Controllare quando l'input dei punti down è vuoto esce errore
         
-        app/shooters/2 tabella associazioni controllare lo span del non trovare risultati
-        alla cancellazione di un shooterassociationInfo cancellare anche le shooterassociation (inserire anche test)
+        
+        [mettere i test]
         controllare tutti i test che aggiungono/rimuovono permessi
-        controllare ed aggiornare i permessi quando accedo all'applicazione e sono già loggato
+        Ogni associazione ha i suoi ruoli per SO CSO SSO
+        Ogni associazione impostare quanto vale la penalità 
+        
+        
+        [Blazor]
+        Ogni associazione impostare quanto vale la penalità
+        Unificare i calcoli ovunque vi sia public decimal Total => Disqualified ? -99
+        Quando vado offline scaricare solo gli stage in cui l'utente è SO o SK, e tutti nel caso in cui sia MD
         l'installazione dell'applicazione deve essere possibile tramite un menù nel setting, lavorando sull'oggetto nel local storage
+
+        [deployment]
+        Backup del db
+        Quando rilascio in prod lanciare il comando delle migrazioni
+        
+
+        permessi -> ruolo mettere field per aggiornare name e description
+
+        nel team:
+        modalità per iscrizione annuale o solare
+
+        nello shooter inserire (creare componente comune per new e edit):
+        - data rilascio porto d'armi
+        - nato a
+        - residenza
+        - via
+        - cap
+        - provincia
+        - codice fiscale
+        - telefono
+
+
+        alla cancellazione di un shooterassociationInfo cancellare anche le shooterassociation (inserire anche test)
+        
+        controllare ed aggiornare i permessi quando accedo all'applicazione e sono già loggato
+        
         <li>/matches/:id/stats
             <ul>
                 <li>caricare gli stage per nome e non per indice (metodo GetMatchStats)</li>
@@ -56,7 +91,7 @@
 
         <li>Creare un test UI per verificare l'aggiunta di uno shooter in un gruppo</li>
         <li>Inserire state management per controllare il tema -> impostato in settings, ma utilizzato in AppLayout</li>
-        
+
         @*rimuovere i Validator="@ValidationRule.IsNotEmpty"*@
         <li>Nelle associazioni e società inserire regolamento, link e allegato (creare un servizio che carica su blob storage e uno mock che salva in locale)</li>
         <li>All'aggiunta di un punteggio inviare una notifica al tiratore, ogni match ha una flag che permette di disabilitare questo meccanismo, aggiungere anche un pulsante che permette di aggiornare tutti i tiratori in 1 colpo solo</li>

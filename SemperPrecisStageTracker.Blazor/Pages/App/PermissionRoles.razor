@@ -1,0 +1,126 @@
+﻿@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<PermissionRoles> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is3">@L["Roles"]</Heading>
+<Divider />
+<AuthorizeView Roles="@(Permissions.ManagePermissions.ToDescriptionString())">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewRole"]</Button>
+        <Table Striped="true" Hoverable="true">
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                    <TableHeaderCell>@L["Description"]</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                @if (ApiLoading)
+                {
+                    <TableRow>
+                        <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+                    </TableRow>
+                }
+                else
+                {
+                    @if (entities.Count == 0)
+                    {
+                        <TableRow>
+                            <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                        </TableRow>
+                    }
+                    else
+                    {
+                        <Virtualize Items="@entities" Context="entity">
+                            <TableRow>
+                                <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = entity.RoleId}))">@entity.Name</NavLink></TableRowHeader>
+                                <TableRowCell>@entity.Description</TableRowCell>
+                                <TableRowCell>
+                                    <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PermissionRoleDetail>(new {id = entity.RoleId}))"><Icon Name="IconName.Pen" /></Button>
+                                    <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(entity))"><Icon Name="IconName.Delete" /></Button>
+                                </TableRowCell>
+                            </TableRow>
+                        </Virtualize>
+                    }
+                }
+            </TableBody>
+        </Table>
+        <Modal @ref="modalRefEntityToDelete">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    <ModalTitle>@L["DeleteRole"]</ModalTitle>
+                    <CloseButton />
+                </ModalHeader>
+                <ModalBody>
+                    <Field>
+                        <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                    </Field>
+                    @if (entityToDelete != null)
+                    {
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <Text>@entityToDelete.Name</Text>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <Text>@entityToDelete.Description</Text>
+                        </Field>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    IList<RoleContract> entities = new List<RoleContract>();
+    private Modal modalRefEntityToDelete;
+    RoleContract entityToDelete = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntities();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadEntities()
+    {
+        entities = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles", null);
+        
+    }
+
+    void DeleteEntity(RoleContract entity)
+    {
+        if (entity == null)
+            return;
+        entityToDelete = entity;
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && entityToDelete != null)
+        {
+            await Post<MatchContract>("/api/Permission/DeleteRole", new RoleRequest
+                {
+                    RoleId = entityToDelete.RoleId
+                });
+
+            await LoadEntities();
+        }
+        entityToDelete = new RoleContract();
+        await modalRefEntityToDelete.Hide();
+    }
+}

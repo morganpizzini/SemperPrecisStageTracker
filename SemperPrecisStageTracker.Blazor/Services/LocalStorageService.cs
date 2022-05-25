@@ -1,21 +1,20 @@
 using Microsoft.JSInterop;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
     public class LocalStorageService : ILocalStorageService
     {
-        private IJSRuntime _jsRuntime;
+        private IJSInProcessRuntime _jsRuntime;
 
         public LocalStorageService(IJSRuntime jsRuntime)
         {
-            _jsRuntime = jsRuntime;
+            _jsRuntime = (IJSInProcessRuntime)jsRuntime;
         }
 
-        public async Task<T> GetItem<T>(string key)
+        public T GetItem<T>(string key)
         {
-            var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
+            var json = _jsRuntime.Invoke<string>("localStorage.getItem", key);
 
             if (json == null)
                 return default;
@@ -23,14 +22,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return JsonSerializer.Deserialize<T>(json);
         }
 
-        public async Task SetItem<T>(string key, T value)
+        public void SetItem<T>(string key, T value)
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", key, JsonSerializer.Serialize(value));
+            _jsRuntime.InvokeVoid("localStorage.setItem", key, JsonSerializer.Serialize(value));
         }
 
-        public async Task RemoveItem(string key)
+        public void RemoveItem(string key)
         {
-            await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+            _jsRuntime.InvokeVoid("localStorage.removeItem", key);
         }
     }
 }

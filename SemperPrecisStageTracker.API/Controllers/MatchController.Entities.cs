@@ -105,7 +105,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 MatchId = existingMatch.Id,
                 ShooterId = x,
-                Role = ShooterRoleEnum.MatchDirector
+                Role = "MatchDirector"
             });
 
             //Invocazione del service layer
@@ -225,7 +225,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 StageId = existingStage.Id,
                 ShooterId = x.ShooterId,
-                Role = (ShooterRoleEnum)x.Role
+                Role = x.Role
             });
 
             //Invocazione del service layer

@@ -31,6 +31,8 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         CreatePlaces = 912,
         [Description("ShowShooters")]
         ShowShooters = 913,
+        [Description("ManageMatches")]
+        ManagePermissions = 912,
 
         // entity
         [Description("EditShooter")]

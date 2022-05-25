@@ -6,20 +6,20 @@ namespace SemperPrecisStageTracker.Blazor.Utils
 {
     public class NetworkService : IDisposable
     {
-        private readonly IJSRuntime _jsRuntime;
+        private readonly IJSInProcessRuntime _jsRuntime;
         private readonly DotNetObjectReference<NetworkService> _dotNetObjectReference;
 
         public NetworkService(IJSRuntime jsRuntime)
         {
             _dotNetObjectReference = DotNetObjectReference.Create(this);
-            _jsRuntime = jsRuntime;
+            _jsRuntime = (IJSInProcessRuntime)jsRuntime;
         }
 
         public event EventHandler OnlineChanged;
 
-        public ValueTask InitAsync()
+        public void Init()
         {
-            return _jsRuntime.InvokeVoidAsync("BlazorPWA.init", _dotNetObjectReference);
+            _jsRuntime.InvokeVoid("BlazorPWA.init", _dotNetObjectReference);
         }
 
         [JSInvokable]

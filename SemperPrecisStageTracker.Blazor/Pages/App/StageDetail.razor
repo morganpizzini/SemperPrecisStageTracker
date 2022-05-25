@@ -240,12 +240,12 @@ else
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="int" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
+                            <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var enumType in EnumUtil.GetValues<ShooterRoleEnumContract>())
+                                    @foreach (var soRole in match.Association.SoRoles)
                                     {
-                                        <SelectItem Value="@((int)enumType)">@enumType</SelectItem>
+                                        <SelectItem Value="@soRole">@soRole</SelectItem>
                                     }
                                 </ChildContent>
                                 <Feedback>

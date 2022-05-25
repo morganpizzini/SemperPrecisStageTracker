@@ -2,7 +2,7 @@
 {
     public class ShooterSOStageShooterContract
     {
-        public int Role { get; set; }
+        public string Role { get; set; }
         public string ShooterId { get; set; }
     }
 }

@@ -19,6 +19,10 @@ namespace SemperPrecisStageTracker.Models
         /// <summary>
         /// X3
         /// </summary>
+        public int Bonus { get; set; }
+        /// <summary>
+        /// X3
+        /// </summary>
         public int Procedurals { get; set; }
         /// <summary>
         /// X5
@@ -36,6 +40,6 @@ namespace SemperPrecisStageTracker.Models
         public bool Disqualified { get; set; }
         public string Notes { get; set; }
         [NotMapped]
-        public decimal Total => Disqualified ? -99 : Time + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
+        public decimal Total => Disqualified ? -99 : Time - Bonus + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
     }
 }

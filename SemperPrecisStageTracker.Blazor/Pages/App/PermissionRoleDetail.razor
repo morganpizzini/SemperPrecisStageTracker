@@ -1,0 +1,246 @@
+﻿@page "/app/permissions/role/{id}"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<PermissionRoleDetail> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["RoleDetail"]</Heading>
+<Divider />
+<NavLink href="@(RouteHelper.GetUrl<PermissionsHandling>())">@L["BackToList"]</NavLink>
+<AuthorizeView Roles="@(Permissions.ManagePermissions.ToDescriptionString())">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        
+        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(DeleteEntity)"><Icon Name="IconName.Delete" /></Button>
+
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <CardTitle>@L["Place"]</CardTitle>
+                                    <CardText>@role.Name</CardText>
+                                    <CardTitle>@L["Description"]</CardTitle>
+                                    <CardText>@role.Description</CardText>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <CardTitle>@L["Permissions"]</CardTitle>
+                                    <CardText>
+                                        
+                                        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
+                                            <Validation Validator="@ValidationRule.IsSelected">
+                                                <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
+                                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                        <Select TValue="string" @bind-SelectedValue="@formModel.PermissionId">
+                                                            <ChildContent>
+                                                                <SelectItem Value="@("")" Disabled></SelectItem>
+                                                                @foreach (var entity in permissions)
+                                                                {
+                                                                    <SelectItem Value="@entity.PermissionId">@entity.Name</SelectItem>
+                                                                }
+                                                            </ChildContent>
+                                                            <Feedback>
+                                                                <ValidationError>@L["WrongPermission"]</ValidationError>
+                                                            </Feedback>
+                                                        </Select>
+                                                    </FieldBody>
+                                                </Field>
+                                            </Validation>
+                                            <Field JustifyContent="JustifyContent.End">
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                                                    <ChildContent>@L["Add"]</ChildContent>
+                                                </Button>
+                                            </Field>
+                                        </Validations>
+
+                                        <Table Striped="true" Hoverable="true">
+                                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                                <TableRow>
+                                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                                    <TableHeaderCell></TableHeaderCell>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+
+                                                @if (role.Permissions.Count == 0)
+                                                {
+                                                    <TableRow>
+                                                        <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoRoles"]</TableRowCell>
+                                                    </TableRow>
+                                                }
+                                                else
+                                                {
+                                                    <Virtualize Items="@role.Permissions" Context="entity">
+                                                        <TableRow>
+                                                            <TableRowCell>@entity.Name</TableRowCell>
+                                                            <TableRowCell>
+                                                                <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeletePermission(entity))"><Icon Name="IconName.Delete"/></Button>
+                                                            </TableRowCell>
+                                                        </TableRow>
+                                                    </Virtualize>
+                                                }
+
+                                            </TableBody>
+                                        </Table>
+                                    </CardText>
+                                </Column>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        }
+        <Modal @ref="modalRefEntityToDelete">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+                    <CloseButton />
+                </ModalHeader>
+                <ModalBody>
+                    <Field>
+                        <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                    </Field>
+                    @if (role != null)
+                    {
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <Text>@role.Name</Text>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <Text>@role.Description</Text>
+                        </Field>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+        <Modal @ref="modalRefPermissionToDelete">
+            <ModalContent Centered="true">
+                <ModalHeader>
+                    <ModalTitle>@L["DeletePermission"]</ModalTitle>
+                    <CloseButton />
+                </ModalHeader>
+                <ModalBody>
+                    <Field>
+                        <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                    </Field>
+                    @if (permissionToDelete != null)
+                    {
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <Text>@permissionToDelete.Name</Text>
+                        </Field>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPermissionToDelete(false))">@L["Close"]</Button>
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPermissionToDelete(true))">@L["Yes"]</Button>
+                </ModalFooter>
+            </ModalContent>
+        </Modal>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+
+    Validations validations;
+    RolePermissionCreateRequest formModel = new();
+
+    private Modal modalRefEntityToDelete;
+    private Modal modalRefPermissionToDelete;
+    RoleContract role = new();
+    IList<PermissionContract> permissions= new List<PermissionContract>();
+    PermissionContract permissionToDelete = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRole();
+        permissions = await Post<IList<PermissionContract>>("api/Permission/FetchPermissions");
+        formModel.RoleId = role.RoleId;
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadRole()
+    {
+        role = await Post<RoleContract>("api/Permission/GetRole", new RoleRequest() { RoleId = Id });
+    }
+
+    async Task Submit()
+    {
+        await validations.ClearAll();
+        if (!await validations.ValidateAll())
+            return;
+        var response = await Post<OkResponse>("/api/Permission/CreatePermissionOnRole", formModel);
+        if (response == null)
+            return;
+        await LoadRole();
+        formModel.PermissionId = string.Empty;
+    }
+
+
+    void DeletePermission(PermissionContract entity)
+    {
+        if (entity == null)
+            return;
+        permissionToDelete = entity;
+        modalRefPermissionToDelete.Show();
+    }
+    private async Task HideModalPermissionToDelete(bool choice)
+    {
+        if (choice && role != null)
+        {
+            var response = await Post<PlaceContract>("/api/Permission/DeletePermissionOnRole", new RolePermissionRequest
+            {
+                RoleId = role.RoleId,
+                PermissionId = permissionToDelete.PermissionId
+            });
+            if (response == null)
+                return;
+            await LoadRole();
+        }
+        await modalRefPermissionToDelete.Hide();
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && role != null)
+        {
+            var response = await Post<PlaceContract>("/api/Permission/DeleteRole", new RoleRequest
+                {
+                    RoleId = role.RoleId
+                });
+            if (response == null)
+                return;
+            UriHelper.NavigateTo(RouteHelper.GetUrl<PermissionsHandling>());
+        }
+        await modalRefEntityToDelete.Hide();
+    }
+}

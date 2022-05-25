@@ -30,7 +30,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             Task t3 = Task.Run(async () =>
             {
-                var model = await _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+                var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
                 Offline = model?.OfflineMode ?? false;
                 _init = true;
                 var openResult = await matchServiceIndexDb.OpenIndexedDb();
@@ -57,7 +57,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<OkResponse> UpdateModel(ClientSetting model)
         {
-            await _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
+            _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
 
             Offline = model.OfflineMode;
             if (!Offline)
@@ -248,6 +248,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
                 singleEntity.ShooterStage.Time = model.Time;
                 singleEntity.ShooterStage.DownPoints = model.DownPoints;
+                singleEntity.ShooterStage.Bonus = model.Bonus;
                 singleEntity.ShooterStage.Procedurals = model.Procedurals;
                 singleEntity.ShooterStage.HitOnNonThreat = model.HitOnNonThreat;
                 singleEntity.ShooterStage.FlagrantPenalties = model.FlagrantPenalties;

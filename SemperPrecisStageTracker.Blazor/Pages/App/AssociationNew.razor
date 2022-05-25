@@ -6,110 +6,30 @@
 <Heading Size="HeadingSize.Is1">@L["NewAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.CreateAssociations))">
-    <Authorizing>
-        <h3 class="mt-5">@L["Loading"]</h3>
-    </Authorizing>
-    <NotAuthorized>
-        <h3 class="mt-5">@L["NoAuth"]</h3>
-    </NotAuthorized>
-    <Authorized>
-        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-            <Validation Validator="@ValidationRule.IsNotEmpty">
-                <Field Horizontal="true">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Name"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                        <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                            <Feedback>
-                                <ValidationError>@L["WrongName"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Divider />
-            <Field  Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Divisions"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                    @for (int i = 0; i < model.Divisions.Count; i++)
-                    {
-                        var tmp = i;
-                        <Addons class="mb-1">
-                            <Addon AddonType="AddonType.Body">
-                                <input value="@model.Divisions[tmp]" class="form-control"
-                                   @onchange="@(e => model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                            </Addon>
-                            <Addon AddonType="AddonType.End">
-                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Divisions.Remove(model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                            </Addon>
-                        </Addons>
-                    }
-                </FieldBody>
+<AssociationComponent Model="model" SubmitCallback="Submit"></AssociationComponent>
 
-            </Field>
-            <Divider />
-            <Field  Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Classifications"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                    @for (int i = 0; i < model.Classifications.Count; i++)
-                    {
-                        var tmp = i;
-                        <Addons class="mb-1">
-                            <Addon AddonType="AddonType.Body">
-                                <input value="@model.Classifications[tmp]" class="form-control"
-                                       @onchange="@(e => model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                            </Addon>
-                            <Addon AddonType="AddonType.End">
-                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Classifications.Remove(model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                            </Addon>
-                        </Addons>
-                    }
-                </FieldBody>
-            </Field>
-            <Divider />
-            <Field  Horizontal="true">
-                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Categories"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Categories.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-
-                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                    @for (int i = 0; i < model.Categories.Count; i++)
-                    {
-                        var tmp = i;
-                        <Addons class="mb-1">
-                            <Addon AddonType="AddonType.Body">
-                                <input value="@model.Categories[tmp]" class="form-control"
-                                   @onchange="@(e => model.Categories[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                            </Addon>
-                            <Addon AddonType="AddonType.End">
-                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { model.Categories.Remove(model.Categories[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                            </Addon>
-                        </Addons>
-                    }
-                </FieldBody>
-            </Field>
-            <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                        <ChildContent>@L["Submit"]</ChildContent>
-                    </Button>
-                </FieldBody>
-            </Field>
-        </Validations>
-    </Authorized>
-</AuthorizeView>
 @code {
-
-    Validations validations;
-    AssociationCreateRequest model = new();
+    AssociationContract model = new();
 
     async Task Submit()
     {
-        if (!(await validations.ValidateAll()))
-            return;
+        // create request
+        var request = new AssociationCreateRequest()
+        {
+            Name = model.Name,
+            Divisions = model.Divisions.OrderBy(x => x).ToList(),
+            Classifications = model.Classifications,
+            Categories = model.Categories,
+            FirstPenaltyLabel = model.FirstPenaltyLabel,
+            FirstPenaltyDownPoints = model.FirstPenaltyDownPoints,
+            SecondPenaltyLabel = model.SecondPenaltyLabel,
+            SecondPenaltyDownPoints = model.SecondPenaltyDownPoints,
+            ThirdPenaltyLabel = model.ThirdPenaltyLabel,
+            ThirdPenaltyDownPoints = model.ThirdPenaltyDownPoints,
+            SoRoles = model.SoRoles
+        };
 
-        await validations.ClearAll();
-        var response = await Post<AssociationContract>("/api/Association/CreateAssociation", model);
+        var response = await Post<AssociationContract>("/api/Association/CreateAssociation", request);
         if (response != null)
             UriHelper.NavigateTo(RouteHelper.GetUrl<AssociationDetail>(new { id = response.AssociationId }));
     }

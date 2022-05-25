@@ -12,6 +12,7 @@ using log4net.Util;
 using Microsoft.Extensions.Caching.Memory;
 using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Models;
+using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
@@ -530,6 +531,15 @@ namespace SemperPrecisStageTracker.Domain.Services
             return _permissionRepository.Fetch(x => names.Contains(x.Name));
         }
 
+        public IList<Permission> FetchPermissionsOnRole(string id)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            var permissionIds = _permissionRoleRepository.FetchWithProjection(x=>x.PermissionId,x => x.RoleId == id);
+            return _permissionRepository.Fetch(x => permissionIds.Contains(x.Id));
+        }
+
         public IList<ValidationResult> SyncPasswords()
         {
             var shooters = this._userRepository.Fetch(x => string.IsNullOrEmpty(x.Password));
@@ -575,6 +585,267 @@ namespace SemperPrecisStageTracker.Domain.Services
             return _permissionRoleRepository.GetSingle(x => x.PermissionId == permissionId && x.RoleId == roleId);
         }
 
+
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> CreatePermissionRole(PermissionRole entity,string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided role permission seems to already existing");
+
+            var validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(CreatePermissionRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Eliminazione
+            _permissionRoleRepository.Save(entity);
+
+            t.Commit();
+            return validations;
+
+        }
+
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> DeletePermissionRole(PermissionRole entity,string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided role doesn't have valid Id");
+            var validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(DeletePermissionRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Eliminazione
+            _permissionRoleRepository.Delete(entity);
+
+            t.Commit();
+            return validations;
+
+        }
+
+        /// <summary>
+        /// Fetch user role
+        /// </summary>
+        /// <returns></returns>
+        public IList<Role> FetchRoles() => _roleRepository.Fetch();
+
+        /// <summary>
+        /// Fetch permission
+        /// </summary>
+        /// <returns></returns>
+        public IList<Permission> FetchPermission() => _permissionRepository.Fetch();
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns team or null</returns>
+        public Role GetRole(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.Id == id, _roleRepository);
+        }
+
+
+        /// <summary>
+        /// Create provided shooter
+        /// </summary>
+        /// <param name="entity">Shooter</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> CreateRole(Role entity, string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided Shooter seems to already existing");
+
+            //Predisposizione al fallimento
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId,Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(CreateRole)}");
+                return validations;
+            }
+
+            // controllo singolatità emplyee
+            validations = CheckRoleValidation(entity);
+            if (validations.Count > 0)
+            {
+                return validations;
+            }
+
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Validazione argomenti
+            validations = _roleRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _roleRepository.Save(entity);
+            
+            t.Commit();
+            return validations;
+        }
+
+        /// <summary>
+        /// Updates provided shooter
+        /// </summary>
+        /// <param name="entity">Shooter</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> UpdateRole(Role entity, string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � nuovo, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
+
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            // controllo singolatità emplyee
+            validations = CheckRoleValidation(entity);
+            if (validations.Count > 0)
+            {
+                return validations;
+            }
+
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (entity.CreationDateTime < new DateTime(2000, 1, 1))
+                entity.CreationDateTime = new DateTime(2000, 1, 1);
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+            //Validazione argomenti
+            validations = _roleRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _roleRepository.Save(entity);
+            t.Commit();
+            return validations;
+        }
+
+        /// <summary>
+        /// Check shooter validations
+        /// </summary>
+        /// <param name="entity">entity to check</param>
+        /// <returns>List of validation results</returns>
+        private IList<ValidationResult> CheckRoleValidation(Role entity)
+        {
+            var validations = new List<ValidationResult>();
+
+            // controllo esistenza shooter con stesso email o licenza
+            var existing = _roleRepository.GetSingle(x => x.Id != entity.Id
+                                                             &&
+                                                             x.Name == entity.Name);
+
+            if (existing != null)
+            {
+                validations.Add(new ValidationResult($"Entity with name '{entity.Name}' already exists"));
+            }
+
+            return validations;
+        }
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> DeleteRole(Role entity,string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided role doesn't have valid Id");
+            var validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Eliminazione
+            _roleRepository.Delete(entity);
+
+            t.Commit();
+            return validations;
+
+        }
+        
         public UserRole GetUserRole(string userId, string roleId)
         {
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
@@ -589,6 +860,12 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             return _permissionRepository.GetSingle(x => x.Name == name);
+        }
+
+        public Permission GetPermission(string id)
+        {
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+            return _permissionRepository.GetSingle(x => x.Id == id);
         }
         public Role GetRoleByName(string name)
         {

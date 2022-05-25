@@ -172,7 +172,7 @@ else
         await validations.ClearAll();
         user = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
         if (user == null) return;
-        await authService.UpdateLogin(user);
+        authService.UpdateLogin(user);
         showEditModel = false;
     }
 }

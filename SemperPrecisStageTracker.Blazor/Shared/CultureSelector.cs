@@ -24,8 +24,8 @@ namespace SemperPrecisStageTracker.Blazor.Shared
             {
                 if (CultureInfo.CurrentCulture != value)
                 {
-                    var js = (IJSInProcessRuntime)JSRuntime;
-                    js.InvokeVoid("blazorCulture.set", value.Name);
+                    
+                    ((IJSInProcessRuntime)JSRuntime).InvokeVoid("blazorCulture.set", value.Name);
                     NavManager.NavigateTo(NavManager.Uri, forceLoad: true);
                 }
             }

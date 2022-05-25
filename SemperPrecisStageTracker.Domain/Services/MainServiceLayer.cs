@@ -148,7 +148,16 @@ namespace SemperPrecisStageTracker.Domain.Services
                 };
                 authenticationService.SavePermission(manageTeamsPerm);
             }
-
+            
+            var managePermissionPerm = authenticationService.GetPermissionByName(Permissions.ManagePermissions);
+            if (managePermissionPerm == null)
+            {
+                managePermissionPerm = new Permission()
+                {
+                    Name = Permissions.ManageStages.ToDescriptionString()
+                };
+                authenticationService.SavePermission(managePermissionPerm);
+            }
             var manageStagesPerm = authenticationService.GetPermissionByName(Permissions.ManageStages);
             if (manageStagesPerm == null)
             {
@@ -191,6 +200,17 @@ namespace SemperPrecisStageTracker.Domain.Services
                 {
                     RoleId = role.Id,
                     PermissionId = managePlacesPerm.Id
+                };
+                authenticationService.SavePermissionRole(rolePermission);
+            }
+
+            rolePermission = authenticationService.GetPermissionRole(managePermissionPerm.Id,role.Id);
+            if (rolePermission == null)
+            {
+                rolePermission = new PermissionRole()
+                {
+                    RoleId = role.Id,
+                    PermissionId = managePermissionPerm.Id
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
@@ -465,7 +485,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             MoveDivisionResultToBottom(matchResult.Results);
             
             var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId &&
-                                            x.Categories.Any());
+                                                                                                                                            x.Categories.Count>0);
             
             if (shooterInCategories.Count > 0)
             {
@@ -1046,8 +1066,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id));
 
         }
-
-
+        
         /// <summary>
         /// Get place by commissionDrawingId
         /// </summary>

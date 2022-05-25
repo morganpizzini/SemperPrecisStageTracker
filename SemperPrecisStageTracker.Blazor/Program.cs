@@ -136,13 +136,13 @@ public class Program
 
         // init network service
         var network = host.Services.GetRequiredService<NetworkService>();
-        await network.InitAsync();
+        network.Init();
 
         //init auth service
         var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
-        await authenticationService.Initialize();
+        authenticationService.Initialize();
 
-        await host.SetDefaultCulture();
+        host.SetDefaultCulture();
         await host.RunAsync();
     }
 }

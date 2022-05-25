@@ -86,7 +86,14 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Name = entity.Name,
                 Divisions = entity.Divisions.OrderBy(x => x).ToList(),
                 Classifications = entity.Classifications,
-                Categories = entity.Categories
+                Categories = entity.Categories,
+                FirstPenaltyLabel = entity.FirstPenaltyLabel,
+                FirstPenaltyDownPoints = entity.FirstPenaltyDownPoints,
+                SecondPenaltyLabel = entity.SecondPenaltyLabel,
+                SecondPenaltyDownPoints = entity.SecondPenaltyDownPoints,
+                ThirdPenaltyLabel = entity.ThirdPenaltyLabel,
+                ThirdPenaltyDownPoints = entity.ThirdPenaltyDownPoints,
+                SoRoles = entity.SoRoles
             };
         }
 
@@ -213,7 +220,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 ShooterSOStageId = entity.Id,
                 Shooter = GenerateContract(shooter),
-                Role = (int)entity.Role,
+                Role = entity.Role,
                 Stage = stage != null ? GenerateContract(stage) : new StageContract() { StageId = entity.StageId }
             };
         }
@@ -507,6 +514,44 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 StageIndex = entity.StageIndex,
                 Total = entity.Total
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static RoleContract GenerateContract(Role entity,IList<Permission> permission = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new RoleContract()
+            {
+                RoleId = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                Permissions = permission != null ? permission.As(GenerateContract) : new List<PermissionContract>()
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static PermissionContract GenerateContract(Permission entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new PermissionContract()
+            {
+                PermissionId = entity.Id,
+                Name = entity.Name,
             };
         }
 

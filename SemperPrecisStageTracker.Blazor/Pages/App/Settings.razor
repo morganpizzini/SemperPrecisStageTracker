@@ -10,8 +10,8 @@
 
 <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
     <Items>
-        <Tab Name="tab1">General</Tab>
-        <Tab Name="tab2">Offline</Tab>
+        <Tab Name="tab1">@L["General"]</Tab>
+        <Tab Name="tab2">@L["Offline"]</Tab>
     </Items>
     <Content>
         <TabPanel Name="tab1">
@@ -134,7 +134,7 @@
     }
     private async Task InitPageOps()
     {
-        model = await localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
+        model = localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
         if (model.OfflineMode)
             pendingChanges = await mainServiceLayer.CountUnsavedModels();
     }
@@ -232,6 +232,6 @@
 
         var text = string.Join("\r\n", strings);
         var bytes = System.Text.Encoding.UTF8.GetBytes(text);
-        await FileUtils.SaveAs(JSRuntime, $"{match.Name}-{DateTime.Now.ToString("s")}.csv", bytes);
+        JSRuntime.SaveAs($"{match.Name}-{DateTime.Now.ToString("s")}.csv", bytes);
     }
 }

@@ -1,5 +1,7 @@
 ﻿@inject IStringLocalizer<ThemeSelector> L
 @inject ILocalStorageService localStorage
+@inject StateService stateService
+
 <strong>@L["Theme"]:</strong>
 <select class="form-control" @bind="CurrentTheme">
     <option value="light">@L["Light"]</option>
@@ -15,14 +17,14 @@
         {
             _currentTheme = value;
             localStorage.SetItem("theme",_currentTheme);
+            stateService.SetTheme(_currentTheme);
         }
     }
 
      protected override async Task OnInitializedAsync()
     {
         // set theme
-        _currentTheme = await localStorage.GetItem<string>("theme");
-        
+         CurrentTheme = localStorage.GetItem<string>("theme");
         await base.OnInitializedAsync();
     }
 }

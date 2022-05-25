@@ -2,7 +2,7 @@
 @using  System.ComponentModel
 @using System.Text.Json
 @using Microsoft.Extensions.Configuration
-@inject IJSRuntime JS;
+@inject IJSRuntime JSRuntime;
 @inject ClientConfiguration config
 @inject IStringLocalizer<Contact> L
 @inject IHttpService service
@@ -98,14 +98,14 @@
     bool loading = false;
     string resultMessage = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
+            ((IJSInProcessRuntime)JSRuntime).InvokeVoid("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
         }
 
-        await base.OnAfterRenderAsync(firstRender);
+        base.OnAfterRender(firstRender);
     }
 
 
@@ -120,7 +120,7 @@
         await validations.ClearAll();
         //loading = true;
 
-        model.Token = await JS.InvokeAsync<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contactSubmit" });
+        model.Token = ((IJSInProcessRuntime)JSRuntime).Invoke<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contactSubmit" });
         var response = await service.Post<OkResponse>("/api/Contact/CreateContact", model);
         if (response is { WentWell: true } && response.Result.Status)
         {

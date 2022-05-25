@@ -89,7 +89,7 @@
             var loginResult = await AuthenticationService.Login(model.Username, model.Password);
             if (loginResult)
             {
-                await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>
+                ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>
                     ("BlazorPWA.requestSubscription");
                 var returnUrl = NavigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>();
 

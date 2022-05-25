@@ -493,7 +493,7 @@
       "id": "1",
       "matchId": "1",
       "shooterId": "4",
-      "role": 3
+      "role": "MatchDirector"
     }
   ],
   "shooterSOStages": [
@@ -501,19 +501,19 @@
       "id": "1",
       "stageId": "1",
       "shooterId": "1",
-      "role": 1
+      "role": "PSO"
     },
     {
       "id": "2",
       "stageId": "1",
       "shooterId": "2",
-      "role": 2
+      "role": "CSO"
     },
     {
       "id": "3",
       "matchId": "1",
       "shooterId": "3",
-      "role": 1
+      "role": "SSO"
     }
   ],
   "shooterStages": [
@@ -578,6 +578,12 @@
     {
       "id": "1",
       "name": "idpa",
+      "firstPenaltyDownPoints": 3,
+      "firstPenaltyLabel": "Precedure",
+      "secondPenaltyDownPoints": 10,
+      "secondPenaltyLabel": "Flagrant Penality",
+      "thirdPenaltyDownPoints": 20,
+      "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Stock Service Pistol idpa (SSP)",
         "Enhanced Service Pistol idpa (ESP)",
@@ -605,11 +611,22 @@
         "Military",
         "Law",
         "Enforcement"
+      ],
+      "soRoles": [
+        "CSO",
+        "PSO",
+        "SSO"
       ]
     },
     {
       "id": "2",
       "name": "ipsc",
+      "firstPenaltyDownPoints": 3,
+      "firstPenaltyLabel": "Precedure",
+      "secondPenaltyDownPoints": 10,
+      "secondPenaltyLabel": "Flagrant Penality",
+      "thirdPenaltyDownPoints": 20,
+      "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Stock Service Pistol (SSP)",
         "Enhanced Service Pistol (ESP)",
@@ -638,11 +655,21 @@
         "Military",
         "Law",
         "Enforcement"
+      ],
+      "soRoles": [
+        "SO",
+        "SK"
       ]
     },
     {
       "id": "3",
       "name": "trs",
+      "firstPenaltyDownPoints": 3,
+      "firstPenaltyLabel": "Precedure",
+      "secondPenaltyDownPoints": 10,
+      "secondPenaltyLabel": "Flagrant Penality",
+      "thirdPenaltyDownPoints": 20,
+      "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Division 1",
         "Division 2"
@@ -654,6 +681,10 @@
       "categories": [
         "Category 1",
         "Category 2"
+      ],
+      "soRoles": [
+        "SO",
+        "SK"
       ]
     }
   ],
@@ -737,6 +768,10 @@
     {
       "id": "12",
       "name": "EditShooter"
+    },
+    {
+      "id": "13",
+      "name": "ManagePermissions"
     }
   ],
   "roles": [
@@ -783,6 +818,11 @@
       "id": "6",
       "roleId": "1",
       "permissionId": "8"
+    },
+    {
+      "id": "1",
+      "roleId": "1",
+      "permissionId": "13"
     }
   ],
   "userRoles": [

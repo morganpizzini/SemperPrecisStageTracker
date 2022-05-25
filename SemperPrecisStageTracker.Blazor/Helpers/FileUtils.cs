@@ -7,9 +7,9 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
 {
     public static class FileUtils
     {
-        public async static Task SaveAs(IJSRuntime js, string filename, byte[] data)
+        public static void SaveAs(this IJSRuntime js, string filename, byte[] data)
         {
-            await js.InvokeAsync<object>(
+            ((IJSInProcessRuntime)js).Invoke<object>(
                 "customFunctions.saveAsFile",
                 filename,
                 Convert.ToBase64String(data));

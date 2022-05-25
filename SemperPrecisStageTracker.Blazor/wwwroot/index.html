@@ -109,7 +109,6 @@
                     .then(function (registration) {
                         console.info('Registration successful, scope is:', registration.scope);
                         registration.onupdatefound = () => {
-                            console.info('update found');
                             const installingWorker = registration.installing;
                             installingWorker.onstatechange = () => {
                                 switch (installingWorker.state) {
@@ -131,7 +130,7 @@
 
             window['updateAvailable']
                 .then(isAvailable => {
-                    if (isAvailable) {
+                    if (isAvailable && window.location.hostname !== 'localhost') {
                         // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
                         alert('Update available. Reload the page when convenient.');
                         location.reload();

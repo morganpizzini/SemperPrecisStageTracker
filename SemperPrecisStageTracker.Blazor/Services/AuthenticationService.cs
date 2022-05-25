@@ -46,10 +46,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _stateService = stateService;
         }
 
-        public async Task Initialize()
+        public void Initialize()
         {
-            _stateService.User = await _localStorageService.GetItem<ShooterContract>(userKey);
-            _stateService.Permissions = await _localStorageService.GetItem<UserPermissionContract>(permissionKey);
+            _stateService.User = _localStorageService.GetItem<ShooterContract>(userKey);
+            _stateService.Permissions = _localStorageService.GetItem<UserPermissionContract>(permissionKey);
             if (_stateService.User != null)
             {
                 _customAuthenticationStateProvider.LoginNotify(_stateService.User);
@@ -67,14 +67,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _stateService.User.AuthData = $"{username}:{password}".EncodeBase64();
             _stateService.Permissions = response.Result.Permissions;
 
-            await _localStorageService.SetItem(userKey, _stateService.User);
-            await _localStorageService.SetItem(permissionKey, response.Result.Permissions);
+            _localStorageService.SetItem(userKey, _stateService.User);
+            _localStorageService.SetItem(permissionKey, response.Result.Permissions);
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
 
             return true;
         }
 
-        public async Task UpdateLogin(ShooterContract user)
+        public void UpdateLogin(ShooterContract user)
         {
             // update username
             var userParams = _stateService.User.AuthData.DecodeBase64().Split(":");
@@ -83,15 +83,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             //override
             _stateService.User = user;
-            await _localStorageService.SetItem(userKey, _stateService.User);
+            _localStorageService.SetItem(userKey, _stateService.User);
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
         }
 
-        public async Task Logout()
+        public void Logout()
         {
             _stateService.User = null;
-            await _localStorageService.RemoveItem(userKey);
-            await _localStorageService.RemoveItem(permissionKey);
+            _localStorageService.RemoveItem(userKey);
+            _localStorageService.RemoveItem(permissionKey);
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }

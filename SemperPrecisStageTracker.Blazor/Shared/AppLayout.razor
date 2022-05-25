@@ -1,11 +1,12 @@
 ﻿@using SemperPrecisStageTracker.Contracts.Utilities
-@using System.Net.WebSockets
 @using SemperPrecisStageTracker.Blazor.Pages.App
+@using Microsoft.Extensions.Logging
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<AppLayout> L
 @inject NetworkService NetworkService
-@inject NavigationManager NavigationManager
+@inject ILogger<AppLayout> logger
 @inject StateService stateService
 @inject IHttpService httpService
 @inject ILocalStorageService localStorage
@@ -76,21 +77,29 @@
         actionNotification = ShowNotificationAlert;
         // In the background, ask if they want to be notified about order updates
         await RequestNotificationSubscriptionAsync();
-
-
-        // set theme
-        CurrentTheme = await localStorage.GetItem<string>("theme");
+        
+        stateService.OnStateChange += SetTheme;
 
 
         await base.OnInitializedAsync();
     }
+    public void Dispose()
+    {
+        stateService.OnStateChange -= SetTheme;
+    }
 
+    public void SetTheme(string theme)
+    {
+        logger.LogInformation(theme);
+        CurrentTheme = theme;
+        StateHasChanged();
+    }
 
     async Task RequestNotificationSubscriptionAsync()
     {
         if (!stateService.IsAuth)
             return;
-        await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
+        ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
     }
 
     [JSInvokable]
@@ -119,7 +128,7 @@
 
     public async Task SubscribeToNotification()
     {
-        var subscription = await JSRuntime.InvokeAsync<NotificationSubscriptionCreateRequest>("BlazorPWA.createSubscription");
+        var subscription = ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.createSubscription");
 
         if (subscription == null)
             return;
@@ -136,14 +145,7 @@
     }
     private async Task HideInstallModal(bool choice)
     {
-        if (choice)
-        {
-            await JSRuntime.InvokeVoidAsync("BlazorPWA.installPWA");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("BlazorPWA.dismissInstallPWA");
-        }
+        ((IJSInProcessRuntime)JSRuntime).InvokeVoid(choice ? "BlazorPWA.installPWA" : "BlazorPWA.dismissInstallPWA");
         await modalInstallRef.Hide();
     }
 }

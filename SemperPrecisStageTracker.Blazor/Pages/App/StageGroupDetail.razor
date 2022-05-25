@@ -160,6 +160,26 @@ else
                             </Validation>
                             <Validation Validator="@ValidationRule.None">
                                 <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Bonus"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@L["Bonus"]" TValue="int" @bind-Value="@model.Bonus">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongBonus"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Bonus < 1 ? true : false)" Clicked="@(() => { model.Bonus--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Bonus++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Procedurals"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
@@ -273,11 +293,11 @@ else
                                                 <input id="@($"target{tmp}")" type="number" value="@model.DownPoints[tmp]" class="form-control"
                                                        onfocus="this.select();"
                                                        @onkeydown="@((e) => Focus(e, tmp + 1))"
-                                                       @onchange="@(e => model.DownPoints[tmp] = e.Value != null ? Convert.ToInt32(e.Value) : 0)" />
+                                                       @onchange="@(e => model.DownPoints[tmp] = e.Value != null && e.Value is string s && s.Length>0 ? Convert.ToInt32(s) : 0)" />
 
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Warning" Clicked="@(() => { model.DownPoints[tmp]+=5; })">@L["NN"]</Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Warning" Clicked="@(() => { model.DownPoints[tmp]+=5; })">+5</Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1 ? true : false)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
@@ -291,6 +311,12 @@ else
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Time"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@($"{model.Time:f2}")</Text>
+                                </FieldBody>
+                            </Field>
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Bonus"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@model.Bonus</Text>
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
@@ -469,6 +495,7 @@ else
         model.Ftdr = shooter.ShooterStage.Ftdr;
         model.HitOnNonThreat = shooter.ShooterStage.HitOnNonThreat;
         model.Procedurals = shooter.ShooterStage.Procedurals;
+        model.Bonus = shooter.ShooterStage.Bonus;
         model.Time = shooter.ShooterStage.Time;
         model.Warning= shooter.ShooterStage.Warning;
         model.Notes = shooter.ShooterStage.Notes;
@@ -533,19 +560,20 @@ else
         await modalConfirmRef.Hide();
     }
 
-    private async Task OnFocus(string elementId)
+    private void OnFocus(string elementId)
     {
-        await JSRuntime.InvokeVoidAsync("customFunctions.selectElement", elementId);
+        ((IJSInProcessRuntime)JSRuntime).InvokeVoid("customFunctions.selectElement", elementId);
     }
-    public async Task Focus(KeyboardEventArgs e, int elementId)
+    public void Focus(KeyboardEventArgs e, int elementId)
     {
-        if (await JSRuntime.InvokeAsync<bool>("customFunctions.isDevice"))
+        var js = ((IJSInProcessRuntime)JSRuntime);
+        if (js.Invoke<bool>("customFunctions.isDevice"))
             return;
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             if (elementId < 0 || elementId >= model.DownPoints.Count)
                 return;
-            await JSRuntime.InvokeVoidAsync("customFunctions.focusElement", $"target{elementId}");
+            js.InvokeVoid("customFunctions.focusElement", $"target{elementId}");
         }
     }
 }

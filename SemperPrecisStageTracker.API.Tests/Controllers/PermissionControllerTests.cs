@@ -20,7 +20,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldFetchShooterPermissionBeOkHavingProvidedData()
         {
             //Invoke del metodo
-            var response = await Controller.FetchAllUserPermissions();
+            var response = await Controller.FetchAllPermissionsOnUser();
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<UserPermissionContract>(response);
@@ -37,7 +37,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         {
             UpdateIdentityUser(GetAnotherUser());
             //Invoke del metodo
-            var response = await Controller.FetchAllUserPermissions();
+            var response = await Controller.FetchAllPermissionsOnUser();
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<UserPermissionContract>(response);

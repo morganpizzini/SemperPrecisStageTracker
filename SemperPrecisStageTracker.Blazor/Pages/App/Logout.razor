@@ -3,8 +3,8 @@
 
 
 @code {
-    protected override async void OnInitialized()
+    protected override void OnInitialized()
     {
-        await AuthenticationService.Logout();
+        AuthenticationService.Logout();
     }
 }

@@ -15,6 +15,7 @@ namespace SemperPrecisStageTracker.Contracts
         public List<Permissions> GenericPermissions { get; set; } = new ();
         public List<EntityPermissionContract> EntityPermissions { get; set; } = new ();
     }
+
     
     public class EntityPermissionContract
     {

@@ -31,6 +31,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 ShooterId = request.ShooterId,
                 DownPoints = request.DownPoints,
                 Procedurals = request.Procedurals,
+                Bonus = request.Bonus,
                 HitOnNonThreat = request.HitOnNonThreat,
                 FlagrantPenalties = request.FlagrantPenalties,
                 Ftdr = request.Ftdr,

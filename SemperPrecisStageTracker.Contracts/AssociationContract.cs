@@ -34,6 +34,14 @@ namespace SemperPrecisStageTracker.Contracts
         public IList<string> Divisions { get; set; } = new List<string>();
         public IList<string> Classifications { get; set; } = new List<string>();
         public IList<string> Categories { get; set; } = new List<string>();
+        public float FirstPenaltyDownPoints { get; set; }
+        public string FirstPenaltyLabel { get; set; } = string.Empty;
+        public float SecondPenaltyDownPoints { get; set; }
+        public string SecondPenaltyLabel { get; set; } = string.Empty;
+        public float ThirdPenaltyDownPoints { get; set; }
+        public string ThirdPenaltyLabel { get; set; } = string.Empty;
+        public IList<string> SoRoles { get; set; } = new List<string>();
+
     }
 
     public class EditedEntityRequest
