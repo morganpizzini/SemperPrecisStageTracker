@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterStageRequest
+    public class ShooterStageRequest : IStageResult
     {
 
         [Required]
@@ -30,6 +31,12 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// X10
         /// </summary>
         public int FlagrantPenalties { get; set; }
+
+        public float FirstProceduralPointDown { get; set; }
+        public float SecondProceduralPointDown { get; set; }
+        public float ThirdProceduralPointDown { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
+
         /// <summary>
         /// X20
         /// </summary>
@@ -39,8 +46,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public bool Disqualified { get; set; }
 
         public string Notes { get; set; }
-
-        public decimal Total => Disqualified ? -99 : Time - Bonus + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
 
     }
 }

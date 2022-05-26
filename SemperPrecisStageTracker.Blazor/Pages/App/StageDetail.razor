@@ -87,7 +87,7 @@ else
                                 <Virtualize Items="@stageSos" Context="stageSo">
                                     <TableRow>
                                         <TableRowHeader>@stageSo.Shooter.CompleteName</TableRowHeader>
-                                        <TableRowHeader>@L[$"Role{stageSo.Role}"]</TableRowHeader>
+                                        <TableRowHeader>@stageSo.Role</TableRowHeader>
                                         <TableRowCell>
                                             @if (MainServiceLayer.Online)
                                             {

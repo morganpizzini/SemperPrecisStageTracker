@@ -109,11 +109,12 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Divisions = request.Divisions,
                 Categories = request.Categories,
                 FirstPenaltyLabel = request.FirstPenaltyLabel,
-                FirstPenaltyDownPoints = request.FirstPenaltyDownPoints,
+                HitOnNonThreatDownPoints = request.HitOnNonThreatDownPoints,
+                FirstProceduralPointDown = request.FirstProceduralPointDown,
                 SecondPenaltyLabel = request.SecondPenaltyLabel,
-                SecondPenaltyDownPoints = request.SecondPenaltyDownPoints,
+                SecondProceduralPointDown = request.SecondProceduralPointDown,
                 ThirdPenaltyLabel = request.ThirdPenaltyLabel,
-                ThirdPenaltyDownPoints = request.ThirdPenaltyDownPoints,
+                ThirdProceduralPointDown = request.ThirdProceduralPointDown,
                 SoRoles = request.SoRoles
             };
 
@@ -153,11 +154,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Divisions = request.Divisions;
 
             entity.FirstPenaltyLabel = request.FirstPenaltyLabel;
-            entity.FirstPenaltyDownPoints = request.FirstPenaltyDownPoints;
+            entity.HitOnNonThreatDownPoints = request.HitOnNonThreatDownPoints;
+            entity.FirstProceduralPointDown = request.FirstProceduralPointDown;
             entity.SecondPenaltyLabel = request.SecondPenaltyLabel;
-            entity.SecondPenaltyDownPoints = request.SecondPenaltyDownPoints;
+            entity.SecondProceduralPointDown = request.SecondProceduralPointDown;
             entity.ThirdPenaltyLabel = request.ThirdPenaltyLabel;
-            entity.ThirdPenaltyDownPoints = request.ThirdPenaltyDownPoints;
+            entity.ThirdProceduralPointDown = request.ThirdProceduralPointDown;
             entity.SoRoles = request.SoRoles;
 
             //Salvataggio

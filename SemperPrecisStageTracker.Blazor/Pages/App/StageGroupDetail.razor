@@ -1,4 +1,6 @@
 ﻿@page "/app/matches/{id}/stages/{stageId}/group/{groupId}"
+@using SemperPrecisStageTracker.Shared.StageResults
+@using System.Text.Json
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
@@ -62,9 +64,11 @@ else
                                         <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                             <TableRowHeader>
                                                 @{
+
+
                                                     if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
                                                     {
-                                                        if (shooter.ShooterStage.Total < 0)
+                                                        if ((shooter.ShooterStage as IStageResult).Total < 0)
                                                         {
                                                             <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
                                                                 @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
@@ -86,7 +90,7 @@ else
                                             </TableRowHeader>
                                             <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
                                             <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
-                                            <TableRowCell>@(shooter.ShooterStage.Total > 0 ? shooter.ShooterStage.Total.ToString() : shooter.ShooterStage.Total < 0 ? @L["Disqualified"] : "")</TableRowCell>
+                                            <TableRowCell>@L[(shooter.ShooterStage as IStageResult).TotalString]</TableRowCell>
                                         </TableRow>
                                         @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
                                         {
@@ -119,21 +123,26 @@ else
 <Modal @ref="modalRef" Size="@ModalSize.ExtraLarge">
     <ModalContent Centered="true">
         <ModalHeader>
-            <ModalTitle>@L["FillShooter"]</ModalTitle>
+            <ModalTitle>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
-                    <Text Weight="TextWeight.Bold">@L["Name"]</Text>
-                    <Text>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</Text>
+                    <Field>
+                        <FieldLabel>@L["Group"]</FieldLabel>
+                        <FieldBody>
+                            @group.Name
+                        </FieldBody>
+                    </Field>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is3">
-                    <Text Weight="TextWeight.Bold">@L["Stage"]</Text>
-                    <Text>@stage.Name</Text>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is3">
-                    <Button Size="Size.Small" Color="Color.Link" Clicked="@(() => HideLegendModal(true))"><Icon Name="IconName.Info" /></Button>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Stage"]</FieldLabel>
+                        <FieldBody>
+                            @stage.Name
+                        </FieldBody>
+                    </Field>
                 </Column>
             </Row>
             <Validations @ref="validations" Mode="ValidationMode.Auto" Model="@model" ValidateOnLoad="false">
@@ -178,35 +187,40 @@ else
                                     </FieldBody>
                                 </Field>
                             </Validation>
+                            @if (match.Association.FirstProceduralPointDown > 0)
+                            {
+                                <Validation Validator="@ValidationRule.None">
+                                    <Field Horizontal="true">
+                                        <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.FirstPenaltyLabel</FieldLabel>
+                                        <FieldBody ColumnSize="ColumnSize.Is8">
+                                            <Addons>
+                                                <Addon AddonType="AddonType.Body">
+                                                    <NumericEdit Placeholder="@match.Association.FirstPenaltyLabel" TValue="int" @bind-Value="@model.Procedurals">
+                                                        <Feedback>
+                                                            <ValidationError>@L["InputError"]</ValidationError>
+                                                        </Feedback>
+                                                    </NumericEdit>
+                                                </Addon>
+                                                <Addon AddonType="AddonType.End">
+                                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                </Addon>
+                                            </Addons>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            }
+                        @if (match.Association.SecondProceduralPointDown > 0)
+                        {
                             <Validation Validator="@ValidationRule.None">
                                 <Field Horizontal="true">
-                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Procedurals"]</FieldLabel>
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.SecondPenaltyLabel</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["Procedurals"]" TValue="int" @bind-Value="@model.Procedurals">
+                                                <NumericEdit Placeholder="@match.Association.SecondPenaltyLabel" TValue="int" @bind-Value="@model.FlagrantPenalties">
                                                     <Feedback>
-                                                        <ValidationError>@L["WrongProcedurals"]</ValidationError>
-                                                    </Feedback>
-                                                </NumericEdit>
-                                            </Addon>
-                                            <Addon AddonType="AddonType.End">
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
-                                            </Addon>
-                                        </Addons>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                            <Validation Validator="@ValidationRule.None">
-                                <Field Horizontal="true">
-                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["FlagrantPenalties"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <Addons>
-                                            <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["FlagrantPenalties"]" TValue="int" @bind-Value="@model.FlagrantPenalties">
-                                                    <Feedback>
-                                                        <ValidationError>@L["WrongFlagrantPenalties"]</ValidationError>
+                                                        <ValidationError>@L["InputError"]</ValidationError>
                                                     </Feedback>
                                                 </NumericEdit>
                                             </Addon>
@@ -218,15 +232,18 @@ else
                                     </FieldBody>
                                 </Field>
                             </Validation>
+                        }
+                        @if (match.Association.ThirdProceduralPointDown > 0)
+                        {
                             <Validation Validator="@ValidationRule.None">
                                 <Field Horizontal="true">
-                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Ftdr"]</FieldLabel>
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.ThirdPenaltyLabel</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["Ftdr"]" TValue="int" @bind-Value="@model.Ftdr">
+                                                <NumericEdit Placeholder="@match.Association.ThirdPenaltyLabel" TValue="int" @bind-Value="@model.Ftdr">
                                                     <Feedback>
-                                                        <ValidationError>@L["WrongFtdr"]</ValidationError>
+                                                        <ValidationError>@L["InputError"]</ValidationError>
                                                     </Feedback>
                                                 </NumericEdit>
                                             </Addon>
@@ -238,6 +255,7 @@ else
                                     </FieldBody>
                                 </Field>
                             </Validation>
+                        }
                             <Row>
                                 <Column ColumnSize="ColumnSize.IsHalf">
                                     <Validation Validator="@ValidationRule.None">
@@ -353,7 +371,7 @@ else
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@(model.Total> 0 ? $"{model.Total:f2}" : model.Total<0 ? @L["Disqualified"] : "")</Text>
+                                    <Text>@L[(model as IStageResult).TotalString]</Text>
                                 </FieldBody>
                             </Field>
                         </TabPanel>
@@ -382,16 +400,29 @@ else
         <ModalBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
-                    <Text Weight="TextWeight.Bold">@L["Shooter"]</Text>
-                    <Text>@shooterToFill.LastName @shooterToFill.FirstName</Text>
+                    <Field>
+                        <FieldLabel>@L["Shooter"]</FieldLabel>
+                        <FieldBody>
+                            @shooterToFill.LastName @shooterToFill.FirstName
+                        </FieldBody>
+                    </Field>
                 </Column>
+               
                 <Column ColumnSize="ColumnSize.Is6">
-                    <Text Weight="TextWeight.Bold">@L["Stage"]</Text>
-                    <Text>@stage.Name</Text>
+                    <Field>
+                        <FieldLabel>@L["Stage"]</FieldLabel>
+                        <FieldBody>
+                            @stage.Name
+                        </FieldBody>
+                    </Field>
                 </Column>
             </Row>
-            <Text Weight="TextWeight.Bold">@L["Total"]</Text>
-            <Text>@(model.Total> 0 ? $"{model.Total:f2}" : model.Total<0 ? @L["Disqualified"] : "")</Text>
+            <Field>
+                <FieldLabel>@L["Total"]</FieldLabel>
+                <FieldBody>
+                    <Text>@(JsonSerializer.Serialize((decimal)model.))  @L[(model as IStageResult).TotalString]</Text>
+                </FieldBody>
+            </Field>
 
             <Validations @ref="noteValidations" Mode="ValidationMode.Manual" Model="@model">
                 <Validation Validator="@ValidationRule.None">
@@ -407,24 +438,6 @@ else
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmModal(false))">@L["Close"]</Button>
             <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideConfirmModal(true))">@L["Approve"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-<Modal @ref="modalLegendRef">
-    <ModalContent Size="ModalSize.Small" Centered="true">
-        <ModalHeader>
-            <ModalTitle>
-                @L["Legend"]
-            </ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Text><span class="font-weight-bold">@L["NN"]</span> @L["NotNeutralized"]</Text>
-            <Text><Icon Name="IconName.MinusSquare" /> @L["RemoveOne"]</Text>
-            <Text><Icon Name="IconName.PlusSquare" /> @L["AddOne"]</Text>
-        </ModalBody>
-        <ModalFooter>
-            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideLegendModal(false))">@L["Close"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -449,11 +462,10 @@ else
     // reference to the modal component
     private Modal modalConfirmRef;
     private Modal modalRef;
-    private Modal modalLegendRef;
     ShooterContract shooterToFill = new ();
 
     StageContract stage = new ();
-
+    MatchContract match = new();
     GroupContract group = new ();
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
 
@@ -468,6 +480,7 @@ else
         stage = await Post(async () =>
         {
             group = await MainServiceLayer.GetGroup(Id,GroupId);
+            match = await MainServiceLayer.GetMatch(group.Match.MatchId);
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 
@@ -488,6 +501,10 @@ else
         if (shooter == null)
             return;
 
+        shooterToFill = shooter.GroupShooter.Shooter;
+        model.FirstProceduralPointDown = match.Association.FirstProceduralPointDown;
+        model.SecondProceduralPointDown = match.Association.SecondProceduralPointDown;
+        model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
         model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
         model.Disqualified = shooter.ShooterStage.Disqualified;
         model.DownPoints = shooter.ShooterStage.DownPoints;
@@ -514,17 +531,6 @@ else
             tmp.Add(0);
         }
         model.DownPoints = tmp;
-    }
-    private void HideLegendModal(bool choice)
-    {
-        if (choice)
-        {
-            modalLegendRef.Show();
-        }
-        else
-        {
-            modalLegendRef.Hide();
-        }
     }
     private async Task HideModal(bool choice)
     {

@@ -34,14 +34,15 @@ else
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     <CardTitle>@L["Penalties"]</CardTitle>
-                    <CardText>@association.FirstPenaltyLabel: @association.FirstPenaltyDownPoints @L["seconds"]</CardText>
-                    @if (association.SecondPenaltyDownPoints> 0)
+                    <CardText>@L["HitOnNonThreatDownPoints"]: @association.HitOnNonThreatDownPoints @L["seconds"]</CardText>
+                    <CardText>@association.FirstPenaltyLabel: @association.FirstProceduralPointDown @L["seconds"]</CardText>
+                    @if (association.SecondProceduralPointDown> 0)
                     {
-                        <CardText>@association.SecondPenaltyLabel: @association.SecondPenaltyDownPoints @L["seconds"]</CardText>
+                        <CardText>@association.SecondPenaltyLabel: @association.SecondProceduralPointDown @L["seconds"]</CardText>
                     }
-                    @if (association.ThirdPenaltyDownPoints> 0)
+                    @if (association.ThirdProceduralPointDown> 0)
                     {
-                        <CardText>@association.ThirdPenaltyLabel: @association.ThirdPenaltyDownPoints @L["seconds"]</CardText>
+                        <CardText>@association.ThirdPenaltyLabel: @association.ThirdProceduralPointDown @L["seconds"]</CardText>
                     }
                 </CardBody>
             </Card>

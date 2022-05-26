@@ -118,6 +118,11 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
             
+            modelBuilder.Entity<Association>()
+                .Property(e => e.SoRoles)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
             modelBuilder.Entity<TeamHolder>()
                 .HasKey(f => f.Id);
@@ -175,6 +180,10 @@ namespace SemperPrecisStageTracker.EF.Context
                 .SetValueComparer(valueComparerString);
             modelBuilder.Entity<Association>()
                 .Property(e => e.Categories)
+                .Metadata
+                .SetValueComparer(valueComparerString);
+            modelBuilder.Entity<Association>()
+                .Property(e => e.SoRoles)
                 .Metadata
                 .SetValueComparer(valueComparerString);
 

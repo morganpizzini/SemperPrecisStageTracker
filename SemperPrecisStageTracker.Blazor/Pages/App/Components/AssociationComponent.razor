@@ -33,6 +33,18 @@
                 </Validation>
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["HitOnNonThreatDownPoints"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                            <NumericEdit Placeholder="@L["HitOnNonThreatDownPoints"]" TValue="float" @bind-Value="@Model.HitOnNonThreatDownPoints">
+                                <Feedback>
+                                    <ValidationError>@L["HitOnNonThreatDownPoints"]</ValidationError>
+                                </Feedback>
+                            </NumericEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstPenaltyLabel"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
                             <TextEdit Placeholder="@L["FirstPenaltyLabel"]" @bind-Text="@Model.FirstPenaltyLabel">
@@ -45,11 +57,11 @@
                 </Validation>
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstPenaltyDownPoints"]</FieldLabel>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstProceduralPointDown"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["FirstPenaltyDownPoints"]" TValue="float" @bind-Value="@Model.FirstPenaltyDownPoints">
+                            <NumericEdit Placeholder="@L["FirstProceduralPointDown"]" TValue="float" @bind-Value="@Model.FirstProceduralPointDown">
                                 <Feedback>
-                                    <ValidationError>@L["WrongFirstPenaltyDownPoints"]</ValidationError>
+                                    <ValidationError>@L["WrongFirstProceduralPointDown"]</ValidationError>
                                 </Feedback>
                             </NumericEdit>
                         </FieldBody>
@@ -69,11 +81,11 @@
                 </Validation>
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondPenaltyDownPoints"]</FieldLabel>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondProceduralPointDown"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["SecondPenaltyDownPoints"]" TValue="float" @bind-Value="@Model.SecondPenaltyDownPoints">
+                            <NumericEdit Placeholder="@L["SecondProceduralPointDown"]" TValue="float" @bind-Value="@Model.SecondProceduralPointDown">
                                 <Feedback>
-                                    <ValidationError>@L["WrongSecondPenaltyDownPoints"]</ValidationError>
+                                    <ValidationError>@L["WrongSecondProceduralPointDown"]</ValidationError>
                                 </Feedback>
                             </NumericEdit>
                         </FieldBody>
@@ -93,11 +105,11 @@
                 </Validation>
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdPenaltyDownPoints"]</FieldLabel>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdProceduralPointDown"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["ThirdPenaltyDownPoints"]" TValue="float" @bind-Value="@Model.ThirdPenaltyDownPoints">
+                            <NumericEdit Placeholder="@L["ThirdProceduralPointDown"]" TValue="float" @bind-Value="@Model.ThirdProceduralPointDown">
                                 <Feedback>
-                                    <ValidationError>@L["WrongThirdPenaltyDownPoints"]</ValidationError>
+                                    <ValidationError>@L["WrongThirdProceduralPointDown"]</ValidationError>
                                 </Feedback>
                             </NumericEdit>
                         </FieldBody>

@@ -88,11 +88,12 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Classifications = entity.Classifications,
                 Categories = entity.Categories,
                 FirstPenaltyLabel = entity.FirstPenaltyLabel,
-                FirstPenaltyDownPoints = entity.FirstPenaltyDownPoints,
+                HitOnNonThreatDownPoints = entity.HitOnNonThreatDownPoints,
+                FirstProceduralPointDown = entity.FirstProceduralPointDown,
                 SecondPenaltyLabel = entity.SecondPenaltyLabel,
-                SecondPenaltyDownPoints = entity.SecondPenaltyDownPoints,
+                SecondProceduralPointDown = entity.SecondProceduralPointDown,
                 ThirdPenaltyLabel = entity.ThirdPenaltyLabel,
-                ThirdPenaltyDownPoints = entity.ThirdPenaltyDownPoints,
+                ThirdProceduralPointDown = entity.ThirdProceduralPointDown,
                 SoRoles = entity.SoRoles
             };
         }
@@ -292,6 +293,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Procedurals = entity.Procedurals,
                 HitOnNonThreat = entity.HitOnNonThreat,
                 FlagrantPenalties = entity.FlagrantPenalties,
+                FirstProceduralPointDown = entity.FirstProceduralPointDown,
+                SecondProceduralPointDown = entity.SecondProceduralPointDown,
+                ThirdProceduralPointDown = entity.ThirdProceduralPointDown,
                 Ftdr = entity.Ftdr,
                 Warning = entity.Warning,
                 Notes = entity.Notes,

@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using SemperPrecisStageTracker.Models.Commons;
+using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Models
 {
-    public class ShooterStage : SemperPrecisEntity
+    public class ShooterStage : SemperPrecisEntity, IStageResult
     {
         [Required]
         public string ShooterId { get; set; }
@@ -32,6 +33,12 @@ namespace SemperPrecisStageTracker.Models
         /// X10
         /// </summary>
         public int FlagrantPenalties { get; set; }
+
+        public float FirstProceduralPointDown { get; set; }
+        public float SecondProceduralPointDown { get; set; }
+        public float ThirdProceduralPointDown { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
+
         /// <summary>
         /// X20
         /// </summary>
@@ -39,7 +46,5 @@ namespace SemperPrecisStageTracker.Models
         public bool Warning { get; set; }
         public bool Disqualified { get; set; }
         public string Notes { get; set; }
-        [NotMapped]
-        public decimal Total => Disqualified ? -99 : Time - Bonus + DownPoints.Sum() + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Contracts
 {
@@ -12,7 +13,7 @@ namespace SemperPrecisStageTracker.Contracts
         public TeamContract Team { get; set; } = new();
         public string Classification { get; set; }
     }
-    public class ShooterStageContract
+    public class ShooterStageContract : IStageResult
     {
         public string ShooterStageId { get; set; }
         public string ShooterId { get; set; }
@@ -38,6 +39,12 @@ namespace SemperPrecisStageTracker.Contracts
         /// X10
         /// </summary>
         public int FlagrantPenalties { get; set; }
+
+        public float FirstProceduralPointDown { get; set; }
+        public float SecondProceduralPointDown { get; set; }
+        public float ThirdProceduralPointDown { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
+
         /// <summary>
         /// X20
         /// </summary>
@@ -46,7 +53,5 @@ namespace SemperPrecisStageTracker.Contracts
         public bool Warning { get; set; }
         public string Notes { get; set; }
         public bool Disqualified { get; set; }
-
-        public decimal Total => Disqualified ? -99 : Time - Bonus + DownPoints?.DefaultIfEmpty(0).Sum() ?? 0 + Procedurals * 3 + HitOnNonThreat * 5 + FlagrantPenalties * 10 + Ftdr * 20;
     }
 }

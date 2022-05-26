@@ -529,7 +529,10 @@
       "ftdr": 1,
       "warning": true,
       "notes": "finger",
-      "disqualified": false
+      "disqualified": false,
+      "firstProceduralPointDown": 3,
+      "secondProceduralPointDown": 10,
+      "thirdProceduralPointDown": 20
     },
     {
       "id": "2",
@@ -543,7 +546,10 @@
       "ftdr": 1,
       "warning": false,
       "notes": "",
-      "disqualified": false
+      "disqualified": false,
+      "firstProceduralPointDown": 3,
+      "secondProceduralPointDown": 10,
+      "thirdProceduralPointDown": 20
     },
     {
       "id": "3",
@@ -557,7 +563,10 @@
       "ftdr": 1,
       "warning": false,
       "notes": "",
-      "disqualified": true
+      "disqualified": true,
+      "firstProceduralPointDown": 3,
+      "secondProceduralPointDown": 10,
+      "thirdProceduralPointDown": 20
     },
     {
       "id": "4",
@@ -571,18 +580,22 @@
       "ftdr": 1,
       "warning": false,
       "notes": "",
-      "disqualified": false
+      "disqualified": false,
+      "firstProceduralPointDown": 3,
+      "secondProceduralPointDown": 10,
+      "thirdProceduralPointDown": 20
     }
   ],
   "associations": [
     {
       "id": "1",
       "name": "idpa",
-      "firstPenaltyDownPoints": 3,
+      "hitOnNonThreatDownPoints": 5,
+      "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
-      "secondPenaltyDownPoints": 10,
+      "secondProceduralPointDown": 10,
       "secondPenaltyLabel": "Flagrant Penality",
-      "thirdPenaltyDownPoints": 20,
+      "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Stock Service Pistol idpa (SSP)",
@@ -621,11 +634,12 @@
     {
       "id": "2",
       "name": "ipsc",
-      "firstPenaltyDownPoints": 3,
+      "hitOnNonThreatDownPoints": 5,
+      "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
-      "secondPenaltyDownPoints": 10,
+      "secondProceduralPointDown": 10,
       "secondPenaltyLabel": "Flagrant Penality",
-      "thirdPenaltyDownPoints": 20,
+      "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Stock Service Pistol (SSP)",
@@ -664,11 +678,12 @@
     {
       "id": "3",
       "name": "trs",
-      "firstPenaltyDownPoints": 3,
+      "hitOnNonThreatDownPoints": 5,
+      "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
-      "secondPenaltyDownPoints": 10,
+      "secondProceduralPointDown": 10,
       "secondPenaltyLabel": "Flagrant Penality",
-      "thirdPenaltyDownPoints": 20,
+      "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
       "divisions": [
         "Division 1",

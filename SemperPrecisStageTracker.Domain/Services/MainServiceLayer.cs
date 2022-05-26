@@ -11,6 +11,7 @@ using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
 using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
+using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -413,6 +414,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
             var existingMatch = this._matchRepository.GetSingle(x => x.Id == id);
+            var existingAssociation = this._associationRepository.GetSingle(x => x.Id == existingMatch.AssociationId);
 
             var existingStages = this._stageRepository.Fetch(x => x.MatchId == id);
 
@@ -430,9 +432,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                     s.TeamId
                 })
             });
-
             
-
             var existingStageIds = existingStages.Select(x => x.Id);
 
             var existingShootersResult = this._shooterStageRepository.Fetch(x => existingStageIds.Contains(x.StageId));
@@ -445,7 +445,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                     {
                         ShooterId = s,
                         StageIndex = existingStages.First(z => z.Id == y.StageId).Index,
-                        Total = y.Total
+                        Total = (y as IStageResult).Total
                     }).OrderBy(y => y.StageIndex).ToList());
 
             var existingShooters = this.FetchShootersByIds(shooterIds);

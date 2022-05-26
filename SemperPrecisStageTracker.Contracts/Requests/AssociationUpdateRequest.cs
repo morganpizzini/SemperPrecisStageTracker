@@ -11,21 +11,23 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         [Required]
         [Range(0, int.MaxValue)]
-        public float FirstPenaltyDownPoints { get; set; }
+        public float HitOnNonThreatDownPoints { get; set; }
+        [Range(0, int.MaxValue)]
+        public float FirstProceduralPointDown { get; set; }
 
         [Required(AllowEmptyStrings = true)] 
         public string FirstPenaltyLabel { get; set; } = string.Empty;
         
         [Required]
         [Range(0, int.MaxValue)]
-        public float SecondPenaltyDownPoints { get; set; }
+        public float SecondProceduralPointDown { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         public string SecondPenaltyLabel { get; set; } = string.Empty;
         
         [Required]
         [Range(0, int.MaxValue)]
-        public float ThirdPenaltyDownPoints { get; set; }
+        public float ThirdProceduralPointDown { get; set; }
 
         [Required(AllowEmptyStrings = true)]
         public string ThirdPenaltyLabel { get; set; } = string.Empty;
