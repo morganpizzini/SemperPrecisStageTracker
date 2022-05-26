@@ -159,7 +159,7 @@ else
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <NumericEdit Placeholder="@L["Time"]" Min="1" TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
+                                        <NumericEdit Placeholder="@L["Time"]" Min="1" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
                                                 <ValidationError/>
                                             </Feedback>
@@ -173,7 +173,7 @@ else
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["Bonus"]" TValue="int" @bind-Value="@model.Bonus">
+                                                <NumericEdit Placeholder="@L["Bonus"]" @bind-Value="@model.Bonus">
                                                     <Feedback>
                                                         <ValidationError>@L["WrongBonus"]</ValidationError>
                                                     </Feedback>
@@ -195,7 +195,7 @@ else
                                         <FieldBody ColumnSize="ColumnSize.Is8">
                                             <Addons>
                                                 <Addon AddonType="AddonType.Body">
-                                                    <NumericEdit Placeholder="@match.Association.FirstPenaltyLabel" TValue="int" @bind-Value="@model.Procedurals">
+                                                    <NumericEdit Placeholder="@match.Association.FirstPenaltyLabel" @bind-Value="@model.Procedurals">
                                                         <Feedback>
                                                             <ValidationError>@L["InputError"]</ValidationError>
                                                         </Feedback>
@@ -218,7 +218,7 @@ else
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@match.Association.SecondPenaltyLabel" TValue="int" @bind-Value="@model.FlagrantPenalties">
+                                                <NumericEdit Placeholder="@match.Association.SecondPenaltyLabel" @bind-Value="@model.FlagrantPenalties">
                                                     <Feedback>
                                                         <ValidationError>@L["InputError"]</ValidationError>
                                                     </Feedback>
@@ -241,7 +241,7 @@ else
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@match.Association.ThirdPenaltyLabel" TValue="int" @bind-Value="@model.Ftdr">
+                                                <NumericEdit Placeholder="@match.Association.ThirdPenaltyLabel" @bind-Value="@model.Ftdr">
                                                     <Feedback>
                                                         <ValidationError>@L["InputError"]</ValidationError>
                                                     </Feedback>
@@ -286,7 +286,7 @@ else
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <Addons>
                                             <Addon AddonType="AddonType.Body">
-                                                <NumericEdit Placeholder="@L["HitOnNonThreat"]" TValue="int" @bind-Value="@model.HitOnNonThreat">
+                                                <NumericEdit Placeholder="@L["HitOnNonThreat"]" @bind-Value="@model.HitOnNonThreat">
                                                     <Feedback>
                                                         <ValidationError>@L["WrongHitOnNonThreat"]</ValidationError>
                                                     </Feedback>

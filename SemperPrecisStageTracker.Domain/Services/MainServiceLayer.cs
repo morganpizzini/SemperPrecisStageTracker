@@ -484,8 +484,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             // move to botton shooters with DQ or DNF
             MoveDivisionResultToBottom(matchResult.Results);
             
-            var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId &&
-                                                                                                                                            x.Categories.Count>0);
+            var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId)
+                    .Where(x=>x.Categories.Count>0).ToList();
             
             if (shooterInCategories.Count > 0)
             {
