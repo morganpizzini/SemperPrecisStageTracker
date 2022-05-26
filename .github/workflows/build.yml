@@ -30,8 +30,6 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    - name: Install wasm tools
-      run: dotnet workload install wasm-tools
     - name: Install dependencies
       run: dotnet restore ${{ env.APP_PATH }}
     - name: Build

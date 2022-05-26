@@ -72,6 +72,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingMatch = Scenario.Matches.FirstOrDefault(x => x.Id == existingStage.MatchId);
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
+            
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == existingMatch.AssociationId);
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
@@ -100,12 +102,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = 1,
+                        Role = association.SoRoles[0],
                         ShooterId = shooters[0].Id
                     },
                     new()
                     {
-                        Role = 2,
+                        Role = association.SoRoles[1],
                         ShooterId = shooters[1].Id
                     }
                 }
@@ -141,6 +143,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
+            var matchId = Scenario.Stages.FirstOrDefault(x => x.Id == existingShooterSOStage.StageId).MatchId;
+            var associationId = Scenario.Matches.FirstOrDefault(x => x.Id == matchId).AssociationId;
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == associationId);
+
             //Composizione della request
             var request = new ShooterSOStagesCreateRequest
             {
@@ -149,7 +155,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = existingShooterSOStage.Role == ShooterRoleEnum.PSO ? (int)ShooterRoleEnum.CSO : (int)ShooterRoleEnum.PSO,
+                        Role = association.SoRoles.FirstOrDefault(),
                         ShooterId = existingShooterSOStage.ShooterId
                     }
                 }
@@ -191,6 +197,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var anotherStage = Scenario.Stages.FirstOrDefault(x => x.Id != currentStage.Id && x.MatchId == currentStage.MatchId);
 
+            var matchId = Scenario.Stages.FirstOrDefault(x => x.Id == existingShooterSOStage.StageId).MatchId;
+            var associationId = Scenario.Matches.FirstOrDefault(x => x.Id == matchId).AssociationId;
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == associationId);
+
+
             //Composizione della request
             var request = new ShooterSOStagesCreateRequest
             {
@@ -199,7 +210,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = existingShooterSOStage.Role == ShooterRoleEnum.PSO ? (int)ShooterRoleEnum.CSO : (int)ShooterRoleEnum.PSO,
+                        Role = association.SoRoles[0],
                         ShooterId = existingShooterSOStage.ShooterId
                     }
                 }
@@ -231,6 +242,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
 
+            
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == existingMatch.AssociationId);
+
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
@@ -258,7 +273,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = 1,
+                        Role = association.SoRoles[0],
                         ShooterId = shooter.Id
                     }
                 }
@@ -290,6 +305,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingMatch = Scenario.Matches.FirstOrDefault(x => x.Id == existingStage.MatchId);
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
+
+            
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == existingMatch.AssociationId);
+
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
@@ -324,12 +343,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = 1,
+                        Role = association.SoRoles[0],
                         ShooterId = shooter.Id
                     },
                     new()
                     {
-                        Role = 2,
+                        Role = association.SoRoles[1],
                         ShooterId = shooterAssociationId
                     }
                 }
@@ -363,6 +382,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existingMatch == null)
                 Assert.Inconclusive("Match not found");
 
+            
+            var association = Scenario.Associations.FirstOrDefault(x => x.Id == existingMatch.AssociationId);
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterSOStages.Count;
 
@@ -395,12 +417,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     new()
                     {
-                        Role = 1,
+                        Role = association.SoRoles[0],
                         ShooterId = shooter.Id
                     },
                     new()
                     {
-                        Role = 2,
+                        Role = association.SoRoles[1],
                         ShooterId = existingShooterMatch.ShooterId
                     }
                 }
