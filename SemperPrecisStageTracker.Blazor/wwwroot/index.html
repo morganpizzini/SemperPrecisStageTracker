@@ -130,6 +130,7 @@
 
             window['updateAvailable']
                 .then(isAvailable => {
+                    console.log("update available");
                     if (isAvailable && window.location.hostname !== 'localhost') {
                         // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
                         alert('Update available. Reload the page when convenient.');
@@ -234,7 +235,6 @@
                     localStorage.setItem('skipInstall', "true");
                 },
                 hasPWAInstalled: function() {
-                    console.log("ciao")
                     return window.PWADeferredPrompt != undefined;
                 },
                 installPWA: function () {
