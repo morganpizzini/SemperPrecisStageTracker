@@ -8,12 +8,12 @@ namespace SemperPrecisStageTracker
 
         public IList<ShooterClassificationResult> CategoryResults { get; set; } =
             new List<ShooterClassificationResult>();
+        public IList<string> StageNames { get; set; } = new List<string>();
     }
 
     public class DivisionMatchResult
     {
         public string Name { get; set; }
-        public IList<string> StageNumber { get; set; } = new List<string>();
         public IList<ShooterClassificationResult> Classifications { get; set; }
     }
 }

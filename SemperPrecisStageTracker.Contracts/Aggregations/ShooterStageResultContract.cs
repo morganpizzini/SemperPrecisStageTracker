@@ -2,7 +2,7 @@
 {
     public class ShooterStageResultContract
     {
-        public int StageIndex { get; set; }
+        public string StageName { get; set; }
         public decimal Total { get; set; }
     }
 }

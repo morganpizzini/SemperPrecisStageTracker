@@ -70,10 +70,9 @@ else
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                     <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
-                                    @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                    @foreach (var stage in stats.StageNames)
                                     {
-                                        var tmp = division.StageNumber[i];
-                                        <TableHeaderCell>@(tmp)</TableHeaderCell>
+                                        <TableHeaderCell>@(stage)</TableHeaderCell>
                                     }
                                     <TableHeaderCell>@L["Total"]</TableHeaderCell>
                                 </TableRow>
@@ -84,9 +83,9 @@ else
                                     <TableRow>
                                         <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
                                         <TableRowCell>@shooter.TeamName</TableRowCell>
-                                        @for (int i = 0; i < division.StageNumber.Count(); i++)
+                                        @foreach(var stageName in stats.StageNames)
                                         {
-                                            var current = shooter.Results.FirstOrDefault(x => x.StageIndex == i);
+                                            var current = shooter.Results.FirstOrDefault(x => x.StageName == stageName);
                                             if (current != null)
                                             {
                                                 @if (current.Total < 0)

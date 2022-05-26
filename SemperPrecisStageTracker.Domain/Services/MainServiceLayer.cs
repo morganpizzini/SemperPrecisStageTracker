@@ -444,9 +444,9 @@ namespace SemperPrecisStageTracker.Domain.Services
                     new ShooterStageResult
                     {
                         ShooterId = s,
-                        StageIndex = existingStages.First(z => z.Id == y.StageId).Index,
+                        StageName = existingStages.First(z => z.Id == y.StageId).Name,
                         Total = (y as IStageResult).Total
-                    }).OrderBy(y => y.StageIndex).ToList());
+                    }).OrderBy(y => y.StageName).ToList());
 
             var existingShooters = this.FetchShootersByIds(shooterIds);
 
@@ -455,10 +455,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var matchResult = new MatchResultData
             {
+                StageNames = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
                 Results = groupDivisions.Select(x => new DivisionMatchResult
                 {
                     Name = x.Division,
-                    StageNumber = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
                     Classifications = x.Shooters.Select(s => new ShooterMatchResult
                         {
                             Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
@@ -482,7 +482,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             
 
             // move to botton shooters with DQ or DNF
-            MoveDivisionResultToBottom(matchResult.Results);
+            MoveDivisionResultToBottom(matchResult);
             
             var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId)
                     .Where(x=>x.Categories.Count>0).ToList();
@@ -520,7 +520,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                             })
                             .ToList()
                         ).ToList();
-                MoveClassificationResultToBottom(matchResult.CategoryResults);
+                MoveClassificationResultToBottom(matchResult.CategoryResults,matchResult.StageNames.Count);
             }
 
 
@@ -528,22 +528,23 @@ namespace SemperPrecisStageTracker.Domain.Services
             _cache.SetValue(CacheKeys.ComposeKey(CacheKeys.Stats, id), matchResult);
             return matchResult;
 
-            void MoveDivisionResultToBottom(IList<DivisionMatchResult> list)
+            void MoveDivisionResultToBottom(MatchResultData matchResult)
             {
                 // move to botton shooters with DQ or DNF
-                foreach (var item in list)
+                foreach (var item in matchResult.Results)
                 {
-                    MoveClassificationResultToBottom(item.Classifications);
+                    MoveClassificationResultToBottom(item.Classifications,matchResult.StageNames.Count);
                 }
             }
 
-            void MoveClassificationResultToBottom(IList<ShooterClassificationResult> list)
+            void MoveClassificationResultToBottom(IList<ShooterClassificationResult> list,int stageCount)
             {
                 foreach (var classification in list)
                 {
-                    if (classification.Shooters.Any(x => x.TotalTime > 0) && classification.Shooters.Any(x => x.TotalTime <= 0))
+                    if (classification.Shooters.Any(x => x.TotalTime > 0 && x.Results.Count == stageCount) && 
+                        classification.Shooters.Any(x => x.TotalTime <= 0 || x.Results.Count<stageCount))
                     {
-                        while (classification.Shooters[0].TotalTime <= 0)
+                        while (classification.Shooters[0].TotalTime <= 0 || classification.Shooters[0].Results.Count < stageCount)
                         {
                             classification.Shooters.Move(classification.Shooters[0], classification.Shooters.Count);
                         }

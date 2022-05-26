@@ -158,7 +158,7 @@ else
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <NumericEdit Placeholder="@L["Time"]" Min="1" Debounce="true" DebounceInterval="2000"  TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
+                                        <NumericEdit Placeholder="@L["Time"]" Min="1" Debounce="true" DebounceInterval="2000" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
                                                 <ValidationError/>
                                             </Feedback>
@@ -492,7 +492,7 @@ else
     async Task LoadShooters()
     {
         shooters = await MainServiceLayer.FetchGroupShooterStage(GroupId, StageId);
-        //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageId = StageId });
+        //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageName = StageName });
     }
 
     void FillShooter(ShooterStageAggregationResult shooter)

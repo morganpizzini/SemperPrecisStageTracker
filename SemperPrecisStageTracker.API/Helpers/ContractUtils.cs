@@ -415,6 +415,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new MatchStatsResultContract()
             {
                 Match = GenerateContract(entity, association, place),
+                StageNames = matchResult.StageNames,
                 DivisionMatchResults = matchResult.Results.As(GenerateContract),
                 CategoryResults =  matchResult.CategoryResults.As(GenerateContract)
             };
@@ -460,7 +461,6 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new DivisionMatchResultContract()
             {
                 Name = entity.Name,
-                StageNumber = entity.StageNumber,
                 Classifications = entity.Classifications.As(GenerateContract)
             };
         }
@@ -516,7 +516,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Ritorno il contratto
             return new ShooterStageResultContract()
             {
-                StageIndex = entity.StageIndex,
+                StageName = entity.StageName,
                 Total = entity.Total
             };
         }

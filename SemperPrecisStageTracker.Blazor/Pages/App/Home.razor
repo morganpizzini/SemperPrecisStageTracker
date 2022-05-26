@@ -12,12 +12,14 @@
     @matches.Count
 
     <ul>
-        verificare in prod:
-        Gestione DNF (quando non ho punteggi per 1 stage)
-        Match stats togliere s.Categories.Any(), non letto da sql
-        Controllare quando l'input dei punti down è vuoto esce errore
-        
-        
+        <li>/app/matches/:id/groups/:id
+            <ul>
+                <li>aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore e bottone per quick edit nella pagina del gruppo</li>
+                <li>possibilità di cambiare la categoria senza dover eliminare il tiratore</li>
+            </ul>
+        </li>
+        <li>Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)</li>
+
         [mettere i test]
         controllare tutti i test che aggiungono/rimuovono permessi
         Ogni associazione ha i suoi ruoli per SO CSO SSO
@@ -25,7 +27,7 @@
         
         
         [Blazor]
-        Ogni associazione impostare quanto vale la penalità
+        se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella magina del dettaglio gruppo e dettaglio stage
         Quando vado offline scaricare solo gli stage in cui l'utente è SO o SK, e tutti nel caso in cui sia MD
 
         [deployment]
@@ -55,33 +57,12 @@
         
         <li>/matches/:id/stats
             <ul>
-                <li>caricare gli stage per nome e non per indice (metodo GetMatchStats)</li>
                 <li>controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)</li>
             </ul>
         </li>
-        <li>/app/shooters/new
-            <ul>
-                <li>gli errori 500 bloccano l'interfaccia</li>
-                <li>aggiungere visita medica, non obbligatoria</li>
-            </ul>
-        </li>
         <li>creare interfaccia per creare più di un gruppo alla volta</li>
-        <li>/app/matches/:id/groups/:id
-            <ul>
-                <li>mostrare la classificazione nella tabella</li>
-                <li>aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore</li>
-                <li>nella lista degli shooter mostrare classificazione e divisione e il pagamento, aggiungere bottone per aggiornare stato pagamento e possibilità di cambiare la categoria senza dover eliminare il tiratore</li>
-                <li>tra gli shooter estrapolare solo quelli con classificazione attiva nell'associazione del match</li>
-            </ul>
-        </li>
-        <li>app/matches/:id/stages/:id/group/:id
-            <ul>
-                <li>mostrare classificazione e divisione, probabilmente con un toggle che abilita/disabilita</li>
-            </ul>
-        </li>
 
 
-        <li>Gestire parimerito con punti down</li>
         <li>Togliere gruppi quando offline</li>
         <li>Spostamento tiratore in altra squadra</li>
         <li>Controllare top bar in mobile</li>
