@@ -13,8 +13,6 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
       <RunAOTCompilation>true</RunAOTCompilation>
-	  <PublishTrimmed>true</PublishTrimmed>
-	  <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
   </PropertyGroup>
   
   <ItemGroup>
