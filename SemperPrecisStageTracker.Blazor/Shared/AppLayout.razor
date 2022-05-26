@@ -6,7 +6,6 @@
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<AppLayout> L
 @inject NetworkService NetworkService
-@inject ILogger<AppLayout> logger
 @inject StateService stateService
 @inject IHttpService httpService
 @inject ILocalStorageService localStorage
@@ -90,7 +89,6 @@
 
     public void SetTheme(string theme)
     {
-        logger.LogInformation(theme);
         CurrentTheme = theme;
         StateHasChanged();
     }

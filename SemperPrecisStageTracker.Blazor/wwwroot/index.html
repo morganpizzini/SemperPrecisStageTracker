@@ -233,16 +233,23 @@
                 dismissInstallPWA: function () {
                     localStorage.setItem('skipInstall', "true");
                 },
+                hasPWAInstalled: function() {
+                    console.log("ciao")
+                    return window.PWADeferredPrompt != undefined;
+                },
                 installPWA: function () {
-                    localStorage.setItem('skipInstall', "true");
-                    if (window.PWADeferredPrompt) {
-                        // Use the stashed event to continue the install process
-                        window.PWADeferredPrompt.prompt();
-                        window.PWADeferredPrompt.userChoice
-                            .then(function (choiceResult) {
-                                window.PWADeferredPrompt = null;
-                            });
-                    }
+                    return new Promise((resolve, reject) => {
+                        localStorage.setItem('skipInstall', "true");
+                        if (window.PWADeferredPrompt) {
+                            // Use the stashed event to continue the install process
+                            window.PWADeferredPrompt.prompt();
+                            window.PWADeferredPrompt.userChoice
+                                .then(function(choiceResult) {
+                                    window.PWADeferredPrompt = null;
+                                    resolve();
+                                });
+                        }
+                    })
                 },
                 requestSubscription: async () => {
                     const worker = await navigator.serviceWorker.getRegistration();

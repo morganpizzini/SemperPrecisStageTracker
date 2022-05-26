@@ -22,6 +22,15 @@
                 <div class="col">
                     <ThemeSelector />
                 </div>
+                @if (hasInstallPWAPrompt)
+                {
+                    <div class="col">
+                        <p class="font-weight-bold mb-1">@L["PWAAvailable"]</p>
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@InstallPwa">
+                            @L["InstallPWA"]
+                        </Button>
+                    </div>
+                }
             </div>
         </TabPanel>
         <TabPanel Name="tab2">
@@ -119,11 +128,35 @@
     private int pendingChanges = 0;
 
     string selectedTab = "tab1";
+
+    bool hasInstallPWAPrompt;
     protected override async Task OnInitializedAsync()
     {
         matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
         await InitPageOps();
+
+        
+
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            CheckPwaInstallStatus();
+        }
+    }
+
+    private void CheckPwaInstallStatus()
+    {
+        hasInstallPWAPrompt = ((IJSInProcessRuntime)JSRuntime).Invoke<bool>("BlazorPWA.hasPWAInstalled");
+    }
+
+    private async Task InstallPwa()
+    {
+        await ((IJSInProcessRuntime)JSRuntime).InvokeVoidAsync("BlazorPWA.installPWA");
+        CheckPwaInstallStatus();
     }
 
     private Task OnSelectedTabChanged( string name )
