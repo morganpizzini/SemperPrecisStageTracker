@@ -1,6 +1,5 @@
 ﻿@page "/app/matches/{id}/stages/{stageId}/group/{groupId}"
 @using SemperPrecisStageTracker.Shared.StageResults
-@using System.Text.Json
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
@@ -159,7 +158,7 @@ else
                                 <Field Horizontal="true">
                                     <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.Is8">
-                                        <NumericEdit Placeholder="@L["Time"]" Min="1" ElementId="time" @bind-Value="@model.Time" >
+                                        <NumericEdit Placeholder="@L["Time"]" Min="1" Debounce="true" DebounceInterval="2000"  TValue="decimal" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
                                                 <ValidationError/>
                                             </Feedback>
