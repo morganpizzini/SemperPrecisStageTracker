@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SemperPrecisStageTracker.API.Controllers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
@@ -79,6 +80,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 GroupId = group.Id,
                 ShooterId = shooterId,
                 DivisionId = shooterAssociation.Division,
+                HasPay = DateTime.Now,
                 TeamId = shooterTeam.Id
             };
 

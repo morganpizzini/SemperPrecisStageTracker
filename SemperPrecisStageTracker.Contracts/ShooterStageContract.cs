@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SemperPrecisStageTracker.Shared.StageResults;
 
@@ -12,6 +13,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string Division { get; set; } = string.Empty;
         public TeamContract Team { get; set; } = new();
         public string Classification { get; set; }
+        public DateTime? HasPay { get; set; }
     }
     public class ShooterStageContract : IStageResult
     {

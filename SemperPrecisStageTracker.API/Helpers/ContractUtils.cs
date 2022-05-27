@@ -88,7 +88,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Classifications = entity.Classifications,
                 Categories = entity.Categories,
                 FirstPenaltyLabel = entity.FirstPenaltyLabel,
-                HitOnNonThreatDownPoints = entity.HitOnNonThreatDownPoints,
+                HitOnNonThreatPointDown = entity.HitOnNonThreatPointDown,
                 FirstProceduralPointDown = entity.FirstProceduralPointDown,
                 SecondPenaltyLabel = entity.SecondPenaltyLabel,
                 SecondProceduralPointDown = entity.SecondProceduralPointDown,
@@ -292,6 +292,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 DownPoints = entity.DownPoints,
                 Procedurals = entity.Procedurals,
                 HitOnNonThreat = entity.HitOnNonThreat,
+                HitOnNonThreatPointDown = entity.HitOnNonThreatPointDown,
                 FlagrantPenalties = entity.FlagrantPenalties,
                 FirstProceduralPointDown = entity.FirstProceduralPointDown,
                 SecondProceduralPointDown = entity.SecondProceduralPointDown,
@@ -329,7 +330,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static GroupShooterContract GenerateContract(GroupShooter entity, Shooter shooter = null, Group group = null, Team team = null)
+        public static GroupShooterContract GenerateContract(GroupShooter entity, Shooter shooter = null, Group group = null, Team team = null,IList<ShooterAssociation> shooterAssociations = null, IList<Team> shooterTeams = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -338,11 +339,12 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new GroupShooterContract()
             {
                 GroupShooterId = entity.Id,
-                Shooter = shooter != null ? GenerateContract(shooter) : new ShooterContract(),
+                Shooter = shooter != null ? GenerateContract(shooter,shooterAssociations,shooterTeams) : new ShooterContract(),
                 Group = group != null ? GenerateContract(group) : new GroupContract(),
                 Team = team != null ? GenerateContract(team) : new TeamContract(),
                 Division = entity.DivisionId,
-                Classification = entity.Classification
+                Classification = entity.Classification,
+                HasPay = entity.HasPay
             };
         }
 
@@ -351,7 +353,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static GroupContract GenerateContract(Group entity, Match match = null, Association association = null, Place place = null, IList<GroupShooter> groupShooter = null, IList<Shooter> shooters = null)
+        public static GroupContract GenerateContract(Group entity, Match match = null, Association association = null, Place place = null, IList<GroupShooter> groupShooter = null, IList<Shooter> shooters = null,IList<ShooterAssociation> shooterAssociations = null,IList<ShooterTeam> shooterTeams = null, IList<Team> teams = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -362,7 +364,13 @@ namespace SemperPrecisStageTracker.API.Helpers
                 GroupId = entity.Id,
                 Name = entity.Name,
                 Match = match != null ? GenerateContract(match, association, place) : null,
-                Shooters = groupShooter != null ? groupShooter.Select(x => GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))).OrderBy(x => x.Shooter.LastName).ToList() : new List<GroupShooterContract>(),
+                Shooters = groupShooter != null ? groupShooter.Select(x => 
+                    GenerateContract(x,shooters?.FirstOrDefault(s => s.Id == x.ShooterId),
+                        null,
+                        teams?.FirstOrDefault(t=>t.Id == x.TeamId),
+                        shooterAssociations?.Where(s=>s.ShooterId == x.ShooterId).ToList(),
+                        teams != null && shooterTeams!= null ? teams.Where(s => shooterTeams.Where(st => st.ShooterId == x.ShooterId).Select(st => st.TeamId).Contains(s.Id)).ToList() : null)
+                    ).OrderBy(x => x.Shooter.LastName).ToList() : new List<GroupShooterContract>(),
             };
         }
 

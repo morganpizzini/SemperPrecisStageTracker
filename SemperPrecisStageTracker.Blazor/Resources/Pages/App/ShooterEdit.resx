@@ -132,7 +132,7 @@
   <data name="WrongFirstName" xml:space="preserve">
     <value>Wrong first name!</value>
   </data>
-  <data name="WrongValidBirthDate" xml:space="preserve">
+  <data name="WrongBirthDate" xml:space="preserve">
     <value>Birth date is not valid!</value>
   </data>
   <data name="Submit" xml:space="preserve">

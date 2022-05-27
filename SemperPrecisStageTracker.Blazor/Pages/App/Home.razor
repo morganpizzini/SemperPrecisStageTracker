@@ -12,28 +12,29 @@
     @matches.Count
 
     <ul>
-        <li>/app/matches/:id/groups/:id
-            <ul>
-                <li>aggiungere campo pagato/non pagato al momento dell'aggiunta del tiratore e bottone per quick edit nella pagina del gruppo</li>
-                <li>possibilità di cambiare la categoria senza dover eliminare il tiratore</li>
-            </ul>
-        </li>
+        [memory cache e/o response cache]
+        getgroup
+        FetchAvailableGroupShooter
+        caching sulla base di GetGroupShooterContractByGroupId(string groupId,string matchId = null)
+        
+
         <li>Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)</li>
 
         [mettere i test]
         controllare tutti i test che aggiungono/rimuovono permessi
         Ogni associazione ha i suoi ruoli per SO CSO SSO
-        Ogni associazione impostare quanto vale la penalità 
-        
-        
+        Ogni associazione impostare quanto vale la penalità
+
+
         [Blazor]
-        se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella magina del dettaglio gruppo e dettaglio stage
+        se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella pagina del dettaglio gruppo e dettaglio stage
+        se il match è unclussified devo poter inserire qualsiasi tiratore abbia una shooterassociation adeguata, indipendentemente dalla presenza o meno di attuali classificazioni (come salvare la divisione?)
         Quando vado offline scaricare solo gli stage in cui l'utente è SO o SK, e tutti nel caso in cui sia MD
 
         [deployment]
         Backup del db
         Quando rilascio in prod lanciare il comando delle migrazioni
-        
+
 
         permessi -> ruolo mettere field per aggiornare name e description
 
@@ -52,9 +53,9 @@
 
 
         alla cancellazione di un shooterassociationInfo cancellare anche le shooterassociation (inserire anche test)
-        
+
         controllare ed aggiornare i permessi quando accedo all'applicazione e sono già loggato
-        
+        quando aggiorno punti down di una associazione, aggiornare tutti i punti down di shooterstages per i match aperti
         <li>/matches/:id/stats
             <ul>
                 <li>controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)</li>
@@ -62,8 +63,7 @@
         </li>
         <li>creare interfaccia per creare più di un gruppo alla volta</li>
 
-
-        <li>Togliere gruppi quando offline</li>
+        
         <li>Spostamento tiratore in altra squadra</li>
         <li>Controllare top bar in mobile</li>
 
@@ -90,19 +90,10 @@
         <li>Creare punti di ritrovo per sparare (sicuro/forse/poco probabile) con piccola chat di messaggi</li>
 
         <li>uniformare customauthservice pescando le informazioni da localstorage https://github.com/Naveen512/Blazor-webassembly-authentication-scratch/tree/main/BlazorWasm.JwtAuthLearning</li>
-
-        <li>Abilitare la modifica dello shooter stage (team e categoria)</li>
-
+        
         <li>upload foto https://www.aspitalia.com/script/1376/Effettuare-Upload-File-Blazor-Azure-Blob-Storage.aspx</li>
-
-
-        <li>Gestire classificazione multipla: ogni associazione può consentire classificazione generica o per categoria d'armi</li>
-        <li>Rimuovere PSO da classificazione e farne entità a parte</li>
-
-        <li>Alla creazione dello stage controllare che l'indice sia consecutivo all'ultimo inserito</li>
-        <li>all'aggiunta dello shooter al gruppo, popolare la lista dei team prendendoli dai team dell'utente</li>
-        <li>all'aggiunta dello shooter al gruppo, verificare la correttezza dell'associazione -aggiungere check in salvataggio-</li>
-
+        
+        
         <li>Evidenziare Migliori 3 (oro/argento/bronzo) per ogni stage</li>
         <li>Inserimento link per download immagini</li>
         <li>esportazione in csv</li>

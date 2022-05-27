@@ -12,7 +12,7 @@ namespace SemperPrecisStageTracker.Models
         
         [Required]
         [Range(0, int.MaxValue)]
-        public float HitOnNonThreatDownPoints { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
 
         [Required]
         [Range(0, int.MaxValue)]

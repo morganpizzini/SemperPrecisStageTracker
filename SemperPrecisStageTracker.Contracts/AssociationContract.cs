@@ -34,7 +34,7 @@ namespace SemperPrecisStageTracker.Contracts
         public IList<string> Divisions { get; set; } = new List<string>();
         public IList<string> Classifications { get; set; } = new List<string>();
         public IList<string> Categories { get; set; } = new List<string>();
-        public float HitOnNonThreatDownPoints { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
         public float FirstProceduralPointDown { get; set; }
         public string FirstPenaltyLabel { get; set; } = string.Empty;
         public float SecondProceduralPointDown { get; set; }

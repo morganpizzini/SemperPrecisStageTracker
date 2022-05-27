@@ -33,11 +33,11 @@
                 </Validation>
                 <Validation Validator="@ValidationRule.None">
                     <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["HitOnNonThreatDownPoints"]</FieldLabel>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["HitOnNonThreatPointDown"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["HitOnNonThreatDownPoints"]" TValue="float" @bind-Value="@Model.HitOnNonThreatDownPoints">
+                            <NumericEdit Placeholder="@L["HitOnNonThreatPointDown"]" TValue="float" @bind-Value="@Model.HitOnNonThreatPointDown">
                                 <Feedback>
-                                    <ValidationError>@L["HitOnNonThreatDownPoints"]</ValidationError>
+                                    <ValidationError>@L["HitOnNonThreatPointDown"]</ValidationError>
                                 </Feedback>
                             </NumericEdit>
                         </FieldBody>

@@ -109,7 +109,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Divisions = request.Divisions,
                 Categories = request.Categories,
                 FirstPenaltyLabel = request.FirstPenaltyLabel,
-                HitOnNonThreatDownPoints = request.HitOnNonThreatDownPoints,
+                HitOnNonThreatPointDown = request.HitOnNonThreatPointDown,
                 FirstProceduralPointDown = request.FirstProceduralPointDown,
                 SecondPenaltyLabel = request.SecondPenaltyLabel,
                 SecondProceduralPointDown = request.SecondProceduralPointDown,
@@ -154,7 +154,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Divisions = request.Divisions;
 
             entity.FirstPenaltyLabel = request.FirstPenaltyLabel;
-            entity.HitOnNonThreatDownPoints = request.HitOnNonThreatDownPoints;
+            entity.HitOnNonThreatPointDown = request.HitOnNonThreatPointDown;
             entity.FirstProceduralPointDown = request.FirstProceduralPointDown;
             entity.SecondPenaltyLabel = request.SecondPenaltyLabel;
             entity.SecondProceduralPointDown = request.SecondProceduralPointDown;

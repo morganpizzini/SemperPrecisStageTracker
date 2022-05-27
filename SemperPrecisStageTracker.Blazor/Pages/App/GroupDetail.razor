@@ -1,7 +1,8 @@
 ﻿@page "/app/matches/{id}/groups/{groupId}"
-@inherits SemperPrecisBaseComponent
+@using Microsoft.Extensions.Logging
 @using System.Text.Json
-@using SemperPrecisStageTracker.Contracts.Requests
+@inherits SemperPrecisBaseComponent
+@inject ILogger<GroupDetail> log;
 @inject IStringLocalizer<GroupDetail> L
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
@@ -43,80 +44,7 @@ else
     <Divider />
     @if (MainServiceLayer.Online && availableShooters.Count > 0)
     {
-        <Row>
-            <Column ColumnSize="ColumnSize.IsFull">
-                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-                    <Validation Validator="@ValidationRule.IsSelected">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
-                                <Select TValue="string" SelectedValue="@model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
-                                    <ChildContent>
-                                        <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var shooter in availableShooters)
-                                        {
-                                            <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongShooter"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsSelected">
-                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <Select TValue="string" @bind-SelectedValue="@model.TeamId">
-                                            <ChildContent>
-                                                <SelectItem Value="@("")"></SelectItem>
-                                                @foreach (var team in teams)
-                                                {
-                                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
-                                                }
-                                            </ChildContent>
-                                            <Feedback>
-                                                <ValidationError>@L["WrongTeam"]</ValidationError>
-                                            </Feedback>
-                                        </Select>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsSelected">
-                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <Select TValue="string" @bind-SelectedValue="@model.DivisionId">
-                                            <ChildContent>
-                                                <SelectItem Value="@("")"></SelectItem>
-                                                @foreach (var division in divisions)
-                                                {
-                                                    <SelectItem Value="@division">@division</SelectItem>
-                                                }
-                                            </ChildContent>
-                                            <Feedback>
-                                                <ValidationError>@L["WrongDivision"]</ValidationError>
-                                            </Feedback>
-                                        </Select>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </Column>
-                    </Row>
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-                        </FieldBody>
-                    </Field>
-                </Validations>
-            </Column>
-        </Row>
+        <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model"/>
         <Divider />
     }
     <Row>
@@ -131,6 +59,8 @@ else
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                 <TableHeaderCell>@L["Division"]</TableHeaderCell>
                                 <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Team"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Payment"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>
                         </TableHeader>
@@ -142,9 +72,21 @@ else
                                         <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Team?.Name</TableRowHeader>
+                                        <TableRowHeader>
+                                            @if (groupShooter.HasPay.HasValue)
+                                            {
+                                                <Icon Name="IconName.Check" TextColor="TextColor.Success" />
+                                            }
+                                            else
+                                            {
+                                                <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Danger" />
+                                            }
+                                        </TableRowHeader>
                                         <TableRowCell>
                                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.EditMatch), Id))
                                             {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(groupShooter))"><Icon Name="IconName.Pen" /></Button>
                                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
                                             }
                                         </TableRowCell>
@@ -154,7 +96,7 @@ else
                             else
                             {
                                 <TableRow>
-                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                    <TableRowCell ColumnSpan="6" TextAlignment="TextAlignment.Center">
                                         @L["NoShooters"]
                                     </TableRowCell>
                                 </TableRow>
@@ -194,6 +136,18 @@ else
             </ModalFooter>
         </ModalContent>
     </Modal>
+
+    <Modal @ref="modalEditRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["EditShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <ShooterInGroup AvailableShooters="group.Shooters.Select(x=>x.Shooter).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit"/>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 }
 @code {
 
@@ -205,15 +159,16 @@ else
 
     // reference to the modal component
     private Modal modalRef;
+    private Modal modalEditRef;
     GroupShooterContract  shooterToDelete = new();
 
     GroupContract group = new();
     IList<ShooterContract> availableShooters = new List<ShooterContract>();
-    IList<TeamContract> teams = new List<TeamContract>();
-    IList<string> divisions = new List<string>();
-
-    Validations validations;
+    
+    
     GroupShooterCreateRequest model = new();
+    GroupShooterCreateRequest shooterToEdit = new();
+    
 
 
     protected override async Task OnInitializedAsync()
@@ -221,10 +176,6 @@ else
         model.GroupId = GroupId;
         await LoadShooters();
         group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
-        //if (MainServiceLayer.Online)
-        //{
-        //    teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams");
-        //}
         await base.OnInitializedAsync();
     }
 
@@ -238,28 +189,39 @@ else
 
     async Task Submit()
     {
-        if (! (await validations.ValidateAll()))
+        var request = new GroupShooterCreateRequest()
+        {
+            HasPay = model.HasPay,
+            ShooterId = model.ShooterId,
+            DivisionId = model.DivisionId,
+            GroupId = model.GroupId,
+            TeamId = model.TeamId
+        };
+        var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request);
+        if (result.Count == 0)
             return;
-        await validations.ClearAll();
-
-        group.Shooters = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", model);
+        
+        group.Shooters = result;
         await LoadShooters();
         model.ShooterId = string.Empty;
         model.DivisionId = string.Empty;
         model.TeamId = string.Empty;
-
+        
     }
-
-    void OnSelectedShooterChanged(string value)
+    
+    void EditShooter(GroupShooterContract shooter)
     {
-        var shooter = availableShooters.FirstOrDefault(x => x.ShooterId == value);
         if (shooter == null)
             return;
-        model.ShooterId = value;
-        model.DivisionId = string.Empty;
-        model.TeamId = string.Empty;
-        teams = shooter.Teams;
-        divisions = shooter.Classifications.Select(x => x.Division).ToList();
+        shooterToEdit = new GroupShooterCreateRequest()
+        {
+            HasPay = shooter.HasPay,
+            ShooterId = shooter.Shooter.ShooterId,
+            DivisionId = shooter.Division,
+            GroupId = model.GroupId,
+            TeamId = shooter.Team.TeamId
+        };
+        modalEditRef.Show();
     }
 
     void DeleteShooter(GroupShooterContract shooter)
@@ -280,4 +242,21 @@ else
         shooterToDelete = new GroupShooterContract();
         await modalRef.Hide();
     }
+
+    private async Task HideEditModal(bool choice)
+    {
+        if (choice && shooterToEdit!= null)
+        {
+            log.LogWarning(JsonSerializer.Serialize(shooterToEdit));
+            var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
+            if (result.Count == 0)
+                return;
+                
+            group.Shooters = result;
+            await LoadShooters();
+        }
+        shooterToEdit = new GroupShooterCreateRequest();
+        await modalEditRef.Hide();
+    }
+
 }

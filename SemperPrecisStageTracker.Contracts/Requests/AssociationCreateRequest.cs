@@ -9,7 +9,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         [Required]
         [Range(0, int.MaxValue)]
-        public float HitOnNonThreatDownPoints { get; set; }
+        public float HitOnNonThreatPointDown { get; set; }
+
         [Range(0, int.MaxValue)]
         public float FirstProceduralPointDown { get; set; }
 

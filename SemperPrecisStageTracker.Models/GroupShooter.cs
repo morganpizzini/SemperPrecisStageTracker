@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.Models
@@ -15,5 +16,7 @@ namespace SemperPrecisStageTracker.Models
         public string Classification { get; set; }
         [Required]
         public string TeamId { get; set; }
+        
+        public DateTime? HasPay { get; set; }
     }
 }

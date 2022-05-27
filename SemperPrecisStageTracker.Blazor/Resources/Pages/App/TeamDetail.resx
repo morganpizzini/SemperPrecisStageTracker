@@ -195,7 +195,7 @@
   <data name="WrongShooter" xml:space="preserve">
     <value>Wrong shooter!</value>
   </data>
-  <data name="WrongValidRegistrationDate" xml:space="preserve">
+  <data name="WrongRegistrationDate" xml:space="preserve">
     <value>Wrong registration date!</value>
   </data>
   <data name="Submit" xml:space="preserve">

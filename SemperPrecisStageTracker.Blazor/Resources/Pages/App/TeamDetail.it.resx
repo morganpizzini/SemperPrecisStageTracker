@@ -201,7 +201,7 @@
   <data name="WrongShooter" xml:space="preserve">
     <value>Errore nel tiratore!</value>
   </data>
-  <data name="WrongValidRegistrationDate" xml:space="preserve">
+  <data name="WrongRegistrationDate" xml:space="preserve">
     <value>Errore nella data di registrazione!</value>
   </data>
   <data name="WrongRegistrationDate" xml:space="preserve">

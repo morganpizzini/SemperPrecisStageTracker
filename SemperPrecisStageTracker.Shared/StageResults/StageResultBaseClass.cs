@@ -26,7 +26,14 @@ public interface IStageResult
         : Time - Bonus + (DownPoints?.DefaultIfEmpty(0).Sum() ?? 0) + Procedurals * (decimal)FirstProceduralPointDown +
         HitOnNonThreat * (decimal)HitOnNonThreatPointDown + FlagrantPenalties * (decimal)SecondProceduralPointDown + Ftdr * (decimal)ThirdProceduralPointDown;
 
-    public string TotalString => Total > 0 ? $"{Total:f2}" : Total < 0 ? "Disqualified" : "";
+    public string TotalString
+    {
+        get
+        {
+            var t = Total;
+            return t > 0 ? $"{t:f2}" : t < 0 ? "Disqualified" : "";
+        }
+    }
 }
 
 //public static class StageResultsExtensions

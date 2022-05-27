@@ -193,7 +193,7 @@
   <data name="WrongUsername" xml:space="preserve">
     <value>Errore username!</value>
   </data>
-  <data name="WrongValidBirthDate" xml:space="preserve">
+  <data name="WrongBirthDate" xml:space="preserve">
     <value>Data di nascita non valida!</value>
   </data>
 </root>

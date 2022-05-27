@@ -119,7 +119,7 @@ else
         </Column>
     </Row>
 }
-<Modal @ref="modalRef" Size="@ModalSize.ExtraLarge">
+<Modal @ref="modalRef" Size="@ModalSize.Fullscreen">
     <ModalContent Centered="true">
         <ModalHeader>
             <ModalTitle>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</ModalTitle>
@@ -292,7 +292,7 @@ else
                                                 </NumericEdit>
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1 ? true : false)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
@@ -315,7 +315,7 @@ else
                                             </Addon>
                                             <Addon AddonType="AddonType.End">
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Warning" Clicked="@(() => { model.DownPoints[tmp]+=5; })">+5</Button>
-                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1 ? true : false)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
                                                 <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
                                             </Addon>
                                         </Addons>
@@ -337,29 +337,38 @@ else
                                 </FieldBody>
                             </Field>
                             <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Procedurals"] (x3)</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@model.Procedurals</Text>
-                                </FieldBody>
-                            </Field>
-                            <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x5)</FieldLabel>
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x @match.Association.HitOnNonThreatPointDown)</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
                                     <Text>@model.HitOnNonThreat</Text>
                                 </FieldBody>
                             </Field>
-                            <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["FlagrantPenalties"] (x10)</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@model.FlagrantPenalties</Text>
-                                </FieldBody>
-                            </Field>
-                            <Field Horizontal="true">
-                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Ftdr"] (x20)</FieldLabel>
-                                <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@model.Ftdr</Text>
-                                </FieldBody>
-                            </Field>
+                            @if (match.Association.FirstProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.FirstPenaltyLabel] (x @match.Association.FirstProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.Procedurals</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
+                            @if (match.Association.SecondProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.SecondPenaltyLabel] (x @match.Association.SecondProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.FlagrantPenalties</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
+                            @if (match.Association.ThirdProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.ThirdPenaltyLabel] (x @match.Association.ThirdProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.Ftdr</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["DownPoints"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
@@ -504,6 +513,7 @@ else
         model.FirstProceduralPointDown = match.Association.FirstProceduralPointDown;
         model.SecondProceduralPointDown = match.Association.SecondProceduralPointDown;
         model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
+        model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
         model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
         model.Disqualified = shooter.ShooterStage.Disqualified;
         model.DownPoints = shooter.ShooterStage.DownPoints;

@@ -56,8 +56,17 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
+            
+            var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds, entity.MatchId);
+            var shooterTeams = BasicLayer.FetchTeamsFromShooterIds(shooterIds);
+
+            var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();
+            var teams = BasicLayer.FetchTeamsByIds(teamsIds);
+
+            var result = ContractUtils.GenerateContract(entity, match, association, null, shooterGroup, shooters,
+                shooterAssociation, shooterTeams, teams);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity, match, association, null, shooterGroup, shooters));
+            return Reply(result);
         }
 
         /// <summary>
