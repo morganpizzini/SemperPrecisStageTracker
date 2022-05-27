@@ -38,6 +38,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - uses: Azure/get-keyvault-secrets@v1
+      name: 'KVConnection'
       with:
         keyvault: "semperprecisKV" # name of key vault in Azure portal
         secrets: 'GHConnectionString'  # comma separated list of secret keys to fetch from key vault 
@@ -57,7 +58,7 @@ jobs:
         dotnet ef database update --startup-project ../SemperPrecisStageTracker.API
         exit 1
       env:
-        ASPNETCORE_ENVIRONMENT: Production
+        ASPNETCORE_ENVIRONMENT: Development
         connectionStrings__SqlDb: ${{ steps.KVoutput.outputs.GHConnectionString }}
 
     - name: Build
