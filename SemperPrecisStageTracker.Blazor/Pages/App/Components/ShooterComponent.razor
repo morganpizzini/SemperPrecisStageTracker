@@ -1,0 +1,260 @@
+﻿@inherits SemperPrecisBasePresentationalComponent
+@inject IStringLocalizer<AssociationComponent> L
+
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@Model.FirstName">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirstName"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field>
+                    <FieldLabel>@L["LastName"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["LastName"]" @bind-Text="@Model.LastName">
+                            <Feedback>
+                                <ValidationError>@L["WrongLastName"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["Username"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Username"]" @bind-Text="@Model.Username">
+                            <Feedback>
+                                <ValidationError>@L["WrongUsername"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel>@L["Email"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@Model.Email">
+                            <Feedback>
+                                <ValidationError>@L["WrongEmail"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.IsNotEmpty">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["FirearmsLicence"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["FirearmsLicence"]" @bind-Text="@Model.FirearmsLicence">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirearmsLicence"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidateDate">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel>@L["FirearmsLicenceReleaseDate"]</FieldLabel>
+                    <FieldBody>
+                        <DateEdit TValue="DateTime" @bind-Date="@Model.FirearmsLicenceReleaseDate">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirearmsLicenceReleaseDate"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidateDate">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel>@L["FirearmsLicenceExpireDate"]</FieldLabel>
+                    <FieldBody>
+                        <DateEdit TValue="DateTime" @bind-Date="@Model.FirearmsLicenceExpireDate">
+                            <Feedback>
+                                <ValidationError>@L["WrongFirearmsLicenceExpireDate"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel>@L["MedicalExaminationExpireDate"]</FieldLabel>
+                    <FieldBody>
+                        <DateEdit TValue="DateTime?" @bind-Date="@Model.MedicalExaminationExpireDate">
+                            <Feedback>
+                                <ValidationError>@L["WrongMedicalExaminationExpireDate"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Validation Validator="@ValidateDate">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <FieldBody>
+                        <DateEdit TValue="DateTime" @bind-Date="@Model.BirthDate">
+                            <Feedback>
+                                <ValidationError>@L["WrongBirthDate"]</ValidationError>
+                            </Feedback>
+                        </DateEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["BirthLocation"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["BirthLocation"]" @bind-Text="@Model.BirthLocation">
+                            <Feedback>
+                                <ValidationError>@L["WrongBirthLocation"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["Address"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Address"]" @bind-Text="@Model.Address">
+                            <Feedback>
+                                <ValidationError>@L["WrongAddress"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["City"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["City"]" @bind-Text="@Model.City">
+                            <Feedback>
+                                <ValidationError>@L["WrongCity"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["PostalCode"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["PostalCode"]" @bind-Text="@Model.PostalCode">
+                            <Feedback>
+                                <ValidationError>@L["WrongPostalCode"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["Province"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Province"]" @bind-Text="@Model.Province">
+                            <Feedback>
+                                <ValidationError>@L["WrongProvince"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["Country"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Country"]" @bind-Text="@Model.Country">
+                            <Feedback>
+                                <ValidationError>@L["WrongCountry"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["Phone"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["Phone"]" @bind-Text="@Model.Phone">
+                            <Feedback>
+                                <ValidationError>@L["WrongPhone"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field Horizontal="true">
+                    <FieldLabel>@L["FiscalCode"]</FieldLabel>
+                    <FieldBody>
+                        <TextEdit Placeholder="@L["FiscalCode"]" @bind-Text="@Model.FiscalCode">
+                            <Feedback>
+                                <ValidationError>@L["WrongFiscalCode"]</ValidationError>
+                            </Feedback>
+                        </TextEdit>
+                    </FieldBody>
+                </Field>
+            </Validation>
+        </Column>
+    </Row>
+
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+            <ChildContent>@L["Submit"]</ChildContent>
+        </Button>
+    </Field>
+</Validations>
+@code {
+    Validations validations;
+
+    [Parameter]
+    public ShooterContract Model { get; set; } = new();
+
+    [Parameter]
+    public EventCallback SubmitCallback { get; set; }
+
+    async Task Submit()
+    {
+        if (!(await validations.ValidateAll()))
+            return;
+
+        await validations.ClearAll();
+
+        await SubmitCallback.InvokeAsync();
+    }
+
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1920, 1, 1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongBirthDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+}

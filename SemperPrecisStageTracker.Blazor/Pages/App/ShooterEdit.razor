@@ -1,4 +1,5 @@
 ﻿@page "/app/shooters/edit/{id}"
+@using System.Reflection.Metadata
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<ShooterEdit> L
 @inject NavigationManager UriHelper
@@ -22,118 +23,15 @@
         }
         else
         {
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
-                                <Feedback>
-                                    <ValidationError>@L["WrongFirstName"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["LastName"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
-                                <Feedback>
-                                    <ValidationError>@L["WrongLastName"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidateDate">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["BirthDate"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
-                                <Feedback>
-                                    <ValidationError>@L["WrongBirthDate"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
-                                <Feedback>
-                                    <ValidationError>@L["WrongUsername"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
-                                <Feedback>
-                                    <ValidationError>@L["WrongEmail"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmsLicence"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["FirearmsLicence"]" @bind-Text="@model.FirearmsLicence">
-                                <Feedback>
-                                    <ValidationError>@L["WrongFirearmsLicence"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidateDate">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FirearmsLicenceExpireDate"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime" @bind-Date="@model.FirearmsLicenceExpireDate">
-                                <Feedback>
-                                    <ValidationError>@L["WrongFirearmsLicenceExpireDate"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidateDate">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MedicalExaminationExpireDate"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime" @bind-Date="@model.MedicalExaminationExpireDate">
-                                <Feedback>
-                                    <ValidationError>@L["WrongMedicalExaminationExpireDate"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                        <ChildContent>@L["Submit"]</ChildContent>
-                    </Button>
-                </Field>
-            </Validations>
+            <ShooterComponent Model="model" SubmitCallback="Submit"></ShooterComponent>
+
         }
     </Authorized>
 </AuthorizeView>
 @code {
     [Parameter]
     public string Id { get; set; }
-    Validations validations;
-    ShooterUpdateRequest model = new ();
+    ShooterContract model = new ();
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), Id))
@@ -141,44 +39,38 @@
             await base.OnInitializedAsync();
             return;
         }
-        var existing = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
-        model.FirstName = existing.FirstName;
-        model.LastName = existing.LastName;
-        model.BirthDate = existing.BirthDate;
-        model.Username = existing.Username;
-        model.Email = existing.Email;
-        model.FirearmsLicenceExpireDate = existing.FirearmsLicenceExpireDate;
-        model.FirearmsLicence = existing.FirearmsLicence;
-        model.MedicalExaminationExpireDate = existing.MedicalExaminationExpireDate;
-        model.ShooterId = Id;
+        model = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
+        
         await base.OnInitializedAsync();
     }
-    void ValidateDate(ValidatorEventArgs e)
-    {
-        var date = e.Value as DateTime?;
-
-        if (date == null)
-        {
-            e.Status = ValidationStatus.Error;
-        }
-        else if (date <= new DateTime(1920, 1, 1))
-        {
-            e.Status = ValidationStatus.Error;
-            e.ErrorText = L["WrongBirthDate"];
-        }
-        else
-        {
-            e.Status = ValidationStatus.Success;
-        }
-    }
+    
 
     async Task Submit()
     {
-        if (! (await validations.ValidateAll()))
-            return;
-        await validations.ClearAll();
-        var response = await Post<ShooterContract>("/api/Shooter/UpdateShooter", model);
+    // create request
+        var request = new ShooterUpdateRequest()
+        {
+            ShooterId = model.ShooterId,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            BirthDate = model.BirthDate,
+            Username = model.Username,
+            Email = model.Email,
+            FirearmsLicenceExpireDate = model.FirearmsLicenceExpireDate,
+            FirearmsLicence = model.FirearmsLicence,
+            MedicalExaminationExpireDate = model.MedicalExaminationExpireDate,
+            BirthLocation = model.BirthLocation,
+            Address = model.Address,
+            City = model.City,
+            PostalCode = model.PostalCode,
+            Province = model.Province,
+            Country = model.Country,
+            Phone = model.Phone,
+            FiscalCode = model.FiscalCode
+        };
+        
+        var response = await Post<ShooterContract>("/api/Shooter/UpdateShooter", request);
         if (response != null)
-        UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
+            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
     }
 }

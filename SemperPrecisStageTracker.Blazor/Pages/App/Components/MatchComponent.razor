@@ -1,0 +1,171 @@
+﻿@inherits SemperPrecisBasePresentationalComponent
+@inject IStringLocalizer<AssociationComponent> L
+
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@Model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FromDate"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <DateEdit TValue="DateTime" @bind-Date="@Model.MatchDateTimeStart">
+                    <Feedback>
+                        <ValidationError>@L["WrongDate"]</ValidationError>
+                    </Feedback>
+                </DateEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidateDate">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ToDate"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <DateEdit TValue="DateTime" @bind-Date="@Model.MatchDateTimeEnd">
+                    <Feedback>
+                        <ValidationError>@L["WrongDate"]</ValidationError>
+                    </Feedback>
+                </DateEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsSelected">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@Model.Association.AssociationId">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var association in Associations)
+                        {
+                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongAssociation"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsSelected">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Place"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@Model.Place.PlaceId">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var place in Places)
+                        {
+                            <SelectItem Value="@place.PlaceId">@place.Name</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongPlace"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation  Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Cost"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <NumericEdit Placeholder="@L["Cost"]" Min="0" Debounce="true" DebounceInterval="2000" ElementId="time" @bind-Value="@Model.Cost" >
+                    <Feedback>
+                        <ValidationError>@L["WrongCost"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation  Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["PaymentDetails"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <MemoEdit @bind-Text="@Model.PaymentDetails" Debounce="true" DebounceInterval="2000">
+                    <Feedback>
+                        <ValidationError>@L["WrongPaymentDetails"]</ValidationError>
+                    </Feedback>
+                </MemoEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Tooltip Text="@L["UnifyClassificationDescription"]">
+                    <Check TValue="bool" @bind-Checked="@Model.UnifyClassifications">@L["UnifyClassifications"]</Check>
+                </Tooltip>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Tooltip Text="@L["OpenMatchDescription"]">
+                    <Check TValue="bool" @bind-Checked="@Model.OpenMatch">@L["OpenMatch"]</Check>
+                </Tooltip>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;@L["Submit"]</LoadingTemplate>
+            <ChildContent>@L["Submit"]</ChildContent>
+        </Button>
+    </Field>
+</Validations>
+@code {
+    Validations validations;
+
+    [Parameter]
+    public MatchContract Model { get; set; } = new();
+    [Parameter]
+    public IList<AssociationContract> Associations { get; set; } = new List<AssociationContract>();
+    [Parameter]
+    public IList<PlaceContract> Places { get; set; } = new List<PlaceContract>();
+
+
+    [Parameter]
+    public EventCallback SubmitCallback { get; set; }
+
+    async Task Submit()
+    {
+        if (!(await validations.ValidateAll()))
+            return;
+
+        await validations.ClearAll();
+
+        await SubmitCallback.InvokeAsync();
+    }
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+    /* else if (date.Value.Date <= DateTime.Now.Date.AddDays(1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongDate"];
+        } */
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+}

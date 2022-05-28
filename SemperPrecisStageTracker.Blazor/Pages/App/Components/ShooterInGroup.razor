@@ -1,96 +1,95 @@
 ﻿@inherits SemperPrecisBasePresentationalComponent
 @inject IStringLocalizer<AssociationComponent> L
-@inject NavigationManager UriHelper
 
 <Row>
-            <Column ColumnSize="ColumnSize.IsFull">
-                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Column ColumnSize="ColumnSize.IsFull">
+        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+            <Validation Validator="@ValidationRule.IsSelected">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
+                        <Select TValue="string" SelectedValue="@Model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
+                            <ChildContent>
+                                <SelectItem Value="@("")"></SelectItem>
+                                @foreach (var shooter in AvailableShooters)
+                                {
+                                    <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                                }
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>@L["WrongShooter"]</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </FieldBody>
+                </Field>
+            </Validation>
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
                     <Validation Validator="@ValidationRule.IsSelected">
                         <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
-                                <Select TValue="string" SelectedValue="@Model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@Model.TeamId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var shooter in AvailableShooters)
+                                        @foreach (var team in Teams)
                                         {
-                                            <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                                            <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
                                         }
                                     </ChildContent>
                                     <Feedback>
-                                        <ValidationError>@L["WrongShooter"]</ValidationError>
+                                        <ValidationError>@L["WrongTeam"]</ValidationError>
                                     </Feedback>
                                 </Select>
                             </FieldBody>
                         </Field>
                     </Validation>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsSelected">
-                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <Select TValue="string" @bind-SelectedValue="@Model.TeamId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
-                                            <ChildContent>
-                                                <SelectItem Value="@("")"></SelectItem>
-                                                @foreach (var team in Teams)
-                                                {
-                                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
-                                                }
-                                            </ChildContent>
-                                            <Feedback>
-                                                <ValidationError>@L["WrongTeam"]</ValidationError>
-                                            </Feedback>
-                                        </Select>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidationRule.IsSelected">
-                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <Select TValue="string" @bind-SelectedValue="@Model.DivisionId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
-                                            <ChildContent>
-                                                <SelectItem Value="@("")"></SelectItem>
-                                                @foreach (var division in Divisions)
-                                                {
-                                                    <SelectItem Value="@division">@division</SelectItem>
-                                                }
-                                            </ChildContent>
-                                            <Feedback>
-                                                <ValidationError>@L["WrongDivision"]</ValidationError>
-                                            </Feedback>
-                                        </Select>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                            <Validation Validator="@ValidateDate">
-                                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["HasPay"]</FieldLabel>
-                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <DateEdit TValue="DateTime?" @bind-Date="@Model.HasPay">
-                                            <Feedback>
-                                                <ValidationError>@L["WrongHasPay"]</ValidationError>
-                                            </Feedback>
-                                        </DateEdit>
-                                    </FieldBody>
-                                </Field>
-                            </Validation>
-                        </Column>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@Model.DivisionId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                        @foreach (var division in Divisions)
+                                        {
+                                            <SelectItem Value="@division">@division</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongDivision"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                    <Validation Validator="@ValidateDate">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["HasPay"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <DateEdit TValue="DateTime?" @bind-Date="@Model.HasPay">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongHasPay"]</ValidationError>
+                                    </Feedback>
+                                </DateEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Column>
 
-                    </Row>
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
-                        </FieldBody>
-                    </Field>
-                </Validations>
-            </Column>
-        </Row>
+            </Row>
+            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+                </FieldBody>
+            </Field>
+        </Validations>
+    </Column>
+</Row>
 @code {
     Validations validations;
 

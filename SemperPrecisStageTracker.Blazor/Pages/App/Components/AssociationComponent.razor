@@ -1,208 +1,196 @@
 ﻿@inherits SemperPrecisBasePresentationalComponent
 @inject IStringLocalizer<AssociationComponent> L
-@inject NavigationManager UriHelper
 
-<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.EditAssociation))" Resource="@Model.AssociationId">
-    <Authorizing>
-        <h3 class="mt-5">@L["Loading"]</h3>
-    </Authorizing>
-    <NotAuthorized>
-        <h3 class="mt-5">@L["NoAuth"]</h3>
-    </NotAuthorized>
-    <Authorized>
-        @if (ApiLoading)
-        {
-            <p class="text-center">
-                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
-            </p>
-        }
-        else
-        {
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Name"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <TextEdit Placeholder="@L["Name"]" @bind-Text="@Model.Name">
-                                <Feedback>
-                                    <ValidationError>@L["WrongName"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["HitOnNonThreatPointDown"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["HitOnNonThreatPointDown"]" TValue="float" @bind-Value="@Model.HitOnNonThreatPointDown">
-                                <Feedback>
-                                    <ValidationError>@L["HitOnNonThreatPointDown"]</ValidationError>
-                                </Feedback>
-                            </NumericEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstPenaltyLabel"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <TextEdit Placeholder="@L["FirstPenaltyLabel"]" @bind-Text="@Model.FirstPenaltyLabel">
-                                <Feedback>
-                                    <ValidationError>@L["WrongFirstPenaltyLabel"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstProceduralPointDown"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["FirstProceduralPointDown"]" TValue="float" @bind-Value="@Model.FirstProceduralPointDown">
-                                <Feedback>
-                                    <ValidationError>@L["WrongFirstProceduralPointDown"]</ValidationError>
-                                </Feedback>
-                            </NumericEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondPenaltyLabel"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <TextEdit Placeholder="@L["SecondPenaltyLabel"]" @bind-Text="@Model.SecondPenaltyLabel">
-                                <Feedback>
-                                    <ValidationError>@L["WrongSecondPenaltyLabel"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondProceduralPointDown"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["SecondProceduralPointDown"]" TValue="float" @bind-Value="@Model.SecondProceduralPointDown">
-                                <Feedback>
-                                    <ValidationError>@L["WrongSecondProceduralPointDown"]</ValidationError>
-                                </Feedback>
-                            </NumericEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdPenaltyLabel"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <TextEdit Placeholder="@L["ThirdPenaltyLabel"]" @bind-Text="@Model.ThirdPenaltyLabel">
-                                <Feedback>
-                                    <ValidationError>@L["WrongThirdPenaltyLabel"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdProceduralPointDown"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                            <NumericEdit Placeholder="@L["ThirdProceduralPointDown"]" TValue="float" @bind-Value="@Model.ThirdProceduralPointDown">
-                                <Feedback>
-                                    <ValidationError>@L["WrongThirdProceduralPointDown"]</ValidationError>
-                                </Feedback>
-                            </NumericEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Divider />
-                <Field Horizontal="true">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Divisions"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                        @for (int i = 0; i < Model.Divisions.Count; i++)
-                        {
-                            var tmp = i;
-                            <Addons class="mb-1">
-                                <Addon AddonType="AddonType.Body">
-                                    <input value="@Model.Divisions[tmp]" class="form-control"
-                                   @onchange="@(e => Model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                                </Addon>
-                                <Addon AddonType="AddonType.End">
-                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Divisions.Remove(Model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                                </Addon>
-                            </Addons>
-                        }
-                    </FieldBody>
-                </Field>
-                <Divider />
-                <Field Horizontal="true">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Classifications"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                        @for (int i = 0; i < Model.Classifications.Count; i++)
-                        {
-                            var tmp = i;
-                            <Addons class="mb-1">
-                                <Addon AddonType="AddonType.Body">
-                                    <input value="@Model.Classifications[tmp]" class="form-control"
-                                   @onchange="@(e => Model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                                </Addon>
-                                <Addon AddonType="AddonType.End">
-                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Classifications.Remove(Model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                                </Addon>
-                            </Addons>
-                        }
-                    </FieldBody>
-                </Field>
-                <Divider />
-                <Field Horizontal="true">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Categories"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Categories.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                        @for (int i = 0; i < Model.Categories.Count; i++)
-                        {
-                            var tmp = i;
-                            <Addons class="mb-1">
-                                <Addon AddonType="AddonType.Body">
-                                    <input value="@Model.Categories[tmp]" class="form-control"
-                                   @onchange="@(e => Model.Categories[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                                </Addon>
-                                <Addon AddonType="AddonType.End">
-                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Categories.Remove(Model.Categories[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                                </Addon>
-                            </Addons>
-                        }
-                    </FieldBody>
-                </Field>
-                <Divider />
-                <Field Horizontal="true">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SoRoles"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.SoRoles.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                        @for (int i = 0; i < Model.SoRoles.Count; i++)
-                        {
-                            var tmp = i;
-                            <Addons class="mb-1">
-                                <Addon AddonType="AddonType.Body">
-                                    <input value="@Model.SoRoles[tmp]" class="form-control"
-                                   @onchange="@(e => Model.SoRoles[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
-                                </Addon>
-                                <Addon AddonType="AddonType.End">
-                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.SoRoles.Remove(Model.SoRoles[tmp]); })"><Icon Name="IconName.Delete" /></Button>
-                                </Addon>
-                            </Addons>
-                        }
-                    </FieldBody>
-                </Field>
-                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                        <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
-                            <ChildContent>@L["Submit"]</ChildContent>
-                        </Button>
-                    </FieldBody>
-                </Field>
-            </Validations>
-        }
-    </Authorized>
-</AuthorizeView>
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@Model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["HitOnNonThreatPointDown"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["HitOnNonThreatPointDown"]" TValue="float" @bind-Value="@Model.HitOnNonThreatPointDown">
+                    <Feedback>
+                        <ValidationError>@L["HitOnNonThreatPointDown"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstPenaltyLabel"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["FirstPenaltyLabel"]" @bind-Text="@Model.FirstPenaltyLabel">
+                    <Feedback>
+                        <ValidationError>@L["WrongFirstPenaltyLabel"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["FirstProceduralPointDown"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["FirstProceduralPointDown"]" TValue="float" @bind-Value="@Model.FirstProceduralPointDown">
+                    <Feedback>
+                        <ValidationError>@L["WrongFirstProceduralPointDown"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondPenaltyLabel"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["SecondPenaltyLabel"]" @bind-Text="@Model.SecondPenaltyLabel">
+                    <Feedback>
+                        <ValidationError>@L["WrongSecondPenaltyLabel"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["SecondProceduralPointDown"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["SecondProceduralPointDown"]" TValue="float" @bind-Value="@Model.SecondProceduralPointDown">
+                    <Feedback>
+                        <ValidationError>@L["WrongSecondProceduralPointDown"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdPenaltyLabel"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["ThirdPenaltyLabel"]" @bind-Text="@Model.ThirdPenaltyLabel">
+                    <Feedback>
+                        <ValidationError>@L["WrongThirdPenaltyLabel"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["ThirdProceduralPointDown"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["ThirdProceduralPointDown"]" TValue="float" @bind-Value="@Model.ThirdProceduralPointDown">
+                    <Feedback>
+                        <ValidationError>@L["WrongThirdProceduralPointDown"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Divider />
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Field>
+                <FieldLabel>@L["SoRoles"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.SoRoles.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldBody>
+                    @for (int i = 0; i < Model.SoRoles.Count; i++)
+                    {
+                        var tmp = i;
+                        <Addons class="mb-1">
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@Model.SoRoles[tmp]" class="form-control"
+                                       @onchange="@(e => Model.SoRoles[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.SoRoles.Remove(Model.SoRoles[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    }
+                </FieldBody>
+            </Field>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Field>
+                <FieldLabel>@L["Categories"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Categories.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldBody>
+                    @for (int i = 0; i < Model.Categories.Count; i++)
+                    {
+                        var tmp = i;
+                        <Addons class="mb-1">
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@Model.Categories[tmp]" class="form-control"
+                                       @onchange="@(e => Model.Categories[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Categories.Remove(Model.Categories[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    }
+                </FieldBody>
+            </Field>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Field>
+                <FieldLabel>@L["Divisions"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Divisions.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldBody>
+                    @for (int i = 0; i < Model.Divisions.Count; i++)
+                    {
+                        var tmp = i;
+                        <Addons class="mb-1">
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@Model.Divisions[tmp]" class="form-control"
+                                       @onchange="@(e => Model.Divisions[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Divisions.Remove(Model.Divisions[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    }
+                </FieldBody>
+            </Field>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Field>
+                <FieldLabel>@L["Classifications"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.Classifications.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldBody>
+                    @for (int i = 0; i < Model.Classifications.Count; i++)
+                    {
+                        var tmp = i;
+                        <Addons class="mb-1">
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@Model.Classifications[tmp]" class="form-control"
+                                       @onchange="@(e => Model.Classifications[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.Classifications.Remove(Model.Classifications[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    }
+                </FieldBody>
+            </Field>
+        </Column>
+    </Row>
+    
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
+        </FieldBody>
+    </Field>
+</Validations>
 @code {
     Validations validations;
 

@@ -160,7 +160,7 @@ else
                                     <FieldBody ColumnSize="ColumnSize.Is8">
                                         <NumericEdit Placeholder="@L["Time"]" Min="1" Debounce="true" DebounceInterval="2000" ElementId="time" @bind-Value="@model.Time" >
                                             <Feedback>
-                                                <ValidationError/>
+                                                <ValidationError>@L["WrongTime"]</ValidationError>
                                             </Feedback>
                                         </NumericEdit>
                                     </FieldBody>

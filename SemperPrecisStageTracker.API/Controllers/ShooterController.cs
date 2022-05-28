@@ -73,7 +73,17 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Email = request.Email,
                 Username = request.Username,
                 FirearmsLicence = request.FirearmsLicence,
-                FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate
+                FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate,
+                FirearmsLicenceReleaseDate = request.FirearmsLicenceReleaseDate,
+                MedicalExaminationExpireDate = request.MedicalExaminationExpireDate,
+                BirthLocation = request.BirthLocation,
+                Address = request.Address,
+                City = request.City,
+                PostalCode = request.PostalCode,
+                Province = request.Province,
+                Country = request.Country,
+                Phone = request.Phone,
+                FiscalCode = request.FiscalCode
             };
 
             //Invocazione del service layer
@@ -113,6 +123,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate;
             entity.FirearmsLicence = request.FirearmsLicence;
             entity.MedicalExaminationExpireDate = request.MedicalExaminationExpireDate;
+            entity.BirthLocation = request.BirthLocation;
+            entity.Address = request.Address;
+            entity.City = request.City;
+            entity.PostalCode = request.PostalCode;
+            entity.Province = request.Province;
+            entity.Country = request.Country;
+            entity.Phone = request.Phone;
+            entity.FiscalCode = request.FiscalCode;
 
             //Salvataggio
             var validations = await BasicLayer.UpdateShooter(entity, PlatformUtils.GetIdentityUserId(User));

@@ -2689,6 +2689,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // controllo esistenza group con stesso nome / PEC / SDI
             var existing = _groupRepository.GetSingle(x => x.Id != entity.Id
+                                                           && x.MatchId == entity.MatchId
                                                               && x.Name == entity.Name);
 
             if (existing != null)
@@ -2888,6 +2889,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //   // controllo esistenza stage con stesso nome / PEC / SDI
             var existing = _stageRepository.GetSingle(x => x.Id != entity.Id
+                                                           && x.MatchId == entity.MatchId
                                                               && x.Name == entity.Name);
 
             if (existing != null)

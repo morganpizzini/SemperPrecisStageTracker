@@ -8,7 +8,9 @@
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
       "placeId": "1",
-      "shortLink": "ABC"
+      "shortLink": "ABC",
+      "cost": 12.03,
+      "paymentDetails": "Some payment details" 
     }
   ],
   "stages": [
@@ -122,7 +124,7 @@
       "shooterId": "1",
       "teamId": "1",
       "divisionId": "Stock Service Pistol idpa (SSP)",
-      "hasPay": "2021-05-23T18:25:43.511Z" 
+      "hasPay": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "2",
@@ -250,7 +252,15 @@
       "birthDate": "2021-05-23T18:25:43.511Z",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD",
-      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
+      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
+      "birthLocation": "birthLocation01",
+      "address": "address01",
+      "city": "city01",
+      "postalCode": "postalCode01",
+      "province": "province01",
+      "country": "country01",
+      "phone": "phone01",
+      "fiscalCode": "fiscalCode01"
     },
     {
       "id": "2",
@@ -262,7 +272,15 @@
       "birthDate": "2021-05-23T18:25:43.511Z",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD1",
-      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
+      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
+      "birthLocation": "birthLocation02",
+      "address": "address02",
+      "city": "city02",
+      "postalCode": "postalCode02",
+      "province": "province02",
+      "country": "country02",
+      "phone": "phone02",
+      "fiscalCode": "fiscalCode02"
     },
     {
       "id": "3",
@@ -274,7 +292,15 @@
       "birthDate": "2021-05-23T18:25:43.511Z",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD2",
-      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
+      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
+      "birthLocation": "birthLocation03",
+      "address": "address03",
+      "city": "city03",
+      "postalCode": "postalCode03",
+      "province": "province03",
+      "country": "country03",
+      "phone": "phone03",
+      "fiscalCode": "fiscalCode03"
     },
     {
       "id": "4",
@@ -286,7 +312,15 @@
       "birthDate": "2021-05-23T18:25:43.511Z",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD3",
-      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
+      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
+      "birthLocation": "birthLocation04",
+      "address": "address04",
+      "city": "city04",
+      "postalCode": "postalCode04",
+      "province": "province04",
+      "country": "country04",
+      "phone": "phone04",
+      "fiscalCode": "fiscalCode04"
     },
     {
       "id": "41",

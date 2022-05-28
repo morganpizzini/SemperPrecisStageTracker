@@ -1,0 +1,43 @@
+﻿@page "/app/permissions/role/new"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<PermissionRoleDetail> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["RoleDetail"]</Heading>
+<Divider />
+<NavLink href="@(RouteHelper.GetUrl<PermissionsHandling>())">@L["BackToList"]</NavLink>
+<AuthorizeView Roles="@(Permissions.ManagePermissions.ToDescriptionString())">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <PermissionRoleComponent Role="role" 
+                                 SubmitCallbackSaveEntity="SaveEntity"
+                                 ></PermissionRoleComponent>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    
+    RoleContract role = new();
+    
+    private async Task SaveEntity(RoleContract request)
+    {
+        if (request== null)
+            return;
+        var response = await Post<RoleContract>("/api/Permission/CreateRole", new RoleCreateRequest
+        {
+            Description = request.Description,
+            Name = request.Name
+        });
+        if (response == null)
+            return;
+        UriHelper.NavigateTo(RouteHelper.GetUrl<PermissionRoleDetail>(new {id = response.RoleId}));
+    }
+}

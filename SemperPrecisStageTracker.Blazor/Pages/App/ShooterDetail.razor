@@ -34,12 +34,18 @@
                         <CardBody>
                             <CardTitle>@L["Shooter"]</CardTitle>
                             <CardText>@shooter.LastName @shooter.FirstName</CardText>
-                            <CardTitle>@L["BirthDate"]</CardTitle>
-                            <CardText>@shooter.BirthDate.ToString("d")</CardText>
+                            <CardTitle>@L["Born"]</CardTitle>
+                            <CardText>@shooter.BirthLocation @L["on"] @shooter.BirthDate.ToString("d")</CardText>
+                            <CardTitle>@L["Address"]</CardTitle>
+                            <CardText>@shooter.CompleteAddress</CardText>
+                            <CardTitle>@L["FiscalCode"]</CardTitle>
+                            <CardText>@shooter.FiscalCode</CardText>
+                            <CardTitle>@L["Phone"]</CardTitle>
+                            <CardText>@shooter.Phone</CardText>
                         </CardBody>
                     </Card>
                 </Column>
-                
+
                 <Column ColumnSize="ColumnSize.Is6">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
@@ -49,17 +55,20 @@
                             <CardText>
                                 @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
                                 {
-                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2" />
                                 }
                                 @shooter.FirearmsLicence (@shooter.FirearmsLicenceExpireDate.ToString("d"))
                             </CardText>
                             <CardTitle>@L["MedicalExaminationExpireDate"]</CardTitle>
                             <CardText>
-                                @if (shooter.FirearmsLicenceExpireDate.Date <= DateTime.Now)
+                                @if (!shooter.MedicalExaminationExpireDate.HasValue || shooter.MedicalExaminationExpireDate.Value.Date <= DateTime.Now)
                                 {
-                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
+                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2" />
                                 }
-                                @shooter.MedicalExaminationExpireDate.ToString("d")
+                                @if (shooter.MedicalExaminationExpireDate.HasValue)
+                                {
+                                    @shooter.MedicalExaminationExpireDate.Value.ToString("d")
+                                }
                             </CardText>
                         </CardBody>
                     </Card>
@@ -93,13 +102,13 @@
                                                 <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen"/></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
-                                                    }
-                                                </TableRowCell>
-                                            </TableRow>
-                                        </Virtualize>
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                            }
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
                                     }
                                     else
                                     {
@@ -115,7 +124,7 @@
                     </Card>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is5">
-                    @if (PageCondition && associationNotAssigned.Count> 0)
+                    @if (PageCondition && associationNotAssigned.Count > 0)
                     {
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
                     }
@@ -144,13 +153,13 @@
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen"/></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete"/></Button>
-                                                    }
-                                                </TableRowCell>
-                                            </TableRow>
-                                        </Virtualize>
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete" /></Button>
+                                            }
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
                                     }
                                     else
                                     {
@@ -194,13 +203,13 @@
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen"/></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete"/></Button>
-                                                    }
-                                                </TableRowCell>
-                                            </TableRow>
-                                        </Virtualize>
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                            }
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
                                     }
                                     else
                                     {
@@ -216,24 +225,23 @@
                         </CardBody>
                     </Card>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsFull">
-                    <Card Margin="Margin.Is4.OnY">
-                        <CardBody>
-                            <CardTitle>@L["ExpiredAssociations"]</CardTitle>
-
-                            <Table Striped="true" Hoverable="true">
-                                <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                    <TableRow>
-                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
-                                        <TableHeaderCell></TableHeaderCell>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    @if (expiredShooterClassifications.Count > 0)
-                                    {
+                @if (expiredShooterClassifications.Count > 0)
+                {
+                    <Column ColumnSize="ColumnSize.IsFull">
+                        <Card Margin="Margin.Is4.OnY">
+                            <CardBody>
+                                <CardTitle>@L["ExpiredAssociations"]</CardTitle>
+                                <Table Striped="true" Hoverable="true">
+                                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                        <TableRow>
+                                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
+                                            <TableHeaderCell></TableHeaderCell>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
                                         <Virtualize Items="@expiredShooterClassifications" Context="classification">
                                             <TableRow>
                                                 <TableRowHeader>@classification.Association.Name</TableRowHeader>
@@ -248,21 +256,13 @@
                                                 </TableRowCell>
                                             </TableRow>
                                         </Virtualize>
-                                    }
-                                    else
-                                    {
-                                        <TableRow>
-                                            <TableRowCell ColumnSpan="5" TextAlignment="TextAlignment.Center">
-                                                @L["NoAssociations"]
-                                            </TableRowCell>
-                                        </TableRow>
-                                    }
-                                </TableBody>
-                            </Table>
+                                    </TableBody>
+                                </Table>
 
-                        </CardBody>
-                    </Card>
-                </Column>
+                            </CardBody>
+                        </Card>
+                    </Column>
+                }
             </Row>
 
         }
@@ -287,17 +287,17 @@
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var association in associationNotAssigned)
-                                        {
-                                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongAssociation"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
+                                    {
+                                        <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongAssociation"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
                 }
                 else
                 {
@@ -324,21 +324,21 @@
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                             <Select TValue="string" @bind-SelectedValues="@categoriesEdit" Multiple>
                                 <ChildContent>
-                                @if (string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId))
-                                {
+                                    @if (string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId))
+                                            {
                                     @foreach (var category in associationNotAssigned.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
                                     {
                                         <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
                                     }
-                                }
-                                else
-                                {
+                                            }
+                                            else
+                                            {
                                     @foreach (var category in associations.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
                                     {
                                         <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
                                     }
-                                }
-                                 
+                                            }
+
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongCategories"]</ValidationError>
@@ -392,9 +392,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var association in associations)
-                                    {
-                                        <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                                    }
+                                            {
+                                    <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                                            }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongAssociation"]</ValidationError>
@@ -411,9 +411,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var division in divisions)
-                                    {
-                                        <SelectItem Value="@division">@division</SelectItem>
-                                    }
+                                            {
+                                    <SelectItem Value="@division">@division</SelectItem>
+                                            }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongdivision"]</ValidationError>
@@ -430,9 +430,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var classification in classifications)
-                                    {
-                                        <SelectItem Value="@classification">@classification</SelectItem>
-                                    }
+                                            {
+                                    <SelectItem Value="@classification">@classification</SelectItem>
+                                            }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
@@ -540,9 +540,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var team in teams)
-                                    {
-                                        <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
-                                    }
+                                            {
+                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                                            }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongTeam"]</ValidationError>
@@ -639,8 +639,8 @@
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.EditShooter), Id);
-    
-    
+
+
     private Modal modalRefEntityToDelete;
 
     ShooterContract shooter = new();
@@ -675,12 +675,12 @@
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.ShowShooters,Permissions.EditShooter), Id))
+        if (!AuthService.CheckPermissions(Permissions.ManageTeams.AndList(Permissions.ShowShooters, Permissions.EditShooter), Id))
         {
             await base.OnInitializedAsync();
             return;
         }
-        
+
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
         await LoadShooterAssociationInfo();
@@ -702,7 +702,7 @@
     {
         categoriesEdit = new List<string>();
         var request = new ShooterRequest() { ShooterId = Id };
-        associationNotAssigned  = await Post<IList<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
+        associationNotAssigned = await Post<IList<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
         associations = await Post<IList<AssociationContract>>("api/Association/FetchAvailableAssociationsForShooter", request);
         shooterAssociationInfos = await Post<IList<ShooterAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
 
@@ -718,9 +718,9 @@
         if (choice && shooter != null)
         {
             await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
-            {
-                ShooterId = shooter.ShooterId
-            });
+                {
+                    ShooterId = shooter.ShooterId
+                });
             UriHelper.NavigateTo(RouteHelper.GetUrl<Shooters>());
         }
         await modalRefEntityToDelete.Hide();
@@ -781,15 +781,15 @@
     void EditAssociationInfo(ShooterAssociationInfoContract shooterAssociation)
     {
         associationInfoToEdit = new ShooterAssociationInfoUpdateRequest
-        {
-            ShooterAssociationInfoId = shooterAssociation.ShooterAssociationInfoId,
-            ShooterId = shooter.ShooterId,
-            AssociationId = shooterAssociation.Association.AssociationId,
-            CardNumber = shooterAssociation.CardNumber,
-            Categories = shooterAssociation.Categories,
-            SafetyOfficier = shooterAssociation.SafetyOfficier,
-            RegistrationDate = shooterAssociation.RegistrationDate
-        };
+            {
+                ShooterAssociationInfoId = shooterAssociation.ShooterAssociationInfoId,
+                ShooterId = shooter.ShooterId,
+                AssociationId = shooterAssociation.Association.AssociationId,
+                CardNumber = shooterAssociation.CardNumber,
+                Categories = shooterAssociation.Categories,
+                SafetyOfficier = shooterAssociation.SafetyOfficier,
+                RegistrationDate = shooterAssociation.RegistrationDate
+            };
         categoriesEdit = shooterAssociation.Categories.ToList();
         modalRefAssociationInfoToEdit.Show();
     }
@@ -798,13 +798,13 @@
     {
         SelectClassificationBasedOnAssociationId(shooterAssociation.Association.AssociationId);
         associationToEdit = new ShooterAssociationCreateRequest
-        {
-            ShooterId = shooter.ShooterId,
-            AssociationId = shooterAssociation.Association.AssociationId,
-            Classification = shooterAssociation.Classification,
-            Division = shooterAssociation.Division,
-            RegistrationDate = shooterAssociation.RegistrationDate
-        };
+            {
+                ShooterId = shooter.ShooterId,
+                AssociationId = shooterAssociation.Association.AssociationId,
+                Classification = shooterAssociation.Classification,
+                Division = shooterAssociation.Division,
+                RegistrationDate = shooterAssociation.RegistrationDate
+            };
 
         modalRefAssociationToEdit.Show();
     }
@@ -813,7 +813,7 @@
     {
         if (choice)
         {
-            if (! (await validationInfos.ValidateAll()))
+            if (!(await validationInfos.ValidateAll()))
                 return;
             await validationInfos.ClearAll();
             associationInfoToEdit.Categories = categoriesEdit.ToList();
@@ -832,11 +832,11 @@
     {
         if (choice)
         {
-            if (! (await validations.ValidateAll()))
+            if (!(await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterAssociation/UpsertShooterAssociation", associationToEdit);
-            if (response is not {Status: true })
+            if (response is not { Status: true })
             {
                 return;
             }
@@ -866,10 +866,10 @@
         if (choice && associationInfoToDelete.Association != null)
         {
             var response = await Post<OkResponse>("/api/ShooterAssociationInfo/DeleteShooterAssociationInfo", new ShooterAssociationInfoRequest
-            {
-                ShooterAssociationInfoId = associationInfoToDelete.ShooterAssociationInfoId
-            });
-            if (response is not { Status: true})
+                {
+                    ShooterAssociationInfoId = associationInfoToDelete.ShooterAssociationInfoId
+                });
+            if (response is not { Status: true })
             {
                 return;
             }
@@ -883,10 +883,10 @@
         if (choice && associationToDelete.Association != null)
         {
             var response = await Post<OkResponse>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
-            {
-                ShooterAssociationId = associationToDelete.ShooterAssociationId
-            });
-            if (response is not { Status: true})
+                {
+                    ShooterAssociationId = associationToDelete.ShooterAssociationId
+                });
+            if (response is not { Status: true })
             {
                 return;
             }
@@ -905,11 +905,11 @@
     {
 
         teamToEdit = new ShooterTeamCreateRequest
-        {
-            ShooterId = shooter.ShooterId,
-            TeamId = shooterTeam.Team.TeamId,
-            RegistrationDate = shooterTeam.RegistrationDate
-        };
+            {
+                ShooterId = shooter.ShooterId,
+                TeamId = shooterTeam.Team.TeamId,
+                RegistrationDate = shooterTeam.RegistrationDate
+            };
         modalRefTeamToEdit.Show();
     }
 
@@ -917,11 +917,11 @@
     {
         if (choice)
         {
-            if (!( await teamValidations.ValidateAll()))
+            if (!(await teamValidations.ValidateAll()))
                 return;
             await teamValidations.ClearAll();
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
-            if (response is not { Status: true})
+            if (response is not { Status: true })
             {
                 return;
             }
@@ -942,10 +942,10 @@
         if (choice && teamToDelete.Team != null)
         {
             var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
-            {
-                TeamId = teamToDelete.Team.TeamId,
-                ShooterId = shooter.ShooterId
-            });
+                {
+                    TeamId = teamToDelete.Team.TeamId,
+                    ShooterId = shooter.ShooterId
+                });
             if (response == null)
             {
                 return;

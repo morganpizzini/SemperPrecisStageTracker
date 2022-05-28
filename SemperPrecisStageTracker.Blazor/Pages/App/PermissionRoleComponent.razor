@@ -1,0 +1,255 @@
+﻿@inherits SemperPrecisBasePresentationalComponent
+@inject IStringLocalizer<PermissionRoleComponent> L
+
+@if (!string.IsNullOrEmpty(Role.RoleId))
+{
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(DeleteEntity)"><Icon Name="IconName.Delete"/></Button>
+}
+<Card Margin="Margin.Is4.OnY">
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                <Validations @ref="modelValidations" Mode="ValidationMode.Manual" Model="@Role">
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field Horizontal="true">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["Name"]" @bind-Text="@Role.Name">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongName"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field Horizontal="true">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Description"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["Description"]" @bind-Text="@Role.Description">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongDescription"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </Column>
+            @if (!string.IsNullOrEmpty(Role.RoleId))
+            {
+                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                    <CardTitle>@L["Permissions"]</CardTitle>
+                    <CardText>
+                        
+                        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
+                            <Validation Validator="@ValidationRule.IsSelected">
+                                <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                        <Select TValue="string" @bind-SelectedValue="@formModel.PermissionId">
+                                            <ChildContent>
+                                                <SelectItem Value="@("")" Disabled></SelectItem>
+                                                @foreach (var entity in Permissions)
+                                                {
+                                                    <SelectItem Value="@entity.PermissionId">@entity.Name</SelectItem>
+                                                }
+                                            </ChildContent>
+                                            <Feedback>
+                                                <ValidationError>@L["WrongPermission"]</ValidationError>
+                                            </Feedback>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Field JustifyContent="JustifyContent.End">
+                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                                    <ChildContent>@L["Add"]</ChildContent>
+                                </Button>
+                            </Field>
+                        </Validations>
+
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+
+                                @if (Role.Permissions.Count == 0)
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoRoles"]</TableRowCell>
+                                    </TableRow>
+                                }
+                                else
+                                {
+                                    <Virtualize Items="@Role.Permissions" Context="entity">
+                                        <TableRow>
+                                            <TableRowCell>@entity.Name</TableRowCell>
+                                            <TableRowCell>
+                                                <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeletePermission(entity))"><Icon Name="IconName.Delete"/></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+
+                            </TableBody>
+                        </Table>
+                    </CardText>
+                </Column>
+            }
+        </Row>
+    </CardBody>
+</Card>
+<Button Size="Size.Small" Color="Color.Primary" Clicked="@SaveSubmit" Loading="ApiLoading" Disabled="ApiLoading">
+    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+    <ChildContent>@L["Submit"]</ChildContent>
+</Button>
+
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteRole"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (Role != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@Role.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Description"]</FieldLabel>
+                    <Text>@Role.Description</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefPermissionToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeletePermission"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (permissionToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@permissionToDelete.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPermissionToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPermissionToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
+
+    [Parameter]
+    public RoleContract Role {
+        get=>_role;
+        set
+        {
+            _role = value;
+            formModel.RoleId = _role.RoleId;
+        }
+    }
+
+    RoleContract _role = new ();
+
+    Validations validations;
+    Validations modelValidations;
+    RolePermissionCreateRequest formModel = new();
+    PermissionContract permissionToDelete = new();
+
+    private Modal modalRefEntityToDelete;
+    private Modal modalRefPermissionToDelete;
+    
+    [Parameter]
+    public EventCallback<RolePermissionCreateRequest> SubmitCallbackNewPermission { get; set; }
+    [Parameter]
+    public EventCallback<RolePermissionRequest> SubmitCallbackDeletePermission { get; set; }
+
+
+    [Parameter]
+    public EventCallback<RoleContract> SubmitCallbackSaveEntity { get; set; }
+    [Parameter]
+    public EventCallback<string> SubmitCallbackDeleteEntity { get; set; }
+
+
+    async Task SaveSubmit()
+    {
+        await modelValidations.ClearAll();
+        if (!await modelValidations.ValidateAll())
+            return;
+        await SubmitCallbackSaveEntity.InvokeAsync(Role);
+    }
+
+    async Task Submit()
+    {
+        await validations.ClearAll();
+        if (!await validations.ValidateAll())
+            return;
+        await SubmitCallbackNewPermission.InvokeAsync(formModel);
+        
+        formModel.PermissionId = string.Empty;
+    }
+    
+    void DeletePermission(PermissionContract entity)
+    {
+        if (entity == null)
+            return;
+        permissionToDelete = entity;
+        modalRefPermissionToDelete.Show();
+    }
+    private async Task HideModalPermissionToDelete(bool choice)
+    {
+        if (choice && Role != null)
+        {
+            await SubmitCallbackDeletePermission.InvokeAsync(new RolePermissionRequest
+            {
+                RoleId = Role.RoleId,
+                PermissionId = permissionToDelete.PermissionId
+            });
+            
+        }
+        await modalRefPermissionToDelete.Hide();
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && Role != null)
+        {
+            await SubmitCallbackDeleteEntity.InvokeAsync(Role.RoleId);
+        }
+        await modalRefEntityToDelete.Hide();
+    }
+}

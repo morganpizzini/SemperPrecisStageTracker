@@ -9,6 +9,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Azure;
 using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
@@ -119,7 +120,9 @@ namespace SemperPrecisStageTracker.API.Controllers
                 AssociationId = request.AssociationId,
                 PlaceId = request.PlaceId,
                 OpenMatch = request.OpenMatch,
-                UnifyClassifications = request.UnifyClassifications
+                UnifyClassifications = request.UnifyClassifications,
+                Cost = request.Cost,
+                PaymentDetails = request.PaymentDetails
             };
 
             //Invocazione del service layer
@@ -160,6 +163,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.PlaceId = request.PlaceId;
             entity.OpenMatch = request.OpenMatch;
             entity.UnifyClassifications = request.UnifyClassifications;
+            entity.Cost = request.Cost;
+            entity.PaymentDetails = request.PaymentDetails;
 
             //Salvataggio
             var validations = await BasicLayer.UpdateMatch(entity, PlatformUtils.GetIdentityUserId(User));

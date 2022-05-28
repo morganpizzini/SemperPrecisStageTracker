@@ -6,7 +6,17 @@
 <Heading Size="HeadingSize.Is1">@L["NewAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AssociationComponent Model="model" SubmitCallback="Submit"></AssociationComponent>
+<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.CreateShooters))">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <AssociationComponent Model="model" SubmitCallback="Submit"></AssociationComponent>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     AssociationContract model = new();

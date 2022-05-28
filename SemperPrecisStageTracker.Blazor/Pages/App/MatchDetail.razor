@@ -34,7 +34,20 @@ else
                     <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
                     <CardTitle>@L["Location"]</CardTitle>
                     <CardText>@match.Place.Name</CardText>
-
+                    <CardTitle>@L["Cost"]</CardTitle>
+                    @if (match.Cost > 0)
+                    {
+                        <CardText>@match.Cost</CardText>
+                    }
+                    else
+                    {
+                        <CardText>@L["Free"]</CardText>
+                    }
+                    @if (!string.IsNullOrEmpty(match.PaymentDetails))
+                    {
+                        <CardTitle>@L["PaymentDetails"]</CardTitle>
+                        <CardText>@match.PaymentDetails</CardText>
+                    }
                 </CardBody>
             </Card>
         </Column>

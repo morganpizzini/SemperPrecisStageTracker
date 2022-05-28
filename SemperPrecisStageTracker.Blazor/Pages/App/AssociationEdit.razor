@@ -6,7 +6,26 @@
 <Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AssociationComponent Model="model" SubmitCallback="Submit"></AssociationComponent>
+<AuthorizeView Roles="@(Permissions.ManageAssociations.And(Permissions.EditAssociation))" Resource="@model.AssociationId">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <AssociationComponent Model="model" SubmitCallback="Submit"></AssociationComponent>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter]

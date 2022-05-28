@@ -122,8 +122,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
 
+
+            var permissions = AuthorizationLayer.FetchPermissionsOnRole(entity.Id);
+
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,permissions));
         }
         
         /// <summary>
@@ -152,7 +155,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 return NotFound($"Role with {request.RoleId} not found");
             }
-
+            
             var entity = new PermissionRole()
             {
                 PermissionId = permission.Id,

@@ -22,108 +22,7 @@
         }
         else
         {
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
-                <Validation Validator="@ValidationRule.IsNotEmpty">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["Name"]" @bind-Text="@model.Name">
-                                <Feedback>
-                                    <ValidationError>@L["WrongName"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidateDate">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["FromDate"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTimeStart">
-                                <Feedback>
-                                    <ValidationError>@L["WrongDate"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidateDate">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ToDate"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime" @bind-Date="@model.MatchDateTimeEnd">
-                                <Feedback>
-                                    <ValidationError>@L["WrongDate"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsSelected">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@model.AssociationId">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var association in associations)
-                                    {
-                                        <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongAssociation"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsSelected">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Place"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@model.PlaceId">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var place in places)
-                                    {
-                                        <SelectItem Value="@place.PlaceId">@place.Name</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongPlace"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Tooltip Text="@L["UnifyClassificationDescription"]">
-                                <Check TValue="bool" @bind-Checked="@model.UnifyClassifications">@L["UnifyClassifications"]</Check>
-                            </Tooltip>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Tooltip Text="@L["OpenMatchDescription"]">
-                                <Check TValue="bool" @bind-Checked="@model.OpenMatch">@L["OpenMatch"]</Check>
-                            </Tooltip>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;@L["Submit"]</LoadingTemplate>
-                        <ChildContent>@L["Submit"]</ChildContent>
-                    </Button>
-                </Field>
-            </Validations>
+            <MatchComponent Model="model" Associations="associations" Places="places" SubmitCallback="Submit"></MatchComponent>
         }
     </Authorized>
 </AuthorizeView>
@@ -133,10 +32,8 @@
 @code {
     [Parameter]
     public string Id { get; set; }
-
-
-    Validations validations;
-    MatchUpdateRequest model = new();
+    
+    MatchContract model = new();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<PlaceContract> places = new List<PlaceContract>();
 
@@ -150,56 +47,28 @@
         associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
         places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
 
-        var existing = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest { MatchId = Id });
-        model.MatchId = existing.MatchId;
-        model.Name = existing.Name;
-        model.MatchDateTimeStart = existing.MatchDateTimeStart;
-        model.MatchDateTimeEnd = existing.MatchDateTimeEnd;
-        model.PlaceId = existing.Place.PlaceId;
-        model.AssociationId = existing.Association.AssociationId;
-        model.PlaceId = existing.Place.PlaceId;
-        model.OpenMatch = existing.OpenMatch;
-        model.UnifyClassifications = existing.UnifyClassifications;
+        model =  await Post<MatchContract>("api/Match/GetMatch", new MatchRequest { MatchId = Id });
 
         await base.OnInitializedAsync();
     }
-    void ValidateDate(ValidatorEventArgs e)
-    {
-        var date = e.Value as DateTime?;
-
-        if (date == null)
-        {
-            e.Status = ValidationStatus.Error;
-        }
-        /* else if (date.Value.Date <= DateTime.Now.Date.AddDays(1))
-        {
-            e.Status = ValidationStatus.Error;
-            e.ErrorText = L["WrongDate"];
-        } */
-        else
-        {
-            e.Status = ValidationStatus.Success;
-        }
-    }
-
-    //private async Task AssociationSelectChanged(string id)
-    //{
-    //    if (string.IsNullOrEmpty(id))
-    //    {
-    //        shooters.Clear();
-    //        return;
-    //    }
-    //    model.AssociationId = id;
-    //    // load available match director
-    //    shooters = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirectorByAssociationId", new AssociationRequest { AssociationId = model.AssociationId });
-    //}
-
+    
     async Task Submit()
     {
-        if (! (await validations.ValidateAll()))
-            return;
-        await validations.ClearAll();
-        var response = await Post<MatchContract>("/api/Match/UpdateMatch", model);
+        // create request
+        var request = new MatchUpdateRequest()
+        {
+            MatchId = model.MatchId,
+            Name = model.Name,
+            MatchDateTimeStart = model.MatchDateTimeStart,
+            MatchDateTimeEnd = model.MatchDateTimeEnd,
+            PlaceId = model.Place.PlaceId,
+            AssociationId = model.Association.AssociationId,
+            OpenMatch = model.OpenMatch,
+            UnifyClassifications = model.UnifyClassifications,
+            Cost = model.Cost,
+            PaymentDetails = model.PaymentDetails
+        };
+        var response = await Post<MatchContract>("/api/Match/UpdateMatch", request);
         if (response != null)
         UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new { id = response.MatchId }));
     }

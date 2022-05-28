@@ -13,6 +13,8 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string ShortLink { get; set; }
         public string PlaceId { get; set; }
+        public float Cost { get; set; }
+        public string PaymentDetails { get; set; } = string.Empty;
         public DateTime MatchDateTimeStart { get; set; }
         public DateTime MatchDateTimeEnd { get; set; }
         ///
