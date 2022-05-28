@@ -71,50 +71,50 @@ jobs:
           az logout
           az cache purge
           az account clear
-ef_migrations:
-  name: EF migrations
-  needs: build_and_deploy
-  environment: production
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v2
-  - name: Setup .NET Core
-    uses: actions/setup-dotnet@v1
-    with:
-      dotnet-version: ${{ env.DOTNET_VERSION }}
+  ef_migrations:
+    name: EF migrations
+    needs: build_and_deploy
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
 
-  - name: Install EF tools
-    run: |
-      dotnet tool install --global dotnet-ef
-      dotnet tool restore
+    - name: Install EF tools
+      run: |
+        dotnet tool install --global dotnet-ef
+        dotnet tool restore
 
-  - name: Install dependencies
-    run: dotnet restore ${{ env.APP_PATH }}
-  
-  - uses: azure/login@v1
-    name: 'Login'
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
-  
-  - uses: Azure/get-keyvault-secrets@v1
-    name: 'KVConnection'
-    with:
-      keyvault: "semperprecisKV" # name of key vault in Azure portal
-      secrets: 'GHConnectionString'  # comma separated list of secret keys to fetch from key vault 
-    id: KVoutput # ID for secrets that you will reference
+    - name: Install dependencies
+      run: dotnet restore ${{ env.APP_PATH }}
+    
+    - uses: azure/login@v1
+      name: 'Login'
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - uses: Azure/get-keyvault-secrets@v1
+      name: 'KVConnection'
+      with:
+        keyvault: "semperprecisKV" # name of key vault in Azure portal
+        secrets: 'GHConnectionString'  # comma separated list of secret keys to fetch from key vault 
+      id: KVoutput # ID for secrets that you will reference
 
-  - name: Update database
-    run: |
-      cd ./SemperPrecisStageTracker.EF
-      dotnet ef database update --startup-project ../SemperPrecisStageTracker.API
-    env:
-      ASPNETCORE_ENVIRONMENT: Development
-      connectionStrings__SqlDb: ${{ steps.KVoutput.outputs.GHConnectionString }}
+    - name: Update database
+      run: |
+        cd ./SemperPrecisStageTracker.EF
+        dotnet ef database update --startup-project ../SemperPrecisStageTracker.API
+      env:
+        ASPNETCORE_ENVIRONMENT: Development
+        connectionStrings__SqlDb: ${{ steps.KVoutput.outputs.GHConnectionString }}
 
-  - name: Azure CLI script
-    uses: azure/CLI@v1
-    with:
-      inlineScript: |
-        az logout
-        az cache purge
-        az account clear
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear
