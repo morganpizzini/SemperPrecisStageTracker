@@ -18,7 +18,8 @@ env:
 
 
 jobs:
-  build:
+  build_and_publish:
+    name: Build and publish
     environment: production
     runs-on: ubuntu-latest
 
