@@ -39,15 +39,15 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.APP_PATH }} --configuration Release --no-restore
     
-    - name: dotnet test
-      run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --logger trx --results-directory "TestResults"
+    # - name: dotnet test
+    #   run: dotnet test ./SemperPrecisStageTracker.API.Tests/SemperPrecisStageTracker.API.Tests.csproj --logger trx --results-directory "TestResults"
 
-    - name: Upload dotnet test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: dotnet-results
-        path: TestResults
-      if: ${{ always() }}
+    # - name: Upload dotnet test results
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: dotnet-results
+    #     path: TestResults
+    #   if: ${{ always() }}
 
     - name: dotnet publish
       run: dotnet publish ${{ env.APP_PATH }} -c Release --no-build --no-restore -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
