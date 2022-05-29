@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -30,6 +31,24 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public void RemoveItem(string key)
         {
             _jsRuntime.InvokeVoid("localStorage.removeItem", key);
+        }
+
+        /// <summary>
+        /// https://dbushell.com/2020/06/08/pwa-web-crypto-encryption-auto-sign-in-redux-persist/
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public ValueTask<string> EncodeSecret(string key,string name,string value)
+        {
+            return _jsRuntime.InvokeAsync<string>("encrFunctions.encrypt", key,name,value);
+        }
+
+        public ValueTask<string> DecodeSecret(string key,string name)
+        {
+            return _jsRuntime.InvokeAsync<string>("encrFunctions.decrypt", key, name);
+
         }
     }
 }

@@ -43,7 +43,7 @@
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new {id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
                             }
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationDetail>(new {id = association.AssociationId}))"><Icon Name="IconName.Search" /></Button>
-                            @if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.DeleteAssociation), association.AssociationId))
+                            @if (AuthService.CheckPermissions(Permissions.ManageAssociations, association.AssociationId))
                             {
                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(association))"><Icon Name="IconName.Delete" /></Button>
                             }

@@ -7,13 +7,14 @@
 <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
     <Items>
         <Tab Name="tab1">@L["Roles"]</Tab>
-        <Tab Name="tab2">@L["UserPermissions"]</Tab>
+        <Tab Name="tab2">@L["UserPermission"]</Tab>
     </Items>
     <Content>
         <TabPanel Name="tab1" class="pt-2">
             <PermissionRoles></PermissionRoles>
         </TabPanel>
         <TabPanel Name="tab2">
+            @L["TBD"]
         </TabPanel>
     </Content>
 </Tabs>

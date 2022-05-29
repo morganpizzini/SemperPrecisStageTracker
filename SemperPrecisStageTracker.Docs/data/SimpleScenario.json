@@ -686,7 +686,7 @@
     {
       "id": "1",
       "name": "idpa",
-      "hitOnNonThreatDownPoints": 5,
+      "hitOnNonThreatPointDown": 5,
       "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
       "secondProceduralPointDown": 10,
@@ -730,7 +730,7 @@
     {
       "id": "2",
       "name": "ipsc",
-      "hitOnNonThreatDownPoints": 5,
+      "hitOnNonThreatPointDown": 5,
       "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
       "secondProceduralPointDown": 10,
@@ -774,7 +774,7 @@
     {
       "id": "3",
       "name": "trs",
-      "hitOnNonThreatDownPoints": 5,
+      "hitOnNonThreatPointDown": 5,
       "firstProceduralPointDown": 3,
       "firstPenaltyLabel": "Precedure",
       "secondProceduralPointDown": 10,
@@ -883,12 +883,56 @@
     {
       "id": "13",
       "name": "ManagePermissions"
+    },
+    {
+      "id": "14",
+      "name": "EditTeam"
+    },
+    {
+      "id": "15",
+      "name": "TeamEditShooters"
+    },
+    {
+      "id": "16",
+      "name": "TeamEditPayment"
+    },
+    {
+      "id": "17",
+      "name": "MatchManageGroups"
+    },
+    {
+      "id": "18",
+      "name": "MatchManageStageSO"
+    },
+    {
+      "id": "19",
+      "name": "MatchInsertScore"
     }
   ],
   "roles": [
     {
       "id": "1",
       "name": "Admin"
+    },
+    {
+      "id": "2",
+      "name": "TeamHolder"
+    },
+    {
+      "id": "3",
+      "name": "TeamSecretary"
+    },
+    {
+      "id": "4",
+      "name": "TeamContributor"
+    },
+    {
+      "id": "5",
+      "name": "MatchContributor"
+    },
+    {
+      "id": "6",
+      "name": "MatchSO"
     }
   ],
   "userPermissions": [
@@ -931,9 +975,54 @@
       "permissionId": "8"
     },
     {
-      "id": "1",
+      "id": "7",
       "roleId": "1",
       "permissionId": "13"
+    },
+    {
+      "id": "8",
+      "roleId": "2",
+      "permissionId": "14"
+    },
+    {
+      "id": "9",
+      "roleId": "2",
+      "permissionId": "15"
+    },
+    {
+      "id": "10",
+      "roleId": "2",
+      "permissionId": "16"
+    },
+    {
+      "id": "11",
+      "roleId": "3",
+      "permissionId": "15"
+    },
+    {
+      "id": "12",
+      "roleId": "4",
+      "permissionId": "16"
+    },
+    {
+      "id": "12",
+      "roleId": "5",
+      "permissionId": "17"
+    },
+    {
+      "id": "13",
+      "roleId": "5",
+      "permissionId": "18"
+    },
+    {
+      "id": "14",
+      "roleId": "5",
+      "permissionId": "19"
+    },
+    {
+      "id": "15",
+      "roleId": "6",
+      "permissionId": "19"
     }
   ],
   "userRoles": [
@@ -941,6 +1030,36 @@
       "id": "1",
       "roleId": "1",
       "userId": "1"
+    },
+    {
+      "id": "2",
+      "roleId": "2",
+      "userId": "2",
+      "entityId": "1"
+    },
+    {
+      "id": "3",
+      "roleId": "3",
+      "userId": "3",
+      "entityId": "1"
+    },
+    {
+      "id": "4",
+      "roleId": "4",
+      "userId": "4",
+      "entityId": "1"
+    },
+    {
+      "id": "5",
+      "roleId": "5",
+      "userId": "4",
+      "entityId": "1"
+    },
+    {
+      "id": "6",
+      "roleId": "6",
+      "userId": "3",
+      "entityId": "1"
     }
   ]
 }

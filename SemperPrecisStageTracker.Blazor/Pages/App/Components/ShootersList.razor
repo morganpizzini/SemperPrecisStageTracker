@@ -70,7 +70,7 @@
                                     }
                                 </Buttons>
                                 <Buttons>
-                                    @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.DeleteShooter), shooter.ShooterId))
+                                    @if (AuthService.CheckPermissions(Permissions.ManageShooters, shooter.ShooterId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(shooter))"><Icon Name="IconName.Delete"/></Button>
                                     }

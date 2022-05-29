@@ -547,7 +547,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static RoleContract GenerateContract(Role entity,IList<Permission> permission = null)
+        public static RoleContract GenerateContract(Role entity,IList<Permission> permission = null,IList<UserRole> userRoles= null, IList<Shooter> shooters = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -558,7 +558,29 @@ namespace SemperPrecisStageTracker.API.Helpers
                 RoleId = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
-                Permissions = permission != null ? permission.As(GenerateContract) : new List<PermissionContract>()
+                Permissions = permission != null ? permission.As(GenerateContract) : new List<PermissionContract>(),
+                UserRoles = userRoles != null ? userRoles.As(x=>GenerateContract(x,shooters?.FirstOrDefault(s=>s.Id==x.UserId))) : new List<UserRoleContract>()
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static UserRoleContract GenerateContract(UserRole entity,Shooter shooter)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (shooter == null) throw new ArgumentNullException(nameof(shooter));
+
+            //Ritorno il contratto
+            return new UserRoleContract()
+            {
+                UserRoleId = entity.Id,
+                Role = null,
+                User = GenerateContract(shooter),
+                EntityId = entity.EntityId
             };
         }
 

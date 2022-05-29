@@ -131,7 +131,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeletePlace")]
-        [ApiAuthorizationFilter(Permissions.DeletePlace, Permissions.ManagePlaces )]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces )]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> DeletePlace([EntityId] PlaceRequest request)
         {

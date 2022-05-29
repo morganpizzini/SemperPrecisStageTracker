@@ -39,8 +39,7 @@ public class Program
     /// </summary>
     public static string ApplicationVersion { get; private set; }
 
-    static void Main(string[] args)
-    {
+    static void Main(string[] args){
         //Configurazione del tracer
         Tracer.Append(typeof(Log4NetTracer));
         Tracer.Info($"[Settings] Working on environment '{ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName}' (from configuration factory)");

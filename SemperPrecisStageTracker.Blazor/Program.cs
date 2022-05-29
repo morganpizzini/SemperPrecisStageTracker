@@ -140,7 +140,7 @@ public class Program
 
         //init auth service
         var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
-        authenticationService.Initialize();
+        await authenticationService.Initialize();
 
         host.SetDefaultCulture();
         await host.RunAsync();

@@ -14,10 +14,14 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
-        <PermissionRoleComponent Permissions="permissions" Role="role" 
+        <PermissionRoleComponent Permissions="permissions" 
+                                 Users="users" 
+                                 Role="role" 
                                  SubmitCallbackNewPermission="CreatePermission" 
-                                 SubmitCallbackSaveEntity="SaveEntity"
                                  SubmitCallbackDeletePermission="DeletePermission"
+                                 SubmitCallbackNewUser="CreateUser" 
+                                 SubmitCallbackDeleteUser="DeleteUser"
+                                 SubmitCallbackSaveEntity="SaveEntity"
                                  SubmitCallbackDeleteEntity="DeleteEntity"></PermissionRoleComponent>
     </Authorized>
 </AuthorizeView>
@@ -29,12 +33,14 @@
     
     RoleContract role = new();
     IList<PermissionContract> permissions= new List<PermissionContract>();
+    IList<ShooterContract> users= new List<ShooterContract>();
     
 
     protected override async Task OnInitializedAsync()
     {
         await LoadRole();
         permissions = await Post<IList<PermissionContract>>("api/Permission/FetchPermissions");
+        users = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters");
         await base.OnInitializedAsync();
     }
 
@@ -55,6 +61,23 @@
     private async Task DeletePermission(RolePermissionRequest request)
     {
         var response = await Post<OkResponse>("/api/Permission/DeletePermissionOnRole", request);
+        if (response == null)
+            return;
+        await LoadRole();
+    }
+
+    async Task CreateUser(UserRoleCreateRequest request)
+    {
+        
+        var response = await Post<OkResponse>("/api/Permission/CreateUserRole", request);
+        if (response == null)
+            return;
+        await LoadRole();
+    }
+    
+    private async Task DeleteUser(UserRoleRequest request)
+    {
+        var response = await Post<OkResponse>("/api/Permission/DeleteUserRole", request);
         if (response == null)
             return;
         await LoadRole();

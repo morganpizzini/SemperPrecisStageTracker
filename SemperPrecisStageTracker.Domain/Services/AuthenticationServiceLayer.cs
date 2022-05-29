@@ -208,7 +208,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            var cached = _cache.GetValue<UserPermissionDto>(userId);
+            var cached = _cache.GetValue<UserPermissionDto>($"perm:{userId}");
             if (cached != null)
                 return Task.FromResult(cached);
             // user group TODO to be implemented
@@ -254,11 +254,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             // entity type is not relevant because a the permission name is unique, an entityid associated to 'edit match' will be for sure related to match entity
             // - roles
             var targetingRoles = userRoles.Where(x => !string.IsNullOrEmpty(x.EntityId));
-            var tr = targetingRoles.GroupBy(x => x.EntityId).Select(x => new
-                EntityPermissionTmp {
+            var entityPermissionList = targetingRoles.GroupBy(x => x.EntityId).Select(x => new
+                EntityPermission {
                 EntityId = x.Key,
                 Permissions = permissionRoles.Where(pr => x.Select(r => r.RoleId).ToList().Contains(pr.RoleId))
-                                .Select(pr =>  pr.PermissionId).ToList()
+                                .Select(pr =>  pr.PermissionId.ParseEnum<Permissions>()).ToList()
             }).ToList();
 
             // - permissions
@@ -270,10 +270,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             }).ToList();
 
             // merge lists
-            var entityPermissionList = new List<EntityPermission>();
             foreach (var t in tp)
             {
-                var tmp = tr.FirstOrDefault(x => x.EntityId == t.EntityId);
+                var tmp = entityPermissionList.FirstOrDefault(x => x.EntityId == t.EntityId);
                 if (tmp == null)
                 {
                     entityPermissionList.Add(new EntityPermission()
@@ -287,18 +286,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                     });
                     continue;
                 }
-                
-                tmp.Permissions.AddRange(t.Permissions);
-
-                entityPermissionList.Add(new EntityPermission()
-                {
-                    EntityId = tmp.EntityId,
-                    Permissions = permissions.Where(x => tmp.Permissions.Contains(x.Id))
-                        .Select(x => x.Name)
-                        .Distinct()
-                        .Select(x=>x.ParseEnum<Permissions>())
-                        .ToList()
-                });
+                tmp.Permissions.AddRange(t.Permissions.Select(x=> x.ParseEnum<Permissions>()).ToList());
             }
 
             var result = new UserPermissionDto
@@ -540,6 +528,14 @@ namespace SemperPrecisStageTracker.Domain.Services
             return _permissionRepository.Fetch(x => permissionIds.Contains(x.Id));
         }
 
+        public IList<UserRole> FetchUserRole(string id)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            return _userRoleRepository.Fetch(x => x.RoleId == id);
+        }
+
         public IList<ValidationResult> SyncPasswords()
         {
             var shooters = this._userRepository.Fetch(x => string.IsNullOrEmpty(x.Password));
@@ -600,7 +596,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (!string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided role permission seems to already existing");
 
-            var validations = new List<ValidationResult>();
+            IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
             if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
@@ -614,7 +610,14 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
+            
+            validations = _permissionRoleRepository.Validate(entity);
 
+            if (validations.Count > 0)
+            {
+                t.Rollback();
+                return validations;
+            }
             //Eliminazione
             _permissionRoleRepository.Save(entity);
 
@@ -846,12 +849,99 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         }
         
-        public UserRole GetUserRole(string userId, string roleId)
+        public UserRole GetUserRole(string id)
+        {
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            return _userRoleRepository.GetSingle(x => x.Id == id);
+        }
+        public UserRole GetUserRole(string userId, string roleId,string entityId = null)
         {
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
             if (string.IsNullOrEmpty(roleId)) throw new ArgumentNullException(nameof(roleId));
 
-            return _userRoleRepository.GetSingle(x => x.UserId == userId && x.RoleId == roleId);
+            return _userRoleRepository.GetSingle(x => x.UserId == userId && x.RoleId==roleId && x.EntityId == entityId);
+        }
+
+
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> CreateUserRole(UserRole entity,string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user role seems to already existing");
+
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(CreateUserRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            // Settaggio data di creazione
+            entity.CreationDateTime = DateTime.UtcNow;
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            validations = _userRoleRepository.Validate(entity);
+
+            if (validations.Count > 0)
+            {
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _userRoleRepository.Save(entity);
+
+            t.Commit();
+            _cache.RemoveValue($"perm:{userId}");
+            return validations;
+
+        }
+
+        /// <summary>
+        /// Delete provided team
+        /// </summary>
+        /// <param name="entity">Team</param>
+        /// <returns>Returns list of validations</returns>
+        public async Task<IList<ValidationResult>> DeleteUserRole(UserRole entity,string userId)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto � esistente, eccezione
+            if (string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user role doesn't have valid Id");
+            var validations = new List<ValidationResult>();
+
+            //Check permissions
+            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteUserRole)} with Id: {entity.Id}");
+                return validations;
+            }
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Eliminazione
+            _userRoleRepository.Delete(entity);
+
+            t.Commit();
+            _cache.RemoveValue($"perm:{userId}");
+            return validations;
+
         }
 
         public Permission GetPermissionByName(Permissions role) => GetPermissionByName(role.ToDescriptionString());

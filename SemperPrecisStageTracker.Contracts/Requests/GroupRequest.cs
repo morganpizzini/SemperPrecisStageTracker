@@ -30,6 +30,20 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string PermissionId { get; set; } = string.Empty;
     }
 
+    public class UserRoleCreateRequest
+    {
+        [Required]
+        public string RoleId { get; set; } = string.Empty;
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+        
+        public string EntityId { get; set; } = string.Empty;
+    }
+    public class UserRoleRequest
+    {
+        [Required]
+        public string UserRoleId { get; set; } = string.Empty;
+    }
     public class RolePermissionCreateRequest
     {
         [Required]

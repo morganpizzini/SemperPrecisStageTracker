@@ -112,14 +112,14 @@
                             const installingWorker = registration.installing;
                             installingWorker.onstatechange = () => {
                                 switch (installingWorker.state) {
-                                    case 'installed':
-                                        if (navigator.serviceWorker.controller) {
-                                            resolve(true);
-                                        } else {
-                                            resolve(false);
-                                        }
-                                        break;
-                                    default:
+                                case 'installed':
+                                    if (navigator.serviceWorker.controller) {
+                                        resolve(true);
+                                    } else {
+                                        resolve(false);
+                                    }
+                                    break;
+                                default:
                                 }
                             };
                         };
@@ -154,140 +154,219 @@
             });
         }
     </script>
-    <script>
-        var customFunctions = (function () {
-            //function privateMethod() {
-            //    //...
-            //}
-            return {
-                focusElement: function (id) {
-                    element = document.getElementById(id);
-                    if (element)
-                        element.focus();
-                },
-                selectElement: function (id) {
-                    element = document.getElementById(id);
-                    if (element)
-                        element.select();
-                },
-                isDevice: function () {
-                    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
-                },
-                saveAsFile: function(filename, bytesBase64) {
-                    var link = document.createElement('a');
-                    link.download = filename;
-                    link.href = "data:application/octet-stream;base64," + bytesBase64;
-                    document.body.appendChild(link); // Needed for Firefox
-                    link.click();
-                    document.body.removeChild(link);
-                }
+<script>
+    var encrFunctions = (function () {
+        async function sha256(value) {
+            return await crypto.subtle.digest(
+                'SHA-256',
+                new TextEncoder().encode(value)
+            );
+        };
+        function getCryptoKey() {
+            const stored = localStorage.getItem('cKey');
+            if (stored)
+                return new Uint8Array(stored.split(/\s*,\s*/).map(Number));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            localStorage.setItem('cKey',iv.toString());
+            return iv;
+        };
+        async function getKey(password) {
+            return await crypto.subtle.importKey(
+                'raw',
+                await sha256(password),
+                {name: 'AES-GCM'},
+                false,
+                ['encrypt', 'decrypt']
+            );
+        };
+        function ab2str(buf) {
+            return String.fromCharCode.apply(null, new Uint16Array(buf));
+        }
+        function str2ab(str) {
+            var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+            var bufView = new Uint16Array(buf);
+            for (var i=0, strLen=str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
             }
-        })();
+            return buf;
+        }
+        return {
+            // k => key
+            // name => localstorage key
+            // value => string to encode
+            encrypt: async (k, name, value) => {
+                const iv = getCryptoKey();
+                const key = await getKey(k);
 
-        window.BlazorPWA = (function () {
-            applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
+                const encArray = await crypto.subtle.encrypt(
+                    {
+                        iv,
+                        name: 'AES-GCM'
+                    },
+                    key,
+                    new TextEncoder().encode(value)
+                );
+                const encString = ab2str(encArray);
+                localStorage.setItem(name, encString);
+                return encString;
+            },
+            // k => key
+            // value => string to decode
+            decrypt: async (k,value) => {
+                const key = await getKey(k);
+                const iv = getCryptoKey();
+                let encodedString = localStorage.getItem(value);
 
-            function syncSubToServer(newSubscription) {
-                if (newSubscription) {
-                    return {
-                        url: newSubscription.endpoint,
-                        p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
-                        auth: arrayBufferToBase64(newSubscription.getKey('auth'))
-                    };
-                }
+                if (!encodedString)
+                    return '';
+
+                const encArray = str2ab(encodedString);
+                
+                const decrypted = await crypto.subtle.decrypt(
+                    {
+                        iv,
+                        name: 'AES-GCM'
+                    },
+                    key,
+                    encArray
+                );
+                return new TextDecoder().decode(decrypted);
             }
+        }
+    })();
+    var customFunctions = (function () {
+        //function privateMethod() {
+        //    //...
+        //}
+        return {
+            focusElement: function (id) {
+                element = document.getElementById(id);
+                if (element)
+                    element.focus();
+            },
+            selectElement: function (id) {
+                element = document.getElementById(id);
+                if (element)
+                    element.select();
+            },
+            isDevice: function () {
+                return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
+            },
+            saveAsFile: function(filename, bytesBase64) {
+                var link = document.createElement('a');
+                link.download = filename;
+                link.href = "data:application/octet-stream;base64," + bytesBase64;
+                document.body.appendChild(link); // Needed for Firefox
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    })();
 
-            function subscribe(worker) {
-                return new Promise(function (resolve, reject) {
-                    worker.pushManager.getSubscription().then(function (sub) {
-                        if (sub === null) {
-                            worker.pushManager.subscribe({
-                                userVisibleOnly: true,
-                                applicationServerKey: applicationServerPublicKey
-                            }).then(function (sub) {
-                                resolve(syncSubToServer(sub));
-                            }).catch(function (e) {
-                                if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
-                                    return null;
-                                }
-                                console.error("Unable to subscribe to push", e);
-                                reject(e);
-                            });
-                        } else {
+    window.BlazorPWA = (function () {
+        applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
+
+        function syncSubToServer(newSubscription) {
+            if (newSubscription) {
+                return {
+                    url: newSubscription.endpoint,
+                    p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                    auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                };
+            }
+        }
+
+        function subscribe(worker) {
+            return new Promise(function (resolve, reject) {
+                worker.pushManager.getSubscription().then(function (sub) {
+                    if (sub === null) {
+                        worker.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: applicationServerPublicKey
+                        }).then(function (sub) {
                             resolve(syncSubToServer(sub));
+                        }).catch(function (e) {
+                            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
+                                return null;
+                            }
+                            console.error("Unable to subscribe to push", e);
+                            reject(e);
+                        });
+                    } else {
+                        resolve(syncSubToServer(sub));
+                    }
+                });
+            });
+        }
+
+        function arrayBufferToBase64(buffer) {
+            // https://stackoverflow.com/a/9458996
+            var binary = '';
+            var bytes = new Uint8Array(buffer);
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        }
+        return {
+            dismissInstallPWA: function () {
+                localStorage.setItem('skipInstall', "true");
+            },
+            hasPWAInstalled: function() {
+                return window.PWADeferredPrompt != undefined;
+            },
+            installPWA: function () {
+                return new Promise((resolve, reject) => {
+                    localStorage.setItem('skipInstall', "true");
+                    if (window.PWADeferredPrompt) {
+                        // Use the stashed event to continue the install process
+                        window.PWADeferredPrompt.prompt();
+                        window.PWADeferredPrompt.userChoice
+                            .then(function(choiceResult) {
+                                window.PWADeferredPrompt = null;
+                                resolve();
+                            });
+                    }
+                })
+            },
+            requestSubscription: async () => {
+                const worker = await navigator.serviceWorker.getRegistration();
+                const existingSubscription = await worker.pushManager.getSubscription();
+                if (!existingSubscription) {
+                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+
+                }
+            },
+            createSubscription: async () => {
+                const worker = await navigator.serviceWorker.getRegistration();
+                var subContract = await new Promise(function (resolve, reject) {
+                    Notification.requestPermission(function (status) {
+                        if (status == "granted") {
+
+                            resolve(subscribe(worker));
+                        } else {
+                            reject(status);
                         }
                     });
                 });
-            }
-
-            function arrayBufferToBase64(buffer) {
-                // https://stackoverflow.com/a/9458996
-                var binary = '';
-                var bytes = new Uint8Array(buffer);
-                var len = bytes.byteLength;
-                for (var i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
+                return subContract;
+            },
+            init: (callback) => { // callback è un puntatore a una classe .NET Core
+                const updateOnlineStatus = (e) => {
+                    // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
+                    // di stato della connessione
+                    callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
                 }
-                return window.btoa(binary);
+
+                window.addEventListener('online', updateOnlineStatus);
+                window.addEventListener('offline', updateOnlineStatus);
+                updateOnlineStatus();
             }
-            return {
-                dismissInstallPWA: function () {
-                    localStorage.setItem('skipInstall', "true");
-                },
-                hasPWAInstalled: function() {
-                    return window.PWADeferredPrompt != undefined;
-                },
-                installPWA: function () {
-                    return new Promise((resolve, reject) => {
-                        localStorage.setItem('skipInstall', "true");
-                        if (window.PWADeferredPrompt) {
-                            // Use the stashed event to continue the install process
-                            window.PWADeferredPrompt.prompt();
-                            window.PWADeferredPrompt.userChoice
-                                .then(function(choiceResult) {
-                                    window.PWADeferredPrompt = null;
-                                    resolve();
-                                });
-                        }
-                    })
-                },
-                requestSubscription: async () => {
-                    const worker = await navigator.serviceWorker.getRegistration();
-                    const existingSubscription = await worker.pushManager.getSubscription();
-                    if (!existingSubscription) {
-                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+        }
 
-                    }
-                },
-                createSubscription: async () => {
-                    const worker = await navigator.serviceWorker.getRegistration();
-                    var subContract = await new Promise(function (resolve, reject) {
-                        Notification.requestPermission(function (status) {
-                            if (status == "granted") {
-
-                                resolve(subscribe(worker));
-                            } else {
-                                reject(status);
-                            }
-                        });
-                    });
-                    return subContract;
-                },
-                init: (callback) => { // callback è un puntatore a una classe .NET Core
-                    const updateOnlineStatus = (e) => {
-                        // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
-                        // di stato della connessione
-                        callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
-                    }
-
-                    window.addEventListener('online', updateOnlineStatus);
-                    window.addEventListener('offline', updateOnlineStatus);
-                    updateOnlineStatus();
-                }
-            }
-
-        })();
-    </script>
+    })();
+</script>
 
     <script>
         var cc = new CookieConsent({

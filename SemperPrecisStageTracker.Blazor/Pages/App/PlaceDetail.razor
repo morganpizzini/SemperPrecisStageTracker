@@ -9,7 +9,7 @@
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
 }
-@if (AuthService.CheckPermissions(Permissions.ManagePlaces.AndList(Permissions.DeletePlace), Id))
+@if (AuthService.CheckPermissions(Permissions.ManagePlaces, Id))
 {
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }

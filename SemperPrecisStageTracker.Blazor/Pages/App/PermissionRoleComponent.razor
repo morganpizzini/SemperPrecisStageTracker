@@ -45,7 +45,7 @@
                         <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
                             <Validation Validator="@ValidationRule.IsSelected">
                                 <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
-                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Permission"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                                         <Select TValue="string" @bind-SelectedValue="@formModel.PermissionId">
                                             <ChildContent>
@@ -92,6 +92,83 @@
                                             <TableRowCell>@entity.Name</TableRowCell>
                                             <TableRowCell>
                                                 <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeletePermission(entity))"><Icon Name="IconName.Delete"/></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+
+                            </TableBody>
+                        </Table>
+                    </CardText>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                    <CardTitle>@L["UserAssignment"]</CardTitle>
+                    <CardText>
+                        
+                        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@userModel">
+                            <Validation Validator="@ValidationRule.IsSelected">
+                                <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["User"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                        <Select TValue="string" @bind-SelectedValue="@userModel.UserId">
+                                            <ChildContent>
+                                                <SelectItem Value="@("")" Disabled></SelectItem>
+                                                @foreach (var entity in Users)
+                                                {
+                                                    <SelectItem Value="@entity.ShooterId">@entity.CompleteName</SelectItem>
+                                                }
+                                            </ChildContent>
+                                            <Feedback>
+                                                <ValidationError>@L["WrongUser"]</ValidationError>
+                                            </Feedback>
+                                        </Select>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["EntityId"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                        <TextEdit Placeholder="@L["EntityId"]" @bind-Text="@userModel.EntityId">
+                                            <Feedback>
+                                                <ValidationError>@L["WrongEntityId"]</ValidationError>
+                                            </Feedback>
+                                        </TextEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Field JustifyContent="JustifyContent.End">
+                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@SubmitNewUser" Loading="ApiLoading" Disabled="ApiLoading">
+                                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                                    <ChildContent>@L["Add"]</ChildContent>
+                                </Button>
+                            </Field>
+                        </Validations>
+
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["EntityId"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+
+                                @if (Role.UserRoles.Count == 0)
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="3" TextAlignment="@TextAlignment.Center">@L["NoUserRoles"]</TableRowCell>
+                                    </TableRow>
+                                }
+                                else
+                                {
+                                    <Virtualize Items="@Role.UserRoles" Context="entity">
+                                        <TableRow>
+                                            <TableRowCell>@entity.User.CompleteName</TableRowCell>
+                                            <TableRowCell>@entity.EntityId</TableRowCell>
+                                            <TableRowCell>
+                                                <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteUser(entity))"><Icon Name="IconName.Delete"/></Button>
                                             </TableRowCell>
                                         </TableRow>
                                     </Virtualize>
@@ -163,18 +240,54 @@
     </ModalContent>
 </Modal>
 
+<Modal @ref="modalRefUserToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteUser"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (userToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@userToDelete.User.LastName @userToDelete.User.FirstName</Text>
+                </Field>
+                @if (!string.IsNullOrEmpty(userToDelete.EntityId))
+                {
+                    <Field>
+                        <FieldLabel>@L["Entity"]</FieldLabel>
+                        <Text>@userToDelete.EntityId</Text>
+                    </Field>
+                }
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalUserToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalUserToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 @code {
 
     [Parameter]
     public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
 
     [Parameter]
+    public IList<ShooterContract> Users { get; set; } = new List<ShooterContract>();
+
+    [Parameter]
     public RoleContract Role {
-        get=>_role;
+        get => _role;
         set
         {
             _role = value;
             formModel.RoleId = _role.RoleId;
+            userModel.RoleId = _role.RoleId;
         }
     }
 
@@ -183,16 +296,23 @@
     Validations validations;
     Validations modelValidations;
     RolePermissionCreateRequest formModel = new();
+    UserRoleCreateRequest userModel = new();
     PermissionContract permissionToDelete = new();
+    UserRoleContract userToDelete = new();
 
     private Modal modalRefEntityToDelete;
     private Modal modalRefPermissionToDelete;
+    private Modal modalRefUserToDelete;
     
     [Parameter]
     public EventCallback<RolePermissionCreateRequest> SubmitCallbackNewPermission { get; set; }
     [Parameter]
     public EventCallback<RolePermissionRequest> SubmitCallbackDeletePermission { get; set; }
-
+    
+    [Parameter]
+    public EventCallback<UserRoleCreateRequest> SubmitCallbackNewUser { get; set; }
+    [Parameter]
+    public EventCallback<UserRoleRequest> SubmitCallbackDeleteUser { get; set; }
 
     [Parameter]
     public EventCallback<RoleContract> SubmitCallbackSaveEntity { get; set; }
@@ -217,6 +337,7 @@
         
         formModel.PermissionId = string.Empty;
     }
+
     
     void DeletePermission(PermissionContract entity)
     {
@@ -234,9 +355,41 @@
                 RoleId = Role.RoleId,
                 PermissionId = permissionToDelete.PermissionId
             });
-            
         }
         await modalRefPermissionToDelete.Hide();
+    }
+
+
+    
+    async Task SubmitNewUser()
+    {
+        await validations.ClearAll();
+        if (!await validations.ValidateAll())
+            return;
+        await SubmitCallbackNewUser.InvokeAsync(userModel);
+        
+        userModel.EntityId = string.Empty;
+        userModel.UserId = string.Empty;
+    }
+
+    void DeleteUser(UserRoleContract entity)
+    {
+        if (entity == null)
+            return;
+        userToDelete = entity;
+        modalRefUserToDelete.Show();
+    }
+    private async Task HideModalUserToDelete(bool choice)
+    {
+        if (choice && Role != null)
+        {
+            await SubmitCallbackDeleteUser.InvokeAsync(new UserRoleRequest
+            {
+                UserRoleId = userToDelete.UserRoleId
+            });
+            
+        }
+        await modalRefUserToDelete.Hide();
     }
 
     void DeleteEntity()

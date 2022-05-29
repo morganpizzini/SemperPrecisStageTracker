@@ -6,7 +6,7 @@
 
 <Heading Size="HeadingSize.Is1">@L["Shooters"]</Heading>
 <Divider />
-<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.CreateShooters,Permissions.EditShooter,Permissions.DeleteShooter))">
+<AuthorizeView Roles="@(Permissions.ManageShooters.And(Permissions.CreateShooters,Permissions.EditShooter))">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>

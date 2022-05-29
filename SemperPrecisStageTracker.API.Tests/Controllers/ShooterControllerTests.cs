@@ -392,8 +392,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi dopo la cancellazione
             var countPermissionAfter = Scenario.Permissions.Count(x =>
                 //x.EntityId == permission.EntityId &&
-                (x.Name == nameof(Permissions.EditShooter) ||
-                 x.Name == nameof(Permissions.DeleteShooter)));
+                x.Name == nameof(Permissions.EditShooter));
 
             Assert.IsTrue(
                 parsed.Data.ShooterId == existing.Id);

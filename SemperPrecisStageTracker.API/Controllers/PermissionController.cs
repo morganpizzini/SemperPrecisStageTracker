@@ -6,6 +6,7 @@ using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
+using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
@@ -63,8 +64,14 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var permissions = AuthorizationLayer.FetchPermissionsOnRole(entity.Id);
 
+            var userRoles = AuthorizationLayer.FetchUserRole(entity.Id);
+
+            var userIds = userRoles.Select(x => x.UserId).ToList();
+
+            var users = BasicLayer.FetchShootersByIds(userIds);
+
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity,permissions));
+            return Reply(ContractUtils.GenerateContract(entity,permissions,userRoles,users));
         }
 
         /// <summary>
@@ -192,6 +199,77 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Invocazione del service layer
             var validations = await AuthorizationLayer.DeletePermissionRole(entity, PlatformUtils.GetIdentityUserId(User));
+            if (validations.Count > 0)
+                return BadRequest(validations);
+            
+            //Return contract
+            return Ok(new OkResponse{Status = true});
+        }
+
+        /// <summary>
+        /// Deletes existing match on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("CreateUserRole")]
+        [ApiAuthorizationFilter(Permissions.ManagePermissions)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
+        public async Task<IActionResult> CreateUserRole(UserRoleCreateRequest request)
+        {
+            //Recupero l'elemento dal business layer
+            var user = BasicLayer.GetShooter(request.UserId);
+
+            if (user== null)
+            {
+                return NotFound($"User with {request.UserId} not found");
+            }
+
+            //Recupero l'elemento dal business layer
+            var role = AuthorizationLayer.GetRole(request.RoleId);
+
+            if (role== null)
+            {
+                return NotFound($"Role with {request.RoleId} not found");
+            }
+            
+            var entity = new UserRole()
+            {
+                UserId= user.Id,
+                RoleId = role.Id,
+                EntityId = request.EntityId
+            };
+            //Invocazione del service layer
+            var validations = await AuthorizationLayer.CreateUserRole(entity, PlatformUtils.GetIdentityUserId(User));
+            
+            if (validations.Count > 0)
+                return BadRequest(validations);
+            
+            //Return contract
+            return Ok(new OkResponse{Status = true});
+        }
+        /// <summary>
+        /// Deletes existing match on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("DeleteUserRole")]
+        [ApiAuthorizationFilter(Permissions.ManagePermissions)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
+        public async Task<IActionResult> DeleteUserROle(UserRoleRequest request)
+        {
+            //Recupero l'elemento dal business layer
+            var entity = AuthorizationLayer.GetUserRole(request.UserRoleId);
+
+            //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            //Invocazione del service layer
+            var validations = await AuthorizationLayer.DeleteUserRole(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
             

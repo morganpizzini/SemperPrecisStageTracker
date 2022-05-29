@@ -12,6 +12,16 @@
     @matches.Count
 
     <ul>
+        
+        TODO: inserire i controlli per MatchInsertScore MatchManageGroups e MatchManageStageSO
+
+        nei metodi del dettaglio ruolo => quando aggiungo o rimuovo un'entità restituire la lista aggiornata, e non OkResponse
+        
+        [permessi]
+        se elimino un ruolo i permessi associati e gli utenti associati dovrebbero sparire
+        se elimino un ruolo tutta la cache degli utenti associati dovrebbe scomparire
+        test per aggiornamenti permessi riguardo alla cache, se eseguo un'aggiornamento sui permessi la chiamata di login successiva dovrebbe rispettare i permessi applicati
+        
         [memory cache e/o response cache]
         getgroup
         FetchAvailableGroupShooter
@@ -29,6 +39,7 @@
         Ogni associazione impostare quanto vale la penalità
         shooterController campi: data rilascio porto d'armi, nato a, residenza, via, cap, provincia, country, codice fiscale, telefono
         matchcontroller campi: cost, paymentDetails
+        permission controller: create e delete user role
 
 
         [Blazor]

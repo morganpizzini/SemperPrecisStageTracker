@@ -7,5 +7,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         T GetItem<T>(string key);
         void SetItem<T>(string key, T value);
         void RemoveItem(string key);
+        ValueTask<string> EncodeSecret(string key,string name,string value);
+        ValueTask<string> DecodeSecret(string key,string name);
     }
 }

@@ -159,6 +159,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 };
                 authenticationService.SavePermission(managePermissionPerm);
             }
+
             var manageStagesPerm = authenticationService.GetPermissionByName(Permissions.ManageStages);
             if (manageStagesPerm == null)
             {
@@ -167,6 +168,51 @@ namespace SemperPrecisStageTracker.Domain.Services
                     Name = Permissions.ManageStages.ToDescriptionString()
                 };
                 authenticationService.SavePermission(manageStagesPerm);
+            }
+            var untrackPermission = authenticationService.GetPermissionByName(Permissions.TeamEditShooters);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.TeamEditShooters.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.TeamEditPayment);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.TeamEditPayment.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchManageGroups);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchManageGroups.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchManageStageSO);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchManageStageSO.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchInsertScore);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchInsertScore.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
             }
             // create admin role
             var adminRoleName = "Admin";
@@ -618,7 +664,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _matchRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditMatch, Permissions.DeleteMatch }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditMatch }, userId);
 
             if (validations.Count > 0)
             {
@@ -739,8 +785,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
-                Permissions.ManageMatches,
-                Permissions.DeleteMatch
+                Permissions.ManageMatches
             }))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteMatch)} with Id: {entity.Id}");
@@ -752,7 +797,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _matchRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditMatch, Permissions.DeleteMatch });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditMatch });
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -869,7 +914,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _teamRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditTeam, Permissions.DeleteTeam }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditTeam }, userId);
 
             if (validations.Count > 0)
             {
@@ -983,8 +1028,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
-                Permissions.ManageMatches,
-                Permissions.DeleteMatch
+                Permissions.ManageMatches
             }))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteTeam)} with Id: {entity.Id}");
@@ -1005,7 +1049,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _teamRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditTeam, Permissions.DeleteTeam });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditTeam });
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -1548,7 +1592,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _placeRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditPlace, Permissions.DeletePlace }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditPlace }, userId);
 
             if (validations.Count > 0)
             {
@@ -1662,8 +1706,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
-                Permissions.ManagePlaces,
-                Permissions.DeletePlace
+                Permissions.ManagePlaces
             }))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeletePlace)} with Id: {entity.Id}");
@@ -1676,7 +1719,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _placeRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditPlace, Permissions.DeletePlace });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditPlace });
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -1796,7 +1839,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _associationRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditAssociation, Permissions.DeleteAssociation }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditAssociation }, userId);
 
             if (validations.Count > 0)
             {
@@ -1909,8 +1952,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
             {
-                Permissions.ManageAssociations,
-                Permissions.DeleteAssociation
+                Permissions.ManageAssociations
             }))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteAssociation)} with Id: {entity.Id}");
@@ -1931,7 +1973,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _associationRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditAssociation, Permissions.DeleteAssociation });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditAssociation});
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -2050,7 +2092,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditShooter, Permissions.DeleteShooter }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditShooter }, userId);
 
             if (validations.Count > 0)
             {
@@ -2202,7 +2244,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _shooterRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditShooter, Permissions.DeleteShooter });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditShooter });
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -2337,7 +2379,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterAssociationInfoRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditShooter, Permissions.DeleteShooter }, userId);
+            validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditShooter }, userId);
 
             if (validations.Count > 0)
             {
@@ -2494,7 +2536,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _shooterAssociationInfoRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditShooter, Permissions.DeleteShooter });
+            validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditShooter});
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -3916,7 +3958,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                 switch (permission)
                 {
                     case Permissions.EditMatch:
-                    case Permissions.DeleteMatch:
                         if (userPermissions.GenericPermissions.Contains(Permissions.ManageMatches))
                             break;
                         newPermissions.Add(new UserPermission
@@ -3928,7 +3969,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                         break;
 
                     case Permissions.EditShooter:
-                    case Permissions.DeleteShooter:
                         if (userPermissions.GenericPermissions.Contains(Permissions.ManageShooters))
                             break;
                         newPermissions.Add(new UserPermission

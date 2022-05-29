@@ -101,8 +101,11 @@
     private async Task LoadEntities()
     {
 
-        entities = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles", null);
-        
+        var result = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles", null);
+        if (result == null)
+            return;
+        entities = result;
+
     }
 
     void DeleteEntity(RoleContract entity)

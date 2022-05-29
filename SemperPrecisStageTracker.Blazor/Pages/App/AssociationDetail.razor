@@ -5,12 +5,9 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
-@if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation), Id))
+@if (PageCondition)
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
-}
-@if (AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.DeleteAssociation), Id))
-{
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
 @if (ApiLoading)
@@ -30,23 +27,26 @@ else
                 </CardBody>
             </Card>
         </Column>
-        <Column ColumnSize="ColumnSize.IsHalf">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Penalties"]</CardTitle>
-                    <CardText>@L["HitOnNonThreatPointDown"]: @association.HitOnNonThreatPointDown @L["seconds"]</CardText>
-                    <CardText>@association.FirstPenaltyLabel: @association.FirstProceduralPointDown @L["seconds"]</CardText>
-                    @if (association.SecondProceduralPointDown> 0)
-                    {
-                        <CardText>@association.SecondPenaltyLabel: @association.SecondProceduralPointDown @L["seconds"]</CardText>
-                    }
-                    @if (association.ThirdProceduralPointDown> 0)
-                    {
-                        <CardText>@association.ThirdPenaltyLabel: @association.ThirdProceduralPointDown @L["seconds"]</CardText>
-                    }
-                </CardBody>
-            </Card>
-        </Column>
+        @if (PageCondition)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Penalties"]</CardTitle>
+                        <CardText>@L["HitOnNonThreatPointDown"]: @association.HitOnNonThreatPointDown @L["seconds"]</CardText>
+                        <CardText>@association.FirstPenaltyLabel: @association.FirstProceduralPointDown @L["seconds"]</CardText>
+                        @if (association.SecondProceduralPointDown> 0)
+                        {
+                            <CardText>@association.SecondPenaltyLabel: @association.SecondProceduralPointDown @L["seconds"]</CardText>
+                        }
+                        @if (association.ThirdProceduralPointDown> 0)
+                        {
+                            <CardText>@association.ThirdPenaltyLabel: @association.ThirdProceduralPointDown @L["seconds"]</CardText>
+                        }
+                    </CardBody>
+                </Card>
+            </Column>
+        }
     </Row>
     <Row>
         <Column ColumnSize="ColumnSize.IsHalf">
@@ -115,28 +115,31 @@ else
                 </CardBody>
             </Card>
         </Column>
-        <Column ColumnSize="ColumnSize.IsHalf">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["SoRoles"]</CardTitle>
-                    <CardText>
-                        @if (association.SoRoles.Count == 0)
-                        {
-                            @L["NoSoRoles"]
-                        }
-                        else
-                        {
-                            <ul>
-                                <Virtualize Items="@association.SoRoles" Context="s">
-                                    <li>@s</li>
-                                </Virtualize>
-                            </ul>
-                        }
+        @if (PageCondition)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["SoRoles"]</CardTitle>
+                        <CardText>
+                            @if (association.SoRoles.Count == 0)
+                            {
+                                @L["NoSoRoles"]
+                            }
+                            else
+                            {
+                                <ul>
+                                    <Virtualize Items="@association.SoRoles" Context="s">
+                                        <li>@s</li>
+                                    </Virtualize>
+                                </ul>
+                            }
 
-                    </CardText>
-                </CardBody>
-            </Card>
-        </Column>
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
     </Row>
 }
 <Modal @ref="modalRefEntityToDelete">
@@ -167,6 +170,11 @@ else
 
     [Parameter]
     public string Id { get; set; }
+
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageAssociations.AndList(Permissions.EditAssociation), Id);
+
 
     private Modal modalRefEntityToDelete;
 

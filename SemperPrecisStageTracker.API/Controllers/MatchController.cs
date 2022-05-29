@@ -184,8 +184,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
-        [ApiAuthorizationFilter(Permissions.DeleteMatch,
-                                Permissions.ManageMatches )]
+        [ApiAuthorizationFilter(Permissions.ManageMatches )]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {

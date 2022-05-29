@@ -367,8 +367,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var countPermissionAfter = Scenario.Permissions.Count(x =>
                 //x.EntityId == permission.EntityId &&
-                (x.Name == nameof(Permissions.EditMatch) ||
-                 x.Name == nameof(Permissions.DeleteMatch)));
+                x.Name == nameof(Permissions.EditMatch));
 
 
             Assert.IsTrue(parsed.Data.MatchId == existing.Id);
