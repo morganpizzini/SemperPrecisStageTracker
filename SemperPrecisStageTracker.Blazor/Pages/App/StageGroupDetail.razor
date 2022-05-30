@@ -493,7 +493,7 @@ else
         model.StageId = stage.StageId;
         InitModelList();
 
-        canInsertScore = AuthService.CheckPermissions(Permissions.MatchInsertScore, Id);
+        canInsertScore = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchInsertScore), Id);
                          
 
         await base.OnInitializedAsync();

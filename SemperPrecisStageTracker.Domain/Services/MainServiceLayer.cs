@@ -214,6 +214,34 @@ namespace SemperPrecisStageTracker.Domain.Services
                 };
                 authenticationService.SavePermission(untrackPermission);
             }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchManageMD);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchManageMD.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchManageStages);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchManageStages.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+            untrackPermission = authenticationService.GetPermissionByName(Permissions.MatchHandling);
+            if (untrackPermission == null)
+            {
+                untrackPermission = new Permission()
+                {
+                    Name = Permissions.MatchHandling.ToDescriptionString()
+                };
+                authenticationService.SavePermission(untrackPermission);
+            }
+
             // create admin role
             var adminRoleName = "Admin";
             var role = authenticationService.GetRoleByName(adminRoleName);

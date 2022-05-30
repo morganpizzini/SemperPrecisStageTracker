@@ -69,7 +69,7 @@ else
                             }
                         </TableBody>
                     </Table>
-                    @if (MainServiceLayer.Online)
+                    @if (MainServiceLayer.Online && canManageSO)
                     {
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
                     }
@@ -89,13 +89,13 @@ else
                                         <TableRowHeader>@stageSo.Shooter.CompleteName</TableRowHeader>
                                         <TableRowHeader>@stageSo.Role</TableRowHeader>
                                         <TableRowCell>
-                                            @if (MainServiceLayer.Online)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStageSo(stageSo))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
+                                            @if (MainServiceLayer.Online && canManageSO)
+                                    {
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStageSo(stageSo))"><Icon Name="IconName.Delete" /></Button>
+                                    }
+                                </TableRowCell>
+                            </TableRow>
+                        </Virtualize>
                             }
                             else
                             {
@@ -208,87 +208,87 @@ else
         </Column>
     </Row>
 }
-
-<Modal @ref="modalRefStageSoToEdit">
-    <ModalContent Centered="true">
-        <ModalHeader>
-            <ModalTitle>@L["NewStageSo"]</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@stageSoToEdit">
-                <Validation Validator="@ValidationRule.IsSelected">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.ShooterId">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var availableMatchDirector in availableStageSo)
-                                    {
-                                        <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongShooter"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Validation Validator="@ValidationRule.IsSelected">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
-                                <ChildContent>
-                                    <SelectItem Value="@("")"></SelectItem>
-                                    @foreach (var soRole in match.Association.SoRoles)
-                                    {
-                                        <SelectItem Value="@soRole">@soRole</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongRole"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-            </Validations>
-        </ModalBody>
-        <ModalFooter>
-            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToEdit(false))">@L["Close"]</Button>
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToEdit(true))">@L["Submit"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-
-<Modal @ref="modalRefStageSoToDelete">
-    <ModalContent Centered="true">
-        <ModalHeader>
-            <ModalTitle>@L["DeleteStageSo"]</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Field>
-                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
-            </Field>
-            @if (stageSoToDelete.Shooter != null)
-            {
+@if (canManageSO)
+{
+    <Modal @ref="modalRefStageSoToEdit">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["NewStageSo"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@stageSoToEdit">
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.ShooterId">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                        @foreach (var availableMatchDirector in availableStageSo)
+                                        {
+                                            <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongShooter"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                        @foreach (var soRole in match.Association.SoRoles)
+                                        {
+                                            <SelectItem Value="@soRole">@soRole</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongRole"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToEdit(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToEdit(true))">@L["Submit"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+    <Modal @ref="modalRefStageSoToDelete">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteStageSo"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
                 <Field>
-                    <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@stageSoToDelete.Shooter.CompleteName</Text>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
                 </Field>
-            }
-        </ModalBody>
-        <ModalFooter>
-            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToDelete(false))">@L["Close"]</Button>
-            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToDelete(true))">@L["Yes"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-
+                @if (stageSoToDelete.Shooter != null)
+                {
+                    <Field>
+                        <FieldLabel>@L["Name"]</FieldLabel>
+                        <Text>@stageSoToDelete.Shooter.CompleteName</Text>
+                    </Field>
+                }
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToDelete(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToDelete(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
 
 <Modal @ref="modalRefCallMatchDirector">
     <ModalContent Centered="true">
@@ -300,14 +300,14 @@ else
             @if (callMatchDirectorSuccess)
             {
                 <Text>
-                @L["CallMatchDirectorSuccess"]
+                    @L["CallMatchDirectorSuccess"]
                 </Text>
             }
             else
             {
                 <Text>
-                @L["CallMatchDirectorFail"]
-                @L[$"{callMatchDirectorError}"]
+                    @L["CallMatchDirectorFail"]
+                    @L[$"{callMatchDirectorError}"]
                 </Text>
             }
         </ModalBody>
@@ -340,14 +340,20 @@ else
     IList<ShooterSOStageContract> stageSos = new List<ShooterSOStageContract>();
     IList<ShooterContract> availableStageSo = new List<ShooterContract>();
 
+    bool canManageSO = false;
+    bool canManageGroups = false;
+
     protected override async Task OnInitializedAsync()
     {
         match = await Post(async () =>
         {
-            stage = await MainServiceLayer.GetStage(Id,StageId);
+            stage = await MainServiceLayer.GetStage(Id, StageId);
             matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
             return await MainServiceLayer.GetMatch(Id);
         });
+        canManageSO = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageStageSO), Id);
+        canManageGroups = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageGroups), Id);
+
         await LoadSO();
         await base.OnInitializedAsync();
     }
@@ -380,7 +386,7 @@ else
     {
         if (choice)
         {
-            if (! (await validations.ValidateAll()))
+            if (!(await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
             stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit);
@@ -396,9 +402,9 @@ else
         if (choice && stageSoToDelete.Shooter != null)
         {
             stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
-            {
-                ShooterSOStageId = stageSoToDelete.ShooterSOStageId
-            });
+                {
+                    ShooterSOStageId = stageSoToDelete.ShooterSOStageId
+                });
             availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
             //await LoadSO();
         }
@@ -412,11 +418,11 @@ else
             return;
         matchDirectorCall = true;
         var result = await Post<OkResponse>("api/Notification/CallShooter", new CallShooterRequest()
-        {
-            MatchId = Id,
-            ShooterId = matchDirector.Shooter.ShooterId,
-            Context = CallShooterContextEnum.MatchDirector
-        });
+            {
+                MatchId = Id,
+                ShooterId = matchDirector.Shooter.ShooterId,
+                Context = CallShooterContextEnum.MatchDirector
+            });
         matchDirectorCall = false;
         callMatchDirectorSuccess = result.Status;
 

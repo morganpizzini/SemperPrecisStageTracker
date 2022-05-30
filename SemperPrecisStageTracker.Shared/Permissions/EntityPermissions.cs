@@ -45,6 +45,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         EditAssociation = 7,
         [Description("EditPlace")]
         EditPlace = 9,
+
         [Description("TeamEditShooters")]
         TeamEditShooters = 15,
         [Description("TeamEditPayment")]
@@ -54,7 +55,13 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("MatchManageStageSO")]
         MatchManageStageSO = 18,
         [Description("MatchInsertScore")]
-        MatchInsertScore = 19
+        MatchInsertScore = 19,
+        [Description("MatchManageMD")]
+        MatchManageMD = 20,
+        [Description("MatchManageStages")]
+        MatchManageStages= 21,
+        [Description("MatchHandling")]
+        MatchHandling = 22
 
     }
 }

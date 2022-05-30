@@ -907,6 +907,18 @@
     {
       "id": "19",
       "name": "MatchInsertScore"
+    },
+    {
+      "id": "20",
+      "name": "MatchManageMD"
+    },
+    {
+      "id": "21",
+      "name": "MatchManageStages"
+    },
+    {
+      "id": "22",
+      "name": "MatchHandling"
     }
   ],
   "roles": [
@@ -1021,6 +1033,21 @@
     },
     {
       "id": "15",
+      "roleId": "5",
+      "permissionId": "20"
+    },
+    {
+      "id": "16",
+      "roleId": "5",
+      "permissionId": "21"
+    },
+    {
+      "id": "17",
+      "roleId": "5",
+      "permissionId": "22"
+    },
+    {
+      "id": "18",
       "roleId": "6",
       "permissionId": "19"
     }

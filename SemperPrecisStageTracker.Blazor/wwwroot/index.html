@@ -109,6 +109,11 @@
                     .then(function (registration) {
                         console.info('Registration successful, scope is:', registration.scope);
                         registration.onupdatefound = () => {
+                            if (window.location.hostname !== 'localhost' && window.location.pathname.startsWith("/app")) {
+                                setTimeout(function () {
+                                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
+                                }, 3000)
+                            }
                             const installingWorker = registration.installing;
                             installingWorker.onstatechange = () => {
                                 switch (installingWorker.state) {
@@ -130,7 +135,6 @@
 
             window['updateAvailable']
                 .then(isAvailable => {
-                    console.log("update available");
                     if (isAvailable && window.location.hostname !== 'localhost') {
                         // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
                         alert('Update available. Reload the page when convenient.');

@@ -5,16 +5,18 @@
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink Class="me-2" href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
-@if (PageCondition)
+@if (MainServiceLayer.Online)
 {
-    <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-    <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
-    <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
-}
-
-@if (MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches,Id))
-{
-    <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+    @if(canManageGroups){
+        <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+    }
+    @if(canManageStages){
+        <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
+    }
+    @if(canManageMatch){
+        <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
+        <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+    }
 }
 <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
@@ -58,7 +60,7 @@ else
                     <CardBody>
                         <CardTitle>@L["Association"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
-                        @if (PageCondition)
+                        @if (canManageMD)
                         {
                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
                         }
@@ -77,7 +79,7 @@ else
                                         <TableRow>
                                             <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                             <TableRowCell>
-                                                @if (PageCondition)
+                                                @if (canManageMD)
                                                 {
                                                     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
                                                 }
@@ -126,7 +128,7 @@ else
                                             <TableRowHeader>@group.Shooters.Count</TableRowHeader>
                                             <TableRowCell>
                                                 <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
-                                                @if (PageCondition)
+                                                @if (canManageGroups)
                                                 {
                                                     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
                                                 }
@@ -175,7 +177,7 @@ else
                                         <TableRowCell>@stage.Targets</TableRowCell>
                                         <TableRowCell>
                                             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" Class="me-2" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
-                                            @if (PageCondition)
+                                            @if (canManageStages)
                                             {
                                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new {id = Id, stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
                                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
@@ -201,7 +203,8 @@ else
         </Column>
     </Row>
 }
-<Modal @ref="modalRefGroup">
+@if(canManageGroups){
+    <Modal @ref="modalRefGroup">
     <ModalContent Centered="true">
         <ModalHeader>
             <ModalTitle>@L["DeleteGroup"]</ModalTitle>
@@ -222,8 +225,10 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+}
 
-<Modal @ref="modalRefStage">
+@if (canManageStages) { 
+    <Modal @ref="modalRefStage">
     <ModalContent Centered="true">
         <ModalHeader>
             <ModalTitle>@L["DeleteStage"]</ModalTitle>
@@ -248,8 +253,12 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+}
 
-<Modal @ref="modalRefMatchDirectorToEdit">
+
+@if (canManageMD)
+{
+    <Modal @ref="modalRefMatchDirectorToEdit">
     <ModalContent Centered="true">
         <ModalHeader>
             <ModalTitle>@L["NewMatchDirector"]</ModalTitle>
@@ -309,6 +318,10 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+}
+
+@if(canManageMatch){
+
 <Modal @ref="modalRefEntityToDelete">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -341,6 +354,7 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+}
 @code {
 
     [Parameter]
@@ -350,7 +364,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.EditMatch),Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.EditMatch),Id);
 
     // reference to the modal component
     private Modal modalRefGroup;
@@ -369,10 +383,22 @@ else
     IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
     IList<ShooterContract> availableMatchDirectors = new List<ShooterContract>();
 
+    bool canManageSO = false;
+    bool canManageMD = false;
+    bool canManageStages = false;
+    bool canManageGroups = false;
+    bool canManageMatch = false;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadMatch();
         await LoadMatchDirectors();
+        canManageSO = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageStageSO), Id);
+        canManageMD = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageMD), Id);
+        canManageGroups = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageGroups), Id);
+        canManageStages = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchManageStages), Id);
+        canManageMatch = AuthService.CheckPermissions(Permissions.ManageMatches.AndList(Permissions.MatchHandling), Id);
+
         await base.OnInitializedAsync();
     }
 

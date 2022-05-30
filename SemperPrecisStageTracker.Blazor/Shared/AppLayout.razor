@@ -31,7 +31,12 @@
                 </NotAuthorized>
             </AuthorizeView>
         </div>
-
+        @if (ShowPwaInstallationProgress)
+        {
+            <div class="bg-warning text-dark p-2">
+                <Icon class="me-2" Name="FontAwesomeIcons.AnimationSpinner" />@L["InstallingUpdates"]
+            </div>
+        }
         <div class="content px-4">
             @if (NetworkService.IsOnline)
             {
@@ -66,21 +71,24 @@
     private Modal modalInstallRef;
     private static Action actionNotification;
     private bool ShowNotificationAlertStatus;
+    private static Action actionPwaInstallation;
+    private bool ShowPwaInstallationProgress;
 
     string CurrentTheme = string.Empty;
-    
 
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
         action = ShowIntallModal;
         actionNotification = ShowNotificationAlert;
+        actionPwaInstallation = ShowPwaInstallation;
         // In the background, ask if they want to be notified about order updates
-        await RequestNotificationSubscriptionAsync();
-        
+        RequestNotificationSubscriptionAsync();
+
         stateService.OnStateChange += SetTheme;
 
 
-        await base.OnInitializedAsync();
+        base.OnInitialized();
     }
     public void Dispose()
     {
@@ -93,7 +101,7 @@
         StateHasChanged();
     }
 
-    async Task RequestNotificationSubscriptionAsync()
+    void RequestNotificationSubscriptionAsync()
     {
         if (!stateService.IsAuth)
             return;
@@ -104,6 +112,14 @@
     public static Task PromptNotificationAlert()
     {
         actionNotification.Invoke();
+
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public static Task PromptPwaInstallation()
+    {
+        actionPwaInstallation.Invoke();
         return Task.CompletedTask;
     }
 
@@ -122,6 +138,14 @@
     public void ShowNotificationAlert()
     {
         ShowNotificationAlertStatus = true;
+        this.StateHasChanged();
+    }
+
+    public void ShowPwaInstallation()
+    {
+        ShowPwaInstallationProgress = true;
+        this.StateHasChanged();
+
     }
 
     public async Task SubscribeToNotification()

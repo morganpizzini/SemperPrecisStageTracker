@@ -2,6 +2,8 @@
 
 ## Requirements
 
+Change blazor launchSettings for run application over 5002/5003 port
+
 Add specified KeyVault secret for enable production environment, for develop purpose add that in API project secrets
 
 ```bash

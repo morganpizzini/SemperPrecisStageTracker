@@ -43,6 +43,7 @@ namespace SemperPrecisStageTracker.Blazor.Pages
             ApiLoading = false;    
             return result;
         }
+
         protected async Task<T> Post<T>(Func<Task<T>> method)
         {
             ApiLoading = true;
