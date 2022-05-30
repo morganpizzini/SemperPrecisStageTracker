@@ -63,8 +63,6 @@ else
                                         <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                             <TableRowHeader>
                                                 @{
-
-
                                                     if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
                                                     {
                                                         if ((shooter.ShooterStage as IStageResult).Total < 0)
@@ -481,7 +479,7 @@ else
     Validations noteValidations;
     ShooterStageRequest model = new();
 
-
+    bool canInsertScore = false;
     protected override async Task OnInitializedAsync()
     {
         await LoadShooters();
@@ -495,6 +493,9 @@ else
         model.StageId = stage.StageId;
         InitModelList();
 
+        canInsertScore = AuthService.CheckPermissions(Permissions.MatchInsertScore, Id);
+                         
+
         await base.OnInitializedAsync();
     }
 
@@ -506,7 +507,7 @@ else
 
     void FillShooter(ShooterStageAggregationResult shooter)
     {
-        if (shooter == null)
+        if (shooter == null || !canInsertScore)
             return;
 
         shooterToFill = shooter.GroupShooter.Shooter;

@@ -21,8 +21,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly NavigationManager _navigationManager;
         private readonly ILocalStorageService _localStorageService;
         private readonly AuthenticationStateProvider _authenticationStateProvider;
-        //public ShooterContract User { get; private set; }
-        //public PermissionsResponse Permissions { get; private set; }
         private readonly StateService _stateService;
 
         private string userKey => nameof(_stateService.User);

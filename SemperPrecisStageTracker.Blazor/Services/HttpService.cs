@@ -70,7 +70,18 @@ namespace SemperPrecisStageTracker.Blazor.Services
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
+                Dictionary<string, IList<string>> error;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    error = new Dictionary<string, IList<string>>
+                    {
+                        {"401",new List<string>{"Unauthorized"} }
+                    };
+                }
+                else
+                {
+                    error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
+                }
                 
                 return new ApiResponse<T>()
                 {

@@ -1,6 +1,6 @@
 ﻿@page "/app/login"
 @using SemperPrecisStageTracker.Contracts.Utilities
-@inject IAuthenticationService AuthenticationService
+@inherits SemperPrecisBasePresentationalComponent
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<Login> L
 @inject IJSRuntime JSRuntime
@@ -24,7 +24,7 @@
                         <Field Horizontal="true">
                             <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Username"]</FieldLabel>
                             <FieldBody ColumnSize="ColumnSize.IsFull">
-                                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username" @onkeydown="@Enter">
                                     <Feedback>
                                         <ValidationError>@L["WrongUsername"]</ValidationError>
                                     </Feedback>
@@ -36,7 +36,7 @@
                         <Field Horizontal="true">
                             <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Password"]</FieldLabel>
                             <FieldBody ColumnSize="ColumnSize.IsFull">
-                                <TextEdit Placeholder="@L["Password"]" Role="TextRole.Password" @bind-Text="@model.Password">
+                                <TextEdit Placeholder="@L["Password"]" Role="TextRole.Password" @bind-Text="@model.Password" @onkeydown="@Enter">
                                     <Feedback>
                                         <ValidationError>@L["WrongPassword"]</ValidationError>
                                     </Feedback>
@@ -54,7 +54,10 @@
                     }
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+                            <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Login"]</LoadingTemplate>
+                                <ChildContent>@L["Login"]</ChildContent>
+                            </Button>
                         </FieldBody>
                     </Field>
                 </Validations>
@@ -77,16 +80,21 @@
             NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
         }
     }
-
-    private async void Submit()
+    public Task Enter(KeyboardEventArgs e)
+    {
+        if (e.Code != "Enter" && e.Code != "NumpadEnter")
+            return Task.CompletedTask;
+        return Submit();
+    }
+    private async Task Submit()
     {
         if (! (await validations.ValidateAll()))
             return;
-
+        ApiLoading = true;
         await validations.ClearAll();
         try
         {
-            var loginResult = await AuthenticationService.Login(model.Username, model.Password);
+            var loginResult = await AuthService.Login(model.Username, model.Password);
             if (loginResult)
             {
                 ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>
@@ -101,7 +109,10 @@
         catch (Exception ex)
         {
             error = ex.Message;
+            await NotificationService.Error(L["Error"],error);
         }
+        ApiLoading = false;
+
     }
 
 }

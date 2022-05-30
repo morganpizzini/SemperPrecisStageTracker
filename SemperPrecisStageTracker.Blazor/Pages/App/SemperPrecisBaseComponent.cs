@@ -3,9 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 using Blazorise;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SemperPrecisStageTracker.Blazor.Pages
 {
+    [Authorize]
     public class SemperPrecisBaseComponent : SemperPrecisBasePresentationalComponent
     {
         [Inject]

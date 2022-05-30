@@ -6,7 +6,6 @@ using SemperPrecisStageTracker.Blazor.Services;
 
 namespace SemperPrecisStageTracker.Blazor.Pages;
 
-[Authorize]
 public class SemperPrecisBasePresentationalComponent : ComponentBase
 {
     [Inject]

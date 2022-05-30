@@ -40,9 +40,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public ValueTask<string> EncodeSecret(string key,string name,string value)
+        public ValueTask EncodeSecret(string key,string name,string value)
         {
-            return _jsRuntime.InvokeAsync<string>("encrFunctions.encrypt", key,name,value);
+            return _jsRuntime.InvokeVoidAsync("encrFunctions.encrypt", key,name,value);
         }
 
         public ValueTask<string> DecodeSecret(string key,string name)
