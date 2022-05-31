@@ -93,10 +93,9 @@ else
                                         {
                                             <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                                 <TableRowCell></TableRowCell>
-                                                <TableRowCell>
+                                                <TableRowCell ColumnSpan="3">
                                                     @shooter.ShooterStage.Notes
                                                 </TableRowCell>
-                                                <TableRowCell></TableRowCell>
                                             </TableRow>
                                         }
                                     </Virtualize>

@@ -18,11 +18,17 @@
     <link href="manifest.json" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <style>
+        .spinner-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .lds-ripple {
             display: inline-block;
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: calc(50% - 40px);
+            left: calc(50% - 40px);
             width: 80px;
             height: 80px;
         }
@@ -77,7 +83,7 @@
 
 <body>
     <div id="app">
-        <div style="position:absolute; top:30vh; width:100%; text-align:center">
+        <div class="spinner-wrapper">
             <div class="lds-ripple"><div></div><div></div></div>
         </div>
     </div>
