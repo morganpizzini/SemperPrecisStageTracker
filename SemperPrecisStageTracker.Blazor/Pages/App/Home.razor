@@ -12,8 +12,14 @@
     @matches.Count
 
     <ul>
+        [controllare interfaccia]
         nei metodi del dettaglio ruolo => quando aggiungo o rimuovo un'entità restituire la lista aggiornata, e non OkResponse
-        
+        <li>/matches/:id/stats
+            <ul>
+                <li>controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)</li>
+            </ul>
+        </li>
+
         [permessi]
         se elimino un ruolo i permessi associati e gli utenti associati dovrebbero sparire
         se elimino un ruolo tutta la cache degli utenti associati dovrebbe scomparire
@@ -26,7 +32,6 @@
         utenti per authn/authz
 
         controllare dimensione delle modali
-        <li>Spostamento tiratore in altro gruppo</li>
 
         <li>Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)</li>
 
@@ -37,7 +42,6 @@
         shooterController campi: data rilascio porto d'armi, nato a, residenza, via, cap, provincia, country, codice fiscale, telefono
         matchcontroller campi: cost, paymentDetails
         permission controller: create e delete user role
-
 
         [Blazor]
         se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella pagina del dettaglio gruppo e dettaglio stage
@@ -56,11 +60,7 @@
 
         controllare ed aggiornare i permessi quando accedo all'applicazione e sono già loggato
         quando aggiorno punti down di una associazione, aggiornare tutti i punti down di shooterstages per i match aperti
-        <li>/matches/:id/stats
-            <ul>
-                <li>controllare assegnazione delle classificazioni, non deve dipendere da shooterassociation ma da groupshooter (metodo GetMatchStats)</li>
-            </ul>
-        </li>
+        
         <li>creare interfaccia per creare più di un gruppo alla volta</li>
 
         <li>Controllare top bar in mobile</li>

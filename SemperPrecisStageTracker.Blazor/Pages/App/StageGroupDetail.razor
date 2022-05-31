@@ -116,8 +116,8 @@ else
         </Column>
     </Row>
 }
-<Modal @ref="modalRef" Size="@ModalSize.Fullscreen">
-    <ModalContent Centered="true">
+<Modal @ref="modalRef">
+    <ModalContent Centered="true" Size="@ModalSize.Fullscreen">
         <ModalHeader>
             <ModalTitle>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</ModalTitle>
             <CloseButton />

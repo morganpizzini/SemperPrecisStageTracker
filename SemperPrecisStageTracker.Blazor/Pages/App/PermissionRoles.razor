@@ -10,6 +10,11 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
+        <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Clicked="UpdateDatabase"><Icon Name="IconName.Redo" /></Button>
+        @if (!string.IsNullOrEmpty(updateresult))
+        {
+            <span>@updateresult</span>
+        }
         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<PermissionRoleNew>())" class="mb-2"><Icon Name="IconName.PlusSquare" /> @L["NewRole"]</Button>
         <Table Striped="true" Hoverable="true">
             <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -85,7 +90,7 @@
     IList<RoleContract> entities = new List<RoleContract>();
     private Modal modalRefEntityToDelete;
     RoleContract entityToDelete = new();
-
+    string updateresult = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.CheckPermissions(Permissions.ManagePermissions))
@@ -107,7 +112,13 @@
         entities = result;
 
     }
+    async Task UpdateDatabase()
+    {
+        updateresult = string.Empty;
+        var result = await Post<IList<RoleContract>>("api/Diagnostic/InitDatabase", null);
+        updateresult = result == null ? L["UpdateFailed"] : L["UpdateDone"];
 
+    }
     void DeleteEntity(RoleContract entity)
     {
         if (entity == null)

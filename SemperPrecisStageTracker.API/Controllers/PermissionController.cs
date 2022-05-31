@@ -144,7 +144,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreatePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(OkResponse), 200)]
+        [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
         public async Task<IActionResult> CreatePermissionOnRole(RolePermissionCreateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -173,9 +173,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
+            var permissions = AuthorizationLayer.FetchPermissionsOnRole(role.Id);
+
             //Return contract
-            return Ok(new OkResponse{Status = true});
+            return Ok(permissions.As(ContractUtils.GenerateContract));
         }
         /// <summary>
         /// Deletes existing match on platform
@@ -185,7 +187,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeletePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(OkResponse), 200)]
+        [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
         public async Task<IActionResult> DeletePermissionOnRole(RolePermissionRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -201,9 +203,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = await AuthorizationLayer.DeletePermissionRole(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
+            var permissions = AuthorizationLayer.FetchPermissionsOnRole(entity.RoleId);
+
             //Return contract
-            return Ok(new OkResponse{Status = true});
+            return Ok(permissions.As(ContractUtils.GenerateContract));
         }
 
         /// <summary>
@@ -214,7 +218,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateUserRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(OkResponse), 200)]
+        [ProducesResponseType(typeof(IList<UserRoleContract>), 200)]
         public async Task<IActionResult> CreateUserRole(UserRoleCreateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -244,9 +248,15 @@ namespace SemperPrecisStageTracker.API.Controllers
             
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
+            var userRoles = AuthorizationLayer.FetchUserRole(role.Id);
+
+            var userIds = userRoles.Select(x => x.UserId).ToList();
+
+            var users = BasicLayer.FetchShootersByIds(userIds);
+
             //Return contract
-            return Ok(new OkResponse{Status = true});
+            return Ok(userRoles.As(x => ContractUtils.GenerateContract(x, users?.FirstOrDefault(s => s.Id == x.UserId))));
         }
         /// <summary>
         /// Deletes existing match on platform
@@ -256,7 +266,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteUserRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(OkResponse), 200)]
+        [ProducesResponseType(typeof(IList<UserRoleContract>), 200)]
         public async Task<IActionResult> DeleteUserROle(UserRoleRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -272,9 +282,15 @@ namespace SemperPrecisStageTracker.API.Controllers
             var validations = await AuthorizationLayer.DeleteUserRole(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
-            
+
+            var userRoles = AuthorizationLayer.FetchUserRole(entity.RoleId);
+
+            var userIds = userRoles.Select(x => x.UserId).ToList();
+
+            var users = BasicLayer.FetchShootersByIds(userIds);
+
             //Return contract
-            return Ok(new OkResponse{Status = true});
+            return Ok(userRoles.As(x => ContractUtils.GenerateContract(x, users?.FirstOrDefault(s => s.Id == x.UserId))));
         }
 
         /// <summary>
