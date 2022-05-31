@@ -155,7 +155,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 managePermissionPerm = new Permission()
                 {
-                    Name = Permissions.ManageStages.ToDescriptionString()
+                    Name = Permissions.ManagePermissions.ToDescriptionString()
                 };
                 authenticationService.SavePermission(managePermissionPerm);
             }
