@@ -86,6 +86,45 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
+        [Route("MoveGroupShooter")]
+        [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
+        public Task<IActionResult> MoveGroupShooter(ShooterGroupMoveRequest request)
+        {
+            var entity = this.BasicLayer.GetGroupShooterById(request.GroupShooterId);
+
+            if (entity == null)
+            {
+                return Task.FromResult<IActionResult>(NotFound());
+            }
+
+            var group = this.BasicLayer.GetGroup(request.GroupId);
+
+
+            if (group == null)
+            {
+                return Task.FromResult(BadRequest(new List<ValidationResult>() { new($"Group {request.GroupId} not found")}));
+            }
+            var oldGroupId = entity.GroupId;
+
+
+            entity.GroupId = request.GroupId;
+
+            // Invocazione del service layer
+            var validations = BasicLayer.UpsertGroupShooter(entity);
+
+            if (validations.Count > 0)
+                return BadRequestTask(validations);
+
+            var match = BasicLayer.GetMatch(group.MatchId);
+            // Return contract
+            return Reply(GetGroupShooterContractByGroupId(oldGroupId, match.Id));
+        }
+        /// <summary>
+        /// Creates a groupshooter on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
         [Route("UpsertGroupShooter")]
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
         public Task<IActionResult> UpsertGroupShooter(GroupShooterCreateRequest request)
@@ -173,8 +212,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(groupId);
 
+            if (shooterGroup.Count==0)
+                return new List<GroupShooterContract>();
+
             var shooterIds = shooterGroup.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+
 
             if (string.IsNullOrEmpty(matchId))
                 matchId = BasicLayer.GetGroup(groupId)?.MatchId;

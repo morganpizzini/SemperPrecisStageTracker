@@ -87,7 +87,7 @@ else
                                             </TableRowHeader>
                                             <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
                                             <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
-                                            <TableRowCell>@L[(shooter.ShooterStage as IStageResult).TotalString]</TableRowCell>
+                                            <TableRowCell>@((shooter.ShooterStage as IStageResult).TotalString)</TableRowCell>
                                         </TableRow>
                                         @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
                                         {
@@ -377,7 +377,7 @@ else
                             <Field Horizontal="true">
                                 <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
                                 <FieldBody ColumnSize="ColumnSize.Is4">
-                                    <Text>@L[(model as IStageResult).TotalString]</Text>
+                                    <Text>@((model as IStageResult).TotalString)</Text>
                                 </FieldBody>
                             </Field>
                         </TabPanel>
@@ -426,7 +426,7 @@ else
             <Field>
                 <FieldLabel>@L["Total"]</FieldLabel>
                 <FieldBody>
-                    <Text>@L[(model as IStageResult).TotalString]</Text>
+                    <Text>@((model as IStageResult).TotalString)</Text>
                 </FieldBody>
             </Field>
 

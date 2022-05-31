@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Caching.Memory;
@@ -39,7 +41,8 @@ public class Program
     /// </summary>
     public static string ApplicationVersion { get; private set; }
 
-    static void Main(string[] args){
+    static void Main(string[] args)
+    {
         //Configurazione del tracer
         Tracer.Append(typeof(Log4NetTracer));
         Tracer.Info($"[Settings] Working on environment '{ConfigurationFactory<SemperPrecisStageTrackerConfiguration>.Instance.EnvironmentName}' (from configuration factory)");
@@ -100,7 +103,7 @@ public class Program
         });
         // register configuration across application
         ServiceResolver.Register<IConfiguration>(builder.Configuration);
-        
+
         builder.Services.AddCors(options =>
         {
             var blazorEndpoints = builder.Configuration.GetSection("blazorEndpoints").Get<string[]>();
@@ -124,7 +127,7 @@ public class Program
         builder.Services
             .AddAuthentication(o => o.DefaultScheme = BasicAuthenticationOptions.Scheme)
             .AddBasicAuthentication();
-        
+
 
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
@@ -165,6 +168,7 @@ public class Program
         });
 
         var app = builder.Build();
+        var enableDev = bool.Parse(builder.Configuration["enableDev"] ?? "false");
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -173,7 +177,7 @@ public class Program
         }
         else
         {
-            if (bool.Parse(builder.Configuration["enableDev"] ?? "false"))
+            if (enableDev)
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -191,6 +195,21 @@ public class Program
 
         app.UseAuthorization();
 
+        if (app.Environment.IsDevelopment() || enableDev)
+        {
+            app.UseExceptionHandler(c => c.Run(async context =>
+            {
+                var exception = context.Features
+                    .Get<IExceptionHandlerPathFeature>()
+                    .Error;
+                var response = new Dictionary<string, IList<string>>
+                            {
+                                {"",new List<string>{exception.Message} }
+                            };
+
+                await context.Response.WriteAsJsonAsync(response);
+            }));
+        }
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHealthChecks("/healthz");

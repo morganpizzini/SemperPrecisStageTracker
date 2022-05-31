@@ -92,9 +92,12 @@ public class Program
         using var serverConfig = new HttpRequestMessage(HttpMethod.Get, "api/config/GetConfig");
         using var responseConfig = await httpClient.SendAsync(serverConfig);
 
-        await using var stream = await responseConfig.Content.ReadAsStreamAsync();
+        if (responseConfig.IsSuccessStatusCode)
+        {
+            await using var stream = await responseConfig.Content.ReadAsStreamAsync();
 
-        builder.Configuration.AddJsonStream(stream);
+            builder.Configuration.AddJsonStream(stream);
+        }
 
         builder.Services.AddScoped(sp =>
         {

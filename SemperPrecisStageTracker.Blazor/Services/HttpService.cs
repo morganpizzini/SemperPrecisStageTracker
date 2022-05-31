@@ -71,18 +71,24 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (!response.IsSuccessStatusCode)
             {
                 Dictionary<string, IList<string>> error;
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                switch (response.StatusCode)
                 {
-                    error = new Dictionary<string, IList<string>>
-                    {
-                        {"401",new List<string>{"Unauthorized"} }
-                    };
+                    case HttpStatusCode.Unauthorized:
+                        error = new Dictionary<string, IList<string>>
+                        {
+                            {"401",new List<string>{"Unauthorized"} }
+                        };
+                        break;
+                    case HttpStatusCode.NotFound:
+                        error = new Dictionary<string, IList<string>>
+                        {
+                            {"404",new List<string>{"Endpoint not found"} }
+                        };
+                        break;
+                    default:
+                        error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
+                        break;
                 }
-                else
-                {
-                    error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
-                }
-                
                 return new ApiResponse<T>()
                 {
                     Error = string.Join(", ",error?.SelectMany(x=>x.Value) ?? new List<string>{"Generic error"})

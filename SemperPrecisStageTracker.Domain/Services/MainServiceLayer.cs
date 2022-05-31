@@ -3255,6 +3255,8 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <returns>Returns list of shooters</returns>
         public IList<GroupShooter> FetchGroupShootersByGroupId(string id)
         {
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
             return this._groupShooterRepository.Fetch(x => x.GroupId == id);
         }
 
