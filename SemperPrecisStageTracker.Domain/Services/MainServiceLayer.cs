@@ -3109,9 +3109,20 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingStages = this._stageRepository.Fetch(x => stageIds.Contains(x.Id));
 
+            var matchIds = existingStages.Select(x => x.MatchId).ToList();
+
+            var existingMatches = this._matchRepository.Fetch(x => matchIds.Contains(x.Id));
+            var existingAssociationIds = existingMatches.Select(x=>x.AssociationId);
+
+            var existingAssociation = this._associationRepository.Fetch(x => existingAssociationIds.Contains(x.Id));
+
             foreach (var shooterStage in entities)
             {
-                validations = UpdateShooterStage(shooterStage, existingStages.FirstOrDefault(x => x.Id == shooterStage.StageId));
+                var stage = existingStages.FirstOrDefault(x => x.Id == shooterStage.StageId);
+                validations = UpdateShooterStage(shooterStage,
+                                                stage,
+                                                existingAssociation.FirstOrDefault(a=> a.Id == 
+                                                    existingMatches.FirstOrDefault(x => x.Id == stage.MatchId).AssociationId) );
 
                 //Se ho validazioni fallite, esco
                 if (validations.Count > 0)
@@ -3123,7 +3134,6 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             // clean up cache for match stats
-            var matchIds = existingStages.Select(x => x.MatchId).Distinct();
             foreach (var matchId in matchIds)
             {
                 _cache.RemoveValue(CacheKeys.ComposeKey(CacheKeys.Stats, matchId));
@@ -3145,11 +3155,13 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             var existingStage = this._stageRepository.GetSingle(x => entity.StageId == x.Id);
+            var existingAssociationId = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId)?.AssociationId;
 
+            var existingAssociation = this._associationRepository.GetSingle(x => x.Id == existingAssociationId);
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
-            validations = UpdateShooterStage(entity, existingStage);
+            validations = UpdateShooterStage(entity, existingStage, existingAssociation);
 
             //Se ho validazioni fallite, esco
             if (validations.Count > 0)
@@ -3166,7 +3178,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        private IList<ValidationResult> UpdateShooterStage(ShooterStage entity, Stage existingStage)
+        private IList<ValidationResult> UpdateShooterStage(ShooterStage entity, Stage existingStage,Association existingAssociation)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -3189,6 +3201,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 // Settaggio data di creazione
                 entity.CreationDateTime = DateTime.UtcNow;
+
+                entity.FirstProceduralPointDown = existingAssociation.FirstProceduralPointDown;
+                entity.SecondProceduralPointDown = existingAssociation.SecondProceduralPointDown;
+                entity.ThirdProceduralPointDown = existingAssociation.ThirdProceduralPointDown;
+                entity.HitOnNonThreatPointDown = existingAssociation.HitOnNonThreatPointDown;
 
                 //Validazione argomenti
                 validations = _shooterStageRepository.Validate(entity);
@@ -3214,10 +3231,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.Warning = entity.Warning;
             existingShooterStage.Disqualified = entity.Disqualified;
             existingShooterStage.Notes = entity.Notes;
-            existingShooterStage.FirstProceduralPointDown = entity.FirstProceduralPointDown;
-            existingShooterStage.SecondProceduralPointDown = entity.SecondProceduralPointDown;
-            existingShooterStage.ThirdProceduralPointDown = entity.ThirdProceduralPointDown;
-            existingShooterStage.HitOnNonThreatPointDown = entity.HitOnNonThreatPointDown;
+
+            existingShooterStage.FirstProceduralPointDown = existingAssociation.FirstProceduralPointDown;
+            existingShooterStage.SecondProceduralPointDown = existingAssociation.SecondProceduralPointDown;
+            existingShooterStage.ThirdProceduralPointDown = existingAssociation.ThirdProceduralPointDown;
+            existingShooterStage.HitOnNonThreatPointDown = existingAssociation.HitOnNonThreatPointDown;
 
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (existingShooterStage.CreationDateTime < new DateTime(2000, 1, 1))
