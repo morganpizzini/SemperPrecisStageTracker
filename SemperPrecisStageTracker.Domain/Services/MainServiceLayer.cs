@@ -3231,7 +3231,6 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.Warning = entity.Warning;
             existingShooterStage.Disqualified = entity.Disqualified;
             existingShooterStage.Notes = entity.Notes;
-
             existingShooterStage.FirstProceduralPointDown = existingAssociation.FirstProceduralPointDown;
             existingShooterStage.SecondProceduralPointDown = existingAssociation.SecondProceduralPointDown;
             existingShooterStage.ThirdProceduralPointDown = existingAssociation.ThirdProceduralPointDown;

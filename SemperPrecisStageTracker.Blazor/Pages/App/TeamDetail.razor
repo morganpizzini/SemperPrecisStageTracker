@@ -68,7 +68,10 @@ else
                                             
                                             <Buttons Role="ButtonsRole.Toolbar">
                                                 <Buttons Margin="Margin.Is2.FromEnd">
-                                                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                                    @if (AuthService.CheckPermissions(Permissions.ManageShooters.AndList(Permissions.ShowShooters, Permissions.EditShooter),shooterTeam.Shooter.ShooterId))
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                                    }
                                                     @if (PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment,Id))
                                                     {
                                                         <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.Shooter.ShooterId, teamId = Id }))"><Icon Name="IconName.DollarSign"/></Button>

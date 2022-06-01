@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Pages.App;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
+using SemperPrecisStageTracker.Shared.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -114,12 +115,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (permissions == null || permissions.Count==0)
                 return false;
 
-            if (_stateService.Permissions.GenericPermissions.Any(permissions.Contains))
-            {
-                return true;
-            }
-            return !string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Count > 0
-                        && _stateService.Permissions.EntityPermissions.Any(x=>x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
+            return _stateService.Permissions.GenericPermissions.Any(permissions.Contains) ? true : !string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Count > 0
+                        && _stateService.Permissions.EntityPermissions.Any(x => x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
         }
     }
 }

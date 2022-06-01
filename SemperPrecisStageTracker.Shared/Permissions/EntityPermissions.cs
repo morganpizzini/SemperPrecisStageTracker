@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace SemperPrecisStageTracker.Shared.Permissions
 {
@@ -62,6 +63,38 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         MatchManageStages= 21,
         [Description("MatchHandling")]
         MatchHandling = 22
+    }
 
+    public interface IPermissionInterface
+    {
+        IPermissionInterface ManageMatches { get; }
+        IPermissionInterface ManageShooters { get; }
+        IPermissionInterface ManageTeams { get; }
+    }
+    public class PermissionHandler : IPermissionInterface
+    {
+        private readonly IList<Permissions> permissions = new List<Permissions>();
+        public IPermissionInterface AddPermission(Permissions perm)
+        {
+            permissions.Add(perm);
+            return this;
+        }
+        public IList<Permissions> List => permissions;
+
+        public IPermissionInterface ManageMatches => AddPermission(Permissions.ManageMatches);
+        public IPermissionInterface ManageShooters => AddPermission(Permissions.ManageShooters);
+        public IPermissionInterface ManageTeams => AddPermission(Permissions.ManageTeams);
+        
+        public override string ToString()
+        {
+            return string.Join(",", permissions);
+        }
+    }
+
+    public static class PermissionConstructor
+    {
+        public static IPermissionInterface ManageMatches => new PermissionHandler().ManageMatches;
+        public static IPermissionInterface ManageShooters => new PermissionHandler().ManageShooters;
+        public static IPermissionInterface ManageTeams => new PermissionHandler().ManageTeams;
     }
 }
