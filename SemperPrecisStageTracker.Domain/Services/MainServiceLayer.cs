@@ -3214,6 +3214,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             existingShooterStage.Warning = entity.Warning;
             existingShooterStage.Disqualified = entity.Disqualified;
             existingShooterStage.Notes = entity.Notes;
+            existingShooterStage.FirstProceduralPointDown = entity.FirstProceduralPointDown;
+            existingShooterStage.SecondProceduralPointDown = entity.SecondProceduralPointDown;
+            existingShooterStage.ThirdProceduralPointDown = entity.ThirdProceduralPointDown;
+            existingShooterStage.HitOnNonThreatPointDown = entity.HitOnNonThreatPointDown;
 
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (existingShooterStage.CreationDateTime < new DateTime(2000, 1, 1))

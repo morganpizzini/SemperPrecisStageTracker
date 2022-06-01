@@ -37,7 +37,11 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Ftdr = request.Ftdr,
                 Warning = request.Warning,
                 Disqualified = request.Disqualified,
-                Notes = request.Notes
+                Notes = request.Notes,
+                FirstProceduralPointDown= request.FirstProceduralPointDown,
+                SecondProceduralPointDown = request.SecondProceduralPointDown,
+                ThirdProceduralPointDown = request.ThirdProceduralPointDown,
+                HitOnNonThreatPointDown = request.HitOnNonThreatPointDown,
             };
             //Invocazione del service layer
             var validations = BasicLayer.UpsertShooterStage(shooterStage);
