@@ -70,7 +70,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: 'Run Azure webapp deploy action using publish profile credentials'
-      uses:  
+      uses:  azure/webapps-deploy@v2
       with: 
         app-name: ${{ env.AZURE_WEBAPP_NAME }} # Replace with your app name
         publish-profile: ${{ secrets.BLAZOR_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
