@@ -15,7 +15,7 @@ env:
   APP_PATH: ./SemperPrecisStageTracker.Blazor.FrontEnd/SemperPrecisStageTracker.Blazor.FrontEnd.csproj
   AZURE_WEBAPP_NAME: semperprecisstagetracker    # set this to your application's name
   AZURE_WEBAPP_RG: semper-precis    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: './myapp'      # set this to the path to your web app project, defaults to the repository root
+  AZURE_WEBAPP_PACKAGE_PATH: './myapp-fe'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.x'           # set this to the dot net version to use
 
 
@@ -31,7 +31,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
    
-
     - name: Install dependencies
       run: dotnet restore ${{ env.APP_PATH }}
       
@@ -46,7 +45,7 @@ jobs:
     - name: Publish artifact
       uses: actions/upload-artifact@v2
       with:
-        name: published-app
+        name: published-fe-app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
    
   publish:
@@ -60,7 +59,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v2
       with:
-        name: published-app
+        name: published-fe-app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 
     - uses: azure/login@v1
