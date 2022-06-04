@@ -1,13 +1,14 @@
-name: Blazor
+name: Frontend
 
 on:
   push:
     branches: [ main ]
     paths:
-    - "SemperPrecisStageTracker.Blazor/**"
+    - "SemperPrecisStageTracker.Blazor.FrontEnd/**"
+    - "SemperPrecisStageTracker.Blazor.Components/**"
     - "SemperPrecisStageTracker.Contracts/**"
     - "SemperPrecisStageTracker.Shared/**"
-    - "SemperPrecisStageTracker/.github/workflows/blazor.yml"
+    - "SemperPrecisStageTracker/.github/workflows/fe.yml"
   workflow_dispatch:  
 
 env:

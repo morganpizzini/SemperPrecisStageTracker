@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
     - "SemperPrecisStageTracker.Blazor/**"
+    - "SemperPrecisStageTracker.Blazor.Components/**"
     - "SemperPrecisStageTracker.Contracts/**"
     - "SemperPrecisStageTracker.Shared/**"
     - "SemperPrecisStageTracker/.github/workflows/blazor.yml"
