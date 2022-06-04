@@ -23,9 +23,6 @@ using SemperPrecisStageTracker.Blazor;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
-
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -139,6 +136,7 @@ builder.Services.AddIndexedDbDatabase<MatchServiceIndexedDb>(options =>
 
 
 builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 var host = builder.Build();
 
 // init network service

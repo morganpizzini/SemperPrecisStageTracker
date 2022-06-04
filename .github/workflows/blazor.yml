@@ -44,7 +44,7 @@ jobs:
       # run: dotnet publish ${{ env.APP_PATH }} -c Release --no-restore --no-build -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
     
     - uses: azure/login@v1
-      name: 'Login'
+      name: Azure Login
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -55,7 +55,7 @@ jobs:
         publish-profile: ${{ secrets.BLAZOR_PUBLISH_PROFILE  }} # Define secret variable in repository settings as per action documentation
         package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 
-    - name: Azure CLI script
+    - name: Azure Logout
       uses: azure/CLI@v1
       with:
         inlineScript: |

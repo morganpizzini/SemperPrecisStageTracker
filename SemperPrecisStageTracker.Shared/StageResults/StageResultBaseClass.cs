@@ -35,11 +35,3 @@ public interface IStageResult
         }
     }
 }
-
-//public static class StageResultsExtensions
-//{
-//    public static decimal Total(this IStageResult entity) => entity.Disqualified
-//        ? -99
-//        : entity.Time - entity.Bonus + entity.DownPoints?.DefaultIfEmpty(0).Sum() ?? 0 + entity.Procedurals * (decimal)entity.FirstProceduralPointDown +
-//        entity.HitOnNonThreat * (decimal)entity.HitOnNonThreat + entity.FlagrantPenalties * (decimal)entity.SecondProceduralPointDown + entity.Ftdr * (decimal)entity.ThirdProceduralPointDown;
-//}
