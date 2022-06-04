@@ -67,8 +67,8 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    # - name: 'Modify deployment target'
-    #   run: az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_WEBAPP_RG }} --settings DEPLOYMENT_TARGET="D:\home\site\wwwroot"
+    - name: 'Modify deployment target'
+      run: az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_WEBAPP_RG }} --settings DEPLOYMENT_TARGET="D:\home\site\wwwroot"
 
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2

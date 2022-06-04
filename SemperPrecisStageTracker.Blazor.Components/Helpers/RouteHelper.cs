@@ -30,8 +30,8 @@ namespace SemperPrecisStageTracker.Blazor.Utils
                 .Where(x => x.Parameters.All(parameter => properties.ContainsKey(parameter)))
                 .Select(x => x.Render(properties))
                 .FirstOrDefault();
-
-            return result;
+            
+            return result.TrimStart('/');
         }
     }
 }
