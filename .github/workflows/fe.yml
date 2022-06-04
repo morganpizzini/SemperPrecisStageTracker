@@ -14,6 +14,7 @@ on:
 env:
   APP_PATH: ./SemperPrecisStageTracker.Blazor.FrontEnd/SemperPrecisStageTracker.Blazor.FrontEnd.csproj
   AZURE_WEBAPP_NAME: semperprecisstagetracker    # set this to your application's name
+  AZURE_WEBAPP_RG: semper-precis    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './myapp'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.x'           # set this to the dot net version to use
 
@@ -46,6 +47,9 @@ jobs:
       name: Azure Login
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: 'Modify deployment target'
+      run: az webapp config appsettings set --name ${{ env.AZURE_WEBAPP_NAME }} --resource-group ${{ env.AZURE_WEBAPP_RG }} --settings DEPLOYMENT_TARGET="D:\home\site\wwwroot"
 
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
