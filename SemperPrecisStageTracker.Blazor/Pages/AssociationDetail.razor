@@ -1,0 +1,208 @@
+﻿@page "/associations/{id}"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<AssociationDetail> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
+@if (PageCondition)
+{
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditAssociation"]</Button>
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+}
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Association"]</CardTitle>
+                    <CardText>@association.Name</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (PageCondition)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Penalties"]</CardTitle>
+                        <CardText>@L["HitOnNonThreatPointDown"]: @association.HitOnNonThreatPointDown @L["seconds"]</CardText>
+                        <CardText>@association.FirstPenaltyLabel: @association.FirstProceduralPointDown @L["seconds"]</CardText>
+                        @if (association.SecondProceduralPointDown> 0)
+                        {
+                            <CardText>@association.SecondPenaltyLabel: @association.SecondProceduralPointDown @L["seconds"]</CardText>
+                        }
+                        @if (association.ThirdProceduralPointDown> 0)
+                        {
+                            <CardText>@association.ThirdPenaltyLabel: @association.ThirdProceduralPointDown @L["seconds"]</CardText>
+                        }
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Divisions"]</CardTitle>
+                    <CardText>
+                        @if (association.Classifications.Count == 0)
+                        {
+                            @L["NoDivisions"]
+                        }
+                        else
+                        {
+                            <ul>
+                                <Virtualize Items="@association.Divisions" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
+                        }
+
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Classifications"]</CardTitle>
+                    <CardText>
+                        @if (association.Classifications.Count == 0)
+                        {
+                            @L["NoClassifications"]
+                        }
+                        else
+                        {
+                            <ul>
+                                <Virtualize Items="@association.Classifications" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
+                        }
+
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Categories"]</CardTitle>
+                    <CardText>
+                        @if (association.Categories.Count == 0)
+                        {
+                            @L["NoCategories"]
+                        }
+                        else
+                        {
+                            <ul>
+                                <Virtualize Items="@association.Categories" Context="s">
+                                    <li>@s</li>
+                                </Virtualize>
+                            </ul>
+                        }
+
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (PageCondition)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["SoRoles"]</CardTitle>
+                        <CardText>
+                            @if (association.SoRoles.Count == 0)
+                            {
+                                @L["NoSoRoles"]
+                            }
+                            else
+                            {
+                                <ul>
+                                    <Virtualize Items="@association.SoRoles" Context="s">
+                                        <li>@s</li>
+                                    </Virtualize>
+                                </ul>
+                            }
+
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+}
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (association != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@association.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageAssociations.EditAssociation, Id);
+
+
+    private Modal modalRefEntityToDelete;
+
+    AssociationContract association = new ();
+
+    protected override async Task OnInitializedAsync()
+    {
+        association = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest() { AssociationId = Id });
+
+        await base.OnInitializedAsync();
+    }
+
+    void DeleteEntity()
+    {
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && association != null)
+        {
+            await Post<TeamContract>("/api/Association/DeleteAssociation", new AssociationRequest
+            {
+                AssociationId = association.AssociationId
+            });
+            UriHelper.NavigateTo(RouteHelper.GetUrl<Associations>());
+        }
+        await modalRefEntityToDelete.Hide();
+    }
+
+}

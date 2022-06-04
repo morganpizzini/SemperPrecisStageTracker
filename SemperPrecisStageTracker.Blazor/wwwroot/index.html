@@ -16,7 +16,8 @@
     <link href="SemperPrecisStageTracker.Blazor.styles.css" rel="stylesheet" />
 
     <link href="manifest.json" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="PWA/images/512x512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="PWA/images/192x192.png" />
     <style>
         .spinner-wrapper {
             display: flex;
@@ -116,7 +117,7 @@
                         console.info('Registration successful, scope is:', registration.scope);
                         registration.onupdatefound = () => {
                             setTimeout(function () {
-                                if (window.location.hostname !== 'localhost' && window.location.pathname.startsWith("/app")) {
+                                if (window.location.hostname !== 'localhost') {
                                     DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
                                 }
                             }, 3000)
@@ -156,7 +157,7 @@
                 // Notify C# Code that it can show an alert
                 // MyBlazorInstallMethod must be [JSInvokable]
                 setTimeout(function () {
-                    if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost' && window.location.pathname.startsWith("/app")) {
+                    if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost') {
                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
                     }
                 }, 3000);
@@ -327,7 +328,7 @@
             },
             installPWA: function () {
                 return new Promise((resolve, reject) => {
-                    localStorage.setItem('skipInstall', "true");
+                    //localStorage.setItem('skipInstall', "true");
                     if (window.PWADeferredPrompt) {
                         // Use the stashed event to continue the install process
                         window.PWADeferredPrompt.prompt();

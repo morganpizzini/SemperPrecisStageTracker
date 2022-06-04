@@ -437,6 +437,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 Match = GenerateContract(entity, association, place),
                 StageNames = matchResult.StageNames,
+                Overall = matchResult.Overall.As(GenerateContract),
                 DivisionMatchResults = matchResult.Results.As(GenerateContract),
                 CategoryResults =  matchResult.CategoryResults.As(GenerateContract)
             };
@@ -513,12 +514,13 @@ namespace SemperPrecisStageTracker.API.Helpers
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-
+            
             //Ritorno il contratto
             return new ShooterMatchResultContract()
             {
                 Shooter = GenerateContract(entity.Shooter),
                 TeamName = entity.TeamName,
+                Division = entity.DivisionId,
                 Classification = entity.Classification,
                 Results = entity.Results.As(GenerateContract)
             };

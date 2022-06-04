@@ -1,0 +1,121 @@
+﻿@page "/places"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<Places> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Places"]</Heading>
+@if (AuthService.CheckPermissions(PermissionCtor.ManagePlaces.CreatePlaces))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<PlaceNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewPlace"]</Button>
+}
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell>@L["Holder"]</TableHeaderCell>
+            <TableHeaderCell>@L["Address"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @if (ApiLoading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+            </TableRow>
+        }
+        else
+        {
+            @if (places.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                <Virtualize Items="@places" Context="place">
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<PlaceDetail>(new{ id = place.PlaceId}))">@place.Name</NavLink></TableRowHeader>
+                        <TableRowCell>@place.Holder</TableRowCell>
+                        <TableRowCell>@place.City</TableRowCell>
+                        <TableRowCell>
+                            @if (AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, place.PlaceId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new {id = place.PlaceId}))"><Icon Name="IconName.Pen"/></Button>
+                            }
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new {id = place.PlaceId}))"><Icon Name="IconName.Search"/></Button>
+                            @if (AuthService.CheckPermissions(Permissions.ManagePlaces, place.PlaceId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(place))"><Icon Name="IconName.Delete" /></Button>
+                            }
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            }
+        }
+    </TableBody>
+</Table>
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityToDelete.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+    IList<PlaceContract> places = new List<PlaceContract>();
+    private Modal modalRefEntityToDelete;
+    PlaceContract entityToDelete = new();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntities();
+
+        await base.OnInitializedAsync();
+    }
+    private async Task LoadEntities()
+    {
+        places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
+    }
+
+    void DeleteEntity(PlaceContract entity)
+    {
+        if (entity == null)
+            return;
+        entityToDelete = entity;
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && entityToDelete != null)
+        {
+            await Post<PlaceContract>("/api/Place/DeletePlace", new PlaceRequest
+            {
+                PlaceId = entityToDelete.PlaceId
+            });
+
+            await LoadEntities();
+        }
+        entityToDelete = new PlaceContract();
+        await modalRefEntityToDelete.Hide();
+    }
+}

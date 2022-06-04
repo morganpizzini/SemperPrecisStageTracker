@@ -9,6 +9,7 @@ namespace SemperPrecisStageTracker
     public class ShooterMatchResult
     {
         public Shooter Shooter { get; set; }
+        public string DivisionId { get; set; }
         public string Classification { get; set; }
         public string TeamName { get; set; }
         public IList<ShooterStageResult> Results { get; set; }

@@ -223,3 +223,6 @@ Thumbs.db
 
 !SemperPrecisStageTracker.Blazor/wwwroot/js/cookieconsent.min.js
 !SemperPrecisStageTracker.Blazor/wwwroot/css/app.min.css
+
+!SemperPrecisStageTracker.Blazor.FrontEnd/wwwroot/css/app.min.css
+!SemperPrecisStageTracker.Blazor.FrontEnd/wwwroot/js/cookieconsent.min.js

@@ -1,0 +1,224 @@
+﻿@page "/matches/{id}/stats"
+@page "/stats/{shortLink}"
+@using SemperPrecisStageTracker.Blazor.Services.Models
+@inject IHttpService Client
+@inject IStringLocalizer<MatchStats> L
+
+<Heading Size="HeadingSize.Is1">@L["Stats"]</Heading>
+@if (PageLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Match"]</CardTitle>
+                    <CardText>
+                        @if (interactive)
+                        {
+                            <text>
+                                <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = stats.Match.MatchId}))">@stats.Match.Name</NavLink> - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                @stats.Match.Name - @stats.Match.MatchDateTimeStart.ToString("d") / @stats.Match.MatchDateTimeEnd.ToString("d")
+                            </text>
+                        }
+                    </CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (stats.Match.Association != null)
+        {
+            <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText>
+                            @if (interactive)
+                            {
+                                <NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new {id = stats.Match.Association.AssociationId}))">@stats.Match.Association.Name</NavLink>
+                            }
+                            else
+                            {
+                                @stats.Match.Association.Name
+                            }
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+
+    <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+        <Items>
+            <Tab Name="tab1">@L["Overall"]</Tab>
+            <Tab Name="tab2">@L["Division"]</Tab>
+            <Tab Name="tab3">@L["Categories"]</Tab>
+        </Items>
+        <Content>
+            <TabPanel Name="tab1">
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                            <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <Virtualize Items="@stats.Overall" Context="result">
+                            <TableRow>
+                                <TableRowHeader>@result.Shooter.CompleteName</TableRowHeader>
+                                <TableRowCell>@result.Division</TableRowCell>
+                                <TableRowCell>@result.Classification</TableRowCell>
+                                <TableRowCell>@result.TeamName</TableRowCell>
+                                <TableRowCell>@(result.Results.Count != stats.StageNames.Count ? L["DNF"] : result.Total < 0 ? @L["DQ"] : $"{result.Total:f2}")</TableRowCell>
+                            </TableRow>
+                        
+                        </Virtualize>
+                    </TableBody>
+                </Table>
+            </TabPanel>
+            <TabPanel Name="tab2">
+                <Virtualize Items="@stats.DivisionMatchResults" Context="division">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@division.Name</CardTitle>
+                            @foreach (var classification in division.Classifications)
+                            {
+                                <CardText>@classification.Classification</CardText>
+                                <Table Striped="true" Hoverable="true">
+                                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                        <TableRow>
+                                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                            @foreach (var stage in stats.StageNames)
+                                            {
+                                                <TableHeaderCell>@(stage)</TableHeaderCell>
+                                            }
+                                            <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <Virtualize Items="@classification.Shooters" Context="shooter">
+                                            <TableRow>
+                                                <TableRowHeader>@shooter.Shooter.CompleteName</TableRowHeader>
+                                                <TableRowCell>@shooter.TeamName</TableRowCell>
+                                                    @foreach (var stageName in stats.StageNames)
+                                                    {
+                                                        var current = shooter.Results.FirstOrDefault(x => x.StageName == stageName);
+                                                        if (current != null)
+                                                        {
+                                                            if (current.Total < 0)
+                                                            {
+                                                                <TableRowCell>-</TableRowCell>
+                                                            }
+                                                            else
+                                                            {
+                                                                <TableRowCell>@($"{current.Total:f2}")</TableRowCell>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <TableRowCell>-</TableRowCell>
+                                                        }
+                                                    }
+                                                <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    </TableBody>
+                                </Table>
+                            }
+                        </CardBody>
+                    </Card>
+                </Virtualize>
+            </TabPanel>
+            <TabPanel Name="tab3">
+                <Row>
+                    <Virtualize Items="@stats.CategoryResults" Context="division">
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Card Margin="Margin.Is4.OnY">
+                                <CardBody>
+                                    <CardTitle>@division.Classification</CardTitle>
+                                    <Table Striped="true" Hoverable="true">
+                                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                            <TableRow>
+                                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <Virtualize Items="@division.Shooters" Context="shooter">
+
+                                                <TableRow>
+                                                    <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                                    <TableRowCell>@shooter.TeamName</TableRowCell>
+                                                    <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                                </TableRow>
+                                            </Virtualize>
+                                        </TableBody>
+                                    </Table>
+                                </CardBody>
+                            </Card>
+                        </Column>
+                    </Virtualize>
+                </Row>
+            </TabPanel>
+        </Content>
+    </Tabs>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string ShortLink { get; set; }
+
+    public bool PageLoading { get; set; } = true;
+
+    bool interactive => string.IsNullOrEmpty(ShortLink);
+    
+    string selectedTab = "tab1";
+
+    MatchStatsResultContract stats = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ApiResponse<MatchStatsResultContract> response;
+        if (!string.IsNullOrEmpty(ShortLink))
+        {
+            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
+        }
+        else
+        {
+            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
+        }
+
+        if (response is { WentWell: true })
+        {
+            stats = response.Result;
+        }
+
+        PageLoading = false;
+
+        await base.OnInitializedAsync();
+    }
+
+    private Task OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+
+        return Task.CompletedTask;
+    }
+}

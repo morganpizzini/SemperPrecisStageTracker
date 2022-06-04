@@ -1,0 +1,31 @@
+﻿@page "/permissions"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<Settings> L
+<Heading Size="HeadingSize.Is1">@L["Settings"]</Heading>
+<Divider />
+
+<Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+    <Items>
+        <Tab Name="tab1">@L["Roles"]</Tab>
+        <Tab Name="tab2">@L["UserPermission"]</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="tab1" class="pt-2">
+            <PermissionRoles></PermissionRoles>
+        </TabPanel>
+        <TabPanel Name="tab2">
+            @L["TBD"]
+        </TabPanel>
+    </Content>
+</Tabs>
+@code {
+    
+    string selectedTab = "tab1";
+   
+    private Task OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+
+        return Task.CompletedTask;
+    }
+}

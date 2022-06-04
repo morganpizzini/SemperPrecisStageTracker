@@ -1,0 +1,270 @@
+﻿@page "/settings"
+@using SemperPrecisStageTracker.Blazor.Models
+@inherits SemperPrecisBaseComponent
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<Settings> L
+@inject ILocalStorageService localStorage
+@inject MainServiceLayer mainServiceLayer;
+<Heading Size="HeadingSize.Is1">@L["Settings"]</Heading>
+<Divider />
+
+<Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+    <Items>
+        <Tab Name="tab1">@L["General"]</Tab>
+        <Tab Name="tab2">@L["Offline"]</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="tab1">
+            <div class="row mt-2">
+                <div class="col">
+                    <CultureSelector />
+                </div>
+                <div class="col">
+                    <ThemeSelector />
+                </div>
+                @if (hasInstallPWAPrompt)
+                {
+                    <div class="col">
+                        <p class="font-weight-bold mb-1">@L["PWAAvailable"]</p>
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@InstallPwa">
+                            @L["InstallPWA"]
+                        </Button>
+                    </div>
+                }
+            </div>
+        </TabPanel>
+        <TabPanel Name="tab2">
+            @if (!model.OfflineMode)
+            {
+                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@formModel.MatchId">
+                                    <ChildContent>
+                                        <SelectItem Value="@("")" Disabled></SelectItem>
+                                        @foreach (var match in matches)
+                                    {
+                                        <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongMatch"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                        <ChildContent>@L["GoOffline"]</ChildContent>
+                    </Button>
+                </Field>
+            </Validations>
+            }
+            else
+            {
+                <h3>@L["OfflineStatus"]</h3>
+                <p>
+                    <b>@L["Match"]:</b>&nbsp;@(matches.FirstOrDefault(x=>x.MatchId==model.MatchId)?.Name ?? L["NotFound"])
+                </p>
+                <p>
+                    <b>@L["PendingChanges"]:</b>&nbsp;@(pendingChanges> 0 ? pendingChanges : L["NoPendingChanges"])
+                </p>
+                <Button Size="Size.Small" Color="Color.Info" Clicked="@SwitchOnline" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["SyncData"]</LoadingTemplate>
+                    <ChildContent>@L["BackOnline"]</ChildContent>
+                </Button>
+                @if (pendingChanges > 0)
+                {
+                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["UploadData"]</LoadingTemplate>
+                        <ChildContent>@L["UploadData"]</ChildContent>
+                    </Button>
+                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["ExportData"]</LoadingTemplate>
+                        <ChildContent>@L["ExportData"]</ChildContent>
+                    </Button>
+                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["DeleteData"]</LoadingTemplate>
+                        <ChildContent>@L["DeleteData"]</ChildContent>
+                    </Button>
+                }
+            }
+        </TabPanel>
+    </Content>
+</Tabs>
+<Modal @ref="modalRefPrompt">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@modalTitle</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@modalBody</FieldLabel>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPrompt(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPrompt(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    Validations validations;
+    private Modal modalRefPrompt;
+    private string modalState = string.Empty;
+
+    private string modalTitle = string.Empty;
+    private string modalBody = string.Empty;
+
+    ClientSetting model = new();
+    ClientSetting formModel = new();
+    IList<MatchContract> matches = new List<MatchContract>();
+    private int pendingChanges = 0;
+
+    string selectedTab = "tab1";
+
+    bool hasInstallPWAPrompt;
+    protected override async Task OnInitializedAsync()
+    {
+        matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        await InitPageOps();
+
+        
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            CheckPwaInstallStatus();
+        }
+    }
+
+    private void CheckPwaInstallStatus()
+    {
+        hasInstallPWAPrompt = ((IJSInProcessRuntime)JSRuntime).Invoke<bool>("BlazorPWA.hasPWAInstalled");
+    }
+
+    private async Task InstallPwa()
+    {
+        await ((IJSInProcessRuntime)JSRuntime).InvokeVoidAsync("BlazorPWA.installPWA");
+        CheckPwaInstallStatus();
+    }
+
+    private Task OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+
+        return Task.CompletedTask;
+    }
+    private async Task InitPageOps()
+    {
+        model = localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
+        if (model.OfflineMode)
+            pendingChanges = await mainServiceLayer.CountUnsavedModels();
+    }
+    async Task Submit()
+    {
+        await validations.ClearAll();
+        if (!(await validations.ValidateAll()))
+            return;
+        formModel.OfflineMode = true;
+        var result = await mainServiceLayer.UpdateModel(formModel);
+        if (!result.Status)
+        {
+            await ShowNotification(string.Join(", ", result.Errors), L["Error"], NotificationType.Error);
+            return;
+        }
+        await ShowNotification(L["DataDownloaded"], L["Success"], NotificationType.Success);
+
+        await InitPageOps();
+    }
+
+    async Task SwitchOnline()
+    {
+        if (await mainServiceLayer.CheckUnsavedModels())
+        {
+            modalState = "override-conf";
+            modalTitle = L["OnlineModePromptTitle"];
+            modalBody = L["OnlineModePromptText"];
+            await modalRefPrompt.Show();
+            return;
+        }
+        await mainServiceLayer.UpdateModel(new ClientSetting
+            {
+                OfflineMode = false
+            });
+        await ShowNotification(L["OfflineModeChanged"], L["Success"], NotificationType.Success);
+
+        await InitPageOps();
+    }
+
+    async Task UploadData()
+    {
+        await mainServiceLayer.UploadData();
+        await InitPageOps();
+
+        await ShowNotification(L["DataUploaded"], L["Success"], NotificationType.Success);
+    }
+
+    async Task ClearUnsavedModels()
+    {
+        modalState = "clear-conf";
+        modalTitle = L["ClearPromptTitle"];
+        modalBody = L["ClearPromptText"];
+        await modalRefPrompt.Show();
+    }
+
+    private async Task HideModalPrompt(bool choice)
+    {
+        if (choice)
+        {
+            switch (modalState)
+            {
+                case "clear-conf":
+                    await mainServiceLayer.ClearUnsavedModels();
+                    await ShowNotification(L["DataDeleted"], L["Success"], NotificationType.Success);
+                    await InitPageOps();
+                    break;
+                case "override-conf":
+                    await mainServiceLayer.ClearUnsavedModels();
+                    var result = await mainServiceLayer.UpdateModel(formModel);
+                    if (!result.Status)
+                    {
+                        await ShowNotification(string.Join(", ", result.Errors), L["Error"], NotificationType.Error);
+                        return;
+                    }
+                    await ShowNotification(L["OfflineModeChanged"], L["Success"], NotificationType.Success);
+                    await InitPageOps();
+                    break;
+            }
+        }
+        await modalRefPrompt.Hide();
+    }
+
+    private async Task ExportData()
+    {
+        var changes = await mainServiceLayer.GetChanges();
+        var shooters = await mainServiceLayer.GetShooters();
+        var match = await mainServiceLayer.GetMatch(model.MatchId);
+
+        var strings = new List<string>();
+        strings.Add("Stage,Shooter,Total time,Down points,Procedurals,Hit on non threat, Flagrant penalties,Ftdr,Notes");
+        foreach (var result in changes.Item1)
+        {
+            strings.Add($"{match.Stages.FirstOrDefault(x => x.StageId == result.StageId)?.Name ?? result.StageId},{shooters.FirstOrDefault(x => x.ShooterId == result.ShooterId)?.CompleteName ?? result.ShooterId},{result.Time},{result.DownPoints?.DefaultIfEmpty(0).Sum() ?? 0},{result.Procedurals},{result.HitOnNonThreat},{result.FlagrantPenalties},{result.Ftdr},{result.Notes}");
+        }
+
+        var text = string.Join("\r\n", strings);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(text);
+        JSRuntime.SaveAs($"{match.Name}-{DateTime.Now.ToString("s")}.csv", bytes);
+    }
+}

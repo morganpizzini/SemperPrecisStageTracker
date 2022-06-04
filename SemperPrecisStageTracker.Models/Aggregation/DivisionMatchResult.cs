@@ -4,6 +4,7 @@ namespace SemperPrecisStageTracker
 {
     public class MatchResultData
     {
+        public IList<ShooterMatchResult> Overall { get; set; } = new List<ShooterMatchResult>();
         public IList<DivisionMatchResult> Results { get; set; } = new List<DivisionMatchResult>();
 
         public IList<ShooterClassificationResult> CategoryResults { get; set; } =

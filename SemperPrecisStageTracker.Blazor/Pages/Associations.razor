@@ -1,0 +1,120 @@
+﻿@page "/associations"
+@inherits SemperPrecisBaseComponent
+@inject IHttpService Client
+@inject IStringLocalizer<Associations> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Associations"]</Heading>
+@if (AuthService.CheckPermissions(PermissionCtor.ManageAssociations.CreateAssociations))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<AssociationNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
+}
+<Divider/>
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @if (ApiLoading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+            </TableRow>
+        }
+        else
+        {
+            @if (associations.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                <Virtualize Items="@associations" Context="association">
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))">@association.Name</NavLink></TableRowHeader>
+                        <TableRowCell>
+                            @if (AuthService.CheckPermissions(PermissionCtor.ManageAssociations.EditAssociation, association.AssociationId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new {id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
+                            }
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationDetail>(new {id = association.AssociationId}))"><Icon Name="IconName.Search" /></Button>
+                            @if (AuthService.CheckPermissions(PermissionCtor.ManageAssociations, association.AssociationId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(association))"><Icon Name="IconName.Delete" /></Button>
+                            }
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            }
+        }
+    </TableBody>
+</Table>
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteMatch"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityToDelete.Name</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+    IList<AssociationContract> associations = new List<AssociationContract>();
+
+    private Modal modalRefEntityToDelete;
+    AssociationContract entityToDelete = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntities();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadEntities()
+    {
+        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+    }
+
+    void DeleteEntity(AssociationContract entity)
+    {
+        if (entity == null)
+            return;
+        entityToDelete = entity;
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && entityToDelete != null)
+        {
+            await Post<AssociationContract>("/api/Association/DeleteAssociation", new AssociationRequest
+            {
+                AssociationId= entityToDelete.AssociationId
+            });
+
+            await LoadEntities();
+        }
+        entityToDelete = new AssociationContract();
+        await modalRefEntityToDelete.Hide();
+    }
+}

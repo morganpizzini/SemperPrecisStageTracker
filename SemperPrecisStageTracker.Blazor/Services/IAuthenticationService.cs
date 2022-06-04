@@ -13,6 +13,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         Task<bool> Login(string username, string password);
         void UpdateLogin(ShooterContract user);
         void Logout();
+        bool CheckPermissions(IPermissionInterface permissions, string resourceId = "");
         bool CheckPermissions(IList<Permissions> permissions, string resourceId = "");
         bool CheckPermissions(Permissions permission, string entityId = "");
     }

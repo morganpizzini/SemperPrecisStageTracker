@@ -1,0 +1,594 @@
+﻿@page "/matches/{id}/stages/{stageId}/group/{groupId}"
+@using SemperPrecisStageTracker.Shared.StageResults
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<StageGroupDetail> L
+@inject IJSRuntime JSRuntime
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
+<NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = StageId}))">@L["BackToStage"]</NavLink>
+<Divider />
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Group"]</CardTitle>
+                    <CardText>@group.Name</CardText>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    <CardText>@group.Shooters.Count</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (group.Match != null)
+        {
+            <Column ColumnSize="ColumnSize.Is6">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Match"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTimeStart.ToString("d") / @group.Match.MatchDateTimeEnd.ToString("d")</CardText>
+                        <CardTitle>@L["Stage"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = StageId}))">@stage.Name</NavLink></CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Divider />
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (shooters.Count > 0)
+                                {
+                                    <Virtualize Context="shooter" Items="@shooters">
+                                        <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                            <TableRowHeader>
+                                                @{
+                                                    if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                    {
+                                                        if ((shooter.ShooterStage as IStageResult).Total < 0)
+                                                        {
+                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                                @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
+                                                            </Button>
+                                                        }
+                                                        else
+                                                        {
+                                                            @shooter.GroupShooter.Shooter.LastName
+                                                            @shooter.GroupShooter.Shooter.FirstName
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                            @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
+                                                        </Button>
+                                                    }
+                                                }
+                                            </TableRowHeader>
+                                            <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
+                                            <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
+                                            <TableRowCell>@((shooter.ShooterStage as IStageResult).TotalString)</TableRowCell>
+                                        </TableRow>
+                                        @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
+                                        {
+                                            <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                                <TableRowCell></TableRowCell>
+                                                <TableRowCell ColumnSpan="3">
+                                                    @shooter.ShooterStage.Notes
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </Virtualize>
+                                }
+                                else
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                            @L["NoShooters"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+<Modal @ref="modalRef">
+    <ModalContent Centered="true" Size="@ModalSize.Fullscreen">
+        <ModalHeader>
+            <ModalTitle>@shooterToFill.LastName @shooterToFill.FirstName - @shooterToFill.BirthDate.ToString("d")</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Group"]</FieldLabel>
+                        <FieldBody>
+                            @group.Name
+                        </FieldBody>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Stage"]</FieldLabel>
+                        <FieldBody>
+                            @stage.Name
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            <Validations @ref="validations" Mode="ValidationMode.Auto" Model="@model" ValidateOnLoad="false">
+
+                <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                    <Items>
+                        <Tab Name="penalties">@L["Penalities"]</Tab>
+                        <Tab Name="downs">@L["DownPoints"]</Tab>
+                        <Tab Name="recap">@L["Recap"]</Tab>
+                    </Items>
+                    <Content>
+                        <TabPanel Name="penalties">
+                            <Validation>
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Time"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <NumericEdit Placeholder="@L["Time"]" Min="1" Debounce="true" DebounceInterval="2000" ElementId="time" @bind-Value="@model.Time" >
+                                            <Feedback>
+                                                <ValidationError>@L["WrongTime"]</ValidationError>
+                                            </Feedback>
+                                        </NumericEdit>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Bonus"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@L["Bonus"]" @bind-Value="@model.Bonus">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongBonus"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Bonus < 1 ? true : false)" Clicked="@(() => { model.Bonus--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Bonus++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @if (match.Association.FirstProceduralPointDown > 0)
+                            {
+                                <Validation Validator="@ValidationRule.None">
+                                    <Field Horizontal="true">
+                                        <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.FirstPenaltyLabel</FieldLabel>
+                                        <FieldBody ColumnSize="ColumnSize.Is8">
+                                            <Addons>
+                                                <Addon AddonType="AddonType.Body">
+                                                    <NumericEdit Placeholder="@match.Association.FirstPenaltyLabel" @bind-Value="@model.Procedurals">
+                                                        <Feedback>
+                                                            <ValidationError>@L["InputError"]</ValidationError>
+                                                        </Feedback>
+                                                    </NumericEdit>
+                                                </Addon>
+                                                <Addon AddonType="AddonType.End">
+                                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Procedurals < 1 ? true : false)" Clicked="@(() => { model.Procedurals--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                    <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Procedurals++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                                </Addon>
+                                            </Addons>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            }
+                        @if (match.Association.SecondProceduralPointDown > 0)
+                        {
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.SecondPenaltyLabel</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@match.Association.SecondPenaltyLabel" @bind-Value="@model.FlagrantPenalties">
+                                                    <Feedback>
+                                                        <ValidationError>@L["InputError"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.FlagrantPenalties < 1 ? true : false)" Clicked="@(() => { model.FlagrantPenalties--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.FlagrantPenalties++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        }
+                        @if (match.Association.ThirdProceduralPointDown > 0)
+                        {
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@match.Association.ThirdPenaltyLabel</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@match.Association.ThirdPenaltyLabel" @bind-Value="@model.Ftdr">
+                                                    <Feedback>
+                                                        <ValidationError>@L["InputError"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.Ftdr < 1 ? true : false)" Clicked="@(() => { model.Ftdr--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.Ftdr++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                        }
+                            <Row>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Validation Validator="@ValidationRule.None">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.Is8">
+                                                <Check TValue="bool" @bind-Checked="@model.Warning">@L["HasWarning"]</Check>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Validation Validator="@ValidationRule.None">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.Is4">&nbsp;</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.Is8">
+                                                <Check TValue="bool" @bind-Checked="@model.Disqualified">@L["Disqualified"]</Check>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                            </Row>
+                        </TabPanel>
+                        <TabPanel Name="downs">
+                            <Validation Validator="@ValidationRule.None">
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["HitOnNonThreat"]</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <NumericEdit Placeholder="@L["HitOnNonThreat"]" @bind-Value="@model.HitOnNonThreat">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongHitOnNonThreat"]</ValidationError>
+                                                    </Feedback>
+                                                </NumericEdit>
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.HitOnNonThreat < 1)" Clicked="@(() => { model.HitOnNonThreat--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.HitOnNonThreat++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            </Validation>
+                            @for (int i = 0; i < model.DownPoints.Count; i++)
+                            {
+                                var tmp = i;
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is4">@L["Target"]&nbsp;@(tmp + 1)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is8">
+                                        <Addons>
+                                            <Addon AddonType="AddonType.Body">
+                                                <input id="@($"target{tmp}")" type="number" value="@model.DownPoints[tmp]" class="form-control"
+                                                       onfocus="this.select();"
+                                                       @onkeydown="@((e) => Focus(e, tmp + 1))"
+                                                       @onchange="@(e => model.DownPoints[tmp] = e.Value != null && e.Value is string s && s.Length>0 ? Convert.ToInt32(s) : 0)" />
+
+                                            </Addon>
+                                            <Addon AddonType="AddonType.End">
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Warning" Clicked="@(() => { model.DownPoints[tmp]+=5; })">+5</Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" disabled="@(model.DownPoints[tmp] < 1)" Clicked="@(() => { model.DownPoints[tmp]--; })"><Icon Name="IconName.MinusSquare" /></Button>
+                                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { model.DownPoints[tmp]++; })"><Icon Name="IconName.PlusSquare" /></Button>
+                                            </Addon>
+                                        </Addons>
+                                    </FieldBody>
+                                </Field>
+                            }
+                        </TabPanel>
+                        <TabPanel Name="recap">
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Time"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@($"{model.Time:f2}")</Text>
+                                </FieldBody>
+                            </Field>
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Bonus"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@model.Bonus</Text>
+                                </FieldBody>
+                            </Field>
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["HitOnNonThreat"] (x @match.Association.HitOnNonThreatPointDown)</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@model.HitOnNonThreat</Text>
+                                </FieldBody>
+                            </Field>
+                            @if (match.Association.FirstProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.FirstPenaltyLabel] (x @match.Association.FirstProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.Procedurals</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
+                            @if (match.Association.SecondProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.SecondPenaltyLabel] (x @match.Association.SecondProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.FlagrantPenalties</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
+                            @if (match.Association.ThirdProceduralPointDown > 0)
+                            {
+                                <Field Horizontal="true">
+                                    <FieldLabel ColumnSize="ColumnSize.Is8">@L[match.Association.ThirdPenaltyLabel] (x @match.Association.ThirdProceduralPointDown)</FieldLabel>
+                                    <FieldBody ColumnSize="ColumnSize.Is4">
+                                        <Text>@model.Ftdr</Text>
+                                    </FieldBody>
+                                </Field>
+                            }
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["DownPoints"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@model.DownPoints.Sum()</Text>
+                                </FieldBody>
+                            </Field>
+                            <Divider />
+                            <Field Horizontal="true">
+                                <FieldLabel ColumnSize="ColumnSize.Is8">@L["Total"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.Is4">
+                                    <Text>@((model as IStageResult).TotalString)</Text>
+                                </FieldBody>
+                            </Field>
+                        </TabPanel>
+                    </Content>
+                </Tabs>
+
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalConfirmRef">
+    <ModalContent Size="ModalSize.Default" Centered="true">
+        <ModalHeader>
+            <ModalTitle>
+                @L["ConfirmTime"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Shooter"]</FieldLabel>
+                        <FieldBody>
+                            @shooterToFill.LastName @shooterToFill.FirstName
+                        </FieldBody>
+                    </Field>
+                </Column>
+               
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Stage"]</FieldLabel>
+                        <FieldBody>
+                            @stage.Name
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            <Field>
+                <FieldLabel>@L["Total"]</FieldLabel>
+                <FieldBody>
+                    <Text>@((model as IStageResult).TotalString)</Text>
+                </FieldBody>
+            </Field>
+
+            <Validations @ref="noteValidations" Mode="ValidationMode.Manual" Model="@model">
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12">@L["Notes"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <TextEdit Placeholder="@L["Notes"]" @bind-Text="@model.Notes"></TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideConfirmModal(true))">@L["Approve"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string StageId { get; set; }
+
+    [Parameter]
+    public string GroupId { get; set; }
+
+    string selectedTab = "penalties";
+
+    private void OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+    }
+
+    // reference to the modal component
+    private Modal modalConfirmRef;
+    private Modal modalRef;
+    ShooterContract shooterToFill = new ();
+
+    StageContract stage = new ();
+    MatchContract match = new();
+    GroupContract group = new ();
+    IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
+
+    Validations validations;
+    Validations noteValidations;
+    ShooterStageRequest model = new();
+
+    bool canInsertScore = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadShooters();
+        stage = await Post(async () =>
+        {
+            group = await MainServiceLayer.GetGroup(Id,GroupId);
+            match = await MainServiceLayer.GetMatch(group.Match.MatchId);
+            return await MainServiceLayer.GetStage(Id, StageId);
+        });
+
+        model.StageId = stage.StageId;
+        InitModelList();
+
+        canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id);
+                         
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadShooters()
+    {
+        shooters = await MainServiceLayer.FetchGroupShooterStage(GroupId, StageId);
+        //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageName = StageName });
+    }
+
+    void FillShooter(ShooterStageAggregationResult shooter)
+    {
+        if (shooter == null || !canInsertScore)
+            return;
+
+        shooterToFill = shooter.GroupShooter.Shooter;
+        model.FirstProceduralPointDown = match.Association.FirstProceduralPointDown;
+        model.SecondProceduralPointDown = match.Association.SecondProceduralPointDown;
+        model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
+        model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
+        model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
+        model.Disqualified = shooter.ShooterStage.Disqualified;
+        model.DownPoints = shooter.ShooterStage.DownPoints;
+        model.FlagrantPenalties = shooter.ShooterStage.FlagrantPenalties;
+        model.Ftdr = shooter.ShooterStage.Ftdr;
+        model.HitOnNonThreat = shooter.ShooterStage.HitOnNonThreat;
+        model.Procedurals = shooter.ShooterStage.Procedurals;
+        model.Bonus = shooter.ShooterStage.Bonus;
+        model.Time = shooter.ShooterStage.Time;
+        model.Warning= shooter.ShooterStage.Warning;
+        model.Notes = shooter.ShooterStage.Notes;
+        InitModelList();
+        selectedTab = "penalties";
+        modalRef.Show();
+    }
+
+    void InitModelList()
+    {
+        if (model.DownPoints.Count > 0)
+            return;
+        var tmp = new List<int>();
+        for (int i = 0; i < stage.Targets; i++)
+        {
+            tmp.Add(0);
+        }
+        model.DownPoints = tmp;
+    }
+    private async Task HideModal(bool choice)
+    {
+        if (choice)
+        {
+            if (! (await validations.ValidateAll()))
+                return;
+            await validations.ClearAll();
+            await modalConfirmRef.Show();
+        }
+        else
+        {
+            shooterToFill = new ShooterContract();
+            InitModelList();
+            await modalRef.Hide();
+        }
+
+    }
+    private async Task HideConfirmModal(bool choice)
+    {
+        if (choice)
+        {
+            if (!(await noteValidations.ValidateAll()))
+                return;
+            await noteValidations.ClearAll();
+
+            var response = await MainServiceLayer.UpsertShooterStage(model);
+            await LoadShooters();
+            shooterToFill = new ShooterContract();
+            InitModelList();
+            await modalRef.Hide();
+        }
+        await modalConfirmRef.Hide();
+    }
+
+    private void OnFocus(string elementId)
+    {
+        ((IJSInProcessRuntime)JSRuntime).InvokeVoid("customFunctions.selectElement", elementId);
+    }
+    public void Focus(KeyboardEventArgs e, int elementId)
+    {
+        var js = ((IJSInProcessRuntime)JSRuntime);
+        if (js.Invoke<bool>("customFunctions.isDevice"))
+            return;
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            if (elementId < 0 || elementId >= model.DownPoints.Count)
+                return;
+            js.InvokeVoid("customFunctions.focusElement", $"target{elementId}");
+        }
+    }
+}

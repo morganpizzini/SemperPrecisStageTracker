@@ -9,10 +9,10 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using SemperPrecisStageTracker.Blazor.Pages.App;
+using SemperPrecisStageTracker.Blazor.Pages;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
-using SemperPrecisStageTracker.Shared.Utils;
+
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -105,7 +105,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }
-        
+
+
+        public bool CheckPermissions(IPermissionInterface permission, string entityId = "") =>
+            CheckPermissions(permission.List, entityId);
 
         public bool CheckPermissions(Permissions permission, string entityId = "") =>
             CheckPermissions(new List<Permissions> { permission }, entityId);

@@ -1,0 +1,369 @@
+﻿@page "/matches/{id}/groups/{groupId}"
+@using Microsoft.Extensions.Logging
+@using System.Text.Json
+@inherits SemperPrecisBaseComponent
+@inject ILogger<GroupDetail> log;
+@inject IStringLocalizer<GroupDetail> L
+
+<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
+<Divider />
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Group"]</CardTitle>
+                    <CardText>@group.Name</CardText>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+                    <CardText>@group.Shooters.Count</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (group.Match != null)
+        {
+            <Column ColumnSize="ColumnSize.Is6">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Association"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = group.Match.Association.AssociationId}))">@group.Match.Association.Name</NavLink></CardText>
+                        <CardTitle>@L["Match"]</CardTitle>
+                        <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTimeStart.ToString("d") / @group.Match.MatchDateTimeEnd.ToString("d")</CardText>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
+    <Divider />
+    @if (MainServiceLayer.Online && availableShooters.Count > 0 && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+    {
+        <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model"/>
+        <Divider />
+    }
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Shooters"]</CardTitle>
+
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Team"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Payment"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (group.Shooters.Count > 0)
+                            {
+                                <Virtualize Items="@group.Shooters" Context="groupShooter">
+                                    <TableRow>
+                                        <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Division</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Team?.Name</TableRowHeader>
+                                        <TableRowHeader>
+                                            @if (groupShooter.HasPay.HasValue)
+                                            {
+                                                <Icon Name="IconName.Check" TextColor="TextColor.Success" />
+                                            }
+                                            else
+                                            {
+                                                <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Danger" />
+                                            }
+                                        </TableRowHeader>
+                                        <TableRowCell>
+                                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(groupShooter))"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
+                                            }
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="6" TextAlignment="TextAlignment.Center">
+                                        @L["NoShooters"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+
+                    </Table>
+
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+     <Modal @ref="modalMoveRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["MoveShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ChooseWhereToMoveShooter"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToMove.ShooterName</Text>
+                </Field>
+                <Validations  @ref="validations" Mode="ValidationMode.Manual" Model="@shooterToMove">
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Group"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@shooterToMove.GroupId">
+                                    <ChildContent>
+                                        @foreach (var group in Groups)
+                                        {
+                                            <SelectItem Value="@group.GroupId">@group.Name</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongGroup"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideMoveModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideMoveModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalEditRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["EditShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <ShooterInGroup AvailableShooters="group.Shooters.Select(x=>x.Shooter).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit"/>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public string GroupId { get; set; }
+
+
+    Validations validations;
+    // reference to the modal component
+    private Modal modalRef;
+    private Modal modalEditRef;
+    private Modal modalMoveRef;
+    GroupShooterContract  shooterToDelete = new();
+
+    IList<GroupContract> Groups = new List<GroupContract>();
+
+    GroupContract group = new();
+    IList<ShooterContract> availableShooters = new List<ShooterContract>();
+
+
+    GroupShooterCreateRequest model = new();
+    GroupShooterCreateRequest shooterToEdit = new();
+    ShooterGroupMoveRequest shooterToMove = new();
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        model.GroupId = GroupId;
+        Groups = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
+        await LoadShooters();
+        group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadShooters()
+    {
+        if (MainServiceLayer.Online)
+        {
+            availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+        }
+    }
+
+    async Task Submit()
+    {
+        var request = new GroupShooterCreateRequest()
+        {
+            HasPay = model.HasPay,
+            ShooterId = model.ShooterId,
+            DivisionId = model.DivisionId,
+            GroupId = model.GroupId,
+            TeamId = model.TeamId
+        };
+        var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request);
+        if (result.Count == 0)
+            return;
+
+        group.Shooters = result;
+        await LoadShooters();
+        model.ShooterId = string.Empty;
+        model.DivisionId = string.Empty;
+        model.TeamId = string.Empty;
+
+    }
+
+    void MoveShooter(GroupShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToMove = new ShooterGroupMoveRequest()
+        {
+            GroupShooterId = shooter.GroupShooterId,
+            GroupId = model.GroupId,
+            ShooterName = shooter.Shooter.CompleteName
+        };
+        modalMoveRef.Show();
+    }
+
+    void EditShooter(GroupShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToEdit = new GroupShooterCreateRequest()
+        {
+            HasPay = shooter.HasPay,
+            ShooterId = shooter.Shooter.ShooterId,
+            DivisionId = shooter.Division,
+            GroupId = model.GroupId,
+            TeamId = shooter.Team.TeamId
+        };
+        modalEditRef.Show();
+    }
+
+    void DeleteShooter(GroupShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToDelete = shooter;
+        modalRef.Show();
+    }
+
+    private async Task HideModal(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
+        {
+            group.Shooters = await Post<IList<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId });
+            await LoadShooters();
+        }
+        shooterToDelete = new GroupShooterContract();
+        await modalRef.Hide();
+    }
+
+    private async Task HideMoveModal(bool choice)
+    {
+        if (choice && shooterToMove!= null)
+        {
+            if (!(await validations.ValidateAll()))
+                return;
+
+            await validations.ClearAll();
+
+            var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/MoveGroupShooter", shooterToMove);
+
+            if (result == null)
+                return;
+            group.Shooters = result;
+        }
+        shooterToEdit = new GroupShooterCreateRequest();
+        await modalEditRef.Hide();
+    }
+
+    private async Task HideEditModal(bool choice)
+    {
+        if (choice && shooterToEdit!= null)
+        {
+            var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
+            if (result.Count == 0)
+                return;
+                
+            group.Shooters = result;
+            await LoadShooters();
+        }
+        shooterToEdit = new GroupShooterCreateRequest();
+        await modalEditRef.Hide();
+    }
+
+}

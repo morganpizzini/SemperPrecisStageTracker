@@ -1,0 +1,178 @@
+﻿@page "/profile"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<PlaceDetail> L
+@inject IAuthenticationService authService
+
+<Heading Size="HeadingSize.Is1">@L["Profile"]</Heading>
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    @if (!showEditModel)
+                    {
+                        <Row>
+                            <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                <CardTitle>@L["FirstName"]</CardTitle>
+                                <CardText>@user.FirstName</CardText>
+                                <CardTitle>@L["LastName"]</CardTitle>
+                                <CardText>@user.LastName</CardText>
+                                <CardTitle>@L["birthDate"]</CardTitle>
+                                <CardText>@user.BirthDate.ToString("d")</CardText>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                <CardTitle>@L["Username"]</CardTitle>
+                                <CardText>@user.Username</CardText>
+                                <CardTitle>@L["Email"]</CardTitle>
+                                <CardText>@user.Email</CardText>
+                            </Column>
+                        </Row>
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@EditProfile">@L["EditProfile"]</Button>
+                    }
+                    else
+                    {
+                        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Name"]</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongFirstName"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["LastName"]</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongLastName"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidateDate">
+                                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["BirthDate"]</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongBirthDate"]</ValidationError>
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field Horizontal="true">
+                                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Username"]</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongUsername"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Email"]</FieldLabel>
+                                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                                <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongEmail"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                                            <ChildContent>@L["Submit"]</ChildContent>
+                                        </Button>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </Validations>
+                    }
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+@code {
+    ShooterContract user = new();
+    Validations validations;
+    UserUpdateRequest model = new();
+    bool showEditModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await Post<ShooterContract>("api/Profile/GetProfile");
+
+        await base.OnInitializedAsync();
+    }
+
+    private void EditProfile()
+    {
+        model = new UserUpdateRequest()
+        {
+            UserId = user.ShooterId,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            BirthDate = user.BirthDate,
+            Email = user.Email,
+            Username = user.Username
+        };
+        showEditModel = true;
+    }
+
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1920, 1, 1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongBirthDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    async Task Submit()
+    {
+        if (! (await validations.ValidateAll()))
+            return;
+        await validations.ClearAll();
+        user = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
+        if (user == null) return;
+        authService.UpdateLogin(user);
+        showEditModel = false;
+    }
+}

@@ -1,0 +1,63 @@
+﻿@page "/teams"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<Teams> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Teams"]</Heading>
+@if (AuthService.CheckPermissions(PermissionCtor.ManageTeams.CreateTeams))
+{
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
+}
+<Divider />
+<Table Striped="true" Hoverable="true">
+    <TableHeader ThemeContrast="ThemeContrast.Dark">
+        <TableRow>
+            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+            <TableHeaderCell></TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @if (ApiLoading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="4" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x" /></TableRowCell>
+            </TableRow>
+        }
+        else
+        {
+            @if (teams.Count == 0)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="2" TextAlignment="@TextAlignment.Center">@L["NoData"]</TableRowCell>
+                </TableRow>
+            }
+            else
+            {
+                <Virtualize Items="@teams" Context="team">
+                    <TableRow>
+                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))">@team.Name</NavLink></TableRowHeader>
+                        <TableRowCell>
+                            @if (AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, team.TeamId))
+                            {
+                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamEdit>(new {id = team.TeamId}))"><Icon Name="IconName.Pen" /></Button>
+                            }
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = team.TeamId}))"><Icon Name="IconName.Search" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            }
+        }
+    </TableBody>
+</Table>
+
+@code {
+    IList<TeamContract> teams = new List<TeamContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+
+        await base.OnInitializedAsync();
+    }
+
+}

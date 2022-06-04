@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SemperPrecisStageTracker.Blazor.Models;
-using SemperPrecisStageTracker.Blazor.Pages.App;
+using SemperPrecisStageTracker.Blazor.Pages;
 using SemperPrecisStageTracker.Blazor.Services.IndexDB;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Contracts;

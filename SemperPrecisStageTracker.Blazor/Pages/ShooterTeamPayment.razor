@@ -1,0 +1,426 @@
+﻿@page "/shooters/{id}/payments/{teamId}"
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<ShooterTeamPayment> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Detail"] @shooter.CompleteName, @L["Team"]: @team.Name</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
+
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManageShooters.ShowShooters.EditShooter.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (PageCondition)
+        {
+            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["DetailShooter"]</Button>
+            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = TeamId}))"><Icon Name="IconName.Pen" /> @L["DetailTeam"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewPayment"]</Button>
+        }
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                             <Row>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <CardTitle>@L["Shooter"]</CardTitle>
+                                    <CardText>@shooter.LastName @shooter.FirstName</CardText>
+                                    <CardTitle>@L["BirthDate"]</CardTitle>
+                                    <CardText>@shooter.BirthDate.ToString("d")</CardText>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <CardTitle>@L["Team"]</CardTitle>
+                                    <CardText>@team.Name</CardText>
+                                </Column>
+                             </Row>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Payments"]</CardTitle>
+
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Amount"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Date"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Description"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (shooterTeamPayments.Count > 0)
+                                    {
+                                        <Virtualize Items="@shooterTeamPayments" Context="payment">
+                                            <TableRow>
+                                                <TableRowHeader>@payment.Amount</TableRowHeader>
+                                                <TableRowCell>@payment.PaymentDateTime.ToString("d")</TableRowCell>
+                                                <TableRowCell>@payment.Reason</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (payment.NotifyExpiration)
+                                                    {
+                                                        <span class="text-danger">!! </span>
+                                                    }
+                                                    @payment.ExpireDateTime?.ToString("d")</TableRowCell>
+                                                <TableRowCell>
+                                                    @if (PageCondition)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditPayment(payment))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeletePayment(payment))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                @L["NoPayment"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+
+        }
+    </Authorized>
+</AuthorizeView>
+<Modal @ref="modalRefPaymentToCreate">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["CreatePayment"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="validationsCreate" Mode="ValidationMode.Manual" Model="@paymentToCreate">
+                <Validation>
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Amount"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <NumericEdit Placeholder="@L["Amount"]" TValue="float" @bind-Value="@paymentToCreate.Amount">
+                                <Feedback>
+                                    <ValidationError>@L["WrongAmount"]</ValidationError>
+                                </Feedback>
+                            </NumericEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@paymentToCreate.PaymentDateTime">
+                                <Feedback>
+                                    <ValidationError>@L["WrongRegistrationDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsNotEmpty">
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Reason"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["Reason"]" @bind-Text="@paymentToCreate.Reason">
+                                <Feedback>
+                                    <ValidationError>@L["WrongReason"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ExpireDateTime"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime?" @bind-Date="@paymentToCreate.ExpireDateTime">
+                                <Feedback>
+                                    <ValidationError>@L["WrongExpireDateTime"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.None">
+                    <Field>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Check TValue="bool" @bind-Checked="@paymentToCreate.NotifyExpiration">@L["NotifyExpiration"]</Check>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPaymentToCreate(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPaymentToCreate(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefPaymentToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["EditPayment"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@paymentToEdit">
+                <Validation>
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Amount"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <NumericEdit Placeholder="@L["Amount"]" TValue="float" @bind-Value="@paymentToEdit.Amount">
+                                <Feedback>
+                                    <ValidationError>@L["WrongAmount"]</ValidationError>
+                                </Feedback>
+                            </NumericEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@paymentToEdit.PaymentDateTime">
+                                <Feedback>
+                                    <ValidationError>@L["WrongRegistrationDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation>
+                    <Field Horizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Reason"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <TextEdit Placeholder="@L["Reason"]" @bind-Text="@paymentToEdit.Reason">
+                                <Feedback>
+                                    <ValidationError>@L["WrongReason"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+            <Validation Validator="@ValidationRule.None">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ExpireDateTime"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime?" @bind-Date="@paymentToEdit.ExpireDateTime">
+                                <Feedback>
+                                    <ValidationError>@L["WrongExpireDateTime"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            <Validation Validator="@ValidationRule.None">
+                <Field>
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Check TValue="bool" @bind-Checked="@paymentToEdit.NotifyExpiration">@L["NotifyExpiration"]</Check>
+                    </FieldBody>
+                </Field>
+            </Validation>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPaymentToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPaymentToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefPaymentToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeletePayment"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Amount"]</FieldLabel>
+                <Text>@paymentToDelete.Amount</Text>
+            </Field>
+            <Field>
+                <FieldLabel>@L["PaymentDate"]</FieldLabel>
+                <Text>@paymentToDelete.PaymentDateTime.ToString("d")</Text>
+            </Field>
+             <Field>
+                <FieldLabel>@L["Reason"]</FieldLabel>
+                <Text>@paymentToDelete.Reason</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPaymentToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalPaymentToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    [Parameter]
+    public string TeamId { get; set; }
+    
+    private bool? pageCondition = null;
+
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
+                                                 && AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, TeamId);
+
+    ShooterContract shooter = new();
+    TeamContract team = new();
+    Validations validations;
+    Validations validationsCreate;
+    private Modal modalRefPaymentToDelete;
+    ShooterTeamPaymentContract paymentToDelete = new();
+    private Modal modalRefPaymentToEdit;
+    private Modal modalRefPaymentToCreate;
+    ShooterTeamPaymentUpdateRequest paymentToEdit = new();
+    ShooterTeamPaymentCreateRequest paymentToCreate = new();
+    IList<ShooterTeamPaymentContract> shooterTeamPayments = new List<ShooterTeamPaymentContract>();
+    IList<string> classifications = new List<string>();
+
+    IList<string> divisions = new List<string>();
+
+    private Modal modalRefTeamToDelete;
+
+    ShooterTeamContract teamToDelete = new();
+    private Modal modalRefTeamToEdit;
+    ShooterTeamCreateRequest teamToEdit = new();
+    IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
+    protected override async Task OnInitializedAsync()
+    {
+        if (!(AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
+                                                 && AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, TeamId)))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
+        shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+        team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = TeamId });
+        await LoadShooterTeamPayments();
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadShooterTeamPayments()
+    {
+        shooterTeamPayments = await Post<IList<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId });
+    }
+
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1980, 1, 1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongRegistrationDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+    
+    void NewClassification()
+    {
+        paymentToCreate = new ShooterTeamPaymentCreateRequest { ShooterId = shooter.ShooterId, TeamId = team.TeamId };
+        modalRefPaymentToCreate.Show();
+    }
+    
+    private async Task HideModalPaymentToCreate(bool choice)
+    {
+        if (choice)
+        {
+            if (! (await validationsCreate.ValidateAll()))
+                return;
+            await validationsCreate.ClearAll();
+            var response = await Post<ShooterTeamPaymentContract>("/api/ShooterTeamPayment/CreateShooterTeamPayment", paymentToCreate);
+            await LoadShooterTeamPayments();
+        }
+        paymentToCreate = new ShooterTeamPaymentCreateRequest();
+        await modalRefPaymentToCreate.Hide();
+    }
+
+    void EditPayment(ShooterTeamPaymentContract shooterTeamPayment)
+    {
+        paymentToEdit = new ShooterTeamPaymentUpdateRequest
+        {
+            ShooterTeamPaymentId = shooterTeamPayment.ShooterTeamPaymentId,
+            ShooterId = shooter.ShooterId,
+            TeamId = team.TeamId,
+            Amount = shooterTeamPayment.Amount,
+            PaymentDateTime = shooterTeamPayment.PaymentDateTime,
+            Reason = shooterTeamPayment.Reason,
+            ExpireDateTime = shooterTeamPayment.ExpireDateTime,
+            NotifyExpiration = shooterTeamPayment.NotifyExpiration
+        };
+
+        modalRefPaymentToEdit.Show();
+    }
+
+    private async Task HideModalPaymentToEdit(bool choice)
+    {
+        if (choice)
+        {
+            if (! (await validations.ValidateAll()))
+                return;
+            await validations.ClearAll();
+            var response = await Post<ShooterTeamPaymentContract>("/api/ShooterTeamPayment/UpdateShooterTeamPayment", paymentToEdit);
+            await LoadShooterTeamPayments();
+        }
+        paymentToEdit = new ShooterTeamPaymentUpdateRequest();
+        await modalRefPaymentToEdit.Hide();
+    }
+
+    void DeletePayment(ShooterTeamPaymentContract payment)
+    {
+        if (payment == null)
+            return;
+        paymentToDelete = payment;
+        modalRefPaymentToDelete.Show();
+    }
+    private async Task HideModalPaymentToDelete(bool choice)
+    {
+        if (choice)
+        {
+            await Post<GroupContract>("/api/ShooterAssociation/DeleteShooterTeamPayment", new ShooterTeamPaymentRequest
+            {
+                ShooterTeamPaymentId = paymentToDelete.ShooterTeamPaymentId
+            });
+            await LoadShooterTeamPayments();
+        }
+        paymentToDelete = new ShooterTeamPaymentContract();
+        await modalRefPaymentToDelete.Hide();
+    }
+}

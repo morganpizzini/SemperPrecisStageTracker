@@ -488,24 +488,12 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
             var existingMatch = this._matchRepository.GetSingle(x => x.Id == id);
-            var existingAssociation = this._associationRepository.GetSingle(x => x.Id == existingMatch.AssociationId);
 
             var existingStages = this._stageRepository.Fetch(x => x.MatchId == id);
 
             var existingGroupsIds = this._groupRepository.FetchWithProjection(x => x.Id, x => x.MatchId == id);
 
             var existingShooterGroups = this._groupShooterRepository.Fetch(x => existingGroupsIds.Contains(x.GroupId));
-
-            
-            var groupDivisions = existingShooterGroups.GroupBy(x => x.DivisionId).Select(x => new
-            {
-                Division = x.Key,
-                Shooters = x.Select(s => new
-                {
-                    s.ShooterId,
-                    s.TeamId
-                })
-            });
             
             var existingStageIds = existingStages.Select(x => x.Id);
 
@@ -527,23 +515,30 @@ namespace SemperPrecisStageTracker.Domain.Services
             var existingTeamsIds = existingShooterGroups.Select(x => x.TeamId).ToList();
             var existingTeams = _teamRepository.Fetch(x=>existingTeamsIds.Contains(x.Id));
 
+            // general classify
+            var shooterResults = existingShooterGroups.Select(s => new ShooterMatchResult
+            {
+                DivisionId = s.DivisionId,
+                Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
+                TeamName = existingTeams.FirstOrDefault(e => e.Id == s.TeamId)?.Name ?? "",
+                Classification = existingMatch.UnifyClassifications
+                    ? "Unclassified"
+                    : existingShooterGroups
+                        .FirstOrDefault(e => e.ShooterId == s.ShooterId && e.DivisionId == s.DivisionId)
+                        ?.Classification ?? "Unclassified",
+                Results = flatResults.Where(e => e.ShooterId == s.ShooterId).ToList()
+            }).OrderBy(x=>x.TotalTime).ToList();
+
+            MoveShooterResultToBottom(shooterResults,existingStages.Count);
+
             var matchResult = new MatchResultData
             {
                 StageNames = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
-                Results = groupDivisions.Select(x => new DivisionMatchResult
+                Overall = shooterResults,
+                Results = shooterResults.GroupBy(x=>x.DivisionId).Select(x => new DivisionMatchResult
                 {
-                    Name = x.Division,
-                    Classifications = x.Shooters.Select(s => new ShooterMatchResult
-                        {
-                            Shooter = existingShooters.FirstOrDefault(e => e.Id == s.ShooterId),
-                            TeamName = existingTeams.FirstOrDefault(e => e.Id == s.TeamId)?.Name ?? "",
-                            Classification = existingMatch.UnifyClassifications
-                                ? "Unclassified"
-                                : existingShooterGroups
-                                    .FirstOrDefault(e => e.ShooterId == s.ShooterId && e.DivisionId == x.Division)
-                                    ?.Classification ?? "Unclassified",
-                            Results = flatResults.Where(e => e.ShooterId == s.ShooterId).ToList()
-                        })
+                    Name = x.Key,
+                    Classifications = x
                         .GroupBy(e => e.Classification).Select(
                             s => new ShooterClassificationResult
                             {
@@ -558,6 +553,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             // move to botton shooters with DQ or DNF
             MoveDivisionResultToBottom(matchResult);
             
+
+            // Create top category
+
+
+            // create shooter categories results list
             var shooterInCategories = _shooterAssociationInfoRepository.Fetch(x => x.AssociationId == existingMatch.AssociationId)
                     .Where(x=>x.Categories.Count>0).ToList();
             
@@ -615,13 +615,17 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 foreach (var classification in list)
                 {
-                    if (classification.Shooters.Any(x => x.TotalTime > 0 && x.Results.Count == stageCount) && 
-                        classification.Shooters.Any(x => x.TotalTime <= 0 || x.Results.Count<stageCount))
+                    MoveShooterResultToBottom(classification.Shooters, stageCount);
+                }
+            }
+            void MoveShooterResultToBottom(IList<ShooterMatchResult> shooters,int stageCount)
+            {
+                if (shooters.Any(x => x.TotalTime > 0 && x.Results.Count == stageCount) && 
+                    shooters.Any(x => x.TotalTime <= 0 || x.Results.Count<stageCount))
+                {
+                    while (shooters[0].TotalTime <= 0 || shooters[0].Results.Count < stageCount)
                     {
-                        while (classification.Shooters[0].TotalTime <= 0 || classification.Shooters[0].Results.Count < stageCount)
-                        {
-                            classification.Shooters.Move(classification.Shooters[0], classification.Shooters.Count);
-                        }
+                        shooters.Move(shooters[0], shooters.Count);
                     }
                 }
             }
