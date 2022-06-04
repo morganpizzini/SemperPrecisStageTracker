@@ -45,7 +45,7 @@ jobs:
     - name: Publish artifact
       uses: actions/upload-artifact@v2
       with:
-        name: published-fe-app
+        name: published-app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
    
   publish:
@@ -59,7 +59,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v2
       with:
-        name: published-fe-app
+        name: published-app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 
     - uses: azure/login@v1
