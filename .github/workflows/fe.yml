@@ -12,7 +12,7 @@ on:
   workflow_dispatch:  
 
 env:
-  APP_PATH: ./SemperPrecisStageTracker.Blazor/SemperPrecisStageTracker.Blazor.csproj
+  APP_PATH: ./SemperPrecisStageTracker.Blazor.FrontEnd/SemperPrecisStageTracker.Blazor.FrontEnd.csproj
   AZURE_WEBAPP_NAME: semperprecisstagetracker    # set this to your application's name
   AZURE_WEBAPP_PACKAGE_PATH: './myapp'      # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.x'           # set this to the dot net version to use
