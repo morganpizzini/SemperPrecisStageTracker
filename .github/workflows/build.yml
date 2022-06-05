@@ -12,7 +12,7 @@ on:
     - "SemperPrecisStageTracker.EF/**"
     - "SemperPrecisStageTracker.Shared/**"
     - "SemperPrecisStageTracker.API.Tests/**"
-    - "SemperPrecisStageTracker/.github/workflows/build.yml"
+    - ".github/workflows/build.yml"
   workflow_dispatch:  
 
 env:
