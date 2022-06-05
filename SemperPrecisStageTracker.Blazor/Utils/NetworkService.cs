@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
             _jsRuntime = (IJSInProcessRuntime)jsRuntime;
         }
 
-        public event EventHandler OnlineChanged;
+        public event Action<bool> OnlineChanged;
 
         public void Init()
         {
@@ -33,7 +33,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
         protected void OnOnlineChanged(bool status)
         {
             IsOnline = status;
-            OnlineChanged?.Invoke(this, EventArgs.Empty);
+            OnlineChanged?.Invoke(IsOnline);
         }
 
         public void Dispose()

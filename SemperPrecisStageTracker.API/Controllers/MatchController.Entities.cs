@@ -9,6 +9,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -212,14 +213,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateStageSOs")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> CreateStageSOs(ShooterSOStagesCreateRequest request)
+        public async Task<IActionResult> CreateStageSOs(ShooterSOStagesCreateRequest request)
         {
             //Recupero l'elemento dal business layer
             var existingStage = BasicLayer.GetStage(request.StageId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (existingStage == null)
-                return Task.FromResult<IActionResult>(NotFound());
+                return NotFound();
 
             var entities = request.Shooters.Select(x => new ShooterSOStage
             {
@@ -229,17 +230,17 @@ namespace SemperPrecisStageTracker.API.Controllers
             });
 
             //Invocazione del service layer
-            var validations = entities.As(BasicLayer.UpsertShooterSOStage).SelectMany(x => x).ToList();
+            var validations = (await entities.AsAsync(x=> BasicLayer.UpsertShooterSOStage(x))).SelectMany(x => x).ToList();
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             var shooterSOStagees = BasicLayer.FetchShooterSOStagesByStageId(existingStage.Id);
             var shooterIds = shooterSOStagees.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Return contract
-            return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
+            return Ok(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
         }
         /// <summary>
         /// Deletes existing match on platform

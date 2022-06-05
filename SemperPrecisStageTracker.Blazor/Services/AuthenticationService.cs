@@ -118,8 +118,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (permissions == null || permissions.Count==0)
                 return false;
 
-            return _stateService.Permissions.GenericPermissions.Any(permissions.Contains) ? true : !string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Count > 0
-                        && _stateService.Permissions.EntityPermissions.Any(x => x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
+           
+                    // se ho permessi generici
+            return  _stateService.Permissions.GenericPermissions.Any(permissions.Contains) || 
+                    // permessi sull'entità, ma solo nel caso in cui non ho specificato l'id
+                    (string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Any(x => permissions.Any(p => x.Permissions.Contains(p)))) || 
+                    // permessi sull'entità avendo specificato l'id
+                    !string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Count > 0
+                                                    && _stateService.Permissions.EntityPermissions.Any(x => x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
         }
     }
 }

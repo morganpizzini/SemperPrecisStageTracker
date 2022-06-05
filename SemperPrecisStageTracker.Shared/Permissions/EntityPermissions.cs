@@ -1,9 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Shared.Permissions
 {
+    public static class KnownRoles
+    {
+        public static string Admin => nameof(Admin);
+        public static string TeamHolder => nameof(Admin);
+        public static string TeamSecretary => nameof(Admin);
+        public static string TeamContributor => nameof(Admin);
+        public static string MatchContributor => nameof(Admin);
+        public static string MatchSO => nameof(Admin);
+
+
+        public static void Each<T>(this IEnumerable<T> instance, Action<T> action)
+        {
+            if (instance == null)
+                throw new ArgumentNullException(nameof (instance));
+            foreach (T obj in instance)
+                action(obj);
+        }
+
+        public static async Task<IList<TOutput>> AsAsync<TInput, TOutput>(
+            this IEnumerable<TInput> instance,
+            Func<TInput, Task<TOutput>> convertFunction)
+        {
+            if (instance == null)
+                throw new ArgumentNullException(nameof (instance));
+            if (convertFunction == null)
+                throw new ArgumentNullException(nameof (convertFunction));
+            var outList = new List<TOutput>();
+            instance.Each(async s => outList.Add( await convertFunction(s)));
+            return outList;
+        }
+    }
     public enum Permissions
     {
         // admin
@@ -33,7 +66,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         CreatePlaces = 912,
         [Description("ShowShooters")]
         ShowShooters = 913,
-        [Description("ManageMatches")]
+        [Description("ManagePermissions")]
         ManagePermissions = 912,
 
         // entity

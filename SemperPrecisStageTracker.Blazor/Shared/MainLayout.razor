@@ -20,7 +20,7 @@
             }
             <AuthorizeView>
                 <Authorized>
-                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="/profile">@context.User.Identity.Name</NavLink>!</span>
+                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="/profile">@(context.User?.Identity?.Name ?? L["NoName"])</NavLink>!</span>
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
                 </Authorized>
                 <NotAuthorized>

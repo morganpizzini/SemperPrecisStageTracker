@@ -3,6 +3,7 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -63,25 +64,33 @@ else
                                         <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                             <TableRowHeader>
                                                 @{
-                                                    if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                    if (canInsertScore)
                                                     {
-                                                        if ((shooter.ShooterStage as IStageResult).Total < 0)
+                                                        if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
+                                                        {
+                                                            if ((shooter.ShooterStage as IStageResult).Total < 0)
+                                                            {
+                                                                <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
+                                                                    @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
+                                                                </Button>
+                                                            }
+                                                            else
+                                                            {
+                                                                @shooter.GroupShooter.Shooter.LastName
+                                                                @shooter.GroupShooter.Shooter.FirstName
+                                                            }
+                                                        }
+                                                        else
                                                         {
                                                             <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
                                                                 @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
                                                             </Button>
                                                         }
-                                                        else
-                                                        {
-                                                            @shooter.GroupShooter.Shooter.LastName
-                                                            @shooter.GroupShooter.Shooter.FirstName
-                                                        }
                                                     }
                                                     else
                                                     {
-                                                        <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                            @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
-                                                        </Button>
+                                                        @shooter.GroupShooter.Shooter.LastName
+                                                        @shooter.GroupShooter.Shooter.FirstName
                                                     }
                                                 }
                                             </TableRowHeader>
@@ -473,7 +482,7 @@ else
     MatchContract match = new();
     GroupContract group = new ();
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
-
+    
     Validations validations;
     Validations noteValidations;
     ShooterStageRequest model = new();
@@ -486,13 +495,17 @@ else
         {
             group = await MainServiceLayer.GetGroup(Id,GroupId);
             match = await MainServiceLayer.GetMatch(group.Match.MatchId);
+            var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x=>x.Shooter.ShooterId);
+            userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x=>x.Shooter.ShooterId).ToList());
+            canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) || 
+                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(stateService.User.ShooterId));
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 
         model.StageId = stage.StageId;
         InitModelList();
 
-        canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id);
+        
                          
 
         await base.OnInitializedAsync();

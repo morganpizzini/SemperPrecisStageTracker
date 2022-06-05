@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class ShooterDataRepository : EntityFrameworkRepositoryBase<ShooterData, SemperPrecisStageTrackerContext>, IShooterDataRepository
+    {
+        public ShooterDataRepository(IDataSession dataSession)
+            : base(dataSession, c => c.ShooterDatas)
+        {
+        }
+    }
 }

@@ -76,6 +76,12 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<ShooterData>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<ShooterData>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<ShooterTeam>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<ShooterTeam>()
@@ -331,6 +337,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of shooter
         /// </summary>
         public DbSet<Shooter> Shooters { get; set; }
+
+        /// <summary>
+        /// List of shooter
+        /// </summary>
+        public DbSet<ShooterData> ShooterDatas { get; set; }
 
         /// <summary>
         /// List of stage

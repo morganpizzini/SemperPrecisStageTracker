@@ -45,7 +45,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
 
-            var result = shooters.As(x => ContractUtils.GenerateContract(x,
+            var result = shooters.As(x => ContractUtils.GenerateContract(x,null,
                 shooterAssociation.Where(s => s.ShooterId == x.Id).ToList(),
                 teams.Where(s => shooterTeams.Where(st => st.ShooterId == x.Id).Select(st => st.TeamId).Contains(s.Id))
                     .ToList()));

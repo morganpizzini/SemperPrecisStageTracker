@@ -42,6 +42,27 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchMatchesForSO")]
+        [ProducesResponseType(typeof(IList<MatchContract>), 200)]
+        public async Task<IActionResult> FetchMatchSO()
+        {
+            //Recupero la lista dal layer
+            var entities = await BasicLayer.FetchAllSoMdMatches(PlatformUtils.GetIdentityUserId(User));
+            var associationIds = entities.Select(x => x.AssociationId).ToList();
+            var placeIds = entities.Select(x => x.PlaceId).ToList();
+
+            var associations = BasicLayer.FetchAssociationsByIds(associationIds);
+            var places = BasicLayer.FetchPlacesByIds(placeIds);
+
+            //Ritorno i contratti
+            return Ok(entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
+        }
+
+        /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>

@@ -171,6 +171,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
+
+            var existingData = Scenario.ShooterDatas.FirstOrDefault(x=>x.ShooterId == existing.Id);
+            if (existingData == null)
+                Assert.Fail("Shooter data not found");
+
             //conteggio esistenti
             var countBefore = Scenario.Shooters.Count;
 
@@ -189,16 +194,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //conteggio esistenti
             var countAfter = Scenario.Shooters.Count;
-
-
+            
             Assert.IsTrue(parsed != null
                           && parsed.Data.Email == existing.Email
                           && parsed.Data.LastName == existing.LastName
                           && parsed.Data.FirstName == existing.FirstName
                           && parsed.Data.BirthDate == existing.BirthDate
-                          && parsed.Data.FirearmsLicence == existing.FirearmsLicence
-                          && parsed.Data.FirearmsLicenceExpireDate == existing.FirearmsLicenceExpireDate
-                          && parsed.Data.MedicalExaminationExpireDate == existing.MedicalExaminationExpireDate
+                          && parsed.Data.FirearmsLicence == existingData.FirearmsLicence
+                          && parsed.Data.FirearmsLicenceExpireDate == existingData.FirearmsLicenceExpireDate
+                          && parsed.Data.MedicalExaminationExpireDate == existingData.MedicalExaminationExpireDate
                           && parsed.Data.Username == existing.Username);
 
             //verifica contatori
@@ -261,13 +265,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //conteggio esistenti
             var countBefore = Scenario.Shooters.Count;
             //Recupero una Shooter esistente
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.ShooterDatas.FirstOrDefault();
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
             //Recupero una Shooter esistente
-            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.Id);
+            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.ShooterId);
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");

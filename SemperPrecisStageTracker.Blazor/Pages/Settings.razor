@@ -11,7 +11,10 @@
 <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
     <Items>
         <Tab Name="tab1">@L["General"]</Tab>
-        <Tab Name="tab2">@L["Offline"]</Tab>
+        @if (canGoOffline)
+        {
+            <Tab Name="tab2">@L["Offline"]</Tab>
+        }
     </Items>
     <Content>
         <TabPanel Name="tab1">
@@ -33,67 +36,70 @@
                 }
             </div>
         </TabPanel>
-        <TabPanel Name="tab2">
-            @if (!model.OfflineMode)
-            {
-                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
-                    <Validation Validator="@ValidationRule.IsSelected">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <Select TValue="string" @bind-SelectedValue="@formModel.MatchId">
-                                    <ChildContent>
-                                        <SelectItem Value="@("")" Disabled></SelectItem>
-                                        @foreach (var match in matches)
-                                    {
-                                        <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongMatch"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-                <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
-                        <ChildContent>@L["GoOffline"]</ChildContent>
-                    </Button>
-                </Field>
-            </Validations>
-            }
-            else
-            {
-                <h3>@L["OfflineStatus"]</h3>
-                <p>
-                    <b>@L["Match"]:</b>&nbsp;@(matches.FirstOrDefault(x=>x.MatchId==model.MatchId)?.Name ?? L["NotFound"])
-                </p>
-                <p>
-                    <b>@L["PendingChanges"]:</b>&nbsp;@(pendingChanges> 0 ? pendingChanges : L["NoPendingChanges"])
-                </p>
-                <Button Size="Size.Small" Color="Color.Info" Clicked="@SwitchOnline" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
-                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["SyncData"]</LoadingTemplate>
-                    <ChildContent>@L["BackOnline"]</ChildContent>
-                </Button>
-                @if (pendingChanges > 0)
+        @if (canGoOffline)
+        {
+            <TabPanel Name="tab2">
+                @if (!model.OfflineMode)
                 {
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["UploadData"]</LoadingTemplate>
-                        <ChildContent>@L["UploadData"]</ChildContent>
-                    </Button>
-                    <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["ExportData"]</LoadingTemplate>
-                        <ChildContent>@L["ExportData"]</ChildContent>
-                    </Button>
-                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
-                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["DeleteData"]</LoadingTemplate>
-                        <ChildContent>@L["DeleteData"]</ChildContent>
-                    </Button>
+                    <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@formModel">
+                        <Validation Validator="@ValidationRule.IsSelected">
+                            <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
+                                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                    <Select TValue="string" @bind-SelectedValue="@formModel.MatchId">
+                                        <ChildContent>
+                                            <SelectItem Value="@("")" Disabled></SelectItem>
+                                            @foreach (var match in matches)
+                                        {
+                                            <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongMatch"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                            <ChildContent>@L["GoOffline"]</ChildContent>
+                        </Button>
+                    </Field>
+                </Validations>
                 }
-            }
-        </TabPanel>
+                else
+                {
+                    <h3>@L["OfflineStatus"]</h3>
+                    <p>
+                        <b>@L["Match"]:</b>&nbsp;@(matches.FirstOrDefault(x=>x.MatchId==model.MatchId)?.Name ?? L["NotFound"])
+                    </p>
+                    <p>
+                        <b>@L["PendingChanges"]:</b>&nbsp;@(pendingChanges> 0 ? pendingChanges : L["NoPendingChanges"])
+                    </p>
+                    <Button Size="Size.Small" Color="Color.Info" Clicked="@SwitchOnline" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                        <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["SyncData"]</LoadingTemplate>
+                        <ChildContent>@L["BackOnline"]</ChildContent>
+                    </Button>
+                    @if (pendingChanges > 0)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@UploadData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["UploadData"]</LoadingTemplate>
+                            <ChildContent>@L["UploadData"]</ChildContent>
+                        </Button>
+                        <Button Size="Size.Small" Color="Color.Secondary" Clicked="@ExportData" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["ExportData"]</LoadingTemplate>
+                            <ChildContent>@L["ExportData"]</ChildContent>
+                        </Button>
+                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@ClearUnsavedModels" Loading="ApiLoading" Disabled="ApiLoading" class="me-1">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" class="me-1" />@L["DeleteData"]</LoadingTemplate>
+                            <ChildContent>@L["DeleteData"]</ChildContent>
+                        </Button>
+                    }
+                }
+            </TabPanel>
+        }
     </Content>
 </Tabs>
 <Modal @ref="modalRefPrompt">
@@ -127,15 +133,18 @@
     IList<MatchContract> matches = new List<MatchContract>();
     private int pendingChanges = 0;
 
+    bool canGoOffline; 
+
     string selectedTab = "tab1";
 
     bool hasInstallPWAPrompt;
     protected override async Task OnInitializedAsync()
     {
-        matches = await Post<IList<MatchContract>>("api/Match/FetchAllMatches", null);
+        canGoOffline = AuthService.CheckPermissions(PermissionCtor.MatchInsertScore.MatchManageMD.ManageMatches);
+        if(canGoOffline)
+            matches = await Post<IList<MatchContract>>("api/Match/FetchMatchesForSO", null);
         await InitPageOps();
 
-        
 
         await base.OnInitializedAsync();
     }

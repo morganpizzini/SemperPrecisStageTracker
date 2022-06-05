@@ -37,6 +37,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of shooter
         /// </summary>
         public IList<Shooter> Shooters { get; set; } = new List<Shooter>();
+        /// <summary>
+        /// List of shooter
+        /// </summary>
+        public IList<ShooterData> ShooterDatas { get; set; } = new List<ShooterData>();
 
         /// <summary>
         /// List of stage

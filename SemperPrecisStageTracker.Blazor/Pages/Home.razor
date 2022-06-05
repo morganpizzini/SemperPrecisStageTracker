@@ -10,14 +10,15 @@
     <Button Clicked="@Get">get</Button>
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
-
     <ul>
+        disabilitare il versionamento di indexdb se in development
         
+        in ShooterStageController.UpsertShooterStage e AggregationController.UpdateDataForMatch controllare che chi effettua la chiamata abbia i permessi di insertscore sul match e sia SO dello stage che si sta inserendo
+
         Bottone nella pagina del team per resettare la password
         Smtp server per invio email
 
         [Blazor]
-        Quando vado offline scaricare solo gli stage in cui l'utente è SO o SK, e tutti nel caso in cui sia MD
         se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella pagina del dettaglio gruppo e dettaglio stage
         <li>
             se il match è unclussified devo poter inserire qualsiasi tiratore abbia una shooterassociation adeguata, indipendentemente dalla presenza o meno di attuali classificazioni (come salvare la divisione?)
@@ -26,7 +27,7 @@
 
         caricamento score da esportazione precedente
         controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
-        
+
         [trainer]
         play audio https://exceptionnotfound.net/how-to-play-a-sound-with-blazor-and-javascript/
 
@@ -47,6 +48,11 @@
 
         [infra]
         aggiungere subdomain all'appservice e caricare l'applicazione per visualizzare solo i risultati, configurare la pipeline
+
+        [chakra]
+        mettere un metodo per gestire una transazione più grossa, cross metodo
+        aggiungere extension method AsAsync
+
 
         login con AAD
         https://docs.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/standalone-with-azure-active-directory?view=aspnetcore-6.0
@@ -75,6 +81,9 @@
         matchcontroller campi: cost, paymentDetails
         permission controller: create e delete user role
         matchstats controllare che l'ordinamento sia sempre corretto
+        match controller FetchMatchSO - recupero dei match per offline / aggregation controller FetchDataForMatch
+        metodo UpsertShooterSOStage controllare che vengano aggiunti i permessi giusti
+
 
         [deployment]
         Backup del db

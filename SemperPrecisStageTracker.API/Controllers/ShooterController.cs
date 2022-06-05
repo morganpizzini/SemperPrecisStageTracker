@@ -49,8 +49,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
+            var data = BasicLayer.GetShooterData(entity.Id);
+
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity,data));
         }
 
         /// <summary>
@@ -71,7 +73,10 @@ namespace SemperPrecisStageTracker.API.Controllers
                 LastName = request.LastName,
                 BirthDate = request.BirthDate,
                 Email = request.Email,
-                Username = request.Username,
+                Username = request.Username
+            };
+            var data = new ShooterData
+            {
                 FirearmsLicence = request.FirearmsLicence,
                 FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate,
                 FirearmsLicenceReleaseDate = request.FirearmsLicenceReleaseDate,
@@ -87,13 +92,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreateShooter(model, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreateShooter(model, data, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model,data));
         }
 
         /// <summary>
@@ -109,9 +114,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
+            var data = BasicLayer.GetShooterData(request.ShooterId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
-            if (entity == null)
+            if (entity == null || data == null)
                 return NotFound();
 
             //Aggiornamento dell'entità
@@ -120,25 +126,25 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.BirthDate = request.BirthDate;
             entity.Email = request.Email;
             entity.Username = request.Username;
-            entity.FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate;
-            entity.FirearmsLicence = request.FirearmsLicence;
-            entity.MedicalExaminationExpireDate = request.MedicalExaminationExpireDate;
-            entity.BirthLocation = request.BirthLocation;
-            entity.Address = request.Address;
-            entity.City = request.City;
-            entity.PostalCode = request.PostalCode;
-            entity.Province = request.Province;
-            entity.Country = request.Country;
-            entity.Phone = request.Phone;
-            entity.FiscalCode = request.FiscalCode;
+            data.FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate;
+            data.FirearmsLicence = request.FirearmsLicence;
+            data.MedicalExaminationExpireDate = request.MedicalExaminationExpireDate;
+            data.BirthLocation = request.BirthLocation;
+            data.Address = request.Address;
+            data.City = request.City;
+            data.PostalCode = request.PostalCode;
+            data.Province = request.Province;
+            data.Country = request.Country;
+            data.Phone = request.Phone;
+            data.FiscalCode = request.FiscalCode;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdateShooter(entity, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.UpdateShooter(entity,data, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,data));
         }
 
         /// <summary>

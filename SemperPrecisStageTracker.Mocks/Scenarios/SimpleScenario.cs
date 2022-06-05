@@ -62,6 +62,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Stages = scenarioClone.Stages;
             Associations = scenarioClone.Associations;
             Shooters = scenarioClone.Shooters;
+            ShooterDatas = scenarioClone.ShooterDatas;
             GroupShooters = scenarioClone.GroupShooters;
             ShooterTeams = scenarioClone.ShooterTeams;
             Teams = scenarioClone.Teams;
