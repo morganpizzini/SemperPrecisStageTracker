@@ -11,15 +11,14 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
-        disabilitare il versionamento di indexdb se in development
-        
         in ShooterStageController.UpsertShooterStage e AggregationController.UpdateDataForMatch controllare che chi effettua la chiamata abbia i permessi di insertscore sul match e sia SO dello stage che si sta inserendo
 
         Bottone nella pagina del team per resettare la password
         Smtp server per invio email
+        salvare il numero di volte in cui il risultato viene editato (all'interno dell'upsert) e salvare risultato precedente
 
         [Blazor]
-        se match è unclassified non mostrare la colonna clasificazione, ma solo la divisione nella pagina del dettaglio gruppo e dettaglio stage
+        se match è unclassified non mostrare la colonna classificazione, ma solo la divisione nella pagina del dettaglio gruppo e dettaglio stage
         <li>
             se il match è unclussified devo poter inserire qualsiasi tiratore abbia una shooterassociation adeguata, indipendentemente dalla presenza o meno di attuali classificazioni (come salvare la divisione?)
             posso cambiare la tipologia di match solo se non ho shooter registrati
