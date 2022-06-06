@@ -27,43 +27,32 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _localStorage = localStorage;
             _httpService = httpService;
             _matchServiceIndexDb = matchServiceIndexDb;
-            
-            Task t3 = Task.Run(async () =>
-            {
-                var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
-                Offline = model?.OfflineMode ?? false;
-                var openResult = await matchServiceIndexDb.OpenIndexedDb();
-                _init = true;
-            });
-
         }
 
-        private async Task CheckInitStatus()
+        public async Task Init()
         {
-            while (!_init)
-                await Task.Delay(200);
+            var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+            Offline = model?.OfflineMode ?? false;
+            var openResult = await _matchServiceIndexDb.OpenIndexedDb();
         }
+        
 
         public async Task<int> CountUnsavedModels()
         {
-            await CheckInitStatus();
             return (await _matchServiceIndexDb.GetAll<EditedEntity>()).Count;
         }
 
         public async Task<bool> CheckUnsavedModels() {
-            await CheckInitStatus();
             return (await CountUnsavedModels()) > 0;
         }
 
         public async Task ClearUnsavedModels()
         {
-            await CheckInitStatus();
             await _matchServiceIndexDb.DeleteAll<EditedEntity>();
         }
 
         public async Task<OkResponse> UpdateModel(ClientSetting model)
         {
-            await CheckInitStatus();
             _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
 
             Offline = model.OfflineMode;
@@ -106,7 +95,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<(IList<ShooterStageContract>, IList<EditedEntityRequest>)> GetChanges()
         {
-            await CheckInitStatus();
             // get changes on shooterStage
             var changes = (await _matchServiceIndexDb.GetAll<EditedEntity>())
                 .Where(x => x.EntityName == nameof(ShooterStageAggregationResult))
@@ -128,7 +116,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<IList<ShooterContract>> GetShooters()
         {
-            await CheckInitStatus();
             return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
                 .Select(x => x.GroupShooter.Shooter)
                 .DistinctBy(x => x.ShooterId)
@@ -137,7 +124,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task UploadData()
         {
-            await CheckInitStatus();
             var changes = await GetChanges();
 
             var response = await _httpService.Post<OkResponse>("api/Aggregation/UpdateDataForMatch", new UpdateDataRequest
@@ -156,7 +142,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<IList<MatchContract>> GetMatches()
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 return await _matchServiceIndexDb.GetAll<MatchContract>();
@@ -168,7 +153,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<MatchContract> GetMatch(string id)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 return await _matchServiceIndexDb.GetByKey<string, MatchContract>(nameof(MatchContract), id);
@@ -179,7 +163,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<IList<ShooterMatchContract>> FetchAllMatchDirector(string id)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 return await _matchServiceIndexDb.GetAll<ShooterMatchContract>();
@@ -190,7 +173,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<GroupContract> GetGroup(string matchId, string groupId)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 var match = await _matchServiceIndexDb.GetByKey<string, MatchContract>(nameof(MatchContract), matchId);
@@ -209,7 +191,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<StageContract> GetStage(string matchId, string stageId)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 var match = await _matchServiceIndexDb.GetByKey<string, MatchContract>(nameof(MatchContract), matchId);
@@ -226,7 +207,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<IList<ShooterSOStageContract>> FetchAllShooterSOStages(string stageId)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 return (await _matchServiceIndexDb.GetAll<ShooterSOStageContract>()).Where(x => x.Stage.StageId == stageId).ToList();
@@ -237,7 +217,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<IList<ShooterStageAggregationResult>> FetchGroupShooterStage(string groupId, string stageId)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
@@ -248,7 +227,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<OkResponse> UpsertShooterStage(ShooterStageRequest model)
         {
-            await CheckInitStatus();
             if (Offline)
             {
                 var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();

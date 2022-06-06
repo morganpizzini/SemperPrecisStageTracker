@@ -19,7 +19,9 @@
     }
 }
 <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+@if(match!= null){
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+}
 @if (ApiLoading)
 {
     <p class="text-center">
@@ -28,126 +30,178 @@
 }
 else
 {
-    <Row>
-        <Column ColumnSize="ColumnSize.IsHalf">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Match"]</CardTitle>
-                    <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
-                    <CardTitle>@L["Location"]</CardTitle>
-                    <CardText>@match.Place.Name</CardText>
-                    <CardTitle>@L["Cost"]</CardTitle>
-                    @if (match.Cost > 0)
-                    {
-                        <CardText>@match.Cost</CardText>
-                    }
-                    else
-                    {
-                        <CardText>@L["Free"]</CardText>
-                    }
-                    @if (!string.IsNullOrEmpty(match.PaymentDetails))
-                    {
-                        <CardTitle>@L["PaymentDetails"]</CardTitle>
-                        <CardText>@match.PaymentDetails</CardText>
-                    }
-                </CardBody>
-            </Card>
-        </Column>
-        @if (match.Association != null)
-        {
+    if (match != null)
+    {
+        <Row>
             <Column ColumnSize="ColumnSize.IsHalf">
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
-                        <CardTitle>@L["Association"]</CardTitle>
-                        <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
-                        <CardTitle>@L["MatchMD"]</CardTitle>
-
-                        @if (canManageMD)
+                        <CardTitle>@L["Match"]</CardTitle>
+                        <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
+                        <CardTitle>@L["Location"]</CardTitle>
+                        <CardText>@match.Place.Name</CardText>
+                        <CardTitle>@L["Cost"]</CardTitle>
+                        @if (match.Cost > 0)
                         {
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
+                            <CardText>@match.Cost</CardText>
                         }
-
-                        <Table Striped="true" Hoverable="true"  Class="mt-2">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (matchDirectors.Count > 0)
-                                {
-                                    <Virtualize Items="@matchDirectors" Context="matchDirector">
-                                        <TableRow>
-                                            <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
-                                            <TableRowCell>
-                                                @if (canManageMD)
-                                                {
-                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
-                                                }
-                                            </TableRowCell>
-                                        </TableRow>
-                                    </Virtualize>
-                                }
-                                else
-                                {
-                                    <TableRow>
-                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
-                                            @L["NoMatchDirectors"]
-                                        </TableRowCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-
+                        else
+                        {
+                            <CardText>@L["Free"]</CardText>
+                        }
+                        @if (!string.IsNullOrEmpty(match.PaymentDetails))
+                        {
+                            <CardTitle>@L["PaymentDetails"]</CardTitle>
+                            <CardText>@match.PaymentDetails</CardText>
+                        }
                     </CardBody>
                 </Card>
             </Column>
+            @if (match.Association != null)
+            {
+                <Column ColumnSize="ColumnSize.IsHalf">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Association"]</CardTitle>
+                            <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
+                            <CardTitle>@L["MatchMD"]</CardTitle>
+
+                            @if (canManageMD)
+                            {
+                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewMatchDirector())"><Icon Name="IconName.PlusSquare" /> @L["NewMatchDirector"]</Button>
+                            }
+
+                            <Table Striped="true" Hoverable="true"  Class="mt-2">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (matchDirectors.Count > 0)
+                                    {
+                                        <Virtualize Items="@matchDirectors" Context="matchDirector">
+                                            <TableRow>
+                                                <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
+                                                <TableRowCell>
+                                                    @if (canManageMD)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteMatchDirector(matchDirector))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                @L["NoMatchDirectors"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+
+                        </CardBody>
+                    </Card>
+                </Column>
+            }
+        </Row>
+        @if (MainServiceLayer.Online)
+        {
+            <Row>
+                <Column ColumnSize="ColumnSize.IsFull">
+                    <Card Margin="Margin.Is4.OnY">
+                        <CardBody>
+                            <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Shooters.Count) @L["Shooters"] )</CardTitle>
+
+                            <Table Striped="true" Hoverable="true">
+                                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                    <TableRow>
+                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Count"]</TableHeaderCell>
+                                        <TableHeaderCell></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @if (match.Groups.Count > 0)
+                                    {
+                                        <Virtualize Items="@match.Groups" Context="group">
+                                            <TableRow>
+                                                <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
+                                                <TableRowHeader>@group.Shooters.Count</TableRowHeader>
+                                                <TableRowCell>
+                                                    <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                                    @if (canManageGroups)
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
+                                    }
+                                    else
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                                @L["NoGroups"]
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+
+                            </Table>
+
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
         }
-    </Row>
-    @if (MainServiceLayer.Online)
-    {
+
         <Row>
             <Column ColumnSize="ColumnSize.IsFull">
                 <Card Margin="Margin.Is4.OnY">
                     <CardBody>
-                        <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Shooters.Count) @L["Shooters"] )</CardTitle>
+                        <CardTitle>@L["Stages"]</CardTitle>
 
                         <Table Striped="true" Hoverable="true">
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell>@L["Count"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Targets"]</TableHeaderCell>
                                     <TableHeaderCell></TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                @if (match.Groups.Count > 0)
+                                @if (match.Stages.Count > 0)
                                 {
-                                    <Virtualize Items="@match.Groups" Context="group">
+                                    <Virtualize Items="@match.Stages" Context="stage">
                                         <TableRow>
-                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
-                                            <TableRowHeader>@group.Shooters.Count</TableRowHeader>
+                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></TableRowHeader>
+                                            <TableRowCell>@stage.Targets</TableRowCell>
                                             <TableRowCell>
-                                                <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
-                                                @if (canManageGroups)
+                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" Class="me-2" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
+                                                @if (canManageStages)
                                                 {
-                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
+                                                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new {id = Id, stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
+                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
                                                 }
                                             </TableRowCell>
                                         </TableRow>
                                     </Virtualize>
+
                                 }
                                 else
                                 {
                                     <TableRow>
                                         <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
-                                            @L["NoGroups"]
+                                            @L["NoStages"]
                                         </TableRowCell>
                                     </TableRow>
                                 }
                             </TableBody>
-
                         </Table>
 
                     </CardBody>
@@ -155,55 +209,6 @@ else
             </Column>
         </Row>
     }
-
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Stages"]</CardTitle>
-
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Targets"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (match.Stages.Count > 0)
-                            {
-                                <Virtualize Items="@match.Stages" Context="stage">
-                                    <TableRow>
-                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></TableRowHeader>
-                                        <TableRowCell>@stage.Targets</TableRowCell>
-                                        <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" Class="me-2" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
-                                            @if (canManageStages)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new {id = Id, stageId = stage.StageId}))"><Icon Name="IconName.Pen" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStage(stage))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
-
-                            }
-                            else
-                            {
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
-                                        @L["NoStages"]
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
 }
 @if(canManageGroups){
     <Modal @ref="modalRefGroup">

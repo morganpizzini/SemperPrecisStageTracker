@@ -1,18 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Pages;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
-
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {

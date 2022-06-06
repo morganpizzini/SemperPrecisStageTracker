@@ -137,6 +137,10 @@ var host = builder.Build();
 var network = host.Services.GetRequiredService<NetworkService>();
 network.Init();
 
+// init Main service
+var main = host.Services.GetRequiredService<MainServiceLayer>();
+await main.Init();
+
 //init auth service
 var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
 await authenticationService.Initialize();
