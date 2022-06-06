@@ -29,6 +29,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<PlaceContract>>(response);
             Assert.AreEqual(countBefore, parsed.Data.Count);
+            Assert.IsTrue(parsed.Data.All(x=>!string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Holder)));
         }
 
         [TestMethod]
