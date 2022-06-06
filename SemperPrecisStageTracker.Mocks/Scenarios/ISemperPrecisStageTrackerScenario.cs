@@ -101,6 +101,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         IList<Place> Places { get; set; }
 
         /// <summary>
+        /// List of place
+        /// </summary>
+        IList<PlaceData> PlaceDatas { get; set; }
+
+        /// <summary>
         /// List of contact
         /// </summary>
         IList<Contact> Contacts { get; set; }

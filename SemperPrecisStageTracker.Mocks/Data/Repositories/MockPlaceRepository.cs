@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class MockPlaceDataRepository : MockRepositoryBase<PlaceData, ISemperPrecisStageTrackerScenario>, IPlaceDataRepository
+    {
+        public MockPlaceDataRepository(IDataSession dataSession)
+            : base(dataSession, c => c.PlaceDatas)
+        {
+        }
+    }
 }

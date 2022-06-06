@@ -100,6 +100,12 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<PlaceData>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<PlaceData>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Association>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Association>()
@@ -327,6 +333,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of associations
         /// </summary>
         public DbSet<Place> Places { get; set; }
+
+        /// <summary>
+        /// List of associations
+        /// </summary>
+        public DbSet<PlaceData> PlaceDatas { get; set; }
 
         /// <summary>
         /// List of associations

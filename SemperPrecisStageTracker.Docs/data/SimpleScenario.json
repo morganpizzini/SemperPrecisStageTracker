@@ -158,7 +158,17 @@
   "places": [
     {
       "id": "1",
-      "name": "Place 01",
+      "name": "Place 01"
+    },
+    {
+      "id": "2",
+      "name": "Place 02"
+    }
+  ],
+  "placeDatas": [
+    {
+      "id": "1",
+      "placeId": "1",
       "holder": "Morgan Pizzini",
       "phone": "12345",
       "email": "morgan.pizzini@stamail.com",
@@ -170,7 +180,7 @@
     },
     {
       "id": "2",
-      "name": "Place 02",
+      "placeId": "2",
       "holder": "Morgan Pizzini 2",
       "phone": "67890",
       "email": "pizzini@stamail.com",

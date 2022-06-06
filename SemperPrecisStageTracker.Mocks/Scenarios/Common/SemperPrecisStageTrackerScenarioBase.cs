@@ -89,11 +89,15 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         public IList<Place> Places { get; set; } = new List<Place>();
 
         /// <summary>
+        /// List of places
+        /// </summary>
+        public IList<PlaceData> PlaceDatas { get; set; } = new List<PlaceData>();
+
+        /// <summary>
         /// List of contacts
         /// </summary>
         public IList<Contact> Contacts { get; set; } = new List<Contact>();
         
-
         /// <summary>
         /// List of entity permissions
         /// </summary>

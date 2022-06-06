@@ -7,6 +7,12 @@ namespace SemperPrecisStageTracker.Models
     {
         [Required]
         public string Name { get; set; }
+    }
+
+    public class PlaceData : SemperPrecisEntity
+    {
+        [Required]
+        public string PlaceId { get; set; }
         [Required]
         public string Holder { get; set; }
         public string Phone { get; set; }

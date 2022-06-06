@@ -29,7 +29,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAllPlaces();
 
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
         }
         /// <summary>
         /// Get specific placet ype using provided identifier
@@ -42,13 +42,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> GetPlace(PlaceRequest request)
         {
             var entity = BasicLayer.GetPlace(request.PlaceId);
+            var data = BasicLayer.GetPlaceData(request.PlaceId);
 
             //verifico validità dell'entità
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity,data));
         }
 
         /// <summary>
@@ -65,7 +66,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Creazione modello richiesto da admin
             var model = new Place
             {
-                Name = request.Name,
+                Name = request.Name
+            };
+
+            var data = new PlaceData
+            {
                 Holder = request.Holder,
                 Phone = request.Phone,
                 Email = request.Email,
@@ -77,13 +82,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreatePlace(model, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreatePlace(model,data, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
 
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model));
+            return Ok(ContractUtils.GenerateContract(model,data));
         }
 
         /// <summary>
@@ -99,29 +104,37 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
+            var data = BasicLayer.GetPlaceData(request.PlaceId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
                 return NotFound();
 
+            if (data == null){}
+                data = new PlaceData
+                {
+                    PlaceId = entity.Id
+                };
+
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            entity.Holder = request.Holder;
-            entity.Phone = request.Phone;
-            entity.Email = request.Email;
-            entity.Address = request.Address;
-            entity.City = request.City;
-            entity.Region = request.Region;
-            entity.PostalZipCode = request.PostalZipCode;
-            entity.Country = request.Country;
+
+            data.Holder = request.Holder;
+            data.Phone = request.Phone;
+            data.Email = request.Email;
+            data.Address = request.Address;
+            data.City = request.City;
+            data.Region = request.Region;
+            data.PostalZipCode = request.PostalZipCode;
+            data.Country = request.Country;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdatePlace(entity, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.UpdatePlace(entity,data, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity,data));
         }
 
         /// <summary>

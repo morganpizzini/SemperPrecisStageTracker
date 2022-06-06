@@ -448,7 +448,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static PlaceContract GenerateContract(Place entity)
+        public static PlaceContract GenerateContract(Place entity,PlaceData data = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -458,14 +458,14 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 PlaceId = entity.Id,
                 Name = entity.Name,
-                Holder = entity.Holder,
-                Phone = entity.Phone,
-                Email = entity.Email,
-                Address = entity.Address,
-                City = entity.City,
-                Region = entity.Region,
-                PostalZipCode = entity.PostalZipCode,
-                Country = entity.Country
+                Holder = data?.Holder,
+                Phone = data?.Phone,
+                Email = data?.Email,
+                Address = data?.Address,
+                City = data?.City,
+                Region = data?.Region,
+                PostalZipCode = data?.PostalZipCode,
+                Country = data?.Country
             };
         }
 

@@ -31,6 +31,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IShooterAssociationInfoRepository _shooterAssociationInfoRepository;
         private readonly INotificationSubscriptionRepository _notificationsubscriptionRepository;
         private readonly IPlaceRepository _placeRepository;
+        private readonly IPlaceDataRepository _placeDataRepository;
         private readonly IShooterSOStageRepository _shooterSOStageRepository;
         private readonly IShooterMatchRepository _shooterMatchRepository;
         private readonly IContactRepository _contractRepository;
@@ -56,6 +57,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterAssociationInfoRepository = dataSession.ResolveRepository<IShooterAssociationInfoRepository>();
             _notificationsubscriptionRepository = dataSession.ResolveRepository<INotificationSubscriptionRepository>();
             _placeRepository = dataSession.ResolveRepository<IPlaceRepository>();
+            _placeDataRepository = dataSession.ResolveRepository<IPlaceDataRepository>();
             _shooterSOStageRepository = dataSession.ResolveRepository<IShooterSOStageRepository>();
             _shooterMatchRepository = dataSession.ResolveRepository<IShooterMatchRepository>();
             _contractRepository = dataSession.ResolveRepository<IContactRepository>();
@@ -1608,14 +1610,30 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns place or null</returns>
+        public PlaceData GetPlaceData(string id, string userId = null)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.PlaceId == id, _placeDataRepository);
+        }
+
+        /// <summary>
         /// Create provided place
         /// </summary>
         /// <param name="entity">Place</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> CreatePlace(Place entity, string userId)
+        public async Task<IList<ValidationResult>> CreatePlace(Place entity,PlaceData data, string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
+            if (data == null) throw new ArgumentNullException(nameof(data));
 
             //Se l'oggetto � esistente, eccezione
             if (!string.IsNullOrEmpty(entity.Id))
@@ -1636,7 +1654,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             // controllo singolatità emplyee
-            validations = CheckPlaceValidation(entity);
+            validations = CheckPlaceValidation(entity,data);
             if (validations.Count > 0)
             {
                 return validations;
@@ -1644,6 +1662,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // Settaggio data di creazione
             entity.CreationDateTime = DateTime.UtcNow;
+            data.CreationDateTime = DateTime.UtcNow;
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
@@ -1660,6 +1679,22 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _placeRepository.Save(entity);
+
+            data.PlaceId = entity.Id;
+
+            //Validazione argomenti
+            validations = _placeDataRepository.Validate(data);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _placeDataRepository.Save(data);
 
             //Add user permission on match
             validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditPlace }, userId);
@@ -1680,7 +1715,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Place</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpdatePlace(Place entity, string userId)
+        public async Task<IList<ValidationResult>> UpdatePlace(Place entity,PlaceData data, string userId)
         {
             //TODO: sistemare permessi
             //Validazione argomenti
@@ -1705,7 +1740,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             // controllo singolatità emplyee
-            validations = CheckPlaceValidation(entity);
+            validations = CheckPlaceValidation(entity,data);
             if (validations.Count > 0)
             {
                 return validations;
@@ -1714,6 +1749,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Compensazione: se non ho la data di creazione, metto una data fittizia
             if (entity.CreationDateTime < new DateTime(2000, 1, 1))
                 entity.CreationDateTime = new DateTime(2000, 1, 1);
+
+            if (data.CreationDateTime < new DateTime(2000, 1, 1))
+                data.CreationDateTime = new DateTime(2000, 1, 1);
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
@@ -1730,7 +1768,22 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _placeRepository.Save(entity);
+            
+            //Validazione argomenti
+            validations = _placeDataRepository.Validate(data);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _placeDataRepository.Save(data);
             t.Commit();
+
             return validations;
         }
 
@@ -1740,17 +1793,25 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">entity to check</param>
         /// <returns>List of validation results</returns>
-        private IList<ValidationResult> CheckPlaceValidation(Place entity)
+        private IList<ValidationResult> CheckPlaceValidation(Place entity,PlaceData data)
         {
             var validations = new List<ValidationResult>();
 
             // controllo esistenza place con stesso nome / PEC / SDI
-            var existing = _placeRepository.GetSingle(x => x.Id != entity.Id
-                                                              && x.Name == entity.Name && (x.City == entity.City || x.PostalZipCode == entity.PostalZipCode));
+            var existing = _placeRepository.Fetch(x => x.Id != entity.Id
+                                                              && x.Name == entity.Name);
 
-            if (existing != null)
+            if (existing.Count == 0)
+                return validations;
+
+            var existingIds = existing.Select(x => x.Id).ToList();
+
+            var singlePlace = _placeDataRepository.Fetch(x =>
+                existingIds.Contains(x.PlaceId) && (x.City == data.City || x.PostalZipCode == data.PostalZipCode));
+
+            if (singlePlace.Count > 0)
             {
-                validations.Add(new ValidationResult($"Entity with name {entity.Name} already exists"));
+                validations.Add(new ValidationResult($"Entity with name {entity.Name} and same city/postal code already exists"));
             }
 
             return validations;
@@ -1785,6 +1846,12 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
+
+            // remove shooterData
+            var placeData = _placeDataRepository.GetSingle(x => x.PlaceId == entity.Id);
+            
+            if(placeData  != null)
+                _placeDataRepository.Delete(placeData);
 
             //Eliminazione
             _placeRepository.Delete(entity);
@@ -2159,6 +2226,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // Settaggio data di creazione
             entity.CreationDateTime = DateTime.UtcNow;
+            data.CreationDateTime = DateTime.UtcNow;
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
@@ -2175,6 +2243,21 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _shooterRepository.Save(entity);
+
+
+            data.ShooterId = entity.Id;
+            validations = _shooterDataRepository.Validate(data);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterDataRepository.Save(data);
 
             //Add user permission on match
             validations = await AddUserPermissions(entity.Id, new List<Permissions> { Permissions.EditShooter }, userId);
@@ -2230,6 +2313,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (entity.CreationDateTime < new DateTime(2000, 1, 1))
                 entity.CreationDateTime = new DateTime(2000, 1, 1);
 
+            //Compensazione: se non ho la data di creazione, metto una data fittizia
+            if (data.CreationDateTime < new DateTime(2000, 1, 1))
+                data.CreationDateTime = new DateTime(2000, 1, 1);
+
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
             //Validazione argomenti
@@ -2245,6 +2332,21 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _shooterRepository.Save(entity);
+
+            //Validazione argomenti
+            validations = _shooterDataRepository.Validate(data);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            _shooterDataRepository.Save(data);
+
             t.Commit();
             return validations;
         }
@@ -2335,9 +2437,15 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _shooterTeamRepository.Delete(shooterTeam);
             }
 
+            // remove shooterData
+            var shooterData = _shooterDataRepository.GetSingle(x => x.ShooterId == entity.Id);
+            
+            if(shooterData != null)
+                _shooterDataRepository.Delete(shooterData);
+
             //Eliminazione
             _shooterRepository.Delete(entity);
-
+            
             validations = await RemoveUserValidation(entity.Id, new List<Permissions> { Permissions.EditShooter });
             if (validations.Count > 1)
             {

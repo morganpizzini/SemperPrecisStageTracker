@@ -15,4 +15,12 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+    [Repository]
+    public class PlaceDataRepository : EntityFrameworkRepositoryBase<PlaceData, SemperPrecisStageTrackerContext>, IPlaceDataRepository
+    {
+        public PlaceDataRepository(IDataSession dataSession)
+            : base(dataSession, c => c.PlaceDatas)
+        {
+        }
+    }
 }
