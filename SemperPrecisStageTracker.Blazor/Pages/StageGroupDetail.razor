@@ -53,7 +53,10 @@ else
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                     <TableHeaderCell>@L["Division"]</TableHeaderCell>
-                                    <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                    @if (!match.UnifyClassifications)
+                                    {
+                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                    }
                                     <TableHeaderCell>@L["Total"]</TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
@@ -95,7 +98,10 @@ else
                                                 }
                                             </TableRowHeader>
                                             <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
-                                            <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
+                                            @if (!match.UnifyClassifications)
+                                            {
+                                                <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
+                                            }
                                             <TableRowCell>@((shooter.ShooterStage as IStageResult).TotalString)</TableRowCell>
                                         </TableRow>
                                         @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
@@ -112,7 +118,7 @@ else
                                 else
                                 {
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                        <TableRowCell ColumnSpan="@(match.UnifyClassifications ? 3 : 4)" TextAlignment="TextAlignment.Center">
                                             @L["NoShooters"]
                                         </TableRowCell>
                                     </TableRow>

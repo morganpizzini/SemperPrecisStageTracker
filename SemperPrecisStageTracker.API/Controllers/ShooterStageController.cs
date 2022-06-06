@@ -22,7 +22,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterStage")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
+        public async Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
         {
             var shooterStage = new ShooterStage
             {
@@ -40,13 +40,13 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Notes = request.Notes
             };
             //Invocazione del service layer
-            var validations = BasicLayer.UpsertShooterStage(shooterStage);
+            var validations = await BasicLayer.UpsertShooterStage(shooterStage,PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(new OkResponse { Status = true });
+            return Ok(new OkResponse { Status = true });
         }
 
     }

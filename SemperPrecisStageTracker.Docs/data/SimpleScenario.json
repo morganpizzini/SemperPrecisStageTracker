@@ -11,6 +11,19 @@
       "shortLink": "ABC",
       "cost": 12.03,
       "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "2",
+      "name": "Match Unified",
+      "matchDateTimeStart": "2021-05-23T18:25:43.511Z",
+      "matchDateTimeEnd": "2021-05-24T18:25:43.511Z",
+      "creationDateTime": "2021-05-23T18:25:43.511Z",
+      "associationId": "1",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": true, 
+      "paymentDetails": "Some payment details"
     }
   ],
   "stages": [
@@ -115,6 +128,16 @@
       "id": "4",
       "matchId": "1",
       "name": "Group 04"
+    },
+    {
+      "id": "5",
+      "matchId": "2",
+      "name": "Group 01"
+    },
+    {
+      "id": "6",
+      "matchId": "2",
+      "name": "Group 02"
     }
   ],
   "groupShooters": [
@@ -153,6 +176,22 @@
       "classification": "Expert",
       "divisionId": "Enhanced Service Pistol idpa (ESP)",
       "hasPay": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "5",
+      "groupId": "5",
+      "shooterId": "1",
+      "teamId": "1",
+      "divisionId": "Stock Service Pistol idpa (SSP)",
+      "hasPay": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "2",
+      "groupId": "5",
+      "shooterId": "2",
+      "teamId": "1",
+      "divisionId": "Stock Service Pistol idpa (SSP)",
+      "hasPay": null
     }
   ],
   "places": [

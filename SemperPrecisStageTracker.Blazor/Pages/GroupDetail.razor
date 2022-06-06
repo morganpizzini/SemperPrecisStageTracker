@@ -36,6 +36,18 @@ else
                         <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = group.Match.Association.AssociationId}))">@group.Match.Association.Name</NavLink></CardText>
                         <CardTitle>@L["Match"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{id = group.Match.MatchId}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTimeStart.ToString("d") / @group.Match.MatchDateTimeEnd.ToString("d")</CardText>
+                        @if (group.Match.UnifyClassifications || group.Match.OpenMatch)
+                        {
+                            <CardTitle>@L["Details"]</CardTitle>
+                            @if (group.Match.UnifyClassifications)
+                            {
+                                <CardText>@L["No classification match"]</CardText>
+                            }
+                            @if(group.Match.OpenMatch)
+                            {
+                                <CardText>@L["Open match"]</CardText>
+                            }
+                        }
                     </CardBody>
                 </Card>
             </Column>
@@ -44,7 +56,7 @@ else
     <Divider />
     @if (MainServiceLayer.Online && availableShooters.Count > 0 && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
     {
-        <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model"/>
+        <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model" Match="group.Match"/>
         <Divider />
     }
     <Row>
@@ -58,7 +70,10 @@ else
                             <TableRow>
                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                 <TableHeaderCell>@L["Division"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                @if (!group.Match.UnifyClassifications)
+                                {
+                                    <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                }
                                 <TableHeaderCell>@L["Team"]</TableHeaderCell>
                                 <TableHeaderCell>@L["Payment"]</TableHeaderCell>
                                 <TableHeaderCell></TableHeaderCell>
@@ -71,7 +86,10 @@ else
                                     <TableRow>
                                         <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
-                                        <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                        @if (!group.Match.UnifyClassifications)
+                                        {
+                                            <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                        }
                                         <TableRowHeader>@groupShooter.Team?.Name</TableRowHeader>
                                         <TableRowHeader>
                                             @if (groupShooter.HasPay.HasValue)
@@ -97,7 +115,7 @@ else
                             else
                             {
                                 <TableRow>
-                                    <TableRowCell ColumnSpan="6" TextAlignment="TextAlignment.Center">
+                                    <TableRowCell ColumnSpan="@(group.Match.UnifyClassifications ? 5 : 6)" TextAlignment="TextAlignment.Center">
                                         @L["NoShooters"]
                                     </TableRowCell>
                                 </TableRow>
@@ -187,7 +205,7 @@ else
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <ShooterInGroup AvailableShooters="group.Shooters.Select(x=>x.Shooter).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit"/>
+                <ShooterInGroup AvailableShooters="group.Shooters.Select(x=>x.Shooter).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit" Match="group.Match"/>
             </ModalBody>
         </ModalContent>
     </Modal>
@@ -237,6 +255,7 @@ else
     IList<GroupContract> Groups = new List<GroupContract>();
 
     GroupContract group = new();
+    //MatchContract match = new();
     IList<ShooterContract> availableShooters = new List<ShooterContract>();
 
 
@@ -252,6 +271,7 @@ else
         Groups = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
         await LoadShooters();
         group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
+        //match = await Post(() => MainServiceLayer.GetMatch(Id));
         await base.OnInitializedAsync();
     }
 

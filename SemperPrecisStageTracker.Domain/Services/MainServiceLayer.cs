@@ -675,11 +675,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreateMatches,
-                Permissions.ManageMatches
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateMatches.ManageMatches))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateMatch)}");
                 return validations;
@@ -751,11 +747,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageMatches,
-                Permissions.EditMatch
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageMatches.EditMatch))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateMatch)} with Id: {entity.Id}");
                 return validations;
@@ -839,10 +831,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageMatches
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageMatches))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteMatch)} with Id: {entity.Id}");
                 return validations;
@@ -933,11 +922,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreateTeams,
-                Permissions.ManageTeams
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateTeams.ManageTeams))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateMatch)}");
                 return validations;
@@ -1002,11 +987,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageTeams,
-                Permissions.EditTeam
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.EditTeam.ManageTeams))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateTeam)} with Id: {entity.Id}");
                 return validations;
@@ -1082,10 +1063,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageMatches
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageTeams))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteTeam)} with Id: {entity.Id}");
                 return validations;
@@ -1512,8 +1490,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             t.Commit();
 
             // add permission
-            var permissions = await authenticationService.GetUserPermissionById(existingShooterSOStage.ShooterId);
-            if (permissions.EntityPermissions.Any(x => x.EntityId == existingMatch.Id && x.Permissions.Contains(Permissions.MatchInsertScore)))
+            
+            var hasPermission = await authenticationService.ValidateUserPermissions(existingShooterSOStage.ShooterId,existingMatch.Id,PermissionCtor.MatchInsertScore);
+            if (hasPermission)
                 return validations;
 
             // add user role
@@ -1655,11 +1634,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreatePlaces,
-                Permissions.ManagePlaces
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreatePlaces.ManagePlaces))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreatePlace)}");
                 return validations;
@@ -1741,11 +1716,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManagePlaces,
-                Permissions.EditPlace
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManagePlaces.EditPlace))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdatePlace)} with Id: {entity.Id}");
                 return validations;
@@ -1847,10 +1818,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManagePlaces
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManagePlaces))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeletePlace)} with Id: {entity.Id}");
                 return validations;
@@ -1951,11 +1919,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreateAssociations,
-                Permissions.ManageAssociations
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateAssociations.ManageAssociations))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateAssociation)}");
                 return validations;
@@ -2019,11 +1983,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageAssociations,
-                Permissions.EditAssociation
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageAssociations.EditAssociation))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateAssociation)} with Id: {entity.Id}");
                 return validations;
@@ -2099,10 +2059,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageAssociations
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageAssociations))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteAssociation)} with Id: {entity.Id}");
                 return validations;
@@ -2219,11 +2176,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreateMatches,
-                Permissions.ManageMatches
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateMatches.ManageMatches))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateShooter)}");
                 return validations;
@@ -2304,11 +2257,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageShooters,
-                Permissions.EditShooter
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateShooter)} with Id: {entity.Id}");
                 return validations;
@@ -2412,11 +2361,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageShooters,
-                Permissions.EditShooter
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteShooter)} with Id: {entity.Id}");
                 return validations;
@@ -2556,11 +2501,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, new List<Permissions>
-            {
-                Permissions.CreateMatches,
-                Permissions.ManageMatches
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateMatches.ManageMatches))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateShooterAssociationInfo)}");
                 return validations;
@@ -2625,11 +2566,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageShooters,
-                Permissions.EditShooter
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateShooterAssociationInfo)} with Id: {entity.Id}");
                 return validations;
@@ -2723,11 +2660,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, new List<Permissions>
-            {
-                Permissions.ManageShooters,
-                Permissions.EditShooter
-            }))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteShooterAssociationInfo)} with Id: {entity.Id}");
                 return validations;
@@ -3283,19 +3216,29 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpsertShooterStages(IList<ShooterStage> entities, IList<(string entityId, DateTime changDateTime)> changes)
+        public async Task<IList<ValidationResult>> UpsertShooterStages(IList<ShooterStage> entities, IList<(string entityId, DateTime changDateTime)> changes, string userId)
         {
-            await Task.CompletedTask;
+            
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            
+            // check permissions
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageMatches.MatchInsertScore))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(UpsertShooterStage)}");
+                return validations;
+            }
 
             using var t = DataSession.BeginTransaction();
 
-            IList<ValidationResult> validations = new List<ValidationResult>();
 
             var stageIds = entities.Select(x => x.StageId).ToList();
 
             var existingStages = this._stageRepository.Fetch(x => stageIds.Contains(x.Id));
 
             var matchIds = existingStages.Select(x => x.MatchId).ToList();
+
+            var matchMd = this._shooterMatchRepository.Fetch(x => matchIds.Contains(x.MatchId));
+            var stageSO = this._shooterSOStageRepository.Fetch(x => stageIds.Contains(x.StageId));
 
             var existingMatches = this._matchRepository.Fetch(x => matchIds.Contains(x.Id));
             var existingAssociationIds = existingMatches.Select(x=>x.AssociationId);
@@ -3305,6 +3248,16 @@ namespace SemperPrecisStageTracker.Domain.Services
             foreach (var shooterStage in entities)
             {
                 var stage = existingStages.FirstOrDefault(x => x.Id == shooterStage.StageId);
+                var allowedUsers = matchMd.Where(x => x.MatchId == stage.MatchId).Select(x=>x.ShooterId).Concat(
+                    stageSO.Where(x => x.StageId == stage.Id).Select(x=>x.ShooterId)).ToList();
+
+                if (!allowedUsers.Contains(userId))
+                {
+                    validations.AddMessage($"User {userId} has no role on insert results for stage {stage.Name}");
+                    t.Rollback();
+                    return validations;
+                }
+
                 validations = UpdateShooterStage(shooterStage,
                                                 stage,
                                                 existingAssociation.FirstOrDefault(a=> a.Id == 
@@ -3334,13 +3287,36 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> UpsertShooterStage(ShooterStage entity)
+        public async Task<IList<ValidationResult>> UpsertShooterStage(ShooterStage entity,string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
+
             IList<ValidationResult> validations = new List<ValidationResult>();
 
+            // check permissions
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageMatches.MatchInsertScore))
+            {
+                validations.AddMessage($"User {userId} has no permissions on {nameof(UpsertShooterStage)}");
+                return validations;
+            }
+            
+            // check for stage role
+
             var existingStage = this._stageRepository.GetSingle(x => entity.StageId == x.Id);
+            var existingMatch = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId);
+
+            var allowedUsers = this._shooterMatchRepository.FetchWithProjection(x=>x.ShooterId,x => x.MatchId == existingMatch.Id).Concat(
+                this._shooterSOStageRepository.FetchWithProjection(x => x.ShooterId,
+                    x => x.StageId == existingMatch.Id)
+                );
+
+            if (!allowedUsers.Contains(userId))
+            {
+                validations.AddMessage($"User {userId} has no role on {nameof(UpsertShooterStage)}");
+                return validations;
+            }
+
             var existingAssociationId = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId)?.AssociationId;
 
             var existingAssociation = this._associationRepository.GetSingle(x => x.Id == existingAssociationId);

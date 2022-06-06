@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
@@ -145,6 +146,12 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Cost = request.Cost,
                 PaymentDetails = request.PaymentDetails
             };
+            
+            if (model.OpenMatch && model.UnifyClassifications)
+            {
+                return BadRequest(
+                    new ValidationResult("Match can't be open and without classification at the same time").AsList());
+            }
 
             //Invocazione del service layer
             var validations = await BasicLayer.CreateMatch(model, PlatformUtils.GetIdentityUserId(User));

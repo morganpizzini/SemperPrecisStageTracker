@@ -93,18 +93,21 @@
 @code {
     Validations validations;
 
-    [Parameter]
+    [Parameter,EditorRequired]
 
     public IList<ShooterContract> AvailableShooters { get; set; } = new List<ShooterContract>();
 
-    [Parameter]
+    //[Parameter]
     public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();
 
-    [Parameter]
+    //[Parameter]
     public IList<string> Divisions { get; set; } = new List<string>();
+
+    [Parameter,EditorRequired]
+    public MatchContract Match { get; set; } = new ();
     
     private GroupShooterCreateRequest _model = new();
-    [Parameter]
+    [Parameter,EditorRequired]
     public GroupShooterCreateRequest Model
     {
         get => _model;
@@ -115,11 +118,11 @@
             if (shooter == null)
                 return;
             Teams = shooter.Teams;
-            Divisions = shooter.Classifications.Select(x => x.Division).ToList();
+            Divisions = Match.UnifyClassifications || Match.OpenMatch ? Match.Association.Divisions : shooter.Classifications.Select(x => x.Division).ToList();
         }
     }
 
-    [Parameter]
+    [Parameter,EditorRequired]
     public EventCallback SubmitCallback { get; set; }
 
     async Task Submit()
@@ -161,6 +164,6 @@
         Model.DivisionId = string.Empty;
         Model.TeamId = string.Empty;
         Teams = shooter.Teams;
-        Divisions = shooter.Classifications.Select(x => x.Division).ToList();
+        Divisions = Match.UnifyClassifications || Match.OpenMatch ? Match.Association.Divisions : shooter.Classifications.Select(x => x.Division).ToList();
     }
 }

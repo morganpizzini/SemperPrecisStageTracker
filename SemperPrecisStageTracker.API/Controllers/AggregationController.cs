@@ -171,7 +171,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                         Disqualified = x.Disqualified,
                         Notes = x.Notes
                     }).ToList(),
-                request.EditedEntities.Select(x => (x.EntityId, x.EditDateTime)).ToList());
+                request.EditedEntities.Select(x => (x.EntityId, x.EditDateTime)).ToList(),PlatformUtils.GetIdentityUserId(User));
             return Ok(new OkResponse()
             {
                 Status = validations.Count == 0

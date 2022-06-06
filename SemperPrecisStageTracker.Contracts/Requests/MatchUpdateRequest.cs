@@ -3,10 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class MatchUpdateRequest
+    public class MatchUpdateRequest : EntityFilterValidation
     {
         [Required]
         public string MatchId { get; set; }
+
+        public override string EntityId => MatchId;
+
         [Required]
         public string Name { get; set; }
 

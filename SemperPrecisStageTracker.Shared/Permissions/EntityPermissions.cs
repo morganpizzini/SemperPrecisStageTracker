@@ -134,6 +134,14 @@ namespace SemperPrecisStageTracker.Shared.Permissions
     public class PermissionHandler : IPermissionInterface
     {
         private readonly IList<Permissions> permissions = new List<Permissions>();
+        public IPermissionInterface AddPermission(IList<Permissions> perms)
+        {
+            foreach (var perm in perms)
+            {
+                permissions.Add(perm);
+            }
+            return this;
+        }
         public IPermissionInterface AddPermission(Permissions perm)
         {
             permissions.Add(perm);
@@ -173,10 +181,15 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         public IPermissionInterface MatchManageMD => AddPermission(Permissions.MatchManageMD);
         public IPermissionInterface MatchManageStages => AddPermission(Permissions.MatchManageStages);
         public IPermissionInterface MatchHandling => AddPermission(Permissions.MatchHandling);
+        public IPermissionInterface Compose(IList<Permissions> perms)
+        {
+            return AddPermission(perms);
+        }
     }
 
     public static class PermissionCtor
     {
+        public static IPermissionInterface Compose(IList<Permissions> perms) => new PermissionHandler().Compose(perms);
         public static IPermissionInterface ManageMatches => new PermissionHandler().ManageMatches;
         public static IPermissionInterface ManageShooters => new PermissionHandler().ManageShooters;
         public static IPermissionInterface ManageTeams => new PermissionHandler().ManageTeams;
