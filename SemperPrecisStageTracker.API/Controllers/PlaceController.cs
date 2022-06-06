@@ -28,8 +28,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllPlaces();
 
+            var datas = BasicLayer.FetchAllMinimunPlacesData();
+
             //Ritorno i contratti
-            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x,datas.FirstOrDefault(d=>d.PlaceId== x.Id))));
         }
         /// <summary>
         /// Get specific placet ype using provided identifier

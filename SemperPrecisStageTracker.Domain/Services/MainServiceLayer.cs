@@ -1584,6 +1584,18 @@ namespace SemperPrecisStageTracker.Domain.Services
         }
 
         /// <summary>
+        /// Fetch list of all places
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of places</returns>
+        public IList<PlaceData> FetchAllMinimunPlacesData()
+        {
+            //Utilizzo il metodo base
+            return _placeDataRepository.FetchWithProjection(x => new PlaceData { Address = x.Address, PlaceId = x.PlaceId, Holder = x.Holder});
+            
+        }
+
+        /// <summary>
         /// Fetch list of places by provided ids
         /// </summary>
         /// <param name="ids"> places identifier </param>
