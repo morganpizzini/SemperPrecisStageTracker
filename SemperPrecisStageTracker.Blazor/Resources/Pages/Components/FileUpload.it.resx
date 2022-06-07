@@ -117,28 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Association" xml:space="preserve">
-    <value>Association</value>
-  </data>
-  <data name="BackToList" xml:space="preserve">
-    <value>Torna alla lista</value>
-  </data>
-  <data name="Classifications" xml:space="preserve">
-    <value>Classificazioni</value>
-  </data>
-  <data name="Detail" xml:space="preserve">
-    <value>Dettaglio associazione</value>
-  </data>
-  <data name="Divisions" xml:space="preserve">
-    <value>Divisioni</value>
-  </data>
-  <data name="EditAssociation" xml:space="preserve">
-    <value>Modifica associazione</value>
-  </data>
-  <data name="NoClassifications" xml:space="preserve">
-    <value>Nessuna classificazione</value>
-  </data>
-  <data name="NoDivisions" xml:space="preserve">
-    <value>Nessuna divisione</value>
+  <data name="FoundEntities1" xml:space="preserve">
+    <value>Trovati {0} risultati</value>
   </data>
 </root>

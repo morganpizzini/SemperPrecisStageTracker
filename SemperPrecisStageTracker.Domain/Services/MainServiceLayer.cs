@@ -3217,8 +3217,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
         public async Task<IList<ValidationResult>> UpsertShooterStages(IList<ShooterStage> entities, IList<(string entityId, DateTime changDateTime)> changes, string userId)
-        {
-            
+        {   
             IList<ValidationResult> validations = new List<ValidationResult>();
             
             // check permissions
@@ -3245,13 +3244,14 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var existingAssociation = this._associationRepository.Fetch(x => existingAssociationIds.Contains(x.Id));
 
+            var isAdmin = await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageMatches);
             foreach (var shooterStage in entities)
             {
                 var stage = existingStages.FirstOrDefault(x => x.Id == shooterStage.StageId);
                 var allowedUsers = matchMd.Where(x => x.MatchId == stage.MatchId).Select(x=>x.ShooterId).Concat(
                     stageSO.Where(x => x.StageId == stage.Id).Select(x=>x.ShooterId)).ToList();
 
-                if (!allowedUsers.Contains(userId))
+                if (!isAdmin && !allowedUsers.Contains(userId))
                 {
                     validations.AddMessage($"User {userId} has no role on insert results for stage {stage.Name}");
                     t.Rollback();

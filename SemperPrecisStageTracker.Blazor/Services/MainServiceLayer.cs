@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SemperPrecisStageTracker.Blazor.Models;
 using SemperPrecisStageTracker.Blazor.Pages;
 using SemperPrecisStageTracker.Blazor.Services.IndexDB;
+using SemperPrecisStageTracker.Blazor.Services.Models;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
@@ -122,21 +123,36 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 .ToList();
         }
 
-        public async Task UploadData()
+        public async Task<bool> UploadData(IList<ShooterStageContract>? listToUpload = null)
         {
-            var changes = await GetChanges();
-
-            var response = await _httpService.Post<OkResponse>("api/Aggregation/UpdateDataForMatch", new UpdateDataRequest
+            ApiResponse<OkResponse> response;
+            if (listToUpload == null)
             {
-                ShooterStages = changes.Item1,
-                EditedEntities = changes.Item2
-            });
+                var changes = await GetChanges();
+
+                response = await _httpService.Post<OkResponse>("api/Aggregation/UpdateDataForMatch", new UpdateDataRequest
+                {
+                    ShooterStages = changes.Item1,
+                    EditedEntities = changes.Item2
+                });
+            }
+            else
+            {
+                response = await _httpService.Post<OkResponse>("api/Aggregation/UpdateDataForMatch", new UpdateDataRequest
+                {
+                    ShooterStages = listToUpload
+                });
+            }
 
             if (response is not { WentWell: true })
-                return;
+                return false;
+
             // cleanup changes
-            if (response.Result.Status)
+            if (response.Result.Status && listToUpload == null)
+            {
                 await _matchServiceIndexDb.DeleteAll<EditedEntity>();
+            }
+            return response.Result.Status;
         }
 
 
