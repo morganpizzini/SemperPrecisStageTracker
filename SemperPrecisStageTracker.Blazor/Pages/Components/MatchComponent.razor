@@ -100,26 +100,29 @@
             </FieldBody>
         </Field>
     </Validation>
-    <Validation Validator="@ValidationRule.None">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Tooltip Text="@L["UnifyClassificationDescription"]">
-                    <Check TValue="bool" @bind-Checked="@Model.UnifyClassifications">@L["UnifyClassifications"]</Check>
-                </Tooltip>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.None">
-        <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <Tooltip Text="@L["OpenMatchDescription"]">
-                    <Check TValue="bool" @bind-Checked="@Model.OpenMatch">@L["OpenMatch"]</Check>
-                </Tooltip>
-            </FieldBody>
-        </Field>
-    </Validation>
+    @if (string.IsNullOrEmpty(Model.MatchId))
+    {
+        <Validation Validator="@ValidationRule.None">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Tooltip Text="@L["UnifyClassificationDescription"]">
+                        <Check TValue="bool" @bind-Checked="@Model.UnifyClassifications">@L["UnifyClassifications"]</Check>
+                    </Tooltip>
+                </FieldBody>
+            </Field>
+        </Validation>
+        <Validation Validator="@ValidationRule.None">
+            <Field Horizontal="true">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Tooltip Text="@L["OpenMatchDescription"]">
+                        <Check TValue="bool" @bind-Checked="@Model.OpenMatch">@L["OpenMatch"]</Check>
+                    </Tooltip>
+                </FieldBody>
+            </Field>
+        </Validation>
+    }
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
             <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;@L["Submit"]</LoadingTemplate>

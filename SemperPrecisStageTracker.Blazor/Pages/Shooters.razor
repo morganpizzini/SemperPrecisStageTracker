@@ -29,9 +29,11 @@
 
     private async Task LoadEntities()
     {
-        ApiLoading = true;
-        shooters = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
-        ApiLoading = false;
+        var result = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters");
+        if (result != null)
+        {
+            shooters = result;
+        }
     }
     private async Task DeleteShooter(string id)
     {

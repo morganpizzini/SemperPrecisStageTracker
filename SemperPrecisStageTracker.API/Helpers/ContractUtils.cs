@@ -280,7 +280,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 FiscalCode = data?.FiscalCode,
 
                 Classifications = shooterClassifications != null ? shooterClassifications.As(s => GenerateContract(s)) : new List<ShooterAssociationContract>(),
-                Teams = shooterTeams != null ? shooterTeams.As(s => GenerateContract(s)) : new List<TeamContract>()
+                Teams = shooterTeams != null ? shooterTeams.As(GenerateContract) : new List<TeamContract>()
             };
         }
 

@@ -259,8 +259,8 @@ else
     IList<ShooterContract> availableShooters = new List<ShooterContract>();
 
 
-    GroupShooterCreateRequest model = new();
-    GroupShooterCreateRequest shooterToEdit = new();
+    BaseShooterInMatchCreateRequest model = new();
+    BaseShooterInMatchCreateRequest shooterToEdit = new();
     ShooterGroupMoveRequest shooterToMove = new();
 
 
@@ -322,7 +322,7 @@ else
     {
         if (shooter == null)
             return;
-        shooterToEdit = new GroupShooterCreateRequest()
+        shooterToEdit = new BaseShooterInMatchCreateRequest()
         {
             HasPay = shooter.HasPay,
             ShooterId = shooter.Shooter.ShooterId,
@@ -367,7 +367,7 @@ else
                 return;
             group.Shooters = result;
         }
-        shooterToEdit = new GroupShooterCreateRequest();
+        shooterToEdit = new();
         await modalEditRef.Hide();
     }
 
@@ -382,7 +382,7 @@ else
             group.Shooters = result;
             await LoadShooters();
         }
-        shooterToEdit = new GroupShooterCreateRequest();
+        shooterToEdit = new();
         await modalEditRef.Hide();
     }
 
