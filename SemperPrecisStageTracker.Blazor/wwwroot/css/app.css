@@ -6,6 +6,7 @@
   font-family: "MvBoli";
   src: url("css/fonts/mvboli-webfont.woff2") format("woff2"), url("css/fonts/mvboli-webfont.woff") format("woff");
 }
+    
 .custom-font {
   font-family: "MvBoli", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
