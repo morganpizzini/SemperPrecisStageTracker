@@ -34,11 +34,18 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (result == null)
                 return Unauthorized();
             
+
+            var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterId(result.Id);
+            var shooterTeams = BasicLayer.FetchTeamsFromShooterId(result.Id);
+
+            var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();
+            var teams = BasicLayer.FetchTeamsByIds(teamsIds);
+
             //Se è tutto ok, serializzo il contratto
             return Ok(
                 new SignInResponse
                 {
-                    Shooter = ContractUtils.GenerateContract(result),
+                    Shooter = ContractUtils.GenerateContract(result,null, shooterAssociation,teams),
                     Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(result.Id))
                 });
         }

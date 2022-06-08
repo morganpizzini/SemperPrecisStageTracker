@@ -120,6 +120,49 @@ namespace SemperPrecisStageTracker.API.Controllers
             // Return contract
             return Reply(GetGroupShooterContractByGroupId(oldGroupId, match.Id));
         }
+
+        /// <summary>
+        /// Creates a groupshooter after shooter request to join a match
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("AddGroupShooter")]
+        [ProducesResponseType(typeof(IList<OkResponse>), 200)]
+        public IActionResult AddGroupShooter(MatchShooterCreateRequest request)
+        {
+            // check entities
+            var existingMatch = this.BasicLayer.GetMatch(request.MatchId);
+            if (existingMatch == null)
+                return BadRequest(new ValidationResult("Match not found").AsList());
+
+            var existingShooter = this.BasicLayer.GetShooter(request.ShooterId);
+            if (existingShooter == null)
+                return BadRequest(new ValidationResult("Shooter not found").AsList());
+
+            var entity = new GroupShooter
+            {
+                ShooterId = request.ShooterId,
+                TeamId = request.TeamId
+            };
+            var validations = ValidateGroupShooter(entity, request.MatchId, request.DivisionId);
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            // Invocazione del service layer
+            validations = BasicLayer.UpsertGroupShooter(entity);
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+
+            return Ok(new OkResponse
+            {
+                Status = true
+            });
+        }
+
         /// <summary>
         /// Creates a groupshooter on platform
         /// </summary>
@@ -151,6 +194,9 @@ namespace SemperPrecisStageTracker.API.Controllers
                 });
             }
 
+            entity.TeamId = request.TeamId;
+            entity.HasPay = request.HasPay;
+
             //check user permission
             var canEdit = await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), group.MatchId,
                 PermissionCtor.ManageMatches.MatchManageGroups.EditMatch);
@@ -163,26 +209,45 @@ namespace SemperPrecisStageTracker.API.Controllers
                 });
             }
 
-            var match = BasicLayer.GetMatch(group.MatchId);
+            var validations = ValidateGroupShooter(entity, group.MatchId, request.DivisionId);
 
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            
+
+            // Invocazione del service layer
+            validations = BasicLayer.UpsertGroupShooter(entity);
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            // Return contract
+            return Ok(GetGroupShooterContractByGroupId(entity.GroupId, group.MatchId));
+        }
+
+
+        private IList<ValidationResult> ValidateGroupShooter(GroupShooter entity, string matchId,string divisionId)
+        {
+            var match = BasicLayer.GetMatch(matchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
 
             var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.ShooterId, match.Id);
             if (match.OpenMatch)
             {
-                var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.Division == request.DivisionId && x.ExpireDate == null);
+                var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.Division == divisionId && x.ExpireDate == null);
 
                 if (currentShooterAssociation == null)
                 {
                     // open classification
-                    if (association.Divisions.All(x => x != request.DivisionId))
+                    if (association.Divisions.All(x => x != divisionId))
                     {
-                        return BadRequest(new List<ValidationResult>
+                        return new List<ValidationResult>
                         {
-                            new ($"Division {request.DivisionId} are not updated with current association specs")
-                        });
+                            new ($"Division {divisionId} are not updated with current association specs")
+                        };
                     }
-                    entity.DivisionId = request.DivisionId;
+                    entity.DivisionId = divisionId;
                 }
                 else
                 {
@@ -191,14 +256,14 @@ namespace SemperPrecisStageTracker.API.Controllers
                         association.Divisions.All(x=>x!=currentShooterAssociation.Division) )
                     {
                         // register shooter in association that race for a division without classification
-                        if (association.Divisions.All(x => x != request.DivisionId))
+                        if (association.Divisions.All(x => x != divisionId))
                         {
-                            return BadRequest(new List<ValidationResult>
+                            return new List<ValidationResult>
                             {
-                                new ($"Division {request.DivisionId} are not updated with current association specs")
-                            });
+                                new ($"Division {divisionId} are not updated with current association specs")
+                            };
                         }
-                        entity.DivisionId = request.DivisionId;
+                        entity.DivisionId = divisionId;
                     }
                     else
                     {
@@ -214,43 +279,43 @@ namespace SemperPrecisStageTracker.API.Controllers
                     var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.ExpireDate == null);
                     if (currentShooterAssociation == null)
                     {
-                        return BadRequest(new List<ValidationResult>
+                        return new List<ValidationResult>
                         {
                             new ("Shooter has no valid registration for match association")
-                        });
+                        };
                     }
 
                     // check association match division and classification
-                    if (association.Divisions.All(x => x != request.DivisionId))
+                    if (association.Divisions.All(x => x != divisionId))
                     {
-                        return BadRequest(new List<ValidationResult>
+                        return new List<ValidationResult>
                     {
-                        new ($"Division {request.DivisionId} are not updated with current association specs")
-                    });
+                        new ($"Division {divisionId} are not updated with current association specs")
+                    };
                     }
-                    entity.DivisionId = request.DivisionId;
+                    entity.DivisionId = divisionId;
                 }
                 else
                 {
                     // default
-                    var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.Division == request.DivisionId && x.ExpireDate == null);
+                    var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.Division == divisionId && x.ExpireDate == null);
 
                     if (currentShooterAssociation == null)
                     {
-                        return BadRequest(new List<ValidationResult>
-                    {
-                        new ($"Shooter has no valid registration for match association or  {request.DivisionId} division")
-                    });
+                        return new List<ValidationResult>
+                                {
+                                    new ($"Shooter has no valid registration for match association or  {divisionId} division")
+                                };
                     }
 
                     // check association match division and classification
                     if (association.Classifications.All(x => x != currentShooterAssociation.Classification) ||
                         association.Divisions.All(x => x != currentShooterAssociation.Division))
                     {
-                        return BadRequest(new List<ValidationResult>
+                        return new List<ValidationResult>
                     {
                         new ($"Classification {currentShooterAssociation.Classification} or  {currentShooterAssociation.Division} Division are not updated with current association specs")
-                    });
+                    };
                     }
 
                     entity.DivisionId = currentShooterAssociation.Division;
@@ -260,19 +325,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             }
 
-
-
-            entity.TeamId = request.TeamId;
-            entity.HasPay = request.HasPay;
-
-            // Invocazione del service layer
-            var validations = BasicLayer.UpsertGroupShooter(entity);
-
-            if (validations.Count > 0)
-                return BadRequest(validations);
-
-            // Return contract
-            return Ok(GetGroupShooterContractByGroupId(entity.GroupId, match.Id));
+            return new List<ValidationResult>();
         }
 
         /// <summary>

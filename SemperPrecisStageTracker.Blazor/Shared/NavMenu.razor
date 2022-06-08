@@ -21,7 +21,6 @@
                 @if (mainServiceLayer.Online)
                 {
                     <li class="nav-item px-3">
-                        @(RouteHelper.GetUrl<Associations>())
                         <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Associations>())">
                             <Icon Name="FontAwesomeIcons.Book"/> @L["Associations"]
                         </NavLink>

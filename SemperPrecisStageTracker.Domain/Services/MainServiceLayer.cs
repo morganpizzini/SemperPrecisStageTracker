@@ -71,7 +71,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #region Init database
 
-        public async Task<IList<ValidationResult>> InitDatabase(string adminUser)
+        public IList<ValidationResult> InitDatabase(string adminUser)
         {
             //Predisposizione al fallimento
             IList<ValidationResult> validations = new List<ValidationResult>();
@@ -431,6 +431,38 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             //Utilizzo il metodo base
             return FetchEntities(null, null, null, s => s.MatchDateTimeStart, true, _matchRepository);
+        }
+
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of matchs</returns>
+        public IList<Match> FetchAvailableMatches(string userId)
+        {
+            // check association
+            var shooterAssociation =
+                _shooterAssociationInfoRepository.FetchWithProjection(x => x.AssociationId, x => x.ShooterId == userId);
+
+            // not already signed-in
+            var groupIds = _groupShooterRepository.FetchWithProjection(x=> x.GroupId,x=>x.ShooterId == userId);
+            var signInMatchIds = _groupRepository.FetchWithProjection(x => x.MatchId, x => groupIds.Contains(x.Id));
+            //Utilizzo il metodo base
+            return FetchEntities(x=> !signInMatchIds.Contains(x.Id) && (x.OpenMatch || shooterAssociation.Contains(x.AssociationId)) && x.MatchDateTimeEnd >= DateTime.Now, null, null, s => s.MatchDateTimeStart, true, _matchRepository);
+        }
+
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of matchs</returns>
+        public IList<Match> FetchSignInMatches(string userId)
+        {
+            // not already signed-in
+            var groupIds = _groupShooterRepository.FetchWithProjection(x=> x.GroupId,x=>x.ShooterId == userId);
+            var signInMatchIds = _groupRepository.FetchWithProjection(x => x.MatchId, x => groupIds.Contains(x.Id));
+            //Utilizzo il metodo base
+            return FetchEntities(x=> !signInMatchIds.Contains(x.Id), null, null, s => s.MatchDateTimeStart, true, _matchRepository);
         }
         
         /// <summary>

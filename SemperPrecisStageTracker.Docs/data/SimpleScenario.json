@@ -22,7 +22,36 @@
       "placeId": "1",
       "shortLink": "EFG",
       "cost": 12.03,
-      "unifyClassifications": true, 
+      "unifyClassifications": true,
+      "openMatch": false,
+      "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "3",
+      "name": "Match 3",
+      "matchDateTimeStart": "2023-05-21T18:25:43.511Z",
+      "matchDateTimeEnd": "2023-05-21T18:25:43.511Z",
+      "creationDateTime": "2021-05-21T18:25:43.511Z",
+      "associationId": "1",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": false,
+      "openMatch": false,
+      "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "4",
+      "name": "Match 4",
+      "matchDateTimeStart": "2023-05-23T18:25:43.511Z",
+      "matchDateTimeEnd": "2023-05-24T18:25:43.511Z",
+      "creationDateTime": "2021-05-23T18:25:43.511Z",
+      "associationId": "2",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": false,
+      "openMatch": true,
       "paymentDetails": "Some payment details"
     }
   ],

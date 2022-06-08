@@ -48,9 +48,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpGet]
         [Route("InitDatabase")]
         [ProducesResponseType(typeof(object), 200)]
-        public async Task<IActionResult> InitDatabase()
+        public IActionResult InitDatabase()
         {
-            var validations = await BasicLayer.InitDatabase(adminUser);
+            var validations = BasicLayer.InitDatabase(adminUser);
             if (validations.Count > 0)
             {
                 return BadRequest(validations);

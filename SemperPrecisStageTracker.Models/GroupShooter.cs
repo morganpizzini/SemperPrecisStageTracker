@@ -6,7 +6,6 @@ namespace SemperPrecisStageTracker.Models
 {
     public class GroupShooter : SemperPrecisEntity
     {
-        [Required]
         public string GroupId { get; set; } = string.Empty;
         [Required]
         public string ShooterId { get; set; } = string.Empty;
