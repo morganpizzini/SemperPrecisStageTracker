@@ -10,4 +10,11 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
+    /// <summary>
+    /// Repository interface for "Place"
+    /// </summary>
+    public interface IPlaceDataRepository : IRepository<PlaceData>
+    {
+
+    }
 }

@@ -103,6 +103,7 @@ public class Program
         });
         // register configuration across application
         ServiceResolver.Register<IConfiguration>(builder.Configuration);
+        
 
         builder.Services.AddCors(options =>
         {

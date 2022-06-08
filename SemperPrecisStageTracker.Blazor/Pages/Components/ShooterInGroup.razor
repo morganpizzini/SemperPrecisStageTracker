@@ -1,95 +1,120 @@
 ﻿@inherits SemperPrecisBasePresentationalComponent
 @inject IStringLocalizer<AssociationComponent> L
 
-<Row>
-    <Column ColumnSize="ColumnSize.IsFull">
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    @if (Shooter != null)
+    {
         <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
             <Validation Validator="@ValidationRule.IsSelected">
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">                                
-                        <Select TValue="string" SelectedValue="@Model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Select TValue="string" SelectedValue="@Model.MatchId" SelectedValueChanged="@OnSelectedMatchChanged">
                             <ChildContent>
                                 <SelectItem Value="@("")"></SelectItem>
-                                @foreach (var shooter in AvailableShooters)
+                                @foreach (var matchContract in AvailableMatches)
                                 {
-                                    <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                                    <SelectItem Value="@matchContract.MatchId">@matchContract.Name (@matchContract.MatchDateTimeStart.ToString("d") - @matchContract.MatchDateTimeEnd.ToString("d"))</SelectItem>
                                 }
                             </ChildContent>
                             <Feedback>
-                                <ValidationError>@L["WrongShooter"]</ValidationError>
+                                <ValidationError>@L["WrongMatch"]</ValidationError>
                             </Feedback>
                         </Select>
                     </FieldBody>
                 </Field>
             </Validation>
-            <Row>
-                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                    <Validation Validator="@ValidationRule.IsSelected">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <Select TValue="string" @bind-SelectedValue="@Model.TeamId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
-                                    <ChildContent>
-                                        <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var team in Teams)
-                                        {
-                                            <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongTeam"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                    <Validation Validator="@ValidationRule.IsSelected">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <Select TValue="string" @bind-SelectedValue="@Model.DivisionId" Disabled="string.IsNullOrEmpty(Model.ShooterId)">
-                                    <ChildContent>
-                                        <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var division in Divisions)
-                                        {
-                                            <SelectItem Value="@division">@division</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongDivision"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
-                    <Validation Validator="@ValidateDate">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["HasPay"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <DateEdit TValue="DateTime?" @bind-Date="@Model.HasPay">
-                                    <Feedback>
-                                        <ValidationError>@L["WrongHasPay"]</ValidationError>
-                                    </Feedback>
-                                </DateEdit>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Column>
-
-            </Row>
+        </Validations>
+    }
+    @if (AvailableShooters.Count > 0)
+    {
+        <Validation Validator="@ValidationRule.IsSelected">
             <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Select TValue="string" SelectedValue="@Model.ShooterId" SelectedValueChanged="@OnSelectedShooterChanged">
+                        <ChildContent>
+                            <SelectItem Value="@("")"></SelectItem>
+                            @foreach (var shooter in AvailableShooters)
+                            {
+                                <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                            }
+                        </ChildContent>
+                        <Feedback>
+                            <ValidationError>@L["WrongShooter"]</ValidationError>
+                        </Feedback>
+                    </Select>
                 </FieldBody>
             </Field>
-        </Validations>
-    </Column>
-</Row>
+        </Validation>
+    }
+    <Row>
+        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+            <Validation Validator="@ValidationRule.IsSelected">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Select TValue="string" @bind-SelectedValue="@Model.TeamId" Disabled="@string.IsNullOrEmpty(Model.ShooterId)">
+                            <ChildContent>
+                                <SelectItem Value="@("")"></SelectItem>
+                                @foreach (var team in Teams)
+                                {
+                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                                }
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>@L["WrongTeam"]</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </FieldBody>
+                </Field>
+            </Validation>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+            <Validation Validator="@ValidationRule.IsSelected">
+                <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Division"]</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                        <Select TValue="string" @bind-SelectedValue="@Model.DivisionId" Disabled="@(string.IsNullOrEmpty(Model.ShooterId) || string.IsNullOrEmpty(Model.MatchId))">
+                            <ChildContent>
+                                <SelectItem Value="@("")"></SelectItem>
+                                @foreach (var division in Divisions)
+                                {
+                                    <SelectItem Value="@division">@division</SelectItem>
+                                }
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>@L["WrongDivision"]</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </FieldBody>
+                </Field>
+            </Validation>
+        </Column>
+        @if (AvailableShooters.Count > 0)
+        {
+            <Column ColumnSize="ColumnSize.IsFull.OnMobile.IsHalf.OnTablet">
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["HasPay"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime?" @bind-Date="@Model.HasPay">
+                                <Feedback>
+                                    <ValidationError>@L["WrongHasPay"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Column>
+        }
+    </Row>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit">@L["Submit"]</Button>
+        </FieldBody>
+    </Field>
+</Validations>
 @code {
     Validations validations;
 
@@ -98,28 +123,52 @@
     public IList<ShooterContract> AvailableShooters { get; set; } = new List<ShooterContract>();
 
     [Parameter]
+
+    public IList<MatchContract> AvailableMatches { get; set; } = new List<MatchContract>();
+
+    private ShooterContract? shooter;
+    [Parameter]
+    public ShooterContract? Shooter
+    {
+        get => shooter;
+        set
+        {
+            shooter = value;
+            Model.ShooterId = shooter?.ShooterId;
+        } 
+    }
+
+    //[Parameter]
     public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();
 
-    [Parameter]
+    //[Parameter]
     public IList<string> Divisions { get; set; } = new List<string>();
-    
-    private GroupShooterCreateRequest _model = new();
+
     [Parameter]
-    public GroupShooterCreateRequest Model
+    public MatchContract? Match { get; set; }
+    
+    private BaseShooterInMatchCreateRequest _model;
+
+    [Parameter,EditorRequired]
+    public BaseShooterInMatchCreateRequest Model
     {
         get => _model;
         set
         {
             _model = value;
-            var shooter = AvailableShooters.FirstOrDefault(x => x.ShooterId == Model.ShooterId);
+            var shooter = Shooter ?? AvailableShooters.FirstOrDefault(x => x.ShooterId == Model.ShooterId);
             if (shooter == null)
                 return;
-            Teams = shooter.Teams;
-            Divisions = shooter.Classifications.Select(x => x.Division).ToList();
+            if (Shooter == null || Teams.Count == 0)
+            {
+                Teams = shooter.Teams;
+            }
+            if(Match != null)
+                Divisions = Match.UnifyClassifications || Match.OpenMatch ? Match.Association.Divisions : shooter.Classifications.Select(x => x.Division).ToList();
         }
     }
 
-    [Parameter]
+    [Parameter,EditorRequired]
     public EventCallback SubmitCallback { get; set; }
 
     async Task Submit()
@@ -161,6 +210,20 @@
         Model.DivisionId = string.Empty;
         Model.TeamId = string.Empty;
         Teams = shooter.Teams;
-        Divisions = shooter.Classifications.Select(x => x.Division).ToList();
+        if(Match != null)
+            Divisions = Match.UnifyClassifications || Match.OpenMatch ? Match.Association.Divisions : shooter.Classifications.Select(x => x.Division).ToList();
+    }
+
+    void OnSelectedMatchChanged(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return;
+        Match = AvailableMatches.FirstOrDefault(x => x.MatchId == value);
+        if (Match == null)
+            return;
+        Model.MatchId = Match.MatchId;
+        if(Shooter!=null)
+            Divisions = Match.UnifyClassifications || Match.OpenMatch ? Match.Association.Divisions : Shooter.Classifications.Select(x => x.Division).ToList();   
+
     }
 }

@@ -37,6 +37,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of shooter
         /// </summary>
         public IList<Shooter> Shooters { get; set; } = new List<Shooter>();
+        /// <summary>
+        /// List of shooter
+        /// </summary>
+        public IList<ShooterData> ShooterDatas { get; set; } = new List<ShooterData>();
 
         /// <summary>
         /// List of stage
@@ -85,11 +89,15 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         public IList<Place> Places { get; set; } = new List<Place>();
 
         /// <summary>
+        /// List of places
+        /// </summary>
+        public IList<PlaceData> PlaceDatas { get; set; } = new List<PlaceData>();
+
+        /// <summary>
         /// List of contacts
         /// </summary>
         public IList<Contact> Contacts { get; set; } = new List<Contact>();
         
-
         /// <summary>
         /// List of entity permissions
         /// </summary>

@@ -4,7 +4,7 @@
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Matches"]</Heading>
-@if (AuthService.CheckPermissions(PermissionCtor.ManageMatches.CreateMatches))
+@if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.CreateMatches))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewMatch"]</Button>
 }

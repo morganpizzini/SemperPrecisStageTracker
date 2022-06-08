@@ -6,16 +6,15 @@ namespace SemperPrecisStageTracker.Models
 {
     public class GroupShooter : SemperPrecisEntity
     {
+        public string GroupId { get; set; } = string.Empty;
         [Required]
-        public string GroupId { get; set; }
+        public string ShooterId { get; set; } = string.Empty;
         [Required]
-        public string ShooterId { get; set; }
+        public string DivisionId { get; set; } = string.Empty;
+        //[Required]
+        public string Classification { get; set; } = string.Empty;
         [Required]
-        public string DivisionId { get; set; }
-        [Required]
-        public string Classification { get; set; }
-        [Required]
-        public string TeamId { get; set; }
+        public string TeamId { get; set; } = string.Empty;
         
         public DateTime? HasPay { get; set; }
     }

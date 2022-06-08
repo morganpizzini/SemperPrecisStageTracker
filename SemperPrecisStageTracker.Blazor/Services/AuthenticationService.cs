@@ -1,18 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using SemperPrecisStageTracker.Blazor.Pages;
 using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
-
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -115,11 +108,16 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public bool CheckPermissions(IList<Permissions> permissions, string entityId = "")
         {
-            if (permissions == null || permissions.Count==0)
+            if (permissions.Count==0)
                 return false;
 
-            return _stateService.Permissions.GenericPermissions.Any(permissions.Contains) ? true : !string.IsNullOrEmpty(entityId) && _stateService.Permissions.EntityPermissions.Count > 0
-                        && _stateService.Permissions.EntityPermissions.Any(x => x.EntityId == entityId && x.Permissions.Any(permissions.Contains));
+            // AuthenticationServiceLayer.ValidateUserPermissions
+            // se ho permessi generici
+            return _stateService.Permissions.GenericPermissions.Any(permissions.Contains) ||
+                   // permessi sull'entità, ma solo nel caso in cui non ho specificato l'id
+                   _stateService.Permissions.EntityPermissions.Any(x =>
+                       (string.IsNullOrEmpty(entityId) || x.EntityId == entityId) &&
+                       permissions.Any(p => x.Permissions.Contains(p)));
         }
     }
 }

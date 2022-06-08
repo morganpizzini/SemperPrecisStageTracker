@@ -30,6 +30,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         IList<Shooter> Shooters { get; set; }
 
         /// <summary>
+        /// List of shooter
+        /// </summary>
+        IList<ShooterData> ShooterDatas { get; set; }
+
+        /// <summary>
         /// List of Shooter Team Payment
         /// </summary>
         IList<ShooterTeamPayment> ShooterTeamPayments { get; set; }
@@ -94,6 +99,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// List of place
         /// </summary>
         IList<Place> Places { get; set; }
+
+        /// <summary>
+        /// List of place
+        /// </summary>
+        IList<PlaceData> PlaceDatas { get; set; }
 
         /// <summary>
         /// List of contact

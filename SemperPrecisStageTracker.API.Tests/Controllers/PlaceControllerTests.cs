@@ -29,6 +29,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<PlaceContract>>(response);
             Assert.AreEqual(countBefore, parsed.Data.Count);
+            Assert.IsTrue(parsed.Data.All(x=>!string.IsNullOrEmpty(x.Address) || !string.IsNullOrEmpty(x.Holder)));
         }
 
         [TestMethod]
@@ -84,6 +85,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existing == null)
                 Assert.Inconclusive("Place is invalid");
 
+            var existingData = Scenario.PlaceDatas.FirstOrDefault(x=>x.PlaceId == existing.Id);
+            if (existingData == null)
+                Assert.Inconclusive("Place data is invalid");
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Places.Count;
 
@@ -91,7 +96,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new PlaceCreateRequest
             {
                 Name = existing.Name,
-                City = existing.City,
+                City = existingData.City,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 Region = RandomizationUtils.GenerateRandomString(15),
@@ -125,6 +130,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existing == null)
                 Assert.Inconclusive("Place is invalid");
 
+            var existingData = Scenario.PlaceDatas.FirstOrDefault(x=>x.PlaceId == existing.Id);
+            if (existingData == null)
+                Assert.Inconclusive("Place data is invalid");
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Places.Count;
 
@@ -132,7 +141,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new PlaceCreateRequest
             {
                 Name = existing.Name,
-                PostalZipCode = existing.PostalZipCode,
+                PostalZipCode = existingData.PostalZipCode,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 City = RandomizationUtils.GenerateRandomString(15),
@@ -262,6 +271,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (anotherExisting == null)
                 Assert.Inconclusive("Second place is invalid");
 
+            //Recupero place esistente
+            var anotherExistingData = Scenario.PlaceDatas.FirstOrDefault(x => x.PlaceId != existing.Id);
+            if (anotherExistingData == null)
+                Assert.Inconclusive("Second place data is invalid");
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Places.Count;
 
@@ -270,7 +284,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 PlaceId = existing.Id,
                 Name = anotherExisting.Name,
-                City = anotherExisting.City,
+                City = anotherExistingData.City,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 Region = RandomizationUtils.GenerateRandomString(15),
@@ -310,6 +324,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (anotherExisting == null)
                 Assert.Inconclusive("Second place is invalid");
 
+            //Recupero place esistente
+            var anotherExistingData = Scenario.PlaceDatas.FirstOrDefault(x => x.PlaceId == anotherExisting.Id);
+            if (anotherExistingData == null)
+                Assert.Inconclusive("Second place is invalid");
+
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Places.Count;
 
@@ -318,7 +337,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 PlaceId = existing.Id,
                 Name = anotherExisting.Name,
-                PostalZipCode = anotherExisting.PostalZipCode,
+                PostalZipCode = anotherExistingData.PostalZipCode,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 City = RandomizationUtils.GenerateRandomString(15),

@@ -2,6 +2,8 @@
 @using Permissions = SemperPrecisStageTracker.Shared.Permissions.Permissions
 @inject IStringLocalizer<NavMenu> L
 @inject IAuthenticationService AuthService
+@inject MainServiceLayer mainServiceLayer
+
 <div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand px-3" href="/app">SemperPrecis Tracker</a>
     <AuthorizeView>
@@ -16,46 +18,51 @@
     <Authorized>
         <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
             <ul class="nav flex-column">
-                <li class="nav-item px-3">
-                    @(RouteHelper.GetUrl<Associations>())
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Associations>())">
-                        <Icon Name="FontAwesomeIcons.Book"/> @L["Associations"]
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Matches>())">
-                        <Icon Name="FontAwesomeIcons.Book" /> @L["Matches"]
-                    </NavLink>
-                </li>
-                @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.CreateShooters.EditShooter))
+                @if (mainServiceLayer.Online)
                 {
                     <li class="nav-item px-3">
-                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
-                            <Icon Name="FontAwesomeIcons.Book" /> @L["Shooters"]
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Associations>())">
+                            <Icon Name="FontAwesomeIcons.Book"/> @L["Associations"]
                         </NavLink>
                     </li>
                 }
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Teams>())">
-                        <Icon Name="FontAwesomeIcons.Book" /> @L["Teams"]
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Matches>())">
+                        <Icon Name="FontAwesomeIcons.Book"/> @L["Matches"]
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Places>())">
-                        <Icon Name="FontAwesomeIcons.Book" /> @L["Places"]
-                    </NavLink>
-                </li>
-                @if (AuthService.CheckPermissions(Permissions.ManagePermissions))
+                @if (mainServiceLayer.Online)
                 {
+                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.CreateShooters.EditShooter))
+                    {
+                        <li class="nav-item px-3">
+                            <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
+                                <Icon Name="FontAwesomeIcons.Book"/> @L["Shooters"]
+                            </NavLink>
+                        </li>
+                    }
                     <li class="nav-item px-3">
-                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<PermissionsHandling>())">
-                            <Icon Name="FontAwesomeIcons.Book" /> @L["Permissions"]
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Teams>())">
+                            <Icon Name="FontAwesomeIcons.Book"/> @L["Teams"]
                         </NavLink>
                     </li>
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Places>())">
+                            <Icon Name="FontAwesomeIcons.Book"/> @L["Places"]
+                        </NavLink>
+                    </li>
+                    @if (AuthService.CheckPermissions(Permissions.ManagePermissions))
+                    {
+                        <li class="nav-item px-3">
+                            <NavLink class="nav-link" href="@(RouteHelper.GetUrl<PermissionsHandling>())">
+                                <Icon Name="FontAwesomeIcons.Book"/> @L["Permissions"]
+                            </NavLink>
+                        </li>
+                    }
                 }
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Settings>())">
-                        <Icon Name="FontAwesomeIcons.Book" /> @L["Settings"]
+                        <Icon Name="FontAwesomeIcons.Book"/> @L["Settings"]
                     </NavLink>
                 </li>
             </ul>

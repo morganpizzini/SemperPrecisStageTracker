@@ -1,0 +1,131 @@
+﻿@inject IStringLocalizer<FileUpload> L
+@inject MainServiceLayer mainServiceLayer
+@using System.IO
+@inject INotificationService NotificationService;
+
+
+<h3>@L["UploadData"]</h3>
+<FileEdit Changed="@OnChanged" Written="@OnWritten" Progressed="@OnProgressed" Filter=".csv" Multiple/>
+
+@if (shooterStageContracts.Count > 0)
+{
+    <p class="mt-2">
+        @L["FoundEntities", shooterStageContracts.Count ]
+    </p>
+    <div>
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(()=>shooterStageContracts.Clear())" class="me-2">
+            @L["Clear"]
+        </Button>
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Upload">
+            @L["Upload"]
+        </Button>
+    </div>
+}
+
+@code {
+
+    private readonly IList<ShooterStageContract> shooterStageContracts = new List<ShooterStageContract>();
+
+    async Task OnChanged(FileChangedEventArgs e)
+    {
+        shooterStageContracts.Clear();
+        try
+        {
+            foreach (var file in e.Files)
+            {
+                // A stream is going to be the destination stream we're writing to.
+                using var stream = new MemoryStream();
+                // Here we're telling the FileEdit where to write the upload result
+                await file.WriteToStreamAsync(stream);
+
+                // Once we reach this line it means the file is fully uploaded.
+                // In this case we're going to offset to the beginning of file
+                // so we can read it.
+                stream.Seek(0, SeekOrigin.Begin);
+
+                // Use the stream reader to read the content of uploaded file,
+                // in this case we can assume it is a textual file.
+                using (var reader = new StreamReader(stream))
+                {
+                    var csv = new CSVHelper(await reader.ReadToEndAsync());
+                    
+                    foreach (var line in csv)
+                    {
+                        var tmp = new ShooterStageContract
+                            {
+                                StageId = line[0],
+                                ShooterId = line[1]
+                            };
+
+                        var r = decimal.TryParse(line[4], out var decimalValue);
+                        if (r)
+                        {
+                            tmp.Time = decimalValue;
+                        }
+                        var dps = line[5].Split("/");
+                        foreach (var dp in dps)
+                        {
+                            r = int.TryParse(dp, out var tmpValue);
+                            if (r)
+                            {
+                                tmp.DownPoints.Add(tmpValue);
+                            }
+                        }
+                        r = int.TryParse(line[6], out var intValue);
+                        if (r)
+                        {
+                            tmp.Procedurals = intValue;
+                        }
+                        r = int.TryParse(line[7], out intValue);
+                        if (r)
+                        {
+                            tmp.HitOnNonThreat = intValue;
+                        }
+                        r = int.TryParse(line[8], out intValue);
+                        if (r)
+                        {
+                            tmp.FlagrantPenalties = intValue;
+                        }
+                        r = int.TryParse(line[9], out intValue);
+                        if (r)
+                        {
+                            tmp.Ftdr = intValue;
+                        }
+                        shooterStageContracts.Add(tmp);
+                    }
+                }
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+        }
+        finally
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    void OnWritten(FileWrittenEventArgs e)
+    {
+        Console.WriteLine($"File: {e.File.Name} Position: {e.Position} Data: {Convert.ToBase64String(e.Data)}");
+    }
+
+    void OnProgressed(FileProgressedEventArgs e)
+    {
+        Console.WriteLine($"File: {e.File.Name} Progress: {e.Percentage}");
+    }
+
+    async Task Upload()
+    {
+        if (await mainServiceLayer.UploadData(shooterStageContracts))
+        {
+            shooterStageContracts.Clear();
+            await NotificationService.Success(L["Success"], L["UploadSuccessfull"]);
+        }
+        else
+        {
+            await NotificationService.Error(L["Error"], L["UploadFailed"]);
+        }
+    }
+}

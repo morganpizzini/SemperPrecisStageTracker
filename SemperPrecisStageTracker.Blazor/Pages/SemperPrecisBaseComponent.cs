@@ -16,12 +16,12 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         [Inject]
         protected MainServiceLayer MainServiceLayer { get; set; }
         
-        public Task<T> Post<T>(string uri) => Post<T>(uri, new { });
+        public Task<T?> Post<T>(string uri) => Post<T>(uri, new { });
 
-        protected async Task<T> Post<T>(string uri, object value)
+        protected async Task<T?> Post<T>(string uri, object value)
         {
             ApiLoading = true;
-            T result = default;
+            T? result = default;
             
                 var apiResponse = await Service.Post<T>(uri, value);
                 if (apiResponse == null)

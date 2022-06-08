@@ -599,7 +599,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreatePermissionRole)} with Id: {entity.Id}");
                 return validations;
@@ -642,7 +642,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeletePermissionRole)} with Id: {entity.Id}");
                 return validations;
@@ -705,7 +705,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId,Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId,PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateRole)}");
                 return validations;
@@ -759,7 +759,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateRole)} with Id: {entity.Id}");
                 return validations;
@@ -832,7 +832,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteRole)} with Id: {entity.Id}");
                 return validations;
@@ -881,7 +881,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateUserRole)} with Id: {entity.Id}");
                 return validations;
@@ -926,7 +926,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await ValidateUserPermissions(userId, Permissions.ManagePermissions))
+            if (!await ValidateUserPermissions(userId, PermissionCtor.ManagePermissions))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteUserRole)} with Id: {entity.Id}");
                 return validations;
@@ -962,17 +962,15 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             return _roleRepository.GetSingle(x => x.Name == name);
         }
+        
+        public Task<bool> ValidateUserPermissions(string userId, IPermissionInterface permissions)
+        {
+            return ValidateUserPermissions(userId, string.Empty, permissions);
+        }
 
-        public Task<bool> ValidateUserPermissions(string userId, Permissions adminPermission)
+        public async Task<bool> ValidateUserPermissions(string userId, string entityId, IPermissionInterface permissions)
         {
-            return ValidateUserPermissions(userId, new List<Permissions> { adminPermission });
-        }
-        public Task<bool> ValidateUserPermissions(string userId, IList<Permissions> adminPermission)
-        {
-            return ValidateUserPermissions(userId, string.Empty, adminPermission);
-        }
-        public async Task<bool> ValidateUserPermissions(string userId, string entityId, IList<Permissions> shooterPermission)
-        {
+            IList<Permissions> shooterPermission = permissions.List;
             if (string.IsNullOrEmpty(userId) || shooterPermission == null || shooterPermission.Count == 0)
             {
                 return false;
@@ -982,14 +980,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (userPermissions == null)
                 return false;
 
-            //looking for generic permission
-            if (userPermissions.GenericPermissions.Any(shooterPermission.Contains))
-                return true;
-            
-            if (!string.IsNullOrEmpty(entityId))
-                return userPermissions.EntityPermissions.FirstOrDefault(x=>x.EntityId == entityId && x.Permissions.Any(shooterPermission.Contains)) != null;
-
-            return false;
+            // AuthenticationService.CheckPermissions
+            return 
+                userPermissions.GenericPermissions.Any(shooterPermission.Contains) ||
+                    userPermissions.EntityPermissions.Any(x=> (string.IsNullOrEmpty(entityId) || x.EntityId== entityId) && x.Permissions.Any(shooterPermission.Contains));
         }
 
         #region Private methods

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
@@ -31,6 +32,30 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllMatches();
+            //Ritorno i contratti
+            return Reply(GenerateMatchContracts(entities));
+        }
+
+
+        /// <summary>
+        /// Fetch list of all available matches
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAvailableMatches")]
+        //[ApiAuthorizationFilter(Permissions.ManageMatches)]
+        [ProducesResponseType(typeof(IList<MatchContract>), 200)]
+        public Task<IActionResult> FetchAvailableMatches()
+        {
+            //Recupero la lista dal layer
+            var entities = BasicLayer.FetchAvailableMatches(PlatformUtils.GetIdentityUserId(User));
+            //Ritorno i contratti
+            return Reply(GenerateMatchContracts(entities));
+        }
+
+
+        private IList<MatchContract> GenerateMatchContracts(IList<Match> entities)
+        {
             var associationIds = entities.Select(x => x.AssociationId).ToList();
             var placeIds = entities.Select(x => x.PlaceId).ToList();
 
@@ -38,7 +63,28 @@ namespace SemperPrecisStageTracker.API.Controllers
             var places = BasicLayer.FetchPlacesByIds(placeIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
+            return entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId)));
+        }
+
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchMatchesForSO")]
+        [ProducesResponseType(typeof(IList<MatchContract>), 200)]
+        public async Task<IActionResult> FetchMatchSO()
+        {
+            //Recupero la lista dal layer
+            var entities = await BasicLayer.FetchAllSoMdMatches(PlatformUtils.GetIdentityUserId(User));
+            var associationIds = entities.Select(x => x.AssociationId).ToList();
+            var placeIds = entities.Select(x => x.PlaceId).ToList();
+
+            var associations = BasicLayer.FetchAssociationsByIds(associationIds);
+            var places = BasicLayer.FetchPlacesByIds(placeIds);
+
+            //Ritorno i contratti
+            return Ok(entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
         }
 
         /// <summary>
@@ -124,6 +170,12 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Cost = request.Cost,
                 PaymentDetails = request.PaymentDetails
             };
+            
+            if (model.OpenMatch && model.UnifyClassifications)
+            {
+                return BadRequest(
+                    new ValidationResult("Match can't be open and without classification at the same time").AsList());
+            }
 
             //Invocazione del service layer
             var validations = await BasicLayer.CreateMatch(model, PlatformUtils.GetIdentityUserId(User));
@@ -161,8 +213,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.MatchDateTimeEnd = request.MatchDateTimeEnd;
             entity.AssociationId = request.AssociationId;
             entity.PlaceId = request.PlaceId;
-            entity.OpenMatch = request.OpenMatch;
-            entity.UnifyClassifications = request.UnifyClassifications;
+            // entity.OpenMatch = request.OpenMatch;
+            // entity.UnifyClassifications = request.UnifyClassifications;
             entity.Cost = request.Cost;
             entity.PaymentDetails = request.PaymentDetails;
 

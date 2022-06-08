@@ -10,7 +10,49 @@
       "placeId": "1",
       "shortLink": "ABC",
       "cost": 12.03,
-      "paymentDetails": "Some payment details" 
+      "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "2",
+      "name": "Match Unified",
+      "matchDateTimeStart": "2021-05-23T18:25:43.511Z",
+      "matchDateTimeEnd": "2021-05-24T18:25:43.511Z",
+      "creationDateTime": "2021-05-23T18:25:43.511Z",
+      "associationId": "1",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": true,
+      "openMatch": false,
+      "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "3",
+      "name": "Match 3",
+      "matchDateTimeStart": "2023-05-21T18:25:43.511Z",
+      "matchDateTimeEnd": "2023-05-21T18:25:43.511Z",
+      "creationDateTime": "2021-05-21T18:25:43.511Z",
+      "associationId": "1",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": false,
+      "openMatch": false,
+      "paymentDetails": "Some payment details"
+    },
+    {
+      "id": "4",
+      "name": "Match 4",
+      "matchDateTimeStart": "2023-05-23T18:25:43.511Z",
+      "matchDateTimeEnd": "2023-05-24T18:25:43.511Z",
+      "creationDateTime": "2021-05-23T18:25:43.511Z",
+      "associationId": "2",
+      "placeId": "1",
+      "shortLink": "EFG",
+      "cost": 12.03,
+      "unifyClassifications": false,
+      "openMatch": true,
+      "paymentDetails": "Some payment details"
     }
   ],
   "stages": [
@@ -115,6 +157,16 @@
       "id": "4",
       "matchId": "1",
       "name": "Group 04"
+    },
+    {
+      "id": "5",
+      "matchId": "2",
+      "name": "Group 01"
+    },
+    {
+      "id": "6",
+      "matchId": "2",
+      "name": "Group 02"
     }
   ],
   "groupShooters": [
@@ -153,12 +205,38 @@
       "classification": "Expert",
       "divisionId": "Enhanced Service Pistol idpa (ESP)",
       "hasPay": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "5",
+      "groupId": "5",
+      "shooterId": "1",
+      "teamId": "1",
+      "divisionId": "Stock Service Pistol idpa (SSP)",
+      "hasPay": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "2",
+      "groupId": "5",
+      "shooterId": "2",
+      "teamId": "1",
+      "divisionId": "Stock Service Pistol idpa (SSP)",
+      "hasPay": null
     }
   ],
   "places": [
     {
       "id": "1",
-      "name": "Place 01",
+      "name": "Place 01"
+    },
+    {
+      "id": "2",
+      "name": "Place 02"
+    }
+  ],
+  "placeDatas": [
+    {
+      "id": "1",
+      "placeId": "1",
       "holder": "Morgan Pizzini",
       "phone": "12345",
       "email": "morgan.pizzini@stamail.com",
@@ -170,7 +248,7 @@
     },
     {
       "id": "2",
-      "name": "Place 02",
+      "placeId": "2",
       "holder": "Morgan Pizzini 2",
       "phone": "67890",
       "email": "pizzini@stamail.com",
@@ -253,7 +331,85 @@
       "email": "Shooter@01.it",
       "username": "Shooter01",
       "password": "Shooter01",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "2",
+      "firstName": "Shooter",
+      "lastName": "02",
+      "email": "Shooter@02.it",
+      "username": "Shooter02",
+      "password": "Shooter02",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "3",
+      "firstName": "Shooter",
+      "lastName": "03",
+      "email": "Shooter@03.it",
+      "username": "Shooter03",
+      "password": "Shooter03",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "4",
+      "firstName": "Shooter",
+      "lastName": "04",
+      "email": "Shooter@04.it",
+      "username": "Shooter04",
+      "password": "Shooter04",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "41",
+      "firstName": "Shooter",
+      "lastName": "A04",
+      "email": "Shooter@A04.it",
+      "username": "ShooterA04",
+      "password": "ShooterA04",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "5",
+      "firstName": "Shooter",
+      "lastName": "05",
+      "email": "Shooter@05.it",
+      "username": "Shooter05",
+      "password": "Shooter05",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "6",
+      "firstName": "Shooter",
+      "lastName": "06",
+      "email": "Shooter@06.it",
+      "username": "Shooter06",
+      "password": "Shooter06",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "7",
+      "firstName": "Shooter",
+      "lastName": "07",
+      "email": "Shooter@07.it",
+      "username": "Shooter07",
+      "password": "Shooter07",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "8",
+      "firstName": "Shooter",
+      "lastName": "08",
+      "email": "Shooter@08.it",
+      "username": "Shooter08",
+      "password": "Shooter08",
+      "birthDate": "2021-05-23T18:25:43.511Z"
+    }
+  ],
+  "shooterDatas": [
+    {
+      "id": "1",
+      "shooterId": "1",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
@@ -268,12 +424,7 @@
     },
     {
       "id": "2",
-      "firstName": "Shooter",
-      "lastName": "02",
-      "email": "Shooter@02.it",
-      "username": "Shooter02",
-      "password": "Shooter02",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "2",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD1",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
@@ -288,12 +439,7 @@
     },
     {
       "id": "3",
-      "firstName": "Shooter",
-      "lastName": "03",
-      "email": "Shooter@03.it",
-      "username": "Shooter03",
-      "password": "Shooter03",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "3",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD2",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
@@ -308,12 +454,7 @@
     },
     {
       "id": "4",
-      "firstName": "Shooter",
-      "lastName": "04",
-      "email": "Shooter@04.it",
-      "username": "Shooter04",
-      "password": "Shooter04",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "4",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD3",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
@@ -328,60 +469,35 @@
     },
     {
       "id": "41",
-      "firstName": "Shooter",
-      "lastName": "A04",
-      "email": "Shooter@A04.it",
-      "username": "ShooterA04",
-      "password": "ShooterA04",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "41",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD3",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     },
     {
       "id": "5",
-      "firstName": "Shooter",
-      "lastName": "05",
-      "email": "Shooter@05.it",
-      "username": "Shooter05",
-      "password": "Shooter05",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "5",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD4",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     },
     {
       "id": "6",
-      "firstName": "Shooter",
-      "lastName": "06",
-      "email": "Shooter@06.it",
-      "username": "Shooter06",
-      "password": "Shooter06",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "6",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD5",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     },
     {
       "id": "7",
-      "firstName": "Shooter",
-      "lastName": "07",
-      "email": "Shooter@07.it",
-      "username": "Shooter07",
-      "password": "Shooter07",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "7",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD6",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
     },
     {
       "id": "8",
-      "firstName": "Shooter",
-      "lastName": "08",
-      "email": "Shooter@08.it",
-      "username": "Shooter08",
-      "password": "Shooter08",
-      "birthDate": "2021-05-23T18:25:43.511Z",
+      "shooterId": "8",
       "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD7",
       "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z"
@@ -1065,6 +1181,12 @@
     {
       "id": "2",
       "roleId": "2",
+      "userId": "2",
+      "entityId": "1"
+    },
+    {
+      "id": "21",
+      "roleId": "6",
       "userId": "2",
       "entityId": "1"
     },

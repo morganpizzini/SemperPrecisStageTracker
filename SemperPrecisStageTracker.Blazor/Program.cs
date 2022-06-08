@@ -124,13 +124,7 @@ builder.Services.AddIndexedDbDatabase<MatchServiceIndexedDb>(options =>
     indexedDbDatabaseModel.AddStore<ShooterMatchContract>();
     indexedDbDatabaseModel.AddStore<ShooterSOStageContract>();
     indexedDbDatabaseModel.AddStore<EditedEntity>();
-
-    // add Offline settings
-    // clean/download all method
-    // services for avoid api call and use indexDB
-    // services for push all
-    // api services for update edited entities
-
+    
     options.UseDatabase(indexedDbDatabaseModel);
 });
 
@@ -142,6 +136,10 @@ var host = builder.Build();
 // init network service
 var network = host.Services.GetRequiredService<NetworkService>();
 network.Init();
+
+// init Main service
+var main = host.Services.GetRequiredService<MainServiceLayer>();
+await main.Init();
 
 //init auth service
 var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();

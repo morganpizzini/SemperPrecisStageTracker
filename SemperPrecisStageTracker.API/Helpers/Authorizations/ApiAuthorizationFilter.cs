@@ -12,26 +12,19 @@ namespace SemperPrecisStageTracker.API.Helpers
 {
     public class ApiAuthorizationFilter : ActionFilterAttribute
     {
-        private readonly List<Permissions> _permissions = new();
-        //private readonly List<MatchPermissions> _matchPermissions = new();
+        private readonly IPermissionInterface _permissions;
 
-        public string PermissionsString
-        {
-            get
-            {
-                var result = string.Empty;
-                
-                if (_permissions.Any())
-                    result += " " + string.Join(" ", _permissions);
 
-                return result;
-            }
-        }
-        
+        public string PermissionsString => _permissions.ToString();
+
         public ApiAuthorizationFilter(params Permissions[] entityPermissions)
         {
-            _permissions.Clear();
-            _permissions.AddRange(entityPermissions);
+            _permissions = PermissionCtor.Compose(entityPermissions);
+        }
+
+        public ApiAuthorizationFilter(IPermissionInterface entityPermissions)
+        {
+            _permissions = entityPermissions;
         }
 
         /// <summary>

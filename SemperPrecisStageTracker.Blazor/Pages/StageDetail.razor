@@ -1,6 +1,7 @@
 ﻿@page "/matches/{id}/stages/{stageId}"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageDetail> L
+@inject NetworkService networkService
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new { id = Id, stageId = StageId }))"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
@@ -51,10 +52,13 @@ else
                                     <TableRow>
                                         <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                         <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
-                                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;<Icon Name="IconName.Phone" /></LoadingTemplate>
-                                                <ChildContent><Icon Name="IconName.Phone" /></ChildContent>
-                                            </Button>
+                                            @if (networkOnline)
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
+                                                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;<Icon Name="IconName.Phone"/></LoadingTemplate>
+                                                    <ChildContent><Icon Name="IconName.Phone"/></ChildContent>
+                                                </Button>
+                                            }
                                         </TableRowCell>
                                     </TableRow>
                                 </Virtualize>
@@ -340,6 +344,8 @@ else
     IList<ShooterSOStageContract> stageSos = new List<ShooterSOStageContract>();
     IList<ShooterContract> availableStageSo = new List<ShooterContract>();
 
+    bool networkOnline = false;
+
     bool canManageSO;
 
     protected override async Task OnInitializedAsync()
@@ -353,10 +359,22 @@ else
         canManageSO = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStageSO, Id);
 
         await LoadSO();
+
+        networkOnline = networkService.IsOnline;
+        networkService.OnlineChanged += OnlineChanged;
         await base.OnInitializedAsync();
     }
 
+    public void Dispose()
+    {
+        networkService.OnlineChanged -= OnlineChanged;
+    }
 
+    void OnlineChanged(bool status)
+    {
+        networkOnline = status;
+        this.StateHasChanged();
+    }
     async Task LoadSO()
     {
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
