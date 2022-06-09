@@ -2758,7 +2758,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<(Group, List<GroupShooter>, List<Shooter>)> FetchAllGroupsWithShootersByMatchId(string matchId)
         {
             // recupero i gruppi associati al match
-            var groups = FetchEntities(e => e.MatchId == matchId, null, null, x => x.Name, false, _groupRepository);
+            var groups = FetchEntities(e => e.MatchId == matchId, null, null, x => x.Index, false, _groupRepository);
 
             var groupsIds = groups.Select(group => group.Id).ToList();
 

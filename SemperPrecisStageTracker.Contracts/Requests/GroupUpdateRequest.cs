@@ -8,6 +8,11 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string GroupId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
+        [Required]
+        public int Index { get; set; }
+        [Required]
+        public int MaxShooterNumber { get; set; }
 
     }
 }

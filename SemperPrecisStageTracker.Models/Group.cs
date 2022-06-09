@@ -9,5 +9,10 @@ namespace SemperPrecisStageTracker.Models
         public string MatchId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
+        [Required]
+        public int Index { get; set; }
+        [Required]
+        public int MaxShooterNumber { get; set; }
     }
 }

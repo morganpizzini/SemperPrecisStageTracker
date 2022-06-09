@@ -376,6 +376,9 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 GroupId = entity.Id,
                 Name = entity.Name,
+                Description = entity.Description,
+                MaxShooterNumber = entity.MaxShooterNumber,
+                Index = entity.Index,
                 Match = match != null ? GenerateContract(match, association, place) : null,
                 Shooters = groupShooter != null ? groupShooter.Select(x => 
                     GenerateContract(x,shooters?.FirstOrDefault(s => s.Id == x.ShooterId),

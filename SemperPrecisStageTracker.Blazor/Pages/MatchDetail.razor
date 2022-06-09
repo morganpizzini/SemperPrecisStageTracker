@@ -130,12 +130,17 @@ else
                                     {
                                         <Virtualize Items="@match.Groups" Context="group">
                                             <TableRow>
-                                                <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
-                                                <TableRowHeader>@group.Shooters.Count</TableRowHeader>
+                                                <TableRowHeader>
+                                                    <NavLink href="@(RouteHelper.GetUrl<GroupDetail>(new { id = Id, groupId = group.GroupId }))">@group.Name</NavLink>
+                                                    <br/>
+                                                    <span class="fw-light">@group.Description</span>
+                                                </TableRowHeader>
+                                                <TableRowHeader>@group.Shooters.Count / @group.MaxShooterNumber</TableRowHeader>
                                                 <TableRowCell>
                                                     <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
                                                     @if (canManageGroups)
                                                     {
+                                                        <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupEdit>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Pen" /></Button>
                                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteGroup(group))"><Icon Name="IconName.Delete" /></Button>
                                                     }
                                                 </TableRowCell>

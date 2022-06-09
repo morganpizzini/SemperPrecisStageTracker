@@ -6,6 +6,27 @@ using SemperPrecisStageTracker.Blazor.Services;
 
 namespace SemperPrecisStageTracker.Blazor.Pages;
 
+public class SemperPrecisBasePresentationalValidationComponent<T> : SemperPrecisBasePresentationalComponent where T : new()
+{
+    protected Validations validations;
+
+    [Parameter,EditorRequired]
+    public virtual T Model { get; set; } = new();
+
+    [Parameter,EditorRequired]
+    public EventCallback SubmitCallback { get; set; }
+
+    protected async Task Submit()
+    {
+        if (!(await validations.ValidateAll()))
+            return;
+
+        await validations.ClearAll();
+
+        await SubmitCallback.InvokeAsync();
+    }
+}
+
 public class SemperPrecisBasePresentationalComponent : ComponentBase
 {
     [Inject]

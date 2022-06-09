@@ -141,32 +141,50 @@
     {
       "id": "1",
       "matchId": "1",
-      "name": "Group 01"
+      "name": "Group 01",
+      "description": "Descr 01",
+      "index": 0,
+      "maxShooterNumber": 10 
     },
     {
       "id": "2",
       "matchId": "1",
-      "name": "Group 02"
+      "name": "Group 02",
+      "description": "Descr 02",
+      "index": 1,
+      "maxShooterNumber": 9
     },
     {
       "id": "3",
       "matchId": "1",
-      "name": "Group 03"
+      "name": "Group 03",
+      "description": "Inverted order",
+      "index": 4,
+      "maxShooterNumber": 8
     },
     {
       "id": "4",
       "matchId": "1",
-      "name": "Group 04"
+      "name": "Group 04",
+      "description": "Descr 04",
+      "index": 3,
+      "maxShooterNumber": 12
     },
     {
       "id": "5",
       "matchId": "2",
-      "name": "Group 01"
+      "name": "Group 01",
+      "description": "Descr 05",
+      "index": 0,
+      "maxShooterNumber": 10
     },
     {
       "id": "6",
       "matchId": "2",
-      "name": "Group 02"
+      "name": "Group 02",
+      "description": "Descr 06",
+      "index": 1,
+      "maxShooterNumber": 10
     }
   ],
   "groupShooters": [

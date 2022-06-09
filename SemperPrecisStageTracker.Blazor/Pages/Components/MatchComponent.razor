@@ -1,4 +1,4 @@
-﻿@inherits SemperPrecisBasePresentationalComponent
+﻿@inherits SemperPrecisBasePresentationalValidationComponent<MatchContract>
 @inject IStringLocalizer<AssociationComponent> L
 
 <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
@@ -131,28 +131,11 @@
     </Field>
 </Validations>
 @code {
-    Validations validations;
-
-    [Parameter]
-    public MatchContract Model { get; set; } = new();
     [Parameter]
     public IList<AssociationContract> Associations { get; set; } = new List<AssociationContract>();
     [Parameter]
     public IList<PlaceContract> Places { get; set; } = new List<PlaceContract>();
-
-
-    [Parameter]
-    public EventCallback SubmitCallback { get; set; }
-
-    async Task Submit()
-    {
-        if (!(await validations.ValidateAll()))
-            return;
-
-        await validations.ClearAll();
-
-        await SubmitCallback.InvokeAsync();
-    }
+    
     void ValidateDate(ValidatorEventArgs e)
     {
         var date = e.Value as DateTime?;

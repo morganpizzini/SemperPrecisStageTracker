@@ -21,7 +21,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly MatchServiceIndexedDb _matchServiceIndexDb;
         public bool Offline { get; private set; }
         public bool Online => !Offline;
-        private bool _init = false;
 
         public MainServiceLayer(ILocalStorageService localStorage, IHttpService httpService, MatchServiceIndexedDb matchServiceIndexDb)
         {

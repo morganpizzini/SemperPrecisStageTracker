@@ -83,7 +83,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Group
             {
                 Name = request.Name,
-                MatchId = request.MatchId
+                MatchId = request.MatchId,
+                Description = request.Description,
+                MaxShooterNumber = request.MaxShooterNumber,
+                Index = request.Index
             };
 
             //Invocazione del service layer
@@ -115,6 +118,9 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
+            entity.Description = request.Description;
+            entity.MaxShooterNumber = request.MaxShooterNumber;
+            entity.Index = request.Index;
 
             //Salvataggio
             var validations = BasicLayer.UpdateGroup(entity);

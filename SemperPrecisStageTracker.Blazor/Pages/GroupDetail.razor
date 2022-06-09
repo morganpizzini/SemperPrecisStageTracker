@@ -22,8 +22,10 @@ else
                 <CardBody>
                     <CardTitle>@L["Group"]</CardTitle>
                     <CardText>@group.Name</CardText>
+                    <CardTitle>@L["Description"]</CardTitle>
+                    <CardText>@group.Description</CardText>
                     <CardTitle>@L["Shooters"]</CardTitle>
-                    <CardText>@group.Shooters.Count</CardText>
+                    <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
                 </CardBody>
             </Card>
         </Column>

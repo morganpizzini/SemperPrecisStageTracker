@@ -8,5 +8,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
         [Required]
         public string MatchId { get; set; }
+        public string Description { get; set; }
+        [Required]
+        public int Index { get; set; }
+        [Required]
+        public int MaxShooterNumber { get; set; }
     }
 }

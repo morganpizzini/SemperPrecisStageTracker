@@ -1,0 +1,62 @@
+﻿@inherits SemperPrecisBasePresentationalValidationComponent<GroupContract>
+@inject IStringLocalizer<GroupComponent> L
+
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@Model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Description"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["Description"]" @bind-Text="@Model.Description">
+                    <Feedback>
+                        <ValidationError>@L["WrongDescription"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["MaxShooterNumber"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["MaxShooterNumber"]" Min="0" Debounce="true" DebounceInterval="2000" TValue="int" @bind-Value="@Model.MaxShooterNumber">
+                    <Feedback>
+                        <ValidationError>@L["WrongMaxShooterNumber"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Index"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["Index"]" Min="0" Debounce="true" DebounceInterval="2000" TValue="int" @bind-Value="@Model.Index">
+                    <Feedback>
+                        <ValidationError>@L["WrongIndex"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
+        </FieldBody>
+    </Field>
+</Validations>
+

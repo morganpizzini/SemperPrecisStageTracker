@@ -9,18 +9,22 @@
                 <Field Horizontal="true" JustifyContent="JustifyContent.End">
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Match"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <Select TValue="string" SelectedValue="@Model.MatchId" SelectedValueChanged="@OnSelectedMatchChanged">
-                            <ChildContent>
-                                <SelectItem Value="@("")"></SelectItem>
-                                @foreach (var matchContract in AvailableMatches)
-                                {
-                                    <SelectItem Value="@matchContract.MatchId">@matchContract.Name (@matchContract.MatchDateTimeStart.ToString("d") - @matchContract.MatchDateTimeEnd.ToString("d"))</SelectItem>
-                                }
-                            </ChildContent>
-                            <Feedback>
-                                <ValidationError>@L["WrongMatch"]</ValidationError>
-                            </Feedback>
-                        </Select>
+                        @if(AvailableMatches.Count >0){
+                            <Select TValue="string" SelectedValue="@Model.MatchId" SelectedValueChanged="@OnSelectedMatchChanged">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var matchContract in AvailableMatches)
+                                    {
+                                        <SelectItem Value="@matchContract.MatchId">@matchContract.Name (@matchContract.MatchDateTimeStart.ToString("d") - @matchContract.MatchDateTimeEnd.ToString("d"))</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongMatch"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        }else{
+                            <p>@L["NoAvailableMatches"]</p>
+                        }
                     </FieldBody>
                 </Field>
             </Validation>

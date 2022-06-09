@@ -39,8 +39,15 @@
             await base.OnInitializedAsync();
             return;
         }
-        model = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest { AssociationId = Id });
-        
+        var result = await Post<AssociationContract>("api/Association/GetAssociation", new AssociationRequest { AssociationId = Id });
+
+        if (result == null)
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
+
+        model = result;
         await base.OnInitializedAsync();
     }
 
