@@ -118,7 +118,12 @@
                         registration.onupdatefound = () => {
                             setTimeout(function () {
                                 if (window.location.hostname !== 'localhost') {
-                                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
+                                    try {
+                                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");    
+                                    } catch (e) {
+                                        console.error(e);
+                                    } 
+                                    
                                 }
                             }, 3000)
                             const installingWorker = registration.installing;
@@ -158,7 +163,11 @@
                 // MyBlazorInstallMethod must be [JSInvokable]
                 setTimeout(function () {
                     if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost') {
-                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
+                        try {
+                            DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
+                        } catch (e) {
+                            console.error(e);
+                        } 
                     }
                 }, 3000);
             });
@@ -344,8 +353,11 @@
                 const worker = await navigator.serviceWorker.getRegistration();
                 const existingSubscription = await worker.pushManager.getSubscription();
                 if (!existingSubscription) {
-                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
-
+                    try {
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+                    } catch (e) {
+                        console.error(e);
+                    }
                 }
             },
             createSubscription: async () => {
