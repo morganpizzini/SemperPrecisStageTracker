@@ -13,7 +13,6 @@ namespace SemperPrecisStageTracker.Models
         public int Index { get; set; }
         public int Targets { get; set; }
 
-        public string SO { get; set; }
         [StringLength(1000)]
         public string Scenario { get; set; }
         [StringLength(1000)]

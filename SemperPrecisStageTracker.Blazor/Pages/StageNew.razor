@@ -47,18 +47,6 @@
         <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
             <Validation Validator="@ValidationRule.None">
                 <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["PSO"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["PSO"]" @bind-Text="@model.SO">
-                            <Feedback>
-                                <ValidationError>@L["WrongSO"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scenario"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                         <MemoEdit Rows="5" Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">

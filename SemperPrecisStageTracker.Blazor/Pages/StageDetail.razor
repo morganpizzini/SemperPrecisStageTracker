@@ -2,9 +2,13 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageDetail> L
 @inject NetworkService networkService
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new { id = Id, stageId = StageId }))"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
+@if (canManageStages)
+{
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageEdit>(new { id = Id, stageId = StageId }))"><Icon Name="IconName.Pen" /> @L["EditStage"]</Button>
+}
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
 @if (ApiLoading)
@@ -25,8 +29,6 @@ else
                     <CardText>@stage.Index</CardText>
                     <CardTitle>@L["Targets"]</CardTitle>
                     <CardText>@stage.Targets</CardText>
-                    <CardTitle>@L["PSO"]</CardTitle>
-                    <CardText>@stage.SO</CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -52,16 +54,16 @@ else
                                     <TableRow>
                                         <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                         <TableRowCell>
-                                            @if (networkOnline)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
-                                                    <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;<Icon Name="IconName.Phone"/></LoadingTemplate>
-                                                    <ChildContent><Icon Name="IconName.Phone"/></ChildContent>
-                                                </Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
+                                            @if (networkOnline && canInsertScore)
+                                    {
+                                        <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
+                                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;<Icon Name="IconName.Phone" /></LoadingTemplate>
+                                            <ChildContent><Icon Name="IconName.Phone" /></ChildContent>
+                                        </Button>
+                                    }
+                                </TableRowCell>
+                            </TableRow>
+                        </Virtualize>
                             }
                             else
                             {
@@ -77,6 +79,8 @@ else
                     {
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
                     }
+
+                    <CardTitle>@L["So"]</CardTitle>
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -170,47 +174,51 @@ else
             </Row>
         </CardBody>
     </Card>
-    <Divider />
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Groups"]</CardTitle>
+    @if (canInsertScore)
+    {
+        <Divider />
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["Groups"]</CardTitle>
 
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (match.Groups.Count > 0)
-                            {
-                                <Virtualize Items="@match.Groups" Context="group">
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (match.Groups.Count > 0)
+                                {
+                                    <Virtualize Items="@match.Groups" Context="group">
+                                        <TableRow>
+                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+                                else
+                                {
                                     <TableRow>
-                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
-                                        <TableRowCell>
-                                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                            @L["NoGroups"]
                                         </TableRowCell>
                                     </TableRow>
-                                </Virtualize>
-                            }
-                            else
-                            {
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
-                                        @L["NoGroups"]
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
+                                }
+                            </TableBody>
+                        </Table>
 
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+    }
+
 }
 @if (canManageSO)
 {
@@ -230,44 +238,44 @@ else
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var availableMatchDirector in availableStageSo)
-                                        {
-                                            <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongShooter"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                    <Validation Validator="@ValidationRule.IsSelected">
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
-                                    <ChildContent>
-                                        <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var soRole in match.Association.SoRoles)
-                                        {
-                                            <SelectItem Value="@soRole">@soRole</SelectItem>
-                                        }
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError>@L["WrongRole"]</ValidationError>
-                                    </Feedback>
-                                </Select>
-                            </FieldBody>
-                        </Field>
-                    </Validation>
-                </Validations>
-            </ModalBody>
-            <ModalFooter>
-                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToEdit(false))">@L["Close"]</Button>
-                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToEdit(true))">@L["Submit"]</Button>
-            </ModalFooter>
-        </ModalContent>
-    </Modal>
+                                    {
+                                        <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsSelected">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Role"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@stageSoToEdit.Shooter.Role">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var soRole in match.Association.SoRoles)
+                                    {
+                                        <SelectItem Value="@soRole">@soRole</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongRole"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalMatchDirectorToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalMatchDirectorToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
     <Modal @ref="modalRefStageSoToDelete">
         <ModalContent Centered="true">
             <ModalHeader>
@@ -347,7 +355,8 @@ else
     bool networkOnline = false;
 
     bool canManageSO;
-
+    bool canManageStages;
+    bool canInsertScore;
     protected override async Task OnInitializedAsync()
     {
         match = await Post(async () =>
@@ -357,6 +366,12 @@ else
             return await MainServiceLayer.GetMatch(Id);
         });
         canManageSO = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStageSO, Id);
+        canManageStages = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStages, Id);
+
+        var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x => x.Shooter.ShooterId);
+        userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x => x.Shooter.ShooterId).ToList());
+        canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) ||
+                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(stateService.User.ShooterId));
 
         await LoadSO();
 

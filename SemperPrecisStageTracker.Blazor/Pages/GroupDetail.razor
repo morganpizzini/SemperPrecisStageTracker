@@ -56,7 +56,7 @@ else
         }
     </Row>
     <Divider />
-    @if (MainServiceLayer.Online && availableShooters.Count > 0 && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+    @if (MainServiceLayer.Online && availableShooters.Count > 0 && canEditGroup)
     {
         <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model" Match="group.Match"/>
         <Divider />
@@ -77,7 +77,10 @@ else
                                     <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                                 }
                                 <TableHeaderCell>@L["Team"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Payment"]</TableHeaderCell>
+                                @if (canEditGroup)
+                                {
+                                    <TableHeaderCell>@L["Payment"]</TableHeaderCell>
+                                }
                                 <TableHeaderCell></TableHeaderCell>
                             </TableRow>
                         </TableHeader>
@@ -93,18 +96,21 @@ else
                                             <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                         }
                                         <TableRowHeader>@groupShooter.Team?.Name</TableRowHeader>
-                                        <TableRowHeader>
-                                            @if (groupShooter.HasPay.HasValue)
-                                            {
-                                                <Icon Name="IconName.Check" TextColor="TextColor.Success" />
-                                            }
-                                            else
-                                            {
-                                                <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Danger" />
-                                            }
-                                        </TableRowHeader>
+                                        @if (canEditGroup)
+                                        {
+                                            <TableRowHeader>
+                                                @if (groupShooter.HasPay.HasValue)
+                                                {
+                                                    <Icon Name="IconName.Check" TextColor="TextColor.Success" />
+                                                }
+                                                else
+                                                {
+                                                    <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Danger" />
+                                                }
+                                            </TableRowHeader>
+                                        }
                                         <TableRowCell>
-                                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                            @if (MainServiceLayer.Online && canEditGroup)
                                             {
                                                 <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(groupShooter))"><Icon Name="IconName.Pen" /></Button>
                                                 <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
@@ -265,10 +271,11 @@ else
     BaseShooterInMatchCreateRequest shooterToEdit = new();
     ShooterGroupMoveRequest shooterToMove = new();
 
-
+    bool canEditGroup;
 
     protected override async Task OnInitializedAsync()
     {
+        canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
         model.GroupId = GroupId;
         Groups = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
         await LoadShooters();

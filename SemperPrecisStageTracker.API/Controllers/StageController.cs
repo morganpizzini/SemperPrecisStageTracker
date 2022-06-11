@@ -83,7 +83,6 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Targets = request.Targets,
                 MatchId = request.MatchId,
                 Index = request.Index,
-                SO = request.SO,
                 Scenario = request.Scenario,
                 GunReadyCondition = request.GunReadyCondition,
                 StageProcedure = request.StageProcedure,
@@ -130,7 +129,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Name = request.Name;
             entity.Targets = request.Targets;
             entity.Index = request.Index;
-            entity.SO = request.SO;
             entity.Scenario = request.Scenario;
             entity.GunReadyCondition = request.GunReadyCondition;
             entity.StageProcedure = request.StageProcedure;

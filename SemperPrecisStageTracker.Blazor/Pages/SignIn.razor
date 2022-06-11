@@ -4,6 +4,8 @@
 @inject IStringLocalizer<SignIn> L
 @inject StateService stateService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
+@inject ClientConfiguration config
 
 <Heading Size="HeadingSize.Is1">@L["SignIn"]</Heading>
     <Row>
@@ -129,6 +131,17 @@
             NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
         }
     }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ((IJSInProcessRuntime)JSRuntime).InvokeVoid("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
     void ValidateDate(ValidatorEventArgs e)
     {
         var date = e.Value as DateTime?;
@@ -153,6 +166,7 @@
         if (! (await validations.ValidateAll()))
             return;
         await validations.ClearAll();
+        model.Token = ((IJSInProcessRuntime)JSRuntime).Invoke<string>("grecaptcha.execute", config.Recaptcha.RecaptchaToken, new { action = "contactSubmit" });
         var response = await AuthService.SignIn(model);
         if(response)
             NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());

@@ -11,21 +11,16 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
-        
-        re-captcha su signin tiratore
-
         gestione degli stage multi-string
         
         permessi su dettaglio team per vedere i tiratori
       
-        // accesso come utente anonimo
-        app/matches/1/stages/1 se non sono SO non ha senso che veda i gruppi / non posso chiamare l'MD / controllare label PSO / mettere header sopra tabella SO / non posso cliccare su edit stage
-        app/matches/1/groups/1 non devo vedere chi ha pagato
-        
         assegnazione shooter al team deve essere duplice, il team e lo shooter devono confermare l'associazione, mettere filtri in tutte le chiamate di recupero tiratori, mostrare 2 boc con "in attesa di conferma" e "in attesa di approvazione dal tiratore"
         pagina profilo tiratore
         richieste in attesa del tiratore
         
+        Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
+
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
 
         Bottone nella pagina del team per resettare la password
@@ -140,8 +135,6 @@
         @*rimuovere i Validator="@ValidationRule.IsNotEmpty"*@
         <li>Nelle associazioni e società inserire regolamento, link e allegato (creare un servizio che carica su blob storage e uno mock che salva in locale)</li>
         <li>All'aggiunta di un punteggio inviare una notifica al tiratore, ogni match ha una flag che permette di disabilitare questo meccanismo, aggiungere anche un pulsante che permette di aggiornare tutti i tiratori in 1 colpo solo</li>
-        <li>Form di iscrizione alla gara, con squad</li>
-        <li>Gestire le string multiple sugli stage</li>
         <li>Bloccare possibilità di reason in shooterteampayment (??)</li>
         <li>Verificare UI per divisione shooter association</li>
         <li>UI per assegnazione teamHolder</li>
@@ -153,7 +146,7 @@
 
         <li>Ogni stage ordine randomico dei tiratori, ma stabile sullo stesso stage</li>
         <li>Possibilità di mescolare l'ordine direttamente sulla pagina</li>
-        <li>Se entro come SO ho link rapido per stage</li>
+        <li>Se entro come SO ho link rapido per stage in homepage</li>
 
         <li>Creare punti di ritrovo per sparare (sicuro/forse/poco probabile) con piccola chat di messaggi</li>
 
@@ -164,11 +157,9 @@
 
         <li>Evidenziare Migliori 3 (oro/argento/bronzo) per ogni stage</li>
         <li>Inserimento link per download immagini</li>
-        <li>esportazione in csv</li>
         <li>caricamento immagini per posizione stage</li>
         <li>Opzione lotteria /elimina all'uscita o mantieni</li>
-        <li>Caricare configurazione dal server in startup.cs</li>
-        <li>virtualization sulle liste e loading dinamico https://docs.microsoft.com/it-it/aspnet/core/blazor/components/virtualization?view=aspnetcore-5.0 </li>
+        <li>virtualization sulle liste e loading dinamico itemprovider e placeholder https://docs.microsoft.com/it-it/aspnet/core/blazor/components/virtualization?view=aspnetcore-5.0 </li>
 
         <li>Dividere la creazione di un match con un wizard, in modo che prima possa settare l'associazione e poi tutto il resto</li>
 
@@ -176,7 +167,7 @@
 
         <li>Font MV boli</li>
 
-        <li>?? Controllare tastierino numerico su Ios ??</li>
+        <li>Controllare tastierino numerico su Ios: numberEdit potrebbe non mettere la virgola</li>
     </ul>
 }
 

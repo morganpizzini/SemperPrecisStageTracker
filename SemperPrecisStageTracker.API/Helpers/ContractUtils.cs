@@ -408,7 +408,6 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Targets = entity.Targets,
                 Index = entity.Index,
                 Match = match != null ? GenerateContract(match, association, place) : null,
-                SO = entity.SO,
                 Scenario = entity.Scenario,
                 GunReadyCondition = entity.GunReadyCondition,
                 StageProcedure = entity.StageProcedure,

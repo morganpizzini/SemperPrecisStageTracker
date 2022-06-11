@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts.Requests;
+using SemperPrecisStageTracker.Domain.Containers;
+using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 
@@ -64,6 +67,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(SignInResponse), 200)]
         public async Task<IActionResult> SignIn(SignInRequest request)
         {
+            var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
+
+            var captchaCheck = await captchaService.ValidateToken(request.Token);
+
+            if (!string.IsNullOrEmpty(captchaCheck))
+            {
+                return BadRequest(new List<ValidationResult> { new(captchaCheck) });
+            }
             //Tento il signin ed ottengo l'utente se è completato
             var validations = AuthorizationLayer.CreateUser(new Shooter
             {

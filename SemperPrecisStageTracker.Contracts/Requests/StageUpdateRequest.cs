@@ -12,7 +12,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public int Targets { get; set; }
         [Required]
         public int Index { get; set; }
-        public string SO { get; set; }
         public string Scenario { get; set; }
         public string GunReadyCondition { get; set; }
         public string StageProcedure { get; set; }

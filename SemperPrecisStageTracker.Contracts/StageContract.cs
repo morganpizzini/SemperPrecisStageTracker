@@ -9,7 +9,6 @@
         public int Targets { get; set; }
         public int Index { get; set; }
         public MatchContract Match { get; set; }
-        public string SO { get; set; }
         public string Scenario { get; set; }
         public string GunReadyCondition { get; set; }
         public string StageProcedure { get; set; }

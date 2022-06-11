@@ -26,6 +26,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Password { get; set; } = string.Empty;
         [Required]
         public DateTime BirthDate { get; set; } = DateTime.MinValue;
+        [Required]
+        public string Token { get; set; }
     }
 
 }
