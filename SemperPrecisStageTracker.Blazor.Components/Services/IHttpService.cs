@@ -5,8 +5,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
 {
     public interface IHttpService
     {
-        Task<ApiResponse<T>> Get<T>(string uri);
-        Task<ApiResponse<T>> Post<T>(string uri);
-        Task<ApiResponse<T>> Post<T>(string uri, object value);
+        Task<ApiResponse<T>?> Get<T>(string uri);
+        Task<ApiResponse<T>?> Post<T>(string uri);
+        Task<ApiResponse<T>?> Post<T>(string uri, object value);
     }
 }

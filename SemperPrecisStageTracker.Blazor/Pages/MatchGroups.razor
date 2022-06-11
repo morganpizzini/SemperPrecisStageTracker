@@ -1,0 +1,341 @@
+﻿@page "/matches/{id}/groups"
+@inherits SemperPrecisBaseComponent<MatchGroupResponse>
+@inject IStringLocalizer<MatchGroups> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["GroupsDetail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
+<Divider />
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Card Margin="Margin.Is4.OnY">
+        <CardBody>
+            <CardTitle>@L["Association"]</CardTitle>
+            <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new { id = Model.Match.Association.AssociationId }))">@Model.Match.Association.Name</NavLink></CardText>
+            <CardTitle>@L["Match"]</CardTitle>
+            <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new { id = Model.Match.MatchId }))">@Model.Match.Name</NavLink> - @Model.Match.MatchDateTimeStart.ToString("d") / @Model.Match.MatchDateTimeEnd.ToString("d")</CardText>
+            @if (Model.Match.UnifyClassifications || Model.Match.OpenMatch)
+            {
+                <CardTitle>@L["Details"]</CardTitle>
+                @if (Model.Match.UnifyClassifications)
+                {
+                    <CardText>@L["No classification match"]</CardText>
+                }
+                @if (Model.Match.OpenMatch)
+                {
+                    <CardText>@L["Open match"]</CardText>
+                }
+            }
+        </CardBody>
+    </Card>
+
+
+    <Divider />
+
+
+    <Card Margin="Margin.Is4.OnY">
+        <CardBody>
+            <CardTitle>@L["ShootersWihoutGroup"]</CardTitle>
+            <Table Striped="true" Hoverable="true">
+                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                    <TableRow>
+                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                        <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                        <TableHeaderCell>@L["Team"]</TableHeaderCell>
+                        @if (Model.Match is { UnifyClassifications: false })
+                        {
+                            <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                        }
+                        <TableHeaderCell></TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @if (Model.UnGrouped.Count > 0)
+                    {
+                        <Virtualize Items="@Model.UnGrouped" Context="groupShooter">
+                            <TableRow>
+                                <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                <TableRowHeader>@groupShooter.Division</TableRowHeader>
+                                <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
+                                @if (Model.Match is { UnifyClassifications: false })
+                                {
+                                    <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                }
+                                <TableRowCell>
+                                    @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                    {
+                                        <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
+                                    }
+                                </TableRowCell>
+                            </TableRow>
+                        </Virtualize>
+                    }
+                    else
+                    {
+                        <TableRow>
+                            <TableRowCell ColumnSpan="@(Model.Match is { UnifyClassifications: true } ? 4 : 5)" TextAlignment="TextAlignment.Center">
+                                @L["NoShooters"]
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+
+            </Table>
+        </CardBody>
+    </Card>
+
+    <Row>
+        <Virtualize Items="@Model.Groups" Context="group">
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <CardTitle>@L["Group"]</CardTitle>
+                                <CardText>@group.Name</CardText>
+                                <CardTitle>@L["Description"]</CardTitle>
+                                <CardText>@group.Description</CardText>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <CardTitle>@L["Spots"]</CardTitle>
+                                <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
+                            </Column>
+                        </Row>
+                        <CardTitle>@L["Shooters"]</CardTitle>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Division"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Team"]</TableHeaderCell>
+                                    @if (Model.Match is { UnifyClassifications: false })
+                                {
+                                    <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                }
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (group.Shooters.Count > 0)
+                            {
+                                <Virtualize Items="@group.Shooters" Context="groupShooter">
+                                    <TableRow>
+                                        <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Division</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
+                                        @if (Model.Match is { UnifyClassifications: false })
+                                    {
+                                        <TableRowHeader>@groupShooter.Classification</TableRowHeader>
+                                    }
+                                    <TableRowCell>
+                                        @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                        {
+                                            <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
+                                        }
+                                    </TableRowCell>
+                                </TableRow>
+                            </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="@(Model.Match is { UnifyClassifications: true } ? 4 : 5)" TextAlignment="TextAlignment.Center">
+                                        @L["NoShooters"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+
+                    </Table>
+
+
+                </CardBody>
+            </Card>
+        </Column>
+    </Virtualize>
+</Row>
+
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+
+    <Modal @ref="modalMoveRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["MoveShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ChooseWhereToMoveShooter"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToMove.ShooterName</Text>
+                </Field>
+                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@shooterToMove">
+                    <Validation Validator="@ValidationRule.IsSelected">
+                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Group"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Select TValue="string" @bind-SelectedValue="@shooterToMove.GroupId">
+                                    <ChildContent>
+                                        @foreach (var group in Model.Groups)
+                                    {
+                                        <SelectItem Value="@group.GroupId">@group.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongGroup"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideMoveModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideMoveModal(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered="true">
+            <ModalHeader>
+                <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModal(true))">@L["Yes"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+}
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    Validations validations;
+    // reference to the modal component
+    private Modal modalRef;
+    private Modal modalMoveRef;
+    GroupShooterContract shooterToDelete = new();
+
+    //MatchGroupResponse Groups = new();
+
+    BaseShooterInMatchCreateRequest model = new();
+    ShooterGroupMoveRequest shooterToMove = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+        await base.OnInitializedAsync();
+    }
+
+    async Task LoadGroups()
+    {
+        await Post1("api/Group/FetchAllGroupsWithDetailsByMatchId", new MatchRequest() { MatchId = Id });
+    }
+
+
+    void MoveShooter(GroupShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToMove = new ShooterGroupMoveRequest()
+            {
+                GroupShooterId = shooter.GroupShooterId,
+                GroupId = model.GroupId,
+                ShooterName = shooter.Shooter.CompleteName
+            };
+        modalMoveRef.Show();
+    }
+
+
+    void DeleteShooter(GroupShooterContract shooter)
+    {
+        if (shooter == null)
+            return;
+        shooterToDelete = shooter;
+        modalRef.Show();
+    }
+
+    private async Task HideModal(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
+        {
+            await Post<IList<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId }, false);
+            await LoadGroups();
+        }
+        shooterToDelete = new GroupShooterContract();
+        await modalRef.Hide();
+    }
+
+    private async Task HideMoveModal(bool choice)
+    {
+        if (choice && shooterToMove != null)
+        {
+            if (!(await validations.ValidateAll()))
+                return;
+
+            await validations.ClearAll();
+
+            var result = await Post<OkResponse>("/api/GroupShooter/MoveGroupShooter", shooterToMove, false);
+
+            if (result == null)
+                return;
+            await LoadGroups();
+        }
+        shooterToMove = new();
+        await modalMoveRef.Hide();
+    }
+
+}

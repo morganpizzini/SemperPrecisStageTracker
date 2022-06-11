@@ -11,6 +11,22 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
+        
+        re-captcha su signin tiratore
+
+        gestione degli stage multi-string
+        
+        permessi su dettaglio team per vedere i tiratori
+      
+        // accesso come utente anonimo
+        app/matches/1/stages/1 se non sono SO non ha senso che veda i gruppi / non posso chiamare l'MD / controllare label PSO / mettere header sopra tabella SO / non posso cliccare su edit stage
+        app/matches/1/groups/1 non devo vedere chi ha pagato
+        
+        assegnazione shooter al team deve essere duplice, il team e lo shooter devono confermare l'associazione, mettere filtri in tutte le chiamate di recupero tiratori, mostrare 2 boc con "in attesa di conferma" e "in attesa di approvazione dal tiratore"
+        pagina profilo tiratore
+        richieste in attesa del tiratore
+        
+        cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
 
         Bottone nella pagina del team per resettare la password
         Smtp server per invio email
@@ -26,6 +42,8 @@
         controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
         Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)
+        
+        tutte le chiamate MainServiceLayer.Online dovrebbero essere gestite dallo state 
 
         Creare uno shooter che gestisca il place e l'associazione
 
@@ -58,6 +76,8 @@
         aggiungere extension method AsAsync
         
         
+        offuscamento dati API se non ho i permessi di vedere determinate info (es: se ho pagato nel dettaglio gruppo nel match, la lista di tiratori all'interno di un team)
+
         login con AAD
         https://docs.microsoft.com/en-us/aspnet/core/blazor/security/webassembly/standalone-with-azure-active-directory?view=aspnetcore-6.0
         altri providers
@@ -72,6 +92,8 @@
 
         usare il masking per utilizzare il db al di fuori dell'applicazione principale (l'app che mostrerà solo i risultati avrà l'utente sul db con meno permessi e quindi vedrà tutto in blur)
         https://docs.microsoft.com/en-us/sql/relational-databases/security/dynamic-data-masking?view=sql-server-ver16
+        
+        hamburger menu
 
         [sviluppo]
         <li>Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)</li>
@@ -91,7 +113,8 @@
         tutti i metodi che riguardano unifyclassification e openmatch
         aggiunta groupshooter senza inserire il gruppo e tutti i metodi associati alla selezione di un gruppo
         nuovi metodi creazione gruppo in match
-        
+        aggiunta groupshooter disponibilità all'interno del gruppo come numero
+        authorization controller SignIn
 
         [deployment]
         Backup del db

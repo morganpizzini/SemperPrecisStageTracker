@@ -31,28 +31,27 @@ namespace SemperPrecisStageTracker.Blazor.Services
             //_localStorageService = localStorageService;
         }
 
-        public async Task<ApiResponse<T>> Get<T>(string uri)
+        public async Task<ApiResponse<T>?> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await sendRequest<T>(request);
+            return await SendRequest<T>(request);
         }
 
-        public Task<ApiResponse<T>> Post<T>(string uri) => Post<T>(uri, new { });
+        public Task<ApiResponse<T>?> Post<T>(string uri) => Post<T>(uri, new { });
 
-        public async Task<ApiResponse<T>> Post<T>(string uri, object value)
+        public async Task<ApiResponse<T>?> Post<T>(string uri, object value)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
-            return await sendRequest<T>(request);
+            return await SendRequest<T>(request);
         }
 
         // helper methods
 
-        private async Task<ApiResponse<T>> sendRequest<T>(HttpRequestMessage request)
+        private async Task<ApiResponse<T>?> SendRequest<T>(HttpRequestMessage request)
         {
             // add basic auth header if user is logged in and request is to the api url
-            //var user = _authenticationService.User
-            var isApiUrl = !request.RequestUri.IsAbsoluteUri;
+            var isApiUrl = !request.RequestUri?.IsAbsoluteUri ?? true;
             if (_stateService.IsAuth && isApiUrl)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _stateService.User.AuthData);
 

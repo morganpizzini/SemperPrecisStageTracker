@@ -33,6 +33,54 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
         /// <summary>
+        /// Fetch list of all groups
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchAllGroupsWithDetailsByMatchId")]
+        [ProducesResponseType(typeof(MatchGroupResponse), 200)]
+        public Task<IActionResult> FetchAllGroupsWithDetailsByMatchId(MatchRequest request)
+        {
+            //Recupero la lista dal layer
+            var match = BasicLayer.GetMatch(request.MatchId);
+            if (match == null)
+                return Reply(NotFound());
+
+            var association = BasicLayer.GetAssociation(match.AssociationId);
+
+            var entities = BasicLayer.FetchAllGroupsByMatchId(match.Id);
+
+            var groupIds = entities.Select(x => x.Id).ToList();
+            //var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
+            var shooterGroup = BasicLayer.FetchGroupShootersByGroupIds(groupIds);
+
+            var shooterWithNoGroup = BasicLayer.FetchGroupShootersWithoutGroupByMatchIds(match.Id);
+            
+            var shooterIds = shooterGroup.Select(x => x.ShooterId)
+                .Concat(shooterWithNoGroup.Select(x => x.ShooterId).ToList()).ToList();
+
+            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+
+            var teamIds = shooterGroup.Select(x => x.TeamId).ToList();
+            var teams = BasicLayer.FetchTeamsByIds(teamIds);
+
+            //Ritorno i contratti
+            return Reply(
+                new MatchGroupResponse
+                {
+                    Match = ContractUtils.GenerateContract(match,association),
+                    Groups = entities.As(x =>
+                    {
+                        var groupShooter = shooterGroup.Where(e => e.GroupId == x.Id).ToList();
+                        var sIds = groupShooter.Select(x => x.ShooterId).ToList();
+                        return ContractUtils.GenerateContract(x, null, null, null,
+                            groupShooter, shooters.Where(s => sIds.Contains(s.Id)).ToList(),null,null,teams);
+                    }),
+                    UnGrouped = shooterWithNoGroup.As(x=>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=>s.Id == x.ShooterId),null,teams.FirstOrDefault(t=>t.Id == x.TeamId)))
+                });
+        }
+
+        /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>
         /// <param name="request">Request</param>

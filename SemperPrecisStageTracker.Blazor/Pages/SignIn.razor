@@ -1,0 +1,184 @@
+﻿@page "/signin"
+@attribute [AllowAnonymous]
+@inherits SemperPrecisBaseComponent
+@inject IStringLocalizer<SignIn> L
+@inject StateService stateService
+@inject NavigationManager NavigationManager
+
+<Heading Size="HeadingSize.Is1">@L["SignIn"]</Heading>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is8.Is2.WithOffset">
+            <Card Margin="Margin.Is4.OnY">
+                <CardHeader>@L["Enter your data"]</CardHeader>
+                <CardBody>
+                        <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field>
+                                            <FieldLabel>@L["Name"]</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit Placeholder="@L["FirstName"]" @bind-Text="@model.FirstName">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongFirstName"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field>
+                                            <FieldLabel>@L["LastName"]</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit Placeholder="@L["LastName"]" @bind-Text="@model.LastName">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongLastName"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidateDate">
+                                        <Field JustifyContent="JustifyContent.End">
+                                            <FieldLabel>@L["BirthDate"]</FieldLabel>
+                                            <FieldBody>
+                                                <DateEdit TValue="DateTime" @bind-Date="@model.BirthDate">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongBirthDate"]</ValidationError>
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field>
+                                            <FieldLabel>@L["Username"]</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongUsername"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                                        <Field JustifyContent="JustifyContent.End">
+                                            <FieldLabel>@L["Email"]</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit Placeholder="@L["Email"]" Role="TextRole.Email" @bind-Text="@model.Email">
+                                                    <Feedback>
+                                                        <ValidationError>@L["WrongEmail"]</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidatePassword">
+                                        <Field Horizontal>
+                                            <FieldLabel>Password</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit Role="TextRole.Password" Placeholder="Password" @bind-Text="@model.Password">
+                                                    <Feedback>
+                                                        <ValidationError>Password must be at least 6 characters long!</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Validation Validator="@ValidatePassword2Auto">
+                                        <Field Horizontal>
+                                            <FieldLabel>Re Password</FieldLabel>
+                                            <FieldBody>
+
+                                                <TextEdit Role="TextRole.Password" Placeholder="Retype password">
+                                                    <Feedback>
+                                                        <ValidationError>Password does not match!</ValidationError>
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <Div Flex="Flex.JustifyContent.End" Margin="Margin.Is3.FromBottom">
+                                        <Div Padding="Padding.Is2">
+                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner"/>&nbsp;@L["Submit"]</LoadingTemplate>
+                                                <ChildContent>@L["Submit"]</ChildContent>
+                                            </Button>
+                                        </Div>
+                                    </Div>
+                                </Column>
+                            </Row>
+                        </Validations>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+@code {
+    Validations validations;
+    SignInRequest model = new();
+
+    protected override void OnInitialized()
+    {
+    // redirect to home if already logged in
+        if (stateService.User != null)
+        {
+            NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
+        }
+    }
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1920, 1, 1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongBirthDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    async Task Submit()
+    {
+        if (! (await validations.ValidateAll()))
+            return;
+        await validations.ClearAll();
+        var response = await AuthService.SignIn(model);
+        if(response)
+            NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
+    }
+
+    void ValidatePassword( ValidatorEventArgs e )
+    {
+        e.Status = Convert.ToString( e.Value )?.Length >= 6 ? ValidationStatus.Success : ValidationStatus.Error;
+    }
+
+    void ValidatePassword2Auto( ValidatorEventArgs e )
+    {
+        var password2 = Convert.ToString( e.Value );
+
+        if ( password2?.Length < 6 )
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = "Password must be at least 6 characters long!";
+        }
+        else if ( password2 != model.Password )
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+}

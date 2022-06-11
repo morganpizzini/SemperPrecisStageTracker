@@ -20,7 +20,7 @@
             }
             <AuthorizeView>
                 <Authorized>
-                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="/profile">@(context.User?.Identity?.Name ?? L["NoName"])</NavLink>!</span>
+                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="@(RouteHelper.GetUrl<Profile>())">@(context.User?.Identity?.Name ?? L["NoName"])</NavLink>!</span>
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
                 </Authorized>
                 <NotAuthorized>
@@ -68,7 +68,7 @@
     private Modal modalInstallRef;
     private static Action actionNotification;
     private bool ShowNotificationAlertStatus;
-    private static Action actionPwaInstallation;
+    private static Action<bool> actionPwaInstallation;
     private bool ShowPwaInstallationProgress;
 
     string CurrentTheme = string.Empty;
@@ -116,10 +116,16 @@
     [JSInvokable]
     public static Task PromptPwaInstallation()
     {
-        actionPwaInstallation.Invoke();
+        actionPwaInstallation.Invoke(true);
         return Task.CompletedTask;
     }
-
+    [JSInvokable]
+    public static Task DismissPwaInstallation()
+    {
+        actionPwaInstallation.Invoke(false);
+        return Task.CompletedTask;
+    }
+    
     [JSInvokable]
     public static Task BlazorInstallHandler()
     {
@@ -138,9 +144,9 @@
         this.StateHasChanged();
     }
 
-    public void ShowPwaInstallation()
+    public void ShowPwaInstallation(bool status)
     {
-        ShowPwaInstallationProgress = true;
+        ShowPwaInstallationProgress = status;
         this.StateHasChanged();
 
     }

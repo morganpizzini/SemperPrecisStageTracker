@@ -38,9 +38,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 
     public class GroupShooterCreateRequest
     {
-        [Required]
-
         public string GroupId { get; set; }
+        public string MatchId { get; set; }
         [Required]
         public string ShooterId { get; set; }
         [Required]  

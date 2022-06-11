@@ -18,7 +18,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
             return result;
         }
 
-        public static string GetUrl<TComponent>(object parameters = null)
+        public static string GetUrl<TComponent>(object? parameters = null)
             where TComponent : ComponentBase
         {
             var properties = new RouteValueDictionary(parameters);
@@ -31,7 +31,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
                 .Select(x => x.Render(properties))
                 .FirstOrDefault();
             
-            return result.TrimStart('/');
+            return result?.TrimStart('/') ?? "/";
         }
     }
 }

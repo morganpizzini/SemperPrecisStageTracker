@@ -9,6 +9,7 @@
 {
     @if(canManageGroups){
         <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
+        <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchGroups>(new{ id = Id}))"><Icon Name="IconName.Adjust" /> @L["ManageGroups"]</Button>
     }
     @if(canManageStages){
         <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>

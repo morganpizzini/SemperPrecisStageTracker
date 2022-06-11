@@ -103,7 +103,7 @@ namespace SemperPrecisStageTracker.API.Middlewares
             using var serviceLayer = new AuthenticationServiceLayer(isolatedSession);
 
             //Tento di eseguire il sign-in dell'utente
-            var signedInUser = await serviceLayer.SignIn(username, password);
+            var signedInUser = await serviceLayer.LogIn(username, password);
 
             //Se non ho l'utente, esco
             if (signedInUser == null)

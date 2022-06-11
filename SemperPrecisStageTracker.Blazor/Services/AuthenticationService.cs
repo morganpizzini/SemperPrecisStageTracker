@@ -54,28 +54,42 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<bool> Login(string username, string password)
         {
-            var response = await _httpService.Post<SignInResponse>("/api/Authorization/SignIn", new SignInRequest { Username = username, Password = password });
+            var response = await _httpService.Post<SignInResponse>("/api/Authorization/LogIn", new LogInRequest { Username = username, Password = password });
 
             if (response is not { WentWell: true })
                 return false;
 
-            _stateService.User = response.Result.Shooter;
+            await SetUser(response.Result,password);
+            return true;
+            
+        }
+        public async Task<bool> SignIn(SignInRequest request)
+        {
+            var response = await _httpService.Post<SignInResponse>("/api/Authorization/SignIn", request);
+
+            if (response is not { WentWell: true })
+                return false;
+
+            await SetUser(response.Result, request.Password);
+            return true;
+        }
+
+        private async Task SetUser(SignInResponse response,string password)
+        {
+            _stateService.User = response.Shooter;
             // save user
             _localStorageService.SetItem(userKey, _stateService.User);
             // update only on runtime the auth data
-            _stateService.User.AuthData = $"{username}:{password}".EncodeBase64();
+            _stateService.User.AuthData = $"{response.Shooter.Username}:{password}".EncodeBase64();
 
             // store authData in secret for silent login
             await _localStorageService.EncodeSecret(_stateService.User.Username, authCode, _stateService.User.AuthData);
 
-            _stateService.Permissions = response.Result.Permissions;
-            _localStorageService.SetItem(permissionKey, response.Result.Permissions);
+            _stateService.Permissions = response.Permissions;
+            _localStorageService.SetItem(permissionKey, response.Permissions);
 
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
-
-            return true;
         }
-
         public void UpdateLogin(ShooterContract user)
         {
             // update username

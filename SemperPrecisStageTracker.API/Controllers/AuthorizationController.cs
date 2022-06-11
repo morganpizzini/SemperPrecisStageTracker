@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts.Requests;
+using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
@@ -23,12 +24,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <response code="400">Bad request</response>
         [HttpPost]
         [AllowAnonymous]
-        [Route("SignIn")]
+        [Route("LogIn")]
         [ProducesResponseType(typeof(SignInResponse), 200)]
-        public async Task<IActionResult> SignIn(SignInRequest request)
+        public async Task<IActionResult> LogIn(LogInRequest request)
         {
             //Tento il signin ed ottengo l'utente se è completato
-            var result = await AuthorizationLayer.SignIn(request.Username, request.Password);
+            var result = await AuthorizationLayer.LogIn(request.Username, request.Password);
 
             //Se non ho utente, unauthorized
             if (result == null)
@@ -48,6 +49,38 @@ namespace SemperPrecisStageTracker.API.Controllers
                     Shooter = ContractUtils.GenerateContract(result,null, shooterAssociation,teams),
                     Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(result.Id))
                 });
+        }
+
+        /// <summary>
+        /// Executes sign-in on current platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        /// <response code="200">Ok</response>
+        /// <response code="400">Bad request</response>
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("SignIn")]
+        [ProducesResponseType(typeof(SignInResponse), 200)]
+        public async Task<IActionResult> SignIn(SignInRequest request)
+        {
+            //Tento il signin ed ottengo l'utente se è completato
+            var validations = AuthorizationLayer.CreateUser(new Shooter
+            {
+                Username = request.Username,
+                Password = request.Password,
+                BirthDate = request.BirthDate,
+                Email = request.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName
+            });
+
+            if (validations.Count > 0)
+            {
+                return BadRequest(validations);
+            }
+
+            return await LogIn(new LogInRequest() { Username = request.Username, Password = request.Password});
         }
 
 
@@ -89,7 +122,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var user = AuthorizationLayer.GetUserById(userId);
 
             //Tento il signin ed ottengo l'utente se è completato
-            var result = await AuthorizationLayer.SignIn(user.Username, request.OldPassword);
+            var result = await AuthorizationLayer.LogIn(user.Username, request.OldPassword);
 
             //Se non ho utente, unauthorized
             if (result == null)

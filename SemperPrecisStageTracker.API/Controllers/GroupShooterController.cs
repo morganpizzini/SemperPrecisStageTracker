@@ -105,6 +105,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             {
                 return Task.FromResult(BadRequest(new List<ValidationResult>() { new($"Group {request.GroupId} not found") }));
             }
+
+            var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(request.GroupId).Count;
+
+            if (shooterGroup >= group.MaxShooterNumber)
+            {
+                return Task.FromResult(BadRequest(new List<ValidationResult>() { new($"Group {group.Name} is full") }));
+            }
+
             var oldGroupId = entity.GroupId;
 
 
@@ -115,8 +123,16 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
+            
+            if (string.IsNullOrEmpty(oldGroupId))
+            {
+                return Reply(new OkResponse() { Status = true });
+            }
 
             var match = BasicLayer.GetMatch(group.MatchId);
+
+           
+
             // Return contract
             return Reply(GetGroupShooterContractByGroupId(oldGroupId, match.Id));
         }
@@ -143,7 +159,8 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entity = new GroupShooter
             {
                 ShooterId = request.ShooterId,
-                TeamId = request.TeamId
+                TeamId = request.TeamId,
+                MatchId = request.MatchId
             };
             var validations = ValidateGroupShooter(entity, request.MatchId, request.DivisionId);
 
@@ -181,6 +198,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 {
                     ShooterId = request.ShooterId,
                     GroupId = request.GroupId,
+                    MatchId = request.MatchId,
                     HasPay = request.HasPay
                 };
             }
@@ -193,6 +211,15 @@ namespace SemperPrecisStageTracker.API.Controllers
                     new ("Group not found")
                 });
             }
+
+            // check if group is full
+            var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
+
+            if (shooterGroup.All(x=> x.ShooterId != entity.ShooterId) && shooterGroup.Count >= group.MaxShooterNumber)
+            {
+                return BadRequest(new List<ValidationResult>() { new($"Group {group.Name} is full") });
+            }
+
 
             entity.TeamId = request.TeamId;
             entity.HasPay = request.HasPay;
@@ -222,6 +249,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
 
+            if (string.IsNullOrEmpty(entity.GroupId))
+            {
+                return Ok(new OkResponse() { Status = true });
+            }
             // Return contract
             return Ok(GetGroupShooterContractByGroupId(entity.GroupId, group.MatchId));
         }
@@ -352,6 +383,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequestTask(validations);
 
+            if (string.IsNullOrEmpty(groupId))
+            {
+                return Reply(new OkResponse() { Status = true });
+            }
             //Return contract
             return Reply(GetGroupShooterContractByGroupId(groupId));
         }
@@ -374,6 +409,8 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return new List<GroupShooterContract>();
 
             var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds, matchId);
+            
+            
             var shooterTeams = BasicLayer.FetchTeamsFromShooterIds(shooterIds);
 
             var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();

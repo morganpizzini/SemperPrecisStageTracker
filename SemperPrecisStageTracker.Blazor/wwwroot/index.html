@@ -170,6 +170,14 @@
                     // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
                     alert('Update available. Reload the page when convenient.');
                     location.reload();
+                } else {
+                    sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
+                        // ready
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation");
+                    }).catch(() => {
+                        // timeout
+                        console.error(e);
+                    });
                 }
             });
 

@@ -189,6 +189,14 @@
   ],
   "groupShooters": [
     {
+      "id": "11",
+      "matchId": "1",
+      "shooterId": "5",
+      "teamId": "1",
+      "classification": "Novice",
+      "divisionId": "Stock Service Pistol idpa (SSP)"
+    },
+    {
       "id": "1",
       "groupId": "1",
       "shooterId": "1",
@@ -326,6 +334,12 @@
       "id": "6",
       "shooterId": "5",
       "teamId": "2",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "61",
+      "shooterId": "5",
+      "teamId": "1",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
@@ -566,6 +580,14 @@
       "safetyOfficier": true
     },
     {
+      "id": "51",
+      "shooterId": "5",
+      "associationId": "1",
+      "cardNumber": "123444",
+      "registrationDate": "2021-05-02T18:25:43.511Z",
+      "safetyOfficier": false
+    },
+    {
       "id": "6",
       "shooterId": "6",
       "associationId": "1",
@@ -637,6 +659,14 @@
       "associationId": "2",
       "classification": "Novice",
       "division": "Enhanced Service Pistol (ESP)",
+      "registrationDate": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "51",
+      "shooterId": "5",
+      "associationId": "1",
+      "classification": "Novice",
+      "division": "Stock Service Pistol idpa (SSP)",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {

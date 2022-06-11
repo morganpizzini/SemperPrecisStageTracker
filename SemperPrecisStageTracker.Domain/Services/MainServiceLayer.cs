@@ -3472,7 +3472,31 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
-            return this._groupShooterRepository.Fetch(x => x.GroupId == id);
+            return FetchGroupShootersByGroupIds(new List<string> { id });
+        }
+
+        /// <summary>
+        /// Fetch list of shooters by provided ids
+        /// </summary>
+        /// <param name="id"> group identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public IList<GroupShooter> FetchGroupShootersByGroupIds(IList<string> ids)
+        {
+            if (ids == null) throw new ArgumentNullException(nameof(ids));
+
+            return this._groupShooterRepository.Fetch(x => ids.Contains(x.GroupId));
+        }
+
+        /// <summary>
+        /// Fetch list of shooters by provided ids
+        /// </summary>
+        /// <param name="id"> group identifier </param>
+        /// <returns>Returns list of shooters</returns>
+        public IList<GroupShooter> FetchGroupShootersWithoutGroupByMatchIds(string id)
+        {
+            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
+
+            return this._groupShooterRepository.Fetch(x => x.MatchId == id && string.IsNullOrEmpty(x.GroupId));
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 
 namespace SemperPrecisStageTracker.Contracts
 {
+    
     public class GroupContract
     {
         [IndexDbKey]

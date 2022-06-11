@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="userName">User name</param>
         /// <param name="password">Password</param>
         /// <returns>Returns signed in user or null</returns>
-        public async Task<Shooter> SignIn(string userName, string password)
+        public async Task<Shooter> LogIn(string userName, string password)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
@@ -81,6 +81,60 @@ namespace SemperPrecisStageTracker.Domain.Services
             return response.Response.IsSuccessStatusCode
                 ? response.Data
                 : null;
+        }
+
+        /// <summary>
+        /// Update user instagram access token
+        /// </summary>
+        /// <param name="entity">user entity</param>
+        /// <param name="userRoleKey">user role key</param>
+        /// <returns>User Entity</returns>
+        public IList<ValidationResult> CreateUser(Shooter entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Se l'oggetto è nuovo, eccezione
+            if (!string.IsNullOrEmpty(entity.Id))
+                throw new InvalidProgramException("Provided user already exists. Operation aborted");
+
+            // controllo validazione user
+            var validations = CheckUserValidation(entity);
+
+            if (validations.Count > 0)
+            {
+                return validations;
+            }
+
+            //Esecuzione in transazione
+            using var t = DataSession.BeginTransaction();
+
+            //Validazione argomenti
+            validations = _userRepository.Validate(entity);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            //Salvataggio
+            validations = SaveEntity(entity, _userRepository);
+
+            //Se ho validazioni fallite, esco
+            if (validations.Count > 0)
+            {
+                //Rollback ed uscita
+                t.Rollback();
+                return validations;
+            }
+
+            t.Commit();
+
+
+            return validations;
         }
 
         /// <summary>

@@ -7,27 +7,65 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SemperPrecisStageTracker.Blazor.Pages
 {
+    public class SemperPrecisBaseComponent<T> : SemperPrecisBaseComponent where T: new()
+    {
+        protected T Model = new();
+
+        protected override async Task<string> Post1(string uri, object value,bool pageOperation = true)
+        {
+            if(pageOperation)
+                ApiLoading = true;
+            
+            var apiResponse = await Service.Post<T>(uri, value);
+            if (apiResponse == null)
+            {
+                await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(apiResponse.Error))
+                {
+                    await ShowNotification(apiResponse.Error, "Error in API request", NotificationType.Error);
+                }
+                else
+                {
+                    Model = apiResponse.Result;
+                }
+            }
+            if(pageOperation)
+                ApiLoading = false;    
+
+            return apiResponse?.Error ?? string.Empty;
+        }
+    }
+
     [Authorize]
     public class SemperPrecisBaseComponent : SemperPrecisBasePresentationalComponent
     {
         [Inject]
-        private IHttpService Service { get; set; }
+        protected IHttpService Service { get; set; }
         
         [Inject]
         protected MainServiceLayer MainServiceLayer { get; set; }
         
         public Task<T?> Post<T>(string uri) => Post<T>(uri, new { });
 
-        protected async Task<T?> Post<T>(string uri, object value)
+
+        protected virtual Task<string> Post1(string uri, object value, bool pageOperation = true)
         {
-            ApiLoading = true;
+            return Task.FromResult(string.Empty);
+        }
+
+        protected virtual async Task<T?> Post<T>(string uri, object value,bool pageOperation = true)
+        {
+            if(pageOperation)
+                ApiLoading = true;
             T? result = default;
             
                 var apiResponse = await Service.Post<T>(uri, value);
                 if (apiResponse == null)
                 {
-                    await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);
-                    
+                    await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);   
                 }
                 else
                 {

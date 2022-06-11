@@ -8,12 +8,6 @@
 @inject INotificationService NotificationService;
 
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
-<Alert Color="Color.Success">
-    <AlertDescription>
-        Username: test<br />
-        Password: test
-    </AlertDescription>
-</Alert>
 <Row>
     <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
         <Card Margin="Margin.Is4.OnY">
@@ -52,14 +46,19 @@
                             </AlertDescription>
                         </Alert>
                     }
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+                    <Div Flex="Flex.JustifyContent.End" Margin="Margin.Is3.FromBottom">
+                        <Div Padding="Padding.Is2">
                             <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
                                 <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Login"]</LoadingTemplate>
                                 <ChildContent>@L["Login"]</ChildContent>
                             </Button>
-                        </FieldBody>
-                    </Field>
+                        </Div>
+                    </Div>
+                    <Div Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromBottom">
+                        <Div Padding="Padding.Is2">
+                            @L["NoAccout?"] <NavLink href="@(RouteHelper.GetUrl<SignIn>())">@L["SignIn"]</NavLink>
+                        </Div>
+                    </Div>
                 </Validations>
             </CardBody>
         </Card>
@@ -68,7 +67,7 @@
 
 @code {
     Validations validations;
-    private SignInRequest model = new();
+    private LogInRequest model = new();
     private bool loading;
     private string error;
 
