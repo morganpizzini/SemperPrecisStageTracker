@@ -105,10 +105,13 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groups = BasicLayer.FetchAllGroupsWithShootersByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
+            
+            var stageIds = stages.Select(x => x.Id).ToList();
+            //var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
-
+            
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity, association, place, groups, stages));
         }

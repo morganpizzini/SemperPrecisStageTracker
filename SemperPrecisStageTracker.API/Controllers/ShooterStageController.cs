@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(OkResponse), 200)]
         public async Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
         {
-            var shooterStage = new ShooterStage
+            var shooterStage = new ShooterStageString
             {
                 StageStringId = request.StageStringId,
                 Time = request.Time,

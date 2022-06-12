@@ -20,9 +20,9 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// Rulebook-2017.-3;
         ///
         public string Rules { get; set; }
-        public IList<StringCreateRequest> Strings { get; set; } = new List<StringCreateRequest>();
+        public IList<StageStringCreateRequest> Strings { get; set; } = new List<StageStringCreateRequest>();
     }
-    public class StringCreateRequest
+    public class StageStringCreateRequest
     {
         [Required]
         public string Name { get; set; }

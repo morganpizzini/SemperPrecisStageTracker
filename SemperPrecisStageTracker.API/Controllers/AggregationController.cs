@@ -29,15 +29,15 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> FetchDataForMatch(MatchRequest request)
         {
             var availableMatches = await BasicLayer.FetchAllSoMdMatches(PlatformUtils.GetIdentityUserId(User));
-            
-            var match = availableMatches.FirstOrDefault(x=> x.Id == request.MatchId);
+
+            var match = availableMatches.FirstOrDefault(x => x.Id == request.MatchId);
 
             if (match == null)
                 return NotFound();
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(match.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(match.Id);
-            //var stageIds = stages.Select(x => x.Id).ToList();
+            var stageIds = stages.Select(x => x.Id).ToList();
             var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
             var stageStringIds = stageStrings.Select(x => x.Id).ToList();
 
@@ -74,9 +74,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             if (shooterMatches.All(x => x.Id != userId))
             {
-                var userStages = shooterSoStages.Where(x => x.ShooterId == userId).Select(x=>x.StageId).ToList();
+                var userStages = shooterSoStages.Where(x => x.ShooterId == userId).Select(x => x.StageId).ToList();
                 stages = stages.Where(x => userStages.Contains(x.Id)).ToList();
                 stageIds = stages.Select(x => x.Id).ToList();
+                stageStringIds = stageStrings.Where(x => stageIds.Contains(x.StageId)).Select(x => x.Id).ToList();
             }
 
             // GroupShooter/FetchGroupShooterStage
@@ -103,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooterStageResults = BasicLayer.FetchShootersResultsOnStageStrings(stageStringIds, groupShootersIds);
 
-            var finalStageResults = new List<ShooterStage>();
+            var finalStageResults = new List<ShooterStageString>();
 
             // fill empty stages results
 
@@ -117,10 +118,14 @@ namespace SemperPrecisStageTracker.API.Controllers
                         finalStageResults.Add(existingResult);
                         continue;
                     }
-                    finalStageResults.Add(new ShooterStage
+                    var currentStageString = stageStrings.FirstOrDefault(x => x.Id == stageStringId);
+                    if (currentStageString == null)
+                        continue;
+                    finalStageResults.Add(new ShooterStageString
                     {
                         StageStringId = stageStringId,
-                        ShooterId = shooter.Id
+                        ShooterId = shooter.Id,
+                        StageId = currentStageString.StageId
                     });
                 }
             }
@@ -130,21 +135,21 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Ritorno i contratti
             return Ok(new MatchDataAssociationContract
             {
-                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x => (x, groupAggregateGroupShooters.Where(g => g.GroupId == x.Id).ToList())).ToList(), stages),
+                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x => (x, groupAggregateGroupShooters.Where(g => g.GroupId == x.Id).ToList())).ToList(), stages,stageStrings.Where(x=>stageStringIds.Contains(x.Id)).ToList()),
 
                 ShooterMatches = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
 
                 ShooterSoStages = shooterSoStages.As(x =>
                     ContractUtils.GenerateContract(x, stageSoShooters.FirstOrDefault(s => s.Id == x.ShooterId))),
 
-                ShooterStages = finalStageResults.As(x =>
-                      ContractUtils.GenerateContract(
-                        groupAggregateGroupShooters.FirstOrDefault(y => y.ShooterId == x.ShooterId),
-                        groupAggregateShooters.FirstOrDefault(y => y.Id == x.ShooterId),
-                        x,
-                        shooterWarnings.FirstOrDefault(y => y.ShooterId == x.ShooterId),
-                        groupAggregate.FirstOrDefault(g => g.shooters.Any(c => c.Id == x.ShooterId)).groupId ?? string.Empty))
-
+                ShooterStages = finalStageResults.GroupBy(x => new { x.StageId, x.ShooterId }).As(x =>
+                     ContractUtils.GenerateContract(
+                             groupAggregateGroupShooters.FirstOrDefault(y => y.ShooterId == x.Key.ShooterId),
+                             groupAggregateShooters.FirstOrDefault(y => y.Id == x.Key.ShooterId),
+                             x.Key.StageId,
+                         x.ToList(),
+                         shooterWarnings.FirstOrDefault(y => y.ShooterId == x.Key.ShooterId),
+                         groupAggregate.FirstOrDefault(g => g.shooters.Any(c => c.Id == x.Key.ShooterId)).groupId ?? string.Empty))
             });
         }
 
@@ -159,7 +164,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             var validations = await BasicLayer.UpsertShooterStages(
                 request.ShooterStages
-                    .Select(x => new ShooterStage
+                    .Select(x => new ShooterStageString
                     {
                         StageStringId = x.StageStringId,
                         Time = x.Time,
@@ -173,7 +178,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                         Disqualified = x.Disqualified,
                         Notes = x.Notes
                     }).ToList(),
-                request.EditedEntities.Select(x => (x.EntityId, x.EditDateTime)).ToList(),PlatformUtils.GetIdentityUserId(User));
+                request.EditedEntities.Select(x => (x.EntityId, x.EditDateTime)).ToList(), PlatformUtils.GetIdentityUserId(User));
             return Ok(new OkResponse()
             {
                 Status = validations.Count == 0

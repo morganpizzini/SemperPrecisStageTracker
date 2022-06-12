@@ -171,13 +171,13 @@ namespace SemperPrecisStageTracker.EF.Context
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedureNotes).HasMaxLength(1000);
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedure).HasMaxLength(1000);
 
-            modelBuilder.Entity<ShooterStage>()
+            modelBuilder.Entity<ShooterStageString>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterStage>()
+            modelBuilder.Entity<ShooterStageString>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterStage>()
+            modelBuilder.Entity<ShooterStageString>()
                 .Property(e => e.DownPoints)
                 .HasConversion(
                     v => string.Join(',', v),
@@ -206,7 +206,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Metadata
                 .SetValueComparer(valueComparerString);
 
-            modelBuilder.Entity<ShooterStage>()
+            modelBuilder.Entity<ShooterStageString>()
                 .Property(e => e.DownPoints)
                 .Metadata
                 .SetValueComparer(valueComparerInt);
@@ -374,7 +374,7 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of shooter stage
         /// </summary>
-        public DbSet<ShooterStage> ShooterStages { get; set; }
+        public DbSet<ShooterStageString> ShooterStages { get; set; }
 
         /// <summary>
         /// List of shooter team payment

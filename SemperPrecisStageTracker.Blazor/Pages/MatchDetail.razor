@@ -19,9 +19,9 @@
         <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
     }
 }
-<Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/matches/{Id}/stats")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
-@if(match!= null){
-    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@($"app/stats/{match.ShortLink}")"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+<Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{Id}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
+@if(!string.IsNullOrEmpty(match.ShortLink)){
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{ match.ShortLink}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
 }
 @if (ApiLoading)
 {
@@ -176,7 +176,6 @@ else
                             <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
                                     <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell>@L["Targets"]</TableHeaderCell>
                                     <TableHeaderCell></TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
@@ -186,7 +185,6 @@ else
                                     <Virtualize Items="@match.Stages" Context="stage">
                                         <TableRow>
                                             <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id, stageId = stage.StageId}))">@stage.Name</NavLink></TableRowHeader>
-                                            <TableRowCell>@stage.Targets</TableRowCell>
                                             <TableRowCell>
                                                 <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" Class="me-2" To="@(RouteHelper.GetUrl<StageDetail>(new{ id = Id,stageId = stage.StageId}))"><Icon Name="IconName.Search" /></Button>
                                                 @if (canManageStages)
@@ -202,7 +200,7 @@ else
                                 else
                                 {
                                     <TableRow>
-                                        <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
                                             @L["NoStages"]
                                         </TableRowCell>
                                     </TableRow>
@@ -254,10 +252,6 @@ else
             <Field>
                 <FieldLabel>@L["Name"]</FieldLabel>
                 <Text>@stageToDelete.Name</Text>
-            </Field>
-            <Field>
-                <FieldLabel>@L["Targets"]</FieldLabel>
-                <Text>@stageToDelete.Targets</Text>
             </Field>
         </ModalBody>
         <ModalFooter>

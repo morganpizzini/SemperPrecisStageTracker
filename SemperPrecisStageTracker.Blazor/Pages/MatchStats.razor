@@ -195,16 +195,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        ApiResponse<MatchStatsResultContract> response;
-        if (!string.IsNullOrEmpty(ShortLink))
-        {
-            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { ShortLink = ShortLink });
-        }
-        else
-        {
-            response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats", new MatchStatsRequest { MatchId = Id });
-        }
-
+        var response = await Client.Post<MatchStatsResultContract>("api/Match/GetMatchStats",
+            !string.IsNullOrEmpty(ShortLink) ? 
+                new MatchStatsRequest { ShortLink = ShortLink } : 
+                new MatchStatsRequest { MatchId = Id });
+        
         if (response is { WentWell: true })
         {
             stats = response.Result;

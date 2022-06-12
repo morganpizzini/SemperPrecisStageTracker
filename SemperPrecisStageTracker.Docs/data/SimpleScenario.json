@@ -744,6 +744,7 @@
     {
       "id": "1",
       "stageId": "1",
+      "stageStringId": "1",
       "shooterId": "1",
       "time": 56.9,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
@@ -762,6 +763,7 @@
     {
       "id": "11",
       "stageId": "2",
+      "stageStringId": "2",
       "shooterId": "1",
       "time": 30.9,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
@@ -780,6 +782,7 @@
     {
       "id": "12",
       "stageId": "3",
+      "stageStringId": "3",
       "shooterId": "1",
       "time": 12.9,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
@@ -798,6 +801,7 @@
     {
       "id": "13",
       "stageId": "4",
+      "stageStringId": "4",
       "shooterId": "1",
       "time": 50,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
@@ -816,6 +820,7 @@
     {
       "id": "2",
       "stageId": "1",
+      "stageStringId": "1",
       "shooterId": "2",
       "time": 50.9,
       "downPoints": [ 3, 1, 0, 1, 0, 3, 0, 0, 0, 1 ],
@@ -834,6 +839,7 @@
     {
       "id": "3",
       "stageId": "1",
+      "stageStringId": "1",
       "shooterId": "3",
       "time": 10.9,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],
@@ -852,6 +858,7 @@
     {
       "id": "4",
       "stageId": "1",
+      "stageStringId": "1",
       "shooterId": "4",
       "time": 10.9,
       "downPoints": [ 0, 1, 2, 1, 0, 0, 0, 0, 0, 1 ],

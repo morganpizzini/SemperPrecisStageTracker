@@ -24,7 +24,7 @@
 
 @code {
 
-    private readonly IList<ShooterStageContract> shooterStageContracts = new List<ShooterStageContract>();
+    private readonly IList<ShooterStageStringContract> shooterStageContracts = new List<ShooterStageStringContract>();
 
     async Task OnChanged(FileChangedEventArgs e)
     {
@@ -51,7 +51,7 @@
                     
                     foreach (var line in csv)
                     {
-                        var tmp = new ShooterStageContract
+                        var tmp = new ShooterStageStringContract
                             {
                                 StageStringId = line[0],
                                 ShooterId = line[1]

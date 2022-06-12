@@ -62,8 +62,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
+            var stageStrings = BasicLayer.FetchStageStringsFromStageId(entity.Id);
+
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Reply(ContractUtils.GenerateContract(entity,stageStrings));
         }
 
         /// <summary>

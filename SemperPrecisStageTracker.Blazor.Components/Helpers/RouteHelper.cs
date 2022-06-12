@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Routing;
 
@@ -22,12 +23,12 @@ namespace SemperPrecisStageTracker.Blazor.Utils
             where TComponent : ComponentBase
         {
             var properties = new RouteValueDictionary(parameters);
-
             var result = ParseRoutes<TComponent>()
                 // check input parameters count
-                .Where(x => x.Parameters.Length == properties.Count)
                 // check input parameters names
-                .Where(x => x.Parameters.All(parameter => properties.ContainsKey(parameter)))
+                .Where(x => x.Parameters.Length == properties.Count &&
+                            //properties.All(p => x.Parameters.Contains(p.Key,StringComparison.OrdinalIgnoreCase)))
+                            x.Parameters.All(parameter => properties.ContainsKey(parameter)))
                 .Select(x => x.Render(properties))
                 .FirstOrDefault();
             

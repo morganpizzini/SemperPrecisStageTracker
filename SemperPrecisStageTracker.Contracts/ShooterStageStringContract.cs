@@ -4,9 +4,9 @@ using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Contracts
 {
-    public class ShooterStageContract : IStageResult
+    public class ShooterStageStringContract : IStageResult
     {
-        public string ShooterStageId { get; set; }
+        //public string ShooterStageId { get; set; }
         public string ShooterId { get; set; }
 
         public string StageStringId { get; set; }

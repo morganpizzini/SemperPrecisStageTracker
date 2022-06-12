@@ -11,14 +11,16 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
+        controllare quando posso inserire un punteggio (se lo shooter è squalificato non posso cliccare) StageGropuDetail:71
+
         gestione degli stage multi-string
-        
+
         permessi su dettaglio team per vedere i tiratori
-      
+
         assegnazione shooter al team deve essere duplice, il team e lo shooter devono confermare l'associazione, mettere filtri in tutte le chiamate di recupero tiratori, mostrare 2 boc con "in attesa di conferma" e "in attesa di approvazione dal tiratore"
         pagina profilo tiratore
         richieste in attesa del tiratore
-        
+
         Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
 
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
@@ -37,12 +39,12 @@
         controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
         Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)
-        
-        tutte le chiamate MainServiceLayer.Online dovrebbero essere gestite dallo state 
+
+        tutte le chiamate MainServiceLayer.Online dovrebbero essere gestite dallo state
 
         Creare uno shooter che gestisca il place e l'associazione
-        
-        
+
+
         [trainer]
         play audio https://exceptionnotfound.net/how-to-play-a-sound-with-blazor-and-javascript/
 
@@ -70,8 +72,8 @@
         [chakra]
         mettere un metodo per gestire una transazione più grossa, cross metodo
         aggiungere extension method AsAsync
-        
-        
+
+
         offuscamento dati API se non ho i permessi di vedere determinate info (es: se ho pagato nel dettaglio gruppo nel match, la lista di tiratori all'interno di un team)
 
         login con AAD
@@ -88,7 +90,7 @@
 
         usare il masking per utilizzare il db al di fuori dell'applicazione principale (l'app che mostrerà solo i risultati avrà l'utente sul db con meno permessi e quindi vedrà tutto in blur)
         https://docs.microsoft.com/en-us/sql/relational-databases/security/dynamic-data-masking?view=sql-server-ver16
-        
+
         hamburger menu
 
         [sviluppo]
@@ -113,7 +115,7 @@
         authorization controller SignIn
         impossibilità di modificare i bersagli su uno stage se sono già stati inseriti dei punteggi
         tutti i processi di stagestring
-        
+
 
         [deployment]
         Backup del db
@@ -122,7 +124,7 @@
 
         nel team:
         modalità per iscrizione annuale o solare
-        
+
         nell'UpsertShooterStages' far risalire il messaggio di errore fino alla risposta
 
         alla cancellazione di un shooterassociationInfo cancellare anche le shooterassociation (inserire anche test)

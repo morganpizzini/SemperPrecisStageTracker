@@ -93,7 +93,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             };
         }
 
-        public async Task<(IList<ShooterStageContract>, IList<EditedEntityRequest>)> GetChanges()
+        public async Task<(IList<ShooterStageStringContract>, IList<EditedEntityRequest>)> GetChanges()
         {
             // get changes on shooterStage
             var changes = (await _matchServiceIndexDb.GetAll<EditedEntity>())
@@ -103,14 +103,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     return new EditedEntityRequest
                     {
                         EntityId = x.Key,
-                        EditDateTime = x.OrderByDescending(y => y.EditDateTime).FirstOrDefault()?.EditDateTime ?? DateTime.Now
+                        EditDateTime = x.MaxBy(y => y.EditDateTime)?.EditDateTime ?? DateTime.Now
                     };
                 }).ToList();
 
             // filter shooter stages with changes
             var entities = (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
                 .Where(x => changes.Any(y => y.EntityId == x.EditedEntityId))
-                .Select(x => x.ShooterStage).ToList();
+                .SelectMany(x => x.ShooterStage).ToList();
             return (entities, changes);
         }
 
@@ -122,7 +122,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 .ToList();
         }
 
-        public async Task<bool> UploadData(IList<ShooterStageContract>? listToUpload = null)
+        public async Task<bool> UploadData(IList<ShooterStageStringContract>? listToUpload = null)
         {
             ApiResponse<OkResponse> response;
             if (listToUpload == null)
@@ -234,7 +234,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             if (Offline)
             {
-                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageStringId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
+                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
             }
             var response = await _httpService.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
             return response is not { WentWell: true } ? new List<ShooterStageAggregationResult>() : response.Result;
@@ -245,28 +245,33 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (Offline)
             {
                 var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
-                var singleEntity = entities.FirstOrDefault(x => x.ShooterStage.StageStringId == model.StageStringId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
-                if (singleEntity == null)
+                
+                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageStringId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                if (shooterStage == null)
                     return new OkResponse() { Status = false };
 
-                singleEntity.ShooterStage.Time = model.Time;
-                singleEntity.ShooterStage.DownPoints = model.DownPoints;
-                singleEntity.ShooterStage.Bonus = model.Bonus;
-                singleEntity.ShooterStage.Procedurals = model.Procedurals;
-                singleEntity.ShooterStage.HitOnNonThreat = model.HitOnNonThreat;
-                singleEntity.ShooterStage.FlagrantPenalties = model.FlagrantPenalties;
-                singleEntity.ShooterStage.Ftdr = model.Ftdr;
-                singleEntity.ShooterStage.Warning = model.Warning;
-                singleEntity.ShooterStage.Disqualified = model.Disqualified;
-                singleEntity.ShooterStage.Notes = model.Notes;
+                var singleEntity = shooterStage.ShooterStage.FirstOrDefault(x=>x.StageStringId == model.StageStringId);
+                if (singleEntity == null)
+                    return new OkResponse() { Status = false };
+                
+                singleEntity.Time = model.Time;
+                singleEntity.DownPoints = model.DownPoints;
+                singleEntity.Bonus = model.Bonus;
+                singleEntity.Procedurals = model.Procedurals;
+                singleEntity.HitOnNonThreat = model.HitOnNonThreat;
+                singleEntity.FlagrantPenalties = model.FlagrantPenalties;
+                singleEntity.Ftdr = model.Ftdr;
+                singleEntity.Warning = model.Warning;
+                singleEntity.Disqualified = model.Disqualified;
+                singleEntity.Notes = model.Notes;
 
                 var editedEntity = new EditedEntity()
                 {
                     EntityName = nameof(ShooterStageAggregationResult),
-                    EntityId = singleEntity.EditedEntityId
+                    EntityId = shooterStage.EditedEntityId
                 };
 
-                await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { singleEntity });
+                await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
                 await _matchServiceIndexDb.AddItems(new List<EditedEntity> { editedEntity });
 
                 return new OkResponse() { Status = true };

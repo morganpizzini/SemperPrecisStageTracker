@@ -600,9 +600,18 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             MoveShooterResultToBottom(shooterResults,existingStages.Count);
 
+            //attach string suffix to stage name
+            var baseStageName = new List<string>();
+            var tmp = existingStages.OrderBy(y => y.Index).ToList();
+            foreach (var stage in tmp)
+            {
+                var t = existingStageString.Where(x => x.StageId == stage.Id).Select(x=>$"{stage.Name} - {x.Name}");
+                baseStageName.AddRange(t);
+            }
+            
             var matchResult = new MatchResultData
             {
-                StageNames = existingStages.OrderBy(y => y.Index).Select(x => x.Name).ToList(),
+                StageNames = baseStageName,
                 Overall = shooterResults,
                 Results = shooterResults.GroupBy(x=>x.DivisionId).Select(x => new DivisionMatchResult
                 {
@@ -3250,7 +3259,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ShooterStage> FetchShootersResultsOnStageStrings(IList<string> stageStringIds, IList<string> shooterIds)
+        public IList<ShooterStageString> FetchShootersResultsOnStageStrings(IList<string> stageStringIds, IList<string> shooterIds)
         {
             if (stageStringIds == null) throw new ArgumentNullException(nameof(stageStringIds));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
@@ -3263,7 +3272,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ShooterStage> FetchShootersResultsOnStage(string stageId, IList<string> shooterIds)
+        public IList<ShooterStageString> FetchShootersResultsOnStage(string stageId, IList<string> shooterIds)
         {
             if (stageId == null) throw new ArgumentNullException(nameof(stageId));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
@@ -3276,7 +3285,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list shooter with warning</returns>
-        public IList<ShooterStage> FetchShootersWarningsDisqualifiedOnStageStrings(string matchId,IList<string> stageStringIds, IList<string> shooterIds)
+        public IList<ShooterStageString> FetchShootersWarningsDisqualifiedOnStageStrings(string matchId,IList<string> stageStringIds, IList<string> shooterIds)
         {
             if (stageStringIds == null) throw new ArgumentNullException(nameof(stageStringIds));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
@@ -3306,7 +3315,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list shooter with warning</returns>
-        public IList<ShooterStage> FetchShootersWarningsDisqualifiedOnStage(string stageId, IList<string> shooterIds)
+        public IList<ShooterStageString> FetchShootersWarningsDisqualifiedOnStage(string stageId, IList<string> shooterIds)
         {
             if (stageId == null) throw new ArgumentNullException(nameof(stageId));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
@@ -3336,7 +3345,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpsertShooterStages(IList<ShooterStage> entities, IList<(string entityId, DateTime changDateTime)> changes, string userId)
+        public async Task<IList<ValidationResult>> UpsertShooterStages(IList<ShooterStageString> entities, IList<(string entityId, DateTime changDateTime)> changes, string userId)
         {   
             IList<ValidationResult> validations = new List<ValidationResult>();
             
@@ -3412,7 +3421,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpsertShooterStage(ShooterStage entity,string userId)
+        public async Task<IList<ValidationResult>> UpsertShooterStage(ShooterStageString entity,string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -3466,7 +3475,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        private IList<ValidationResult> UpdateShooterStage(ShooterStage entity, StageString existingStageString,Association existingAssociation)
+        private IList<ValidationResult> UpdateShooterStage(ShooterStageString entity, StageString existingStageString,Association existingAssociation)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 

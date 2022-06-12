@@ -27,8 +27,22 @@ else
                     <CardText>@stage.Name</CardText>
                     <CardTitle>@L["Index"]</CardTitle>
                     <CardText>@stage.Index</CardText>
-                    <CardTitle>@L["Targets"]</CardTitle>
-                    <CardText>@stage.Targets</CardText>
+                    <CardTitle>@L["Scenario"]</CardTitle>
+                    <CardText>@stage.Scenario</CardText>
+                    <CardTitle>@L["Strings"]:</CardTitle>
+                    <CardText>@stage.Strings.Count</CardText>
+                    <CardTitle>@L["Rules"]:</CardTitle>
+                    <CardText>@stage.Rules</CardText>
+               
+                    <CardTitle>@L["GunReadyCondition"]</CardTitle>
+                    <CardText>@stage.GunReadyCondition</CardText>
+                    <CardTitle>@L["StageProcedure"]</CardTitle>
+                    <CardText>@stage.StageProcedure</CardText>
+                    @if (!string.IsNullOrEmpty(stage.StageProcedureNotes))
+                    {
+                        <CardTitle>@L["Notes"]</CardTitle>
+                        <CardText>@stage.StageProcedureNotes</CardText>
+                    }
                 </CardBody>
             </Card>
         </Column>
@@ -119,61 +133,47 @@ else
             </Card>
         </Column>
     </Row>
-    <Card Margin="Margin.Is4.OnY">
-        <CardBody>
-            <Row>
-                <Column ColumnSize="ColumnSize.IsFull">
-                    <CardTitle>@L["Scenario"]</CardTitle>
-                    <CardText>@stage.Scenario</CardText>
-                </Column>
-                <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
-                    <CardTitle>@L["GunReadyCondition"]</CardTitle>
-                    <CardText>@stage.GunReadyCondition</CardText>
-                    <CardTitle>@L["StageProcedure"]</CardTitle>
-                    <CardText>@stage.StageProcedure</CardText>
-                    @if (!string.IsNullOrEmpty(stage.StageProcedureNotes))
-                    {
-                        <CardTitle>@L["Notes"]</CardTitle>
-                        <CardText>@stage.StageProcedureNotes</CardText>
-                    }
-                </Column>
-                <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Strings</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Scoring</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.TargetsDescription</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.ScoredHits</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.StartStop</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Rules</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stage.Distance</CardText>
-                    </Row>
-                    <Row>
-                        <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]:</CardTitle>
-                        <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@(stage.CoverGarment ? @L["Yes"] : @L["No"])</CardText>
-                    </Row>
-                </Column>
-            </Row>
-        </CardBody>
-    </Card>
+    <Virtualize Items="@stage.Strings" Context="stageString">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@stageString.Name</CardTitle>
+                <Row>
+                    <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Targets"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.Targets</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.Scoring</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.TargetsDescription</CardText>
+                        </Row>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.ScoredHits</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.StartStop</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.Distance</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@(stageString.CoverGarment ? @L["Yes"] : @L["No"])</CardText>
+                        </Row>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Virtualize>
     @if (canInsertScore)
     {
         <Divider />

@@ -66,50 +66,41 @@ else
                                     <Virtualize Context="shooter" Items="@shooters">
                                         <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                             <TableRowHeader>
-                                                @{
-                                                    if (canInsertScore)
+                                                @shooter.GroupShooter.Shooter.CompleteName
+                                                
+                                                @if (canInsertScore)
+                                                {
+                                                    @foreach (var stageString in stage.Strings)
                                                     {
-                                                        if (shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified)
-                                                        {
-                                                            if ((shooter.ShooterStage as IStageResult).Total < 0)
-                                                            {
-                                                                <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                                    @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
-                                                                </Button>
-                                                            }
-                                                            else
-                                                            {
-                                                                @shooter.GroupShooter.Shooter.LastName
-                                                                @shooter.GroupShooter.Shooter.FirstName
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter))">
-                                                                @shooter.GroupShooter.Shooter.LastName @shooter.GroupShooter.Shooter.FirstName
-                                                            </Button>
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        @shooter.GroupShooter.Shooter.LastName
-                                                        @shooter.GroupShooter.Shooter.FirstName
+                                                        <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter,stageString))">
+                                                            @stageString.Name
+                                                        </Button>
                                                     }
                                                 }
+                                                
                                             </TableRowHeader>
                                             <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
                                             @if (!match.UnifyClassifications)
                                             {
                                                 <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
                                             }
-                                            <TableRowCell>@((shooter.ShooterStage as IStageResult).TotalString)</TableRowCell>
+                                            <TableRowCell>
+                                                @foreach (var stageString in stage.Strings)
+                                                {
+                                                    var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                                    
+                                                    <span>@((current as IStageResult).TotalString)</span>
+                                                }
+                                                
+                                                
+                                            </TableRowCell>
                                         </TableRow>
-                                        @if (!string.IsNullOrEmpty(shooter.ShooterStage.Notes))
+                                        @if (shooter.ShooterStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
                                         {
                                             <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
                                                 <TableRowCell></TableRowCell>
                                                 <TableRowCell ColumnSpan="3">
-                                                    @shooter.ShooterStage.Notes
+                                                    @(string.Join(", ",shooter.ShooterStage.Select(x=>x.Notes)))
                                                 </TableRowCell>
                                             </TableRow>
                                         }
@@ -158,7 +149,7 @@ else
             </Row>
             <Validations @ref="validations" Mode="ValidationMode.Auto" Model="@model" ValidateOnLoad="false">
 
-                <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged" RenderMode="TabsRenderMode.LazyLoad">
                     <Items>
                         <Tab Name="penalties">@L["Penalities"]</Tab>
                         <Tab Name="downs">@L["DownPoints"]</Tab>
@@ -509,11 +500,6 @@ else
         });
 
         model.StageStringId = stage.StageId;
-        InitModelList();
-
-        
-                         
-
         await base.OnInitializedAsync();
     }
 
@@ -523,7 +509,7 @@ else
         //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageName = StageName });
     }
 
-    void FillShooter(ShooterStageAggregationResult shooter)
+    void FillShooter(ShooterStageAggregationResult shooter,StageStringContract stageString)
     {
         if (shooter == null || !canInsertScore)
             return;
@@ -534,27 +520,30 @@ else
         model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
         model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
         model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
-        model.Disqualified = shooter.ShooterStage.Disqualified;
-        model.DownPoints = shooter.ShooterStage.DownPoints;
-        model.FlagrantPenalties = shooter.ShooterStage.FlagrantPenalties;
-        model.Ftdr = shooter.ShooterStage.Ftdr;
-        model.HitOnNonThreat = shooter.ShooterStage.HitOnNonThreat;
-        model.Procedurals = shooter.ShooterStage.Procedurals;
-        model.Bonus = shooter.ShooterStage.Bonus;
-        model.Time = shooter.ShooterStage.Time;
-        model.Warning= shooter.ShooterStage.Warning;
-        model.Notes = shooter.ShooterStage.Notes;
-        InitModelList();
+
+        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+
+        model.Disqualified = currentString.Disqualified;
+        model.DownPoints = currentString.DownPoints;
+        model.FlagrantPenalties = currentString.FlagrantPenalties;
+        model.Ftdr = currentString.Ftdr;
+        model.HitOnNonThreat = currentString.HitOnNonThreat;
+        model.Procedurals = currentString.Procedurals;
+        model.Bonus = currentString.Bonus;
+        model.Time = currentString.Time;
+        model.Warning= currentString.Warning;
+        model.Notes = currentString.Notes;
+        InitModelList(stageString);
         selectedTab = "penalties";
         modalRef.Show();
     }
 
-    void InitModelList()
+    void InitModelList(StageStringContract stageString)
     {
         if (model.DownPoints.Count > 0)
             return;
         var tmp = new List<int>();
-        for (int i = 0; i < stage.Targets; i++)
+        for (int i = 0; i < stageString.Targets; i++)
         {
             tmp.Add(0);
         }
@@ -572,7 +561,7 @@ else
         else
         {
             shooterToFill = new ShooterContract();
-            InitModelList();
+            model.DownPoints.Clear();
             await modalRef.Hide();
         }
 
@@ -588,7 +577,7 @@ else
             var response = await MainServiceLayer.UpsertShooterStage(model);
             await LoadShooters();
             shooterToFill = new ShooterContract();
-            InitModelList();
+            model.DownPoints.Clear();
             await modalRef.Hide();
         }
         await modalConfirmRef.Hide();
