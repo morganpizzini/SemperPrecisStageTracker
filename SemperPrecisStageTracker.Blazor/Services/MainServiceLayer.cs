@@ -234,7 +234,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             if (Offline)
             {
-                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
+                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.ShooterStage.StageStringId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
             }
             var response = await _httpService.Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
             return response is not { WentWell: true } ? new List<ShooterStageAggregationResult>() : response.Result;
@@ -245,7 +245,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (Offline)
             {
                 var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
-                var singleEntity = entities.FirstOrDefault(x => x.ShooterStage.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                var singleEntity = entities.FirstOrDefault(x => x.ShooterStage.StageStringId == model.StageStringId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
                 if (singleEntity == null)
                     return new OkResponse() { Status = false };
 

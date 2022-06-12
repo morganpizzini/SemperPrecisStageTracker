@@ -8,27 +8,19 @@ using ZenProgramming.Chakra.Core.Mocks.Data.Repositories;
 namespace SemperPrecisStageTracker.Mocks.Data.Repositories
 {
     [Repository]
-    public class MockShooterTeamPaymentRepository : MockRepositoryBase<ShooterTeamPayment, ISemperPrecisStageTrackerScenario>, IShooterTeamPaymentRepository
-    {
-        public MockShooterTeamPaymentRepository(IDataSession dataSession)
-            : base(dataSession, c => c.ShooterTeamPayments)
-        {
-        }
-    }
-    [Repository]
-    public class MockTeamHolderRepository : MockRepositoryBase<TeamHolder, ISemperPrecisStageTrackerScenario>, ITeamHolderRepository
-    {
-        public MockTeamHolderRepository(IDataSession dataSession)
-            : base(dataSession, c => c.TeamHolders)
-        {
-        }
-    }
-    [Repository]
     public class MockStageRepository : MockRepositoryBase<Stage, ISemperPrecisStageTrackerScenario>, IStageRepository
     {
         public MockStageRepository(IDataSession dataSession)
             : base(dataSession, c => c.Stages)
         {
         }
-    }
+    
+        [Repository]
+        public class MockStageStringRepository : MockRepositoryBase<StageString, ISemperPrecisStageTrackerScenario>, IStageStringRepository 
+        {
+            public MockStageStringRepository (IDataSession dataSession)
+                : base(dataSession, c => c.StageStrings)
+            {
+            }
+        }
 }

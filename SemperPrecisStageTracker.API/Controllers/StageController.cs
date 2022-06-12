@@ -80,25 +80,28 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Stage
             {
                 Name = request.Name,
-                Targets = request.Targets,
                 MatchId = request.MatchId,
                 Index = request.Index,
                 Scenario = request.Scenario,
                 GunReadyCondition = request.GunReadyCondition,
                 StageProcedure = request.StageProcedure,
                 StageProcedureNotes = request.StageProcedureNotes,
-                Strings = request.Strings,
-                Scoring = request.Scoring,
-                TargetsDescription = request.TargetsDescription,
-                ScoredHits = request.ScoredHits,
-                StartStop = request.StartStop,
-                Rules = request.Rules,
-                Distance = request.Distance,
-                CoverGarment = request.CoverGarment
+                Rules = request.Rules
             };
 
+            var strings = request.Strings.Select(x => new StageString()
+            {
+                Targets = x.Targets,
+                Scoring = x.Scoring,
+                TargetsDescription = x.TargetsDescription,
+                ScoredHits = x.ScoredHits,
+                StartStop = x.StartStop,
+                Distance = x.Distance,
+                CoverGarment = x.CoverGarment
+            }).ToList();
+
             //Invocazione del service layer
-            var validations = BasicLayer.CreateStage(model);
+            var validations = BasicLayer.CreateStage(model,strings);
 
             if (validations.Count > 0)
                 return BadRequestTask(validations);
@@ -120,30 +123,43 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetStage(request.StageId);
-
+            
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
+            var strings = BasicLayer.FetchStageStringsFromStageId(request.StageId);
+
             //Aggiornamento dell'entità
             entity.Name = request.Name;
-            entity.Targets = request.Targets;
             entity.Index = request.Index;
             entity.Scenario = request.Scenario;
             entity.GunReadyCondition = request.GunReadyCondition;
             entity.StageProcedure = request.StageProcedure;
             entity.StageProcedureNotes = request.StageProcedureNotes;
-            entity.Strings = request.Strings;
-            entity.Scoring = request.Scoring;
-            entity.TargetsDescription = request.TargetsDescription;
-            entity.ScoredHits = request.ScoredHits;
-            entity.StartStop = request.StartStop;
             entity.Rules = request.Rules;
-            entity.Distance = request.Distance;
-            entity.CoverGarment = request.CoverGarment;
 
+
+            var newStrings = new List<StageString>();
+            // set new
+            // update existing
+            foreach (var stageString in request.Strings)
+            {
+                var existing = strings.FirstOrDefault(x => x.Id == stageString.StageStringId) ?? new StageString();
+
+                existing.Targets = stageString.Targets;
+                existing.Scoring = stageString.Scoring;
+                existing.TargetsDescription = stageString.TargetsDescription;
+                existing.ScoredHits = stageString.ScoredHits;
+                existing.StartStop = stageString.StartStop;
+                existing.Distance = stageString.Distance;
+                existing.CoverGarment = stageString.CoverGarment;
+
+                newStrings.Add(existing);
+            }
+            
             //Salvataggio
-            var validations = BasicLayer.UpdateStage(entity);
+            var validations = BasicLayer.UpdateStage(entity,newStrings);
             if (validations.Count > 0)
                 return BadRequestTask(validations);
 

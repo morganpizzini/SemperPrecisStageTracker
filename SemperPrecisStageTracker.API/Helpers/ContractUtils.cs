@@ -298,7 +298,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new ShooterStageContract()
             {
                 ShooterStageId = entity.Id,
-                StageId = entity.StageId,
+                StageStringId = entity.StageStringId,
                 ShooterId = entity.ShooterId,
                 Time = entity.Time,
                 DownPoints = entity.DownPoints,

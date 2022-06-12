@@ -5,14 +5,13 @@ using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Data.Repositories.Attributes;
 using ZenProgramming.Chakra.Core.Mocks.Data.Repositories;
 
-namespace SemperPrecisStageTracker.Mocks.Data.Repositories
+namespace SemperPrecisStageTracker.Mocks.Data.Repositories;
+
+[Repository]
+public class MockUserRoleRepository : MockRepositoryBase<UserRole, ISemperPrecisStageTrackerScenario>, IUserRoleRepository
 {
-    [Repository]
-    public class MockPlaceRepository : MockRepositoryBase<Place, ISemperPrecisStageTrackerScenario>, IPlaceRepository
+    public MockUserRoleRepository(IDataSession dataSession)
+        : base(dataSession, c => c.UserRoles)
     {
-        public MockPlaceRepository(IDataSession dataSession)
-            : base(dataSession, c => c.Places)
-        {
-        }
     }
 }

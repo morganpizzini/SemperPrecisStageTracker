@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class StageStringRepository : EntityFrameworkRepositoryBase<StageString, SemperPrecisStageTrackerContext>, IStageStringRepository
+    {
+        public StageStringRepository (IDataSession dataSession)
+            : base(dataSession, c => c.StageStrings)
+        {
+        }
+    }
 }

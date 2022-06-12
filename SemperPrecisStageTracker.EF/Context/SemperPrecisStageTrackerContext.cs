@@ -112,6 +112,12 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<StageString>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<StageString>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Association>()
                 .Property(e => e.Divisions)
                 .HasConversion(
@@ -359,6 +365,11 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of stage
         /// </summary>
         public DbSet<Stage> Stages { get; set; }
+
+        /// <summary>
+        /// List of stageStrings
+        /// </summary>
+        public DbSet<StageString> StageStrings { get; set; }
 
         /// <summary>
         /// List of shooter stage

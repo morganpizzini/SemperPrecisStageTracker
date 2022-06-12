@@ -21,18 +21,6 @@
     </Validation>
     <Validation Validator="@ValidationRule.None">
         <Field Horizontal="true">
-            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Targets"]</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                <NumericEdit Placeholder="@L["Targets"]" TValue="int" @bind-Value="@model.Targets">
-                    <Feedback>
-                        <ValidationError>@L["WrongTargets"]</ValidationError>
-                    </Feedback>
-                </NumericEdit>
-            </FieldBody>
-        </Field>
-    </Validation>
-    <Validation Validator="@ValidationRule.None">
-        <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Index"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                 <NumericEdit Placeholder="@L["Index"]" TValue="int" @bind-Value="@model.Index">
@@ -43,152 +31,164 @@
             </FieldBody>
         </Field>
     </Validation>
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scenario"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <MemoEdit Rows="5" Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">
-                            <Feedback>
-                                <ValidationError>@L["WrongScenario"]</ValidationError>
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["GunReadyCondition"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <MemoEdit Rows="3" Placeholder="@L["GunReadyCondition"]" @bind-Text="@model.GunReadyCondition">
-                            <Feedback>
-                                <ValidationError>@L["WrongGunReadyCondition"]</ValidationError>
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedure"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <MemoEdit Rows="5" Placeholder="@L["StageProcedure"]" @bind-Text="@model.StageProcedure">
-                            <Feedback>
-                                <ValidationError>@L["WrongStageProcedure"]</ValidationError>
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Notes"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <MemoEdit Rows="2" Placeholder="@L["Notes"]" @bind-Text="@model.StageProcedureNotes">
-                            <Feedback>
-                                <ValidationError>@L["WrongNotes"]</ValidationError>
-                            </Feedback>
-                        </MemoEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-        </Column>
-        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Strings"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                         <NumericEdit Placeholder="@L["Strings"]" TValue="int" @bind-Value="@model.Strings">
-                            <Feedback>
-                                <ValidationError>@L["WrongStrings"]</ValidationError>
-                            </Feedback>
-                        </NumericEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["Scoring"]" @bind-Text="@model.Scoring">
-                            <Feedback>
-                                <ValidationError>@L["WrongScoring"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["TargetsDescription"]" @bind-Text="@model.TargetsDescription">
-                            <Feedback>
-                                <ValidationError>@L["WrongTargetsDescription"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["ScoredHits"]" @bind-Text="@model.ScoredHits">
-                            <Feedback>
-                                <ValidationError>@L["WrongScoredHits"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["StartStop"]" @bind-Text="@model.StartStop">
-                            <Feedback>
-                                <ValidationError>@L["WrongStartStop"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["Rules"]" @bind-Text="@model.Rules">
-                            <Feedback>
-                                <ValidationError>@L["WrongRules"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <TextEdit Placeholder="@L["Distance"]" @bind-Text="@model.Distance">
-                            <Feedback>
-                                <ValidationError>@L["WrongDistance"]</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </FieldBody>
-                </Field>
-            </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <Check TValue="bool" @bind-Checked="@model.CoverGarment">@L["CoverGarment"]</Check>
-                    </FieldBody>
-                </Field>
-            </Validation>
-        </Column>
-    </Row>
+    <Validation Validator="@ValidationRule.None">
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scenario"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <MemoEdit Rows="5" Placeholder="@L["Scenario"]" @bind-Text="@model.Scenario">
+                    <Feedback>
+                        <ValidationError>@L["WrongScenario"]</ValidationError>
+                    </Feedback>
+                </MemoEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["GunReadyCondition"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <MemoEdit Rows="3" Placeholder="@L["GunReadyCondition"]" @bind-Text="@model.GunReadyCondition">
+                    <Feedback>
+                        <ValidationError>@L["WrongGunReadyCondition"]</ValidationError>
+                    </Feedback>
+                </MemoEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StageProcedure"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <MemoEdit Rows="5" Placeholder="@L["StageProcedure"]" @bind-Text="@model.StageProcedure">
+                    <Feedback>
+                        <ValidationError>@L["WrongStageProcedure"]</ValidationError>
+                    </Feedback>
+                </MemoEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Notes"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <MemoEdit Rows="2" Placeholder="@L["Notes"]" @bind-Text="@model.StageProcedureNotes">
+                    <Feedback>
+                        <ValidationError>@L["WrongNotes"]</ValidationError>
+                    </Feedback>
+                </MemoEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+
+    <Validation Validator="@ValidationRule.None">
+        <Field>
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Rules"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Rules"]" @bind-Text="@model.Rules">
+                    <Feedback>
+                        <ValidationError>@L["WrongRules"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    
+    <Button Size="Size.Small" Color="Color.Primary" Clicked="@AddString">@L["AddString"]</Button>
+    <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+        <Items>
+            @foreach (var stageString in model.Strings)
+            {
+                <Tab Name="@stageString.Name">@stageString.Name</Tab>
+            }
+        </Items>
+        <Content>
+            <Virtualize Items="@model.Strings" Context="stageString">
+                <TabPanel Name="@stageString.Name">
+                    <Validation Validator="@ValidationRule.None">
+                        <Field Horizontal="true">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Targets"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <NumericEdit Placeholder="@L["Targets"]" TValue="int" @bind-Value="@stageString.Targets">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongTargets"]</ValidationError>
+                                    </Feedback>
+                                </NumericEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Scoring"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["Scoring"]" @bind-Text="@stageString.Scoring">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongScoring"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["TargetsDescription"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["TargetsDescription"]" @bind-Text="@stageString.TargetsDescription">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongTargetsDescription"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ScoredHits"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["ScoredHits"]" @bind-Text="@stageString.ScoredHits">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongScoredHits"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["StartStop"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["StartStop"]" @bind-Text="@stageString.StartStop">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongStartStop"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["Distance"]" @bind-Text="@stageString.Distance">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongDistance"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <Check TValue="bool" @bind-Checked="@stageString.CoverGarment">@L["CoverGarment"]</Check>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                </TabPanel>
+            </Virtualize>
+        </Content>
+    </Tabs>
+
     <Field Horizontal="true" JustifyContent="JustifyContent.End">
         <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
@@ -206,20 +206,40 @@
 
     Validations validations;
     StageCreateRequest model = new();
+    string selectedTab = "String 1";
 
     protected override async Task OnInitializedAsync()
     {
         model.MatchId = Id;
+        model.Strings.Add(new StringCreateRequest()
+        {
+            Name = "String 1"
+        });
         await base.OnInitializedAsync();
+    }
+
+    private Task OnSelectedTabChanged( string name )
+    {
+        selectedTab = name;
+
+        return Task.CompletedTask;
+    }
+
+    void AddString()
+    {
+        model.Strings.Add(new StringCreateRequest()
+        {
+            Name= $"String {model.Strings.Count + 1}"
+        });
     }
 
     async Task Submit()
     {
-        if (! (await validations.ValidateAll()))
+        if (!(await validations.ValidateAll()))
             return;
         await validations.ClearAll();
         var response = await Post<GroupContract>("/api/Stage/CreateStage", model);
         if (response != null)
-        UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}));
+            UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new { id = Id }));
     }
 }

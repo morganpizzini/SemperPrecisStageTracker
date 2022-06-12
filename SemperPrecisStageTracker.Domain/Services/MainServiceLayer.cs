@@ -24,6 +24,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IShooterDataRepository _shooterDataRepository;
         private readonly IShooterStageRepository _shooterStageRepository;
         private readonly IStageRepository _stageRepository;
+        private readonly IStageStringRepository _stageStringRepository;
         private readonly IGroupShooterRepository _groupShooterRepository;
         private readonly ITeamRepository _teamRepository;
         private readonly IShooterTeamRepository _shooterTeamRepository;
@@ -52,6 +53,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterDataRepository = dataSession.ResolveRepository<IShooterDataRepository>();
             _shooterStageRepository = dataSession.ResolveRepository<IShooterStageRepository>();
             _stageRepository = dataSession.ResolveRepository<IStageRepository>();
+            _stageStringRepository = dataSession.ResolveRepository<IStageStringRepository>();
             _shooterTeamRepository = dataSession.ResolveRepository<IShooterTeamRepository>();
             _shooterAssociationRepository = dataSession.ResolveRepository<IShooterAssociationRepository>();
             _shooterAssociationInfoRepository = dataSession.ResolveRepository<IShooterAssociationInfoRepository>();
@@ -553,18 +555,29 @@ namespace SemperPrecisStageTracker.Domain.Services
             
             var existingStageIds = existingStages.Select(x => x.Id);
 
-            var existingShootersResult = this._shooterStageRepository.Fetch(x => existingStageIds.Contains(x.StageId));
+            var existingStageString = this._stageStringRepository.Fetch(x=>existingStageIds.Contains(x.StageId));
+            
+            var existingStageStringIds = existingStageString.Select(x => x.Id);
+
+            var existingShootersResult = this._shooterStageRepository.Fetch(x => existingStageStringIds.Contains(x.StageStringId));
 
             var shooterIds = existingShooterGroups.Select(x => x.ShooterId).ToList();
 
             var flatResults = shooterIds.SelectMany(s => existingShootersResult.Where(e => e.ShooterId == s)
                 .Select(y =>
-                    new ShooterStageResult
+                {
+                    var stageString = existingStageString.FirstOrDefault(x => x.Id == y.StageStringId);
+                    if (stageString == null)
+                        return new ShooterStageResult();
+                    return new ShooterStageResult
                     {
                         ShooterId = s,
-                        StageName = existingStages.First(z => z.Id == y.StageId).Name,
+                        StageName = $"{existingStages.First(z => z.Id == stageString.StageId).Name} - {stageString.Name}",
                         Total = (y as IStageResult).Total
-                    }).OrderBy(y => y.StageName).ToList());
+                    };
+                })
+                .Where(x=>!string.IsNullOrEmpty(x.ShooterId))
+                .OrderBy(y => y.StageName).ToList());
 
             var existingShooters = this.FetchShootersByIds(shooterIds);
 
@@ -3004,13 +3017,36 @@ namespace SemperPrecisStageTracker.Domain.Services
             return GetSingleEntity(c => c.Id == id, _stageRepository);
         }
 
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<StageString> FetchStageStringsFromStageId(string id, string userId = null) =>
+            FetchStageStringsFromStageIds(new List<string> { id }, userId);
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public IList<StageString> FetchStageStringsFromStageIds(IList<string> ids, string userId = null)
+        {
+            //Validazione argomenti
+            if (ids == null) throw new ArgumentNullException(nameof(ids));
+
+            //Utilizzo il metodo base
+            return _stageStringRepository.Fetch(x=>ids.Contains(x.StageId));
+        }
 
         /// <summary>
         /// Create provided stage
         /// </summary>
         /// <param name="entity">Stage</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> CreateStage(Stage entity)
+        public IList<ValidationResult> CreateStage(Stage entity, IList<StageString> strings)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -3019,11 +3055,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (!string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided Stage seems to already existing");
 
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
-
             // controllo singolatità emplyee
-            validations = CheckStageValidation(entity);
+            var validations = CheckStageValidation(entity);
             if (validations.Count > 0)
             {
                 return validations;
@@ -3047,6 +3080,25 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _stageRepository.Save(entity);
+
+            foreach (var stageString in strings)
+            {
+                stageString.StageId = entity.Id;
+                //Validazione argomenti
+                validations = _stageStringRepository.Validate(stageString);
+
+                //Se ho validazioni fallite, esco
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
+                //Salvataggio
+                _stageStringRepository.Save(stageString);
+            }
+
             t.Commit();
             return validations;
         }
@@ -3056,7 +3108,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Stage</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ValidationResult> UpdateStage(Stage entity)
+        public IList<ValidationResult> UpdateStage(Stage entity,IList<StageString> strings)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -3065,11 +3117,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
 
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
+            var existingStrings = _stageStringRepository.Fetch(x=>x.StageId == entity.Id);
 
             // controllo singolatità emplyee
-            validations = CheckStageValidation(entity);
+            var validations = CheckStageValidation(entity);
             if (validations.Count > 0)
             {
                 return validations;
@@ -3094,6 +3145,37 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Salvataggio
             _stageRepository.Save(entity);
+
+            // update strings
+            
+            // remove old
+            var old = existingStrings.Where(x => strings.All(s => s.Id != x.Id));
+            
+            foreach (var existingString in old)
+            {
+                _stageStringRepository.Delete(existingString);
+            }
+
+            foreach (var stageString in strings)
+            {
+                //Compensazione: se non ho la data di creazione, metto una data fittizia
+                if (stageString.CreationDateTime < new DateTime(2000, 1, 1))
+                    stageString.CreationDateTime = new DateTime(2000, 1, 1);
+                
+                validations = _stageStringRepository.Validate(stageString);
+
+                //Se ho validazioni fallite, esco
+                if (validations.Count > 0)
+                {
+                    //Rollback ed uscita
+                    t.Rollback();
+                    return validations;
+                }
+
+                //Salvataggio
+                _stageStringRepository.Save(stageString);
+            }
+
             t.Commit();
             return validations;
         }
@@ -3134,11 +3216,16 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Se l'oggetto � esistente, eccezione
             if (string.IsNullOrEmpty(entity.Id))
                 throw new InvalidProgramException("Provided stage doesn't have valid Id");
+            var existingStrings = _stageStringRepository.Fetch(x=>x.StageId == entity.Id);
 
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
             //Eliminazione
             _stageRepository.Delete(entity);
+            foreach (var existingString in existingStrings)
+            {
+                _stageStringRepository.Delete(existingString);
+            }
             t.Commit();
             return new List<ValidationResult>();
         }
@@ -3163,12 +3250,12 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list of validations</returns>
-        public IList<ShooterStage> FetchShootersResultsOnStages(IList<string> stageIds, IList<string> shooterIds)
+        public IList<ShooterStage> FetchShootersResultsOnStageStrings(IList<string> stageStringIds, IList<string> shooterIds)
         {
-            if (stageIds == null) throw new ArgumentNullException(nameof(stageIds));
+            if (stageStringIds == null) throw new ArgumentNullException(nameof(stageStringIds));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
 
-            return FetchEntities(e => stageIds.Contains(e.StageId) && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
+            return FetchEntities(e => stageStringIds.Contains(e.StageStringId) && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
         }
 
         /// <summary>
@@ -3181,7 +3268,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (stageId == null) throw new ArgumentNullException(nameof(stageId));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
 
-            return FetchEntities(e => e.StageId == stageId && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
+            return FetchEntities(e => e.StageStringId == stageId && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
         }
 
         /// <summary>
@@ -3189,16 +3276,17 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">shooterstage to upsert</param>
         /// <returns>Returns list shooter with warning</returns>
-        public IList<ShooterStage> FetchShootersWarningsDisqualifiedOnStages(IList<string> stageIds, IList<string> shooterIds)
+        public IList<ShooterStage> FetchShootersWarningsDisqualifiedOnStageStrings(string matchId,IList<string> stageStringIds, IList<string> shooterIds)
         {
-            if (stageIds == null) throw new ArgumentNullException(nameof(stageIds));
+            if (stageStringIds == null) throw new ArgumentNullException(nameof(stageStringIds));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
+            
+            var stagesInMatchIds = _stageRepository.FetchWithProjection(x => x.Id, x => x.MatchId == matchId);
 
-            var currentStagesMatchIds = _stageRepository.FetchWithProjection(x => x.MatchId, x => stageIds.Contains(x.Id));
+            var stageStringsInMatch =
+                _stageStringRepository.FetchWithProjection(x => x.Id, x => stagesInMatchIds.Contains(x.StageId));
 
-            var stagesInMatchIds = _stageRepository.FetchWithProjection(x => x.Id, x => currentStagesMatchIds.Contains(x.MatchId));
-
-            var shooterStages = FetchEntities(e => stagesInMatchIds.Contains(e.StageId) && shooterIds.Contains(e.ShooterId) && (e.Disqualified || e.Warning), null, null, e => !e.Disqualified, false, _shooterStageRepository);
+            var shooterStages = FetchEntities(e => stageStringsInMatch.Contains(e.StageStringId) && shooterIds.Contains(e.ShooterId) && (e.Disqualified || e.Warning), null, null, e => !e.Disqualified, false, _shooterStageRepository);
 
             // remove warning if disqualified shooter
             var disqualifiedShooters = shooterStages.Where(x => x.Disqualified).ToList();
@@ -3227,7 +3315,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var stagesInMatchIds = _stageRepository.FetchWithProjection(x => x.Id, x => x.MatchId == currentStage.MatchId);
 
-            var shooterStages = FetchEntities(e => stagesInMatchIds.Contains(e.StageId) && shooterIds.Contains(e.ShooterId) && (e.Disqualified || e.Warning), null, null, e => !e.Disqualified, false, _shooterStageRepository);
+            var shooterStages = FetchEntities(e => stagesInMatchIds.Contains(e.StageStringId) && shooterIds.Contains(e.ShooterId) && (e.Disqualified || e.Warning), null, null, e => !e.Disqualified, false, _shooterStageRepository);
 
             // remove warning if disqualified shooter
             var disqualifiedShooters = shooterStages.Where(x => x.Disqualified).ToList();
@@ -3262,7 +3350,11 @@ namespace SemperPrecisStageTracker.Domain.Services
             using var t = DataSession.BeginTransaction();
 
 
-            var stageIds = entities.Select(x => x.StageId).ToList();
+            var stageStringIds = entities.Select(x => x.StageStringId).ToList();
+
+            var existingStageStrings = this._stageStringRepository.Fetch(x => stageStringIds.Contains(x.Id));
+
+            var stageIds = existingStageStrings.Select(x => x.StageId).ToList();
 
             var existingStages = this._stageRepository.Fetch(x => stageIds.Contains(x.Id));
 
@@ -3279,7 +3371,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             var isAdmin = await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageMatches);
             foreach (var shooterStage in entities)
             {
-                var stage = existingStages.FirstOrDefault(x => x.Id == shooterStage.StageId);
+                var stageString = existingStageStrings.FirstOrDefault(x => x.Id == shooterStage.StageStringId);
+                var stage = existingStages.FirstOrDefault(x => x.Id == stageString.StageId);
                 var allowedUsers = matchMd.Where(x => x.MatchId == stage.MatchId).Select(x=>x.ShooterId).Concat(
                     stageSO.Where(x => x.StageId == stage.Id).Select(x=>x.ShooterId)).ToList();
 
@@ -3291,7 +3384,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 }
 
                 validations = UpdateShooterStage(shooterStage,
-                                                stage,
+                                                stageString,
                                                 existingAssociation.FirstOrDefault(a=> a.Id == 
                                                     existingMatches.FirstOrDefault(x => x.Id == stage.MatchId).AssociationId) );
 
@@ -3335,7 +3428,8 @@ namespace SemperPrecisStageTracker.Domain.Services
             
             // check for stage role
 
-            var existingStage = this._stageRepository.GetSingle(x => entity.StageId == x.Id);
+            var existingStageString = this._stageStringRepository.GetSingle(x => entity.StageStringId == x.Id);
+            var existingStage = this._stageRepository.GetSingle(x => existingStageString .StageId == x.Id);
             var existingMatch = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId);
 
             var allowedUsers = this._shooterMatchRepository.FetchWithProjection(x=>x.ShooterId,x => x.MatchId == existingMatch.Id).Concat(
@@ -3355,7 +3449,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
 
-            validations = UpdateShooterStage(entity, existingStage, existingAssociation);
+            validations = UpdateShooterStage(entity, existingStageString, existingAssociation);
 
             //Se ho validazioni fallite, esco
             if (validations.Count > 0)
@@ -3372,23 +3466,23 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        private IList<ValidationResult> UpdateShooterStage(ShooterStage entity, Stage existingStage,Association existingAssociation)
+        private IList<ValidationResult> UpdateShooterStage(ShooterStage entity, StageString existingStageString,Association existingAssociation)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            if (existingStage == null)
+            if (existingStageString == null)
             {
-                validations.Add(new ValidationResult($"{nameof(existingStage)} not found"));
+                validations.Add(new ValidationResult($"{nameof(existingStageString)} not found"));
                 return validations;
             }
 
             // point check
-            if (existingStage.Targets != entity.DownPoints.Count)
+            if (existingStageString.Targets != entity.DownPoints.Count)
             {
                 validations.Add(new ValidationResult($"Stage points and downPoint reported are missmatching"));
                 return validations;
             }
-            var existingShooterStage = this._shooterStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageId == x.StageId);
+            var existingShooterStage = this._shooterStageRepository.GetSingle(x => x.ShooterId == entity.ShooterId && entity.StageStringId == x.StageStringId);
 
             // new element
             if (existingShooterStage == null)

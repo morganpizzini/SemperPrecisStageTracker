@@ -9,7 +9,7 @@ namespace SemperPrecisStageTracker.Contracts
         public string ShooterStageId { get; set; }
         public string ShooterId { get; set; }
 
-        public string StageId { get; set; }
+        public string StageStringId { get; set; }
 
         public decimal Time { get; set; }
 

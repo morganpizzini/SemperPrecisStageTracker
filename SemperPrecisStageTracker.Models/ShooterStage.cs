@@ -12,7 +12,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string ShooterId { get; set; }
         [Required]
-        public string StageId { get; set; }
+        public string StageStringId { get; set; }
         [Required]
         public decimal Time { get; set; }
         //https://stackoverflow.com/questions/20711986/entity-framework-code-first-cant-store-liststring

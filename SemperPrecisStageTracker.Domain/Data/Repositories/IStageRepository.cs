@@ -10,4 +10,11 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
+    /// <summary>
+    /// Repository interface for "StageString"
+    /// </summary>
+    public interface IStageStringRepository : IRepository<StageString>
+    {
+
+    }
 }

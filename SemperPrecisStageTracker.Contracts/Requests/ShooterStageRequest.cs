@@ -8,9 +8,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 {
     public class ShooterStageRequest : IStageResult
     {
-
         [Required]
-        public string StageId { get; set; }
+        public string StageStringId { get; set; }
         [Required]
         public string ShooterId { get; set; }
         [Required]

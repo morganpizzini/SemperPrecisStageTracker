@@ -37,7 +37,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(match.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(match.Id);
-            
+            //var stageIds = stages.Select(x => x.Id).ToList();
+            var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
+            var stageStringIds = stageStrings.Select(x => x.Id).ToList();
+
 
             var association = BasicLayer.GetAssociation(match.AssociationId);
             var place = BasicLayer.GetPlace(match.PlaceId);
@@ -51,7 +54,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             //shooter list to fetch
             var shooterIdsSum = new List<string>(shooterIds);
 
-            var stageIds = stages.Select(x => x.Id).ToList();
 
             //Match/FetchAllShooterSOStages
             var shooterSoStages = BasicLayer.FetchShooterSOStagesByStageIds(stageIds);
@@ -99,17 +101,17 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groupShootersIds = groupAggregateShooters.Select(x => x.Id).ToList();
 
-            var shooterStageResults = BasicLayer.FetchShootersResultsOnStages(stageIds, groupShootersIds);
+            var shooterStageResults = BasicLayer.FetchShootersResultsOnStageStrings(stageStringIds, groupShootersIds);
 
             var finalStageResults = new List<ShooterStage>();
 
             // fill empty stages results
 
-            foreach (var stageId in stageIds)
+            foreach (var stageStringId in stageStringIds)
             {
                 foreach (var shooter in groupAggregateShooters)
                 {
-                    var existingResult = shooterStageResults.FirstOrDefault(x => x.StageId == stageId && x.ShooterId == shooter.Id);
+                    var existingResult = shooterStageResults.FirstOrDefault(x => x.StageStringId == stageStringId && x.ShooterId == shooter.Id);
                     if (existingResult != null)
                     {
                         finalStageResults.Add(existingResult);
@@ -117,13 +119,13 @@ namespace SemperPrecisStageTracker.API.Controllers
                     }
                     finalStageResults.Add(new ShooterStage
                     {
-                        StageId = stageId,
+                        StageStringId = stageStringId,
                         ShooterId = shooter.Id
                     });
                 }
             }
 
-            var shooterWarnings = BasicLayer.FetchShootersWarningsDisqualifiedOnStages(stageIds, groupShootersIds);
+            var shooterWarnings = BasicLayer.FetchShootersWarningsDisqualifiedOnStageStrings(match.Id, stageStringIds, groupShootersIds);
 
             //Ritorno i contratti
             return Ok(new MatchDataAssociationContract
@@ -159,7 +161,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 request.ShooterStages
                     .Select(x => new ShooterStage
                     {
-                        StageId = x.StageId,
+                        StageStringId = x.StageStringId,
                         Time = x.Time,
                         ShooterId = x.ShooterId,
                         DownPoints = x.DownPoints,
