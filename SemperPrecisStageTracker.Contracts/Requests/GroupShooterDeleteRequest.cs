@@ -2,12 +2,6 @@
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class GroupShooterRequest
-    {
-        [Required]
-        public string GroupShooterId { get; set; }
-    }
-
     public class GroupShooterDeleteRequest
     {
         [Required]

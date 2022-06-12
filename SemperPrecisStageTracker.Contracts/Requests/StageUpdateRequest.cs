@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
@@ -9,15 +10,28 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         [Required]
-        public int Targets { get; set; }
-        [Required]
         public int Index { get; set; }
         public string Scenario { get; set; }
         public string GunReadyCondition { get; set; }
         public string StageProcedure { get; set; }
         public string StageProcedureNotes { get; set; }
-        public int Strings { get; set; }
+        
+        ///
+        /// Rulebook-2017.-3;
+        ///
+        public string Rules { get; set; }
+        
+        public IList<StageStringUpdateRequest> Strings { get; set; } = new List<StageStringUpdateRequest>();
+    }
 
+    public class StageStringUpdateRequest
+    {
+        public string StageStringId { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public int Targets { get; set; }
+        
         ///
         /// 12 rounds min, Unlimited
         ///
@@ -35,10 +49,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         ///
         public string StartStop { get; set; }
         ///
-        /// Rulebook-2017.-3;
-        ///
-        public string Rules { get; set; }
-        ///
         /// From 6 yds to 10 yds
         ///
         public string Distance { get; set; }
@@ -46,6 +56,5 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// Required
         ///
         public bool CoverGarment { get; set; }
-
     }
 }

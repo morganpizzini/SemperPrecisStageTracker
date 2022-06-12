@@ -7,22 +7,34 @@ namespace SemperPrecisStageTracker.Models
     {
         public string MatchId { get; set; }
         public string Name { get; set; }
+
         ///
         /// Stage index for sorting
         ///
         public int Index { get; set; }
+
+
+        public string Scenario { get; set; }
+
+        public string GunReadyCondition { get; set; }
+
+        public string StageProcedure { get; set; }
+
+        public string StageProcedureNotes { get; set; }
+        
+        ///
+        /// Rulebook-2017.-3;
+        ///
+        public string Rules { get; set; }
+    }
+
+    public class StageString : SemperPrecisEntity
+    {
+        public string StageId { get; set; }
+
         public int Targets { get; set; }
 
-        [StringLength(1000)]
-        public string Scenario { get; set; }
-        [StringLength(1000)]
-        public string GunReadyCondition { get; set; }
-        [StringLength(1000)]
-        public string StageProcedure { get; set; }
-        [StringLength(1000)]
-        public string StageProcedureNotes { get; set; }
-        public int Strings { get; set; }
-
+        public string Name { get; set; }
         ///
         /// 12 rounds min, Unlimited
         ///
@@ -39,10 +51,6 @@ namespace SemperPrecisStageTracker.Models
         /// Audible - Last shot
         ///
         public string StartStop { get; set; }
-        ///
-        /// Rulebook-2017.-3;
-        ///
-        public string Rules { get; set; }
         ///
         /// From 6 yds to 10 yds
         ///

@@ -390,12 +390,15 @@ namespace SemperPrecisStageTracker.API.Helpers
             };
         }
 
+        public static StageContract GenerateContract(Stage entity, IList<StageString> strings) =>
+                GenerateContract(entity, null, null, null, strings);
+        
         /// <summary>
         /// Generate contract using entity
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static StageContract GenerateContract(Stage entity, Match match = null, Association association = null, Place place = null)
+        public static StageContract GenerateContract(Stage entity, Match match = null, Association association = null, Place place = null, IList<StageString> strings = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -405,19 +408,37 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 StageId = entity.Id,
                 Name = entity.Name,
-                Targets = entity.Targets,
                 Index = entity.Index,
                 Match = match != null ? GenerateContract(match, association, place) : null,
                 Scenario = entity.Scenario,
                 GunReadyCondition = entity.GunReadyCondition,
                 StageProcedure = entity.StageProcedure,
                 StageProcedureNotes = entity.StageProcedureNotes,
-                Strings = entity.Strings,
+                Rules = entity.Rules,
+                Strings = strings?.As(GenerateContract)
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static StageStringContract GenerateContract(StageString entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new StageStringContract()
+            {
+                StageStringId = entity.Id,
+                Targets = entity.Targets,
+                Name = entity.Name,
                 Scoring = entity.Scoring,
                 TargetsDescription = entity.TargetsDescription,
                 ScoredHits = entity.ScoredHits,
                 StartStop = entity.StartStop,
-                Rules = entity.Rules,
                 Distance = entity.Distance,
                 CoverGarment = entity.CoverGarment
             };

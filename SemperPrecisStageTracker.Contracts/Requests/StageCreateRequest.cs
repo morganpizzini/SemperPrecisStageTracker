@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
@@ -7,8 +8,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         [Required]
-        public int Targets { get; set; }
-        [Required]
         public string MatchId { get; set; }
         [Required]
         public int Index { get; set; }
@@ -16,8 +15,20 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string GunReadyCondition { get; set; }
         public string StageProcedure { get; set; }
         public string StageProcedureNotes { get; set; }
-        public int Strings { get; set; }
-
+        
+        ///
+        /// Rulebook-2017.-3;
+        ///
+        public string Rules { get; set; }
+        public IList<StringCreateRequest> Strings { get; set; } = new List<StringCreateRequest>();
+    }
+    public class StringCreateRequest
+    {
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public int Targets { get; set; }
+        
         ///
         /// 12 rounds min, Unlimited
         ///
@@ -34,10 +45,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// Audible - Last shot
         ///
         public string StartStop { get; set; }
-        ///
-        /// Rulebook-2017.-3;
-        ///
-        public string Rules { get; set; }
         ///
         /// From 6 yds to 10 yds
         ///

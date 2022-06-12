@@ -161,6 +161,7 @@ namespace SemperPrecisStageTracker.EF.Context
                         .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Stage>().Property(f => f.Scenario).HasMaxLength(1000);
+            modelBuilder.Entity<Stage>().Property(f => f.GunReadyCondition).HasMaxLength(1000);
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedureNotes).HasMaxLength(1000);
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedure).HasMaxLength(1000);
 
