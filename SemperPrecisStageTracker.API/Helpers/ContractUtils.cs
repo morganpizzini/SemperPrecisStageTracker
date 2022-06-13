@@ -243,6 +243,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 Team = team != null ? GenerateContract(team) : new TeamContract(),
                 Shooter = shooter != null ? GenerateContract(shooter) : new ShooterContract(),
+                ShooterApprove = entity.ShooterApprove,
+                TeamApprove = entity.TeamApprove,
                 RegistrationDate = entity.RegistrationDate
             };
         }

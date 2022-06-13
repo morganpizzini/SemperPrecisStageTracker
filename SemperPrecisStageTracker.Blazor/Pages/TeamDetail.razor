@@ -1,7 +1,9 @@
 ﻿@page "/teams/{id}"
+@using System.Security.Cryptography.X509Certificates
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<TeamDetail> L
 @inject NavigationManager UriHelper
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
@@ -25,85 +27,172 @@
 }
 else
 {
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Team"]</CardTitle>
-                    <CardText>@team.Name</CardText>
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Shooters"]</CardTitle>
-
-                    <Table Striped="true" Hoverable="true">
-                        <TableHeader ThemeContrast="ThemeContrast.Dark">
-                            <TableRow>
-                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Birthdate"]</TableHeaderCell>
-                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                <TableHeaderCell></TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (teamShooters.Count > 0)
-                            {
-                                <Virtualize Items="@teamShooters" Context="shooterTeam">
+    
+    <Card Margin="Margin.Is4.OnY">
+        <CardBody>
+            <CardTitle>@L["Team"]</CardTitle>
+            <CardText>@team.Name</CardText>
+        </CardBody>
+    </Card>
+    @if (canEditTeamShooter)
+    {
+        <Row>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["ShooterRequested"]</CardTitle>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                <TableRow>
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (teamShooters.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                                {
+                                    <Virtualize Items="@teamShooters.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                                        <TableRow>
+                                            <TableRowHeader>
+                                                @shooterTeam.Shooter.CompleteName
+                                                <br/>
+                                                @shooterTeam.Shooter.BirthDate.ToString("d")
+                                            </TableRowHeader>
+                                            <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(shooterTeam))"><Icon Name="IconName.Check"/></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+                                else
+                                {
                                     <TableRow>
-                                        <TableRowHeader>
-                                            @if ((PageCondition  || AuthService.CheckPermissions(Permissions.TeamEditShooters,Id)) && shooterTeam.Shooter.HasWarning)
-                                            {
-                                                <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
-                                            }
-                                            @shooterTeam.Shooter.CompleteName
-                                        </TableRowHeader>
-                                        <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
-                                        <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
-                                        <TableRowCell>
-                                            
-                                            <Buttons Role="ButtonsRole.Toolbar">
-                                                <Buttons Margin="Margin.Is2.FromEnd">
-                                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter,shooterTeam.Shooter.ShooterId))
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
-                                                    }
-                                                    @if (PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment,Id))
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.Shooter.ShooterId, teamId = Id }))"><Icon Name="IconName.DollarSign"/></Button>
-                                                    }
-                                                </Buttons>
-                                                <Buttons>
-                                                    @if (PageCondition  || AuthService.CheckPermissions(Permissions.TeamEditShooters,Id))
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
-                                                    }
-                                                </Buttons>
-                                            </Buttons>
-                                            
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                            @L["NoShooters"]
                                         </TableRowCell>
                                     </TableRow>
-                                </Virtualize>
-                            }
-                            else
-                            {
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardBody>
+                </Card>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["WaitingShooterForApproval"]</CardTitle>
+                        <Table Striped="true" Hoverable="true">
+                            <TableHeader ThemeContrast="ThemeContrast.Dark">
                                 <TableRow>
-                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
-                                        @L["NoShooters"]
+                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                    <TableHeaderCell></TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (teamShooters.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                                {
+                                    <Virtualize Items="@teamShooters.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                        <TableRow>
+                                            <TableRowHeader>
+                                                @shooterTeam.Shooter.CompleteName
+                                                <br/>
+                                                @shooterTeam.Shooter.BirthDate.ToString("d")
+                                            </TableRowHeader>
+                                            <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                            <TableRowCell>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
+                                else
+                                {
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                            @L["NoShooters"]
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardBody>
+                </Card>
+            </Column>
+        </Row>
+
+    }
+    // faccio parte del team e vedo gli altri
+    @if (stateService.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment)
+    {
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["Shooters"]</CardTitle>
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Birthdate"]</TableHeaderCell>
+                            <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                            <TableHeaderCell></TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (teamShooters.Count(x => x.ShooterApprove && x.TeamApprove) > 0)
+                        {
+                            <Virtualize Items="@teamShooters.Where(x => x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                <TableRow>
+                                    <TableRowHeader>
+                                        @if (canEditTeamShooter && shooterTeam.Shooter.HasWarning)
+                                        {
+                                            <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
+                                        }
+                                        @shooterTeam.Shooter.CompleteName
+                                    </TableRowHeader>
+                                    <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
+                                    <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                    <TableRowCell>
+
+                                        <Buttons Role="ButtonsRole.Toolbar">
+                                            <Buttons Margin="Margin.Is2.FromEnd">
+                                                @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooterTeam.Shooter.ShooterId))
+                                                {
+                                                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                                }
+                                                @if (canEditTeamShooterPayment)
+                                                {
+                                                    <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.Shooter.ShooterId, teamId = Id }))"><Icon Name="IconName.DollarSign"/></Button>
+                                                }
+                                            </Buttons>
+                                            <Buttons>
+                                                @if (canEditTeamShooter)
+                                                {
+                                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                                }
+                                            </Buttons>
+                                        </Buttons>
+
                                     </TableRowCell>
                                 </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                    @L["NoShooters"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
 
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+            </CardBody>
+        </Card>
+    }
 }
 <Modal @ref="modalRefShooterToEdit">
     <ModalContent Centered="true">
@@ -145,6 +234,31 @@ else
                     </Field>
                 </Validation>
             </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefShooterToApprove">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["ApproveShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+           @{
+               var shooter = teamShooters.FirstOrDefault(x => x.Shooter.ShooterId == shooterToEdit.ShooterId);
+           }
+           @if (shooter != null)
+           {
+               <Field>
+                   <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
+                   <FieldBody>@shooter.Shooter.CompleteName - @shooter.Shooter.BirthDate.ToString("d")</FieldBody>
+               </Field>
+           }
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
@@ -226,13 +340,21 @@ else
     private Modal modalRefShooterToDelete;
     ShooterTeamContract shooterToDelete = new();
     private Modal modalRefShooterToEdit;
+    private Modal modalRefShooterToApprove;
     ShooterTeamCreateRequest shooterToEdit = new();
     IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
+
+
+    bool canEditTeamShooter;
+    bool canEditTeamShooterPayment;
 
     protected override async Task OnInitializedAsync()
     {
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
         shooters = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+
+        canEditTeamShooter = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
+        canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
 
         await LoadShooterTeams();
 
@@ -286,6 +408,19 @@ else
         modalRefShooterToEdit.Show();
     }
 
+
+    void EditShooter(ShooterTeamContract shooterTeam)
+    {
+        shooterToEdit = new ShooterTeamCreateRequest
+        {
+            ShooterId = shooterTeam.Shooter.ShooterId,
+            TeamId = Id,
+            FromShooter = false,
+            RegistrationDate = shooterTeam.RegistrationDate
+        };
+        modalRefShooterToApprove.Show();
+    }
+    
     private async Task HideModalTeamToEdit(bool choice)
     {
         if (choice)
@@ -293,17 +428,17 @@ else
             if (!(await shooterValidations.ValidateAll()))
                 return;
             await shooterValidations.ClearAll();
+            shooterToEdit.FromShooter = false;
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
             await LoadShooterTeams();
         }
         shooterToEdit = new ShooterTeamCreateRequest();
         await modalRefShooterToEdit.Hide();
+        await modalRefShooterToApprove.Hide();
     }
 
     async Task DeleteShooter(ShooterTeamContract shooter)
     {
-        if (shooter == null)
-            return;
         shooterToDelete = shooter;
         await modalRefShooterToDelete.Show();
     }

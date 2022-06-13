@@ -277,6 +277,7 @@ else
     {
         canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
         model.GroupId = GroupId;
+        model.MatchId = Id;
         Groups = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
         await LoadShooters();
         group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
@@ -322,7 +323,8 @@ else
         {
             GroupShooterId = shooter.GroupShooterId,
             GroupId = model.GroupId,
-            ShooterName = shooter.Shooter.CompleteName
+            ShooterName = shooter.Shooter.CompleteName,
+            ResponseAsGroup = true
         };
         modalMoveRef.Show();
     }

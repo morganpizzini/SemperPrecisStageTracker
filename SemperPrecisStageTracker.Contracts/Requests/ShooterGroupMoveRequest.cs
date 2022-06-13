@@ -12,4 +12,5 @@ public class ShooterGroupMoveRequest
     public string GroupId { get; set; }
         
     public string ShooterName { get; set; }
+    public bool ResponseAsGroup { get; set; } = false;
 }

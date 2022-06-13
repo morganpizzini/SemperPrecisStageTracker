@@ -1,5 +1,5 @@
 ﻿@page "/matches/{id}/groups/edit/{groupId}"
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisBaseComponent<GroupContract>
 @inject IStringLocalizer<GroupEdit> L
 @inject NavigationManager UriHelper
 
@@ -14,27 +14,24 @@
 }
 else
 {
-    <GroupComponent Model="model" SubmitCallback="Submit"></GroupComponent>
+    <GroupComponent Model="Model" SubmitCallback="Submit"></GroupComponent>
 }
 @code {
-
     [Parameter]
     public string Id { get; set; }
     [Parameter]
     public string GroupId { get; set; }
     
-    GroupContract model = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await Post<GroupContract>("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
-        if (response == null)
+        var response = await Post1("api/Group/GetGroup", new GroupRequest() { GroupId = GroupId });
+        if (!string.IsNullOrEmpty(response))
         {
             await base.OnInitializedAsync();
             UriHelper.NavigateTo(RouteHelper.GetUrl<MatchDetail>(new {id = Id}));
             return;
         }
-        model = response;
         await base.OnInitializedAsync();
     }
 
@@ -42,11 +39,11 @@ else
     {
         var request = new GroupUpdateRequest
         {
-            Name = model.Name,
-            Description = model.Description,
-            GroupId = model.GroupId,
-            MaxShooterNumber = model.MaxShooterNumber,
-            Index = model.Index
+            Name = Model.Name,
+            Description = Model.Description,
+            GroupId = Model.GroupId,
+            MaxShooterNumber = Model.MaxShooterNumber,
+            Index = Model.Index
         };
         var response = await Post<GroupContract>("/api/Group/UpdateGroup", request);
         if (response != null)

@@ -13,7 +13,7 @@ namespace SemperPrecisStageTracker.Models
         public string ShooterId { get; set; }
         [Required]
         public string StageStringId { get; set; }
-        [Required]
+        //[Required]
         public string StageId { get; set; }
         [Required]
         public decimal Time { get; set; }

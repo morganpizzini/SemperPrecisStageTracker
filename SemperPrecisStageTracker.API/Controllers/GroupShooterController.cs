@@ -115,8 +115,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             var oldGroupId = entity.GroupId;
-
-
+            
             entity.GroupId = request.GroupId;
 
             // Invocazione del service layer
@@ -125,15 +124,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequestTask(validations);
             
-            if (string.IsNullOrEmpty(oldGroupId))
+            if (string.IsNullOrEmpty(oldGroupId) || !request.ResponseAsGroup)
             {
                 return Reply(new OkResponse() { Status = true });
             }
 
             var match = BasicLayer.GetMatch(group.MatchId);
-
-           
-
+            
             // Return contract
             return Reply(GetGroupShooterContractByGroupId(oldGroupId, match.Id));
         }
@@ -156,6 +153,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             var existingShooter = this.BasicLayer.GetShooter(request.ShooterId);
             if (existingShooter == null)
                 return BadRequest(new ValidationResult("Shooter not found").AsList());
+
+            var existing = this.BasicLayer.GetGroupShooterByShooterAndMatch(request.ShooterId, request.MatchId);
+
+            if (existing != null)
+            {
+                return BadRequest(new ValidationResult("Shooter is already sign in for this match").AsList());
+
+            }
 
             var entity = new GroupShooter
             {
@@ -191,6 +196,18 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
         public async Task<IActionResult> UpsertGroupShooter([EntityId] GroupShooterCreateRequest request)
         {
+            //check user permission
+            var canEdit = await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), request.GroupId,
+                PermissionCtor.ManageMatches.MatchManageGroups.EditMatch);
+
+            if (!canEdit)
+            {
+                return BadRequest(new List<ValidationResult>
+                {
+                    new ("User not allowed")
+                });
+            }
+
             var entity = this.BasicLayer.GetGroupShooterByShooterAndGroup(request.ShooterId, request.GroupId);
 
             if (entity == null)
@@ -203,6 +220,8 @@ namespace SemperPrecisStageTracker.API.Controllers
                     HasPay = request.HasPay
                 };
             }
+
+            
 
             var group = this.BasicLayer.GetGroup(entity.GroupId);
             if (group == null)
@@ -224,26 +243,12 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             entity.TeamId = request.TeamId;
             entity.HasPay = request.HasPay;
-
-            //check user permission
-            var canEdit = await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), group.MatchId,
-                PermissionCtor.ManageMatches.MatchManageGroups.EditMatch);
-
-            if (!canEdit)
-            {
-                return BadRequest(new List<ValidationResult>
-                {
-                    new ("User not allowed")
-                });
-            }
-
+            
             var validations = ValidateGroupShooter(entity, group.MatchId, request.DivisionId);
 
             if (validations.Count > 0)
                 return BadRequest(validations);
-
             
-
             // Invocazione del service layer
             validations = BasicLayer.UpsertGroupShooter(entity);
 

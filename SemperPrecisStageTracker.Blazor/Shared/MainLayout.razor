@@ -92,9 +92,9 @@
         stateService.OnStateChange -= SetTheme;
     }
 
-    public void SetTheme(string theme)
+    public void SetTheme(StateService state)
     {
-        CurrentTheme = theme;
+        CurrentTheme = state.CurrentTheme;
         StateHasChanged();
     }
 

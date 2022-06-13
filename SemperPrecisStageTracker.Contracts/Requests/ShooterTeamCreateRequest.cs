@@ -12,5 +12,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string ShooterId { get; set; }
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.Now;
+
+        [Required]
+        public bool FromShooter { get; set; }
     }
 }

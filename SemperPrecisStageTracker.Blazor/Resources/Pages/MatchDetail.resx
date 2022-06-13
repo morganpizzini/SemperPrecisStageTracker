@@ -192,4 +192,7 @@
   <data name="BackToList" xml:space="preserve">
     <value>Back to list</value>
   </data>
+  <data name="InMatchGroup" xml:space="preserve">
+    <value>You are in {0} group</value>
+  </data>
 </root>

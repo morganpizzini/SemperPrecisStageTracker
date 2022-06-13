@@ -76,6 +76,15 @@ namespace SemperPrecisStageTracker.API.Controllers
                 };
             }
 
+            if (request.FromShooter)
+            {
+                entity.ShooterApprove = true;
+            }
+            else
+            {
+                entity.TeamApprove = true;
+            }
+
             entity.RegistrationDate = request.RegistrationDate;
 
             //Invocazione del service layer

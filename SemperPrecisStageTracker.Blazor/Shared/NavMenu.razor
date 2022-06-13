@@ -5,7 +5,9 @@
 @inject MainServiceLayer mainServiceLayer
 
 <div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand px-3" href="/app">SemperPrecis Tracker</a>
+    <NavLink class="navbar-brand px-3" href="@(RouteHelper.GetUrl<Home>())">
+        SemperPrecis Tracker
+    </NavLink>
     <AuthorizeView>
         <Authorized>
             <button class="navbar-toggler" @onclick="ToggleNavMenu">

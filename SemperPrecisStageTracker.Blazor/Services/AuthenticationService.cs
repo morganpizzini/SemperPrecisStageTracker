@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
@@ -50,6 +51,22 @@ namespace SemperPrecisStageTracker.Blazor.Services
             var userParams = secret.DecodeBase64().Split(":");
 
             await Login(userParams[0], userParams[1]);
+
+            await UpdateShooterInfo();
+
+        }
+
+        public async Task UpdateShooterInfo()
+        {
+            var shooterInfo = await _httpService.Post<ShooterInformationResponse>(
+                "api/Aggregation/FetchShooterInformation", new ShooterRequest
+                {
+                    ShooterId = _stateService.User.ShooterId
+                });
+            if (shooterInfo is { WentWell: true })
+            {
+                _stateService.SetShooterInfo(shooterInfo.Result);
+            }
         }
 
         public async Task<bool> Login(string username, string password)
@@ -87,7 +104,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             _stateService.Permissions = response.Permissions;
             _localStorageService.SetItem(permissionKey, response.Permissions);
-
+            
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
         }
         public void UpdateLogin(ShooterContract user)
@@ -106,6 +123,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public void Logout()
         {
             _stateService.User = null;
+            _stateService.SetShooterInfo(new ShooterInformationResponse());
             _localStorageService.RemoveItem(userKey);
             _localStorageService.RemoveItem(permissionKey);
             _localStorageService.RemoveItem(authCode);

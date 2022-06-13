@@ -11,6 +11,10 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string ShooterId { get; set; }
         [Required]
+        public bool ShooterApprove { get; set; }
+        [Required]
+        public bool TeamApprove { get; set; }
+        [Required]
         public DateTime RegistrationDate { get; set; }
     }
 }

@@ -61,7 +61,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
-            var teamIds = shooterGroup.Select(x => x.TeamId).ToList();
+            var teamIds = shooterGroup.Select(x => x.TeamId).Concat(shooterWithNoGroup.Select(x=>x.TeamId)).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamIds);
 
             //Ritorno i contratti

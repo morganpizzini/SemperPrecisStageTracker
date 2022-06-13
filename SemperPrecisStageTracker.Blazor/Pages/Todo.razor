@@ -11,12 +11,7 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
-        controllare quando posso inserire un punteggio (se lo shooter è squalificato non posso cliccare) StageGropuDetail:71
-
-        gestione degli stage multi-string
-
-        permessi su dettaglio team per vedere i tiratori
-
+        shooterdetail mettere le richieste verso il team in attesa
         assegnazione shooter al team deve essere duplice, il team e lo shooter devono confermare l'associazione, mettere filtri in tutte le chiamate di recupero tiratori, mostrare 2 boc con "in attesa di conferma" e "in attesa di approvazione dal tiratore"
         pagina profilo tiratore
         richieste in attesa del tiratore
@@ -35,6 +30,7 @@
         In caso di match open, tutti possono iscriversi, indipendentemente dall'iscrizione all'associazione o a classificazioni
         Se il match è open, i tiratori non iscritti all'associazione sceglieranno la divisione e faranno classifica a parte
         possibilità cambiare la tipologia di match solo se non ho shooter registrati
+        metodo UpdateShooterInfo dovrebbe essere richiamato ogni volta che viene svolta un'operazione che potrebbe cambiare la risposta
 
         controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
@@ -43,7 +39,6 @@
         tutte le chiamate MainServiceLayer.Online dovrebbero essere gestite dallo state
 
         Creare uno shooter che gestisca il place e l'associazione
-
 
         [trainer]
         play audio https://exceptionnotfound.net/how-to-play-a-sound-with-blazor-and-javascript/
@@ -113,8 +108,10 @@
         nuovi metodi creazione gruppo in match
         aggiunta groupshooter disponibilità all'interno del gruppo come numero
         authorization controller SignIn
+        FetchAvailableMatches / AddGroupShooter
         impossibilità di modificare i bersagli su uno stage se sono già stati inseriti dei punteggi
         tutti i processi di stagestring
+        FetchShooterInformation
 
 
         [deployment]

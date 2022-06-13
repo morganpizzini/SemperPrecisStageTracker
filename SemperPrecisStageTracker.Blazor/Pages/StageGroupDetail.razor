@@ -72,9 +72,15 @@ else
                                                 {
                                                     @foreach (var stageString in stage.Strings)
                                                     {
-                                                        <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter,stageString))">
-                                                            @stageString.Name
-                                                        </Button>
+                                                        var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                                        
+                                                        if (shooter.ShooterStatus != ShooterStatusEnum.IsDisqualified || current is {Disqualified: true })
+                                                        {
+                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter,stageString))">
+                                                                @stageString.Name
+                                                            </Button>
+                                                        }
+                                                        
                                                     }
                                                 }
                                                 
@@ -88,11 +94,11 @@ else
                                                 @foreach (var stageString in stage.Strings)
                                                 {
                                                     var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
-                                                    
-                                                    <span>@((current as IStageResult).TotalString)</span>
+                                                    if (current != null)
+                                                    {
+                                                        <span>@((current as IStageResult).TotalString)</span>
+                                                    }
                                                 }
-                                                
-                                                
                                             </TableRowCell>
                                         </TableRow>
                                         @if (shooter.ShooterStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
@@ -506,7 +512,6 @@ else
     async Task LoadShooters()
     {
         shooters = await MainServiceLayer.FetchGroupShooterStage(GroupId, StageId);
-        //shooters = await Post<IList<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = GroupId, StageName = StageName });
     }
 
     void FillShooter(ShooterStageAggregationResult shooter,StageStringContract stageString)
@@ -521,7 +526,10 @@ else
         model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
         model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
 
-        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId) ?? new ShooterStageStringContract
+        {
+            StageStringId = stageString.StageStringId
+        };
 
         model.Disqualified = currentString.Disqualified;
         model.DownPoints = currentString.DownPoints;

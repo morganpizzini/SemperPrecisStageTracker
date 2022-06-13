@@ -184,5 +184,36 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Status = validations.Count == 0
             });
         }
+        /// <summary>
+        /// Fetch list of all associations
+        /// </summary>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("FetchShooterInformation")]
+        [ProducesResponseType(typeof(ShooterInformationResponse), 200)]
+        public IActionResult FetchShooterInformation(ShooterRequest request)
+        {
+            var nextMatches = BasicLayer.FetchMatchRegistrationForUser(request.ShooterId);
+
+            var associationIds = nextMatches.Item1.Select(x => x.AssociationId).ToList();
+            var associations = BasicLayer.FetchAssociationsByIds(associationIds);
+
+            var placeIds = nextMatches.Item1.Select(x => x.PlaceId).ToList();
+            var places = BasicLayer.FetchPlacesByIds(placeIds);
+
+            return Ok(new ShooterInformationResponse()
+            {
+                ShooterMatchInfos = nextMatches.Item1.Select(x=>new ShooterMatchInfoResponse
+                {
+                    Name = x.Name,
+                    AssociationName = associations.FirstOrDefault(a=>a.Id== x.AssociationId)?.Name ?? string.Empty,
+                    PlaceName = places.FirstOrDefault(a=>a.Id== x.PlaceId)?.Name ?? string.Empty,
+                    MatchDateTimeEnd = x.MatchDateTimeEnd,
+                    MatchDateTimeStart = x.MatchDateTimeStart,
+                    MatchId = x.Id,
+                    GroupName = nextMatches.Item2.FirstOrDefault(g=>g.Id == x.Id)?.Name ?? string.Empty
+                }).ToList()
+            });
+        }
     }
 }

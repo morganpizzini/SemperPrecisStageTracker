@@ -920,6 +920,7 @@
             if (!(await teamValidations.ValidateAll()))
                 return;
             await teamValidations.ClearAll();
+            teamToEdit.FromShooter = true;
             var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
             if (response is not { Status: true })
             {

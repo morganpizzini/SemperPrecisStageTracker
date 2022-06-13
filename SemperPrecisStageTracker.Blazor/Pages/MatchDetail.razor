@@ -2,15 +2,38 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<MatchDetail> L
 @inject NavigationManager UriHelper
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink Class="me-2" href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
+@{
+    var currentShooterRegistration = stateService.ShooterInfo.ShooterMatchInfos.FirstOrDefault(x => x.MatchId == Id);
+    if (currentShooterRegistration != null)
+    {
+        if (!string.IsNullOrEmpty(currentShooterRegistration.GroupName))
+        {
+            <Alert Color="Color.Success" Visible>
+                <AlertMessage>@L["Nice"]</AlertMessage>
+                <AlertDescription>@L["InMatchGroup",currentShooterRegistration.GroupName]</AlertDescription>
+            </Alert>
+        }
+        else
+        {
+            <Alert Color="Color.Warning" Visible>
+                <AlertMessage>@L["Attention"]</AlertMessage>
+                <AlertDescription>@L["InMatchButNotSquad"]</AlertDescription>
+            </Alert>
+        }
+    }
+}
+
+
 @if (MainServiceLayer.Online)
 {
     @if(canManageGroups){
         <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
-        <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchGroups>(new{ id = Id}))"><Icon Name="IconName.Adjust" /> @L["ManageGroups"]</Button>
     }
+    <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchGroups>(new{ id = Id}))"><Icon Name="IconName.Adjust" /> @L["ManageGroups"]</Button>
     @if(canManageStages){
         <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<StageNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewStage"]</Button>
     }

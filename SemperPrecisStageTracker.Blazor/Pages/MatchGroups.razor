@@ -2,6 +2,7 @@
 @inherits SemperPrecisBaseComponent<MatchGroupResponse>
 @inject IStringLocalizer<MatchGroups> L
 @inject NavigationManager UriHelper
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["GroupsDetail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -68,10 +69,11 @@ else
                                     <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                 }
                                 <TableRowCell>
-                                    @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                    @if (MainServiceLayer.Online && 
+                                         (canManageShooter || stateService.User.ShooterId == groupShooter.Shooter.ShooterId))
                                     {
-                                        <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
-                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking"/></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete"/></Button>
                                     }
                                 </TableRowCell>
                             </TableRow>
@@ -135,7 +137,7 @@ else
                                         <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                     }
                                     <TableRowCell>
-                                        @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id))
+                                        @if (MainServiceLayer.Online && (canManageShooter || stateService.User.ShooterId == groupShooter.Shooter.ShooterId))
                                         {
                                             <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
@@ -274,9 +276,12 @@ else
     BaseShooterInMatchCreateRequest model = new();
     ShooterGroupMoveRequest shooterToMove = new();
 
+    bool canManageShooter;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadGroups();
+        canManageShooter = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
         await base.OnInitializedAsync();
     }
 
@@ -294,7 +299,8 @@ else
             {
                 GroupShooterId = shooter.GroupShooterId,
                 GroupId = model.GroupId,
-                ShooterName = shooter.Shooter.CompleteName
+                ShooterName = shooter.Shooter.CompleteName,
+                ResponseAsGroup = false
             };
         modalMoveRef.Show();
     }

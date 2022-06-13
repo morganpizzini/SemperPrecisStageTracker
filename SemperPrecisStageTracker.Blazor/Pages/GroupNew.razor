@@ -13,14 +13,11 @@
     [Parameter]
     public string Id { get; set; }
 
-    Validations validations;
     GroupContract model = new();
 
     async Task Submit()
     {
-        if (! (await validations.ValidateAll()))
-            return;
-        await validations.ClearAll();
+      
         var request = new GroupCreateRequest
         {
             MatchId = Id,

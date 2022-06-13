@@ -447,10 +447,33 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _shooterAssociationInfoRepository.FetchWithProjection(x => x.AssociationId, x => x.ShooterId == userId);
 
             // not already signed-in
-            var groupIds = _groupShooterRepository.FetchWithProjection(x=> x.GroupId,x=>x.ShooterId == userId);
-            var signInMatchIds = _groupRepository.FetchWithProjection(x => x.MatchId, x => groupIds.Contains(x.Id));
+            var groupShooters = _groupShooterRepository.Fetch(x=>x.ShooterId == userId);
+            var groupIds = groupShooters.Select(x => x.GroupId).ToList();
+            var signInMatchIds = _groupRepository.FetchWithProjection(x => x.MatchId, x => groupIds.Contains(x.Id))
+                .Concat(groupShooters.Select(x => x.MatchId));
             //Utilizzo il metodo base
             return FetchEntities(x=> !signInMatchIds.Contains(x.Id) && (x.OpenMatch || shooterAssociation.Contains(x.AssociationId)) && x.MatchDateTimeEnd >= DateTime.Now, null, null, s => s.MatchDateTimeStart, true, _matchRepository);
+        }
+
+        /// <summary>
+        /// Fetch list of all matchs
+        /// </summary>
+        /// <param name="userId"> user identifier </param>
+        /// <returns>Returns list of matchs</returns>
+        public (IList<Match>,IList<Group>) FetchMatchRegistrationForUser(string userId)
+        {
+            // not already signed-in
+            var groupShooters = _groupShooterRepository.Fetch(x=>x.ShooterId == userId);
+            
+            var groupIds = groupShooters.Select(x => x.GroupId).ToList();
+            
+            // list of group squadded for a match
+            var groupInMatch = _groupRepository.Fetch(x => groupIds.Contains(x.Id));
+            
+            var signInMatchIds = groupInMatch.Select(x => x.MatchId).Concat(groupShooters.Select(x => x.MatchId));
+            //Utilizzo il metodo base
+            return (FetchEntities(x=> signInMatchIds.Contains(x.Id) && x.MatchDateTimeEnd >= DateTime.Now, null, null, s => s.MatchDateTimeStart, true, _matchRepository),
+                groupInMatch);
         }
 
         /// <summary>
@@ -3660,6 +3683,22 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Utilizzo il metodo base
             return GetSingleEntity(c => c.ShooterId == shooterId && c.GroupId == groupId, _groupShooterRepository);
+        }
+
+        /// <summary>
+        /// Get place by commissionDrawingId
+        /// </summary>
+        /// <param name="id">Identifier</param>
+        /// <param name="userId">filter by userId</param>
+        /// <returns>Returns stage or null</returns>
+        public GroupShooter GetGroupShooterByShooterAndMatch(string shooterId, string matchId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(shooterId)) throw new ArgumentNullException(nameof(shooterId));
+            if (string.IsNullOrEmpty(matchId)) throw new ArgumentNullException(nameof(matchId));
+
+            //Utilizzo il metodo base
+            return GetSingleEntity(c => c.ShooterId == shooterId && c.MatchId == matchId, _groupShooterRepository);
         }
 
         /// <summary>
