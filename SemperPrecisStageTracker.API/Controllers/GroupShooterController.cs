@@ -43,7 +43,11 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds, entity.MatchId);
             var shooterTeams = BasicLayer.FetchTeamsFromShooterIds(shooterIds);
 
-            var teamsIds = shooterTeams.Select(x => x.TeamId).ToList();
+            var teamsIds = shooterTeams
+                .Where(x=>x.ShooterApprove && x.TeamApprove)
+                .Select(x => x.TeamId)
+                .ToList();
+
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
 
             var result = shooters.As(x => ContractUtils.GenerateContract(x, null,

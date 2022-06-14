@@ -278,7 +278,9 @@ else
         canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
         model.GroupId = GroupId;
         model.MatchId = Id;
-        Groups = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
+        var response = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
+        if(response!=null)
+            Groups = response;
         await LoadShooters();
         group = await Post(() => MainServiceLayer.GetGroup(Id,GroupId));
         //match = await Post(() => MainServiceLayer.GetMatch(Id));
