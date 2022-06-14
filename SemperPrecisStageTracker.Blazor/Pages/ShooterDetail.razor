@@ -146,7 +146,7 @@
                                                             </TableRowHeader>
                                                             <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                             <TableRowCell>
-                                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(shooterTeam))"><Icon Name="IconName.Check"/></Button>
+                                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => ApproveTeam(shooterTeam))"><Icon Name="IconName.Check"/></Button>
                                                                 <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
                                                             </TableRowCell>
                                                         </TableRow>
