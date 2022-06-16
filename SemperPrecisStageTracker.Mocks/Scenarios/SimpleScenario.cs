@@ -75,14 +75,14 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterMatches = scenarioClone.ShooterMatches;
             ShooterSOStages = scenarioClone.ShooterSOStages;
             Contacts = scenarioClone.Contacts;
-            //Permissions = scenarioClone.Permissions;
-            //PermissionRoles = scenarioClone.PermissionRoles;
-            //Roles = scenarioClone.Roles;
-            //UserRoles = scenarioClone.UserRoles;
-            //UserPermissions = scenarioClone.UserPermissions;
-            //PermissionGroups = scenarioClone.PermissionGroups;
-            //UserPermissionGroups = scenarioClone.UserPermissionGroups;
-            //PermissionGroupRoles = scenarioClone.PermissionGroupRoles;
+            Permissions = scenarioClone.Permissions;
+            PermissionRoles = scenarioClone.PermissionRoles;
+            Roles = scenarioClone.Roles;
+            UserRoles = scenarioClone.UserRoles;
+            UserPermissions = scenarioClone.UserPermissions;
+            PermissionGroups = scenarioClone.PermissionGroups;
+            UserPermissionGroups = scenarioClone.UserPermissionGroups;
+            PermissionGroupRoles = scenarioClone.PermissionGroupRoles;
             TeamHolders = scenarioClone.TeamHolders;
             ShooterTeamPayments = scenarioClone.ShooterTeamPayments;
             
