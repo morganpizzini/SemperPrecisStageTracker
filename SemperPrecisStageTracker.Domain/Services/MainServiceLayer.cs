@@ -769,7 +769,8 @@ namespace SemperPrecisStageTracker.Domain.Services
                     {
                         ShooterId = s,
                         StageName = $"{existingStages.First(z => z.Id == stageString.StageId).Name} - {stageString.Name}",
-                        Total = (y as IStageResult).Total
+                        Total = (y as IStageResult).Total,
+                        RawTime = y.Time
                     };
                 })
                 .Where(x => !string.IsNullOrEmpty(x.ShooterId))
@@ -902,6 +903,20 @@ namespace SemperPrecisStageTracker.Domain.Services
                         shooters.Move(shooters[0], shooters.Count);
                     }
                 }
+
+                // swap if same points
+                for (int i = 0; i < shooters.Count-1 || shooters[i].TotalTime != 0; i++)
+                {
+                    ShooterMatchResult item = shooters[i];
+                    if(item.TotalTime == shooters[i + 1].TotalTime
+                        // same total time but it done the stage with much precision, and losing time
+                        && item.Results.Sum(x=>x.RawTime) < shooters[i + 1].Results.Sum(x=>x.RawTime))
+                    {
+                        shooters[i] = shooters[i+1];
+                        shooters[i+1] = item;
+                    }
+                }
+
             }
         }
 

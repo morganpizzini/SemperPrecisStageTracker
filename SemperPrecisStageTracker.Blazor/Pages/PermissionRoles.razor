@@ -10,7 +10,7 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
-        <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Clicked="UpdateDatabase"><Icon Name="IconName.Redo" /></Button>
+        <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Clicked="UpdateDatabase"><Icon Name="IconName.Redo" />&nbsp;@L["InitDb"]</Button>
         @if (!string.IsNullOrEmpty(updateresult))
         {
             <span>@updateresult</span>
@@ -106,7 +106,7 @@
     private async Task LoadEntities()
     {
 
-        var result = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles", null);
+        var result = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles");
         if (result == null)
             return;
         entities = result;
@@ -115,9 +115,8 @@
     async Task UpdateDatabase()
     {
         updateresult = string.Empty;
-        var result = await Post<IList<RoleContract>>("api/Diagnostic/InitDatabase", null);
+        var result = await Post<OkResponse>("api/Diagnostic/InitDatabase");
         updateresult = result == null ? L["UpdateFailed"] : L["UpdateDone"];
-
     }
     void DeleteEntity(RoleContract entity)
     {

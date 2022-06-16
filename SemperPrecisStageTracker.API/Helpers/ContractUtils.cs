@@ -580,7 +580,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new ShooterStageResultContract()
             {
                 StageName = entity.StageName,
-                Total = entity.Total
+                Total = entity.Total,
+                RawTime = entity.RawTime
             };
         }
 

@@ -73,6 +73,7 @@ else
                             <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                             <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
                             <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                            <TableHeaderCell>@L["RawTime"]</TableHeaderCell>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -83,8 +84,8 @@ else
                                 <TableRowCell>@result.Classification</TableRowCell>
                                 <TableRowCell>@result.TeamName</TableRowCell>
                                 <TableRowCell>@(result.Results.Count != stats.StageNames.Count ? L["DNF"] : result.Total < 0 ? @L["DQ"] : $"{result.Total:f2}")</TableRowCell>
+                                <TableRowCell>@result.RawTime</TableRowCell>
                             </TableRow>
-                        
                         </Virtualize>
                     </TableBody>
                 </Table>
@@ -107,6 +108,7 @@ else
                                                 <TableHeaderCell>@(stage)</TableHeaderCell>
                                             }
                                             <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["RawTime"]</TableHeaderCell>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -134,6 +136,7 @@ else
                                                         }
                                                     }
                                                 <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                                <TableRowCell>@shooter.RawTime</TableRowCell>
                                             </TableRow>
                                         </Virtualize>
                                     </TableBody>
@@ -156,6 +159,7 @@ else
                                                 <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                                 <TableHeaderCell>@L["TeamName"]</TableHeaderCell>
                                                 <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["RawTime"]</TableHeaderCell>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -165,6 +169,7 @@ else
                                                     <TableRowHeader>@shooter.Shooter.CompleteName</TableRowHeader>
                                                     <TableRowCell>@shooter.TeamName</TableRowCell>
                                                     <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
+                                                    <TableRowCell>@shooter.RawTime</TableRowCell>
                                                 </TableRow>
                                             </Virtualize>
                                         </TableBody>

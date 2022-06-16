@@ -19,7 +19,6 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         {
             return Task.FromResult(string.Empty);
         }
-
         protected virtual async Task<T?> Post<T>(string uri, object value,bool pageOperation = true)
         {
             if(pageOperation)

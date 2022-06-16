@@ -47,7 +47,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// Init database
         /// </summary>
         /// <returns>Returns action result</returns>
-        [HttpGet]
+        [HttpPost]
         [Route("InitDatabase")]
         [ProducesResponseType(typeof(object), 200)]
         public IActionResult InitDatabase()

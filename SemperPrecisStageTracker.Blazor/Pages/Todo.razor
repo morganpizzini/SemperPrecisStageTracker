@@ -21,6 +21,7 @@
         nella pagina del team mettere il pulsante per richiedere l'iscrizione al team
 
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
+        Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)
 
         salvare il numero di volte in cui il risultato viene editato (all'interno dell'upsert) e salvare risultato precedente
 
@@ -31,10 +32,9 @@
         Se il match è open, i tiratori non iscritti all'associazione sceglieranno la divisione e faranno classifica a parte
         possibilità cambiare la tipologia di match solo se non ho shooter registrati
         metodo UpdateShooterInfo dovrebbe essere richiamato ogni volta che viene svolta un'operazione che potrebbe cambiare la risposta
+        Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)
 
         durante processo di inport controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
-
-        Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)
 
         tutte le chiamate MainServiceLayer.Online dovrebbero essere gestite dallo state
 
@@ -89,8 +89,6 @@
 
         hamburger menu
 
-        [sviluppo]
-        <li>Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)</li>
 
         [mettere i test]
         tests per UpsertShooterStages
