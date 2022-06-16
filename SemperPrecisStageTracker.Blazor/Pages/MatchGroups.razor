@@ -61,7 +61,7 @@ else
                     {
                         <Virtualize Items="@Model.UnGrouped" Context="groupShooter">
                             <TableRow>
-                                <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
                                 <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                 <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
                                 @if (Model.Match is { UnifyClassifications: false })
@@ -129,7 +129,7 @@ else
                             {
                                 <Virtualize Items="@group.Shooters" Context="groupShooter">
                                     <TableRow>
-                                        <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
                                         @if (Model.Match is { UnifyClassifications: false })
@@ -178,7 +178,7 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
@@ -246,7 +246,7 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>

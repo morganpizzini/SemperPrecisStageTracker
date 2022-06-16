@@ -34,10 +34,21 @@ namespace SemperPrecisStageTracker.Contracts
         public string CompleteAddress => $"{Address}, {City} ({PostalCode}), {Province} - {Country}";
         public string Phone { get; set; } = string.Empty;
         public string FiscalCode { get; set; } = string.Empty;
+        // set when personal data is not provided
+        public bool? Warning { get; set; }
+        public bool HasWarning => Warning ?? (Warning = this.CalculateWarning(FirearmsLicenceExpireDate, MedicalExaminationExpireDate)).Value;
 
-        public bool HasWarning => FirearmsLicenceExpireDate.Date <= DateTime.Now ||
-                                  !MedicalExaminationExpireDate.HasValue || MedicalExaminationExpireDate.Value.Date <= DateTime.Now;
+
+
         public IList<ShooterAssociationContract> Classifications { get; set; } = new List<ShooterAssociationContract>();
         public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();
+    }
+
+    public static class ContractExtension
+    {
+        public static bool CalculateWarning(this ShooterContract _, DateTime firearmsLicenceExpireDate, DateTime? medicalExaminationExpireDate)
+        =>
+            firearmsLicenceExpireDate.Date <= DateTime.Now ||
+                                  !medicalExaminationExpireDate.HasValue || medicalExaminationExpireDate.Value.Date <= DateTime.Now;
     }
 }

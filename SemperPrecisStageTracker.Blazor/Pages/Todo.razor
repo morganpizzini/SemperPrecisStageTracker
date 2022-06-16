@@ -10,13 +10,19 @@
     <Button Clicked="@Get">get</Button>
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
-    <ul>
-        shooterdetail mettere le richieste verso il team in attesa
-        assegnazione shooter al team deve essere duplice, il team e lo shooter devono confermare l'associazione, mettere filtri in tutte le chiamate di recupero tiratori, mostrare 2 boc con "in attesa di conferma" e "in attesa di approvazione dal tiratore"
-        pagina profilo tiratore
-        richieste in attesa del tiratore
+    <ul>        
+        inserire i ruoli nel fill del db
+
+        Graduatoria del match club/nazionale/europeo.. lista libera
 
         Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
+
+        Controllare regole idpa 9.4.5 (calcolare parametri in base a queste regole)
+        Salvare posizionamento totale, percentuale di tempo
+
+        Le classificazioni nel match devono essere ordinabili per rank di importanza
+
+        nella pagina del team mettere il pulsante per richiedere l'iscrizione al team
 
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
 
@@ -69,7 +75,6 @@
         mettere un metodo per gestire una transazione più grossa, cross metodo
         aggiungere extension method AsAsync
 
-
         offuscamento dati API se non ho i permessi di vedere determinate info (es: se ho pagato nel dettaglio gruppo nel match, la lista di tiratori all'interno di un team)
 
         login con AAD
@@ -82,7 +87,8 @@
         bottoni https://github.com/dotnet/AspNetCore.Docs/issues/10563
 
         fare encrypt della FK sulla tabella anagrafica
-        https://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/always-encrypted-enclaves?view=sql-server-ver16
+        https://docs.microsoft.com/en-us/azure/azure-sql/database/always-encrypted-enclaves-getting-started?view=azuresql&tabs=azure-portal
+        https://docs.microsoft.com/en-us/sql/connect/ado-net/sql/tutorial-always-encrypted-enclaves-develop-net-apps?view=sql-server-ver16
 
         usare il masking per utilizzare il db al di fuori dell'applicazione principale (l'app che mostrerà solo i risultati avrà l'utente sul db con meno permessi e quindi vedrà tutto in blur)
         https://docs.microsoft.com/en-us/sql/relational-databases/security/dynamic-data-masking?view=sql-server-ver16
@@ -113,7 +119,7 @@
         impossibilità di modificare i bersagli su uno stage se sono già stati inseriti dei punteggi
         tutti i processi di stagestring
         FetchShooterInformation
-
+        metodi riguardanti match kind (sia association che match controller)
 
         [deployment]
         Backup del db

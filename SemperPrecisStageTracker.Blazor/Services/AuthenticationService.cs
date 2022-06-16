@@ -50,7 +50,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 return;
             var userParams = secret.DecodeBase64().Split(":");
 
-            await Login(userParams[0], userParams[1]);
+            var loginResult = await Login(userParams[0], userParams[1]);
+
+            if(!loginResult)
+                return;
 
             await UpdateShooterInfo();
 
@@ -115,7 +118,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             user.AuthData = string.Join(":", userParams).EncodeBase64();
 
             //override
-            _stateService.User = user;
+            _stateService.SetUser(user);
             _localStorageService.SetItem(userKey, _stateService.User);
             _customAuthenticationStateProvider.LoginNotify(_stateService.User);
         }

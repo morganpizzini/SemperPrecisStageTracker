@@ -13,7 +13,7 @@
     <TableHeader ThemeContrast="ThemeContrast.Dark">
         <TableRow>
             <TableHeaderCell>@L["Name"]</TableHeaderCell>
-            <TableHeaderCell>@L["Association"]</TableHeaderCell>
+            <TableHeaderCell>@L["Association"] / @L["Kind"]</TableHeaderCell>
             <TableHeaderCell>@L["Date"] / @L["Location"]</TableHeaderCell>
             <TableHeaderCell></TableHeaderCell>
         </TableRow>
@@ -38,7 +38,7 @@
                 <Virtualize Items="@matches" Context="match">
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink></TableRowHeader>
-                        <TableRowCell>@match.Association.Name</TableRowCell>
+                        <TableRowCell>@match.Association.Name - @match.Kind</TableRowCell>
                         <TableRowCell>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
                             @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch, match.MatchId))

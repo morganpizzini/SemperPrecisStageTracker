@@ -32,6 +32,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required(AllowEmptyStrings = true)]
         public string ThirdPenaltyLabel { get; set; } = string.Empty;
         [Required]
+        public IList<string> MatchKinds { get; set; } = new List<string>();
+        [Required]
         public IList<string> Divisions { get; set; } = new List<string>();
         [Required]
         public IList<string> Classifications { get; set; } = new List<string>();

@@ -115,6 +115,28 @@ else
                 </CardBody>
             </Card>
         </Column>
+         <Column ColumnSize="ColumnSize.IsHalf">
+                <Card Margin="Margin.Is4.OnY">
+                    <CardBody>
+                        <CardTitle>@L["MatchKinds"]</CardTitle>
+                        <CardText>
+                            @if (association.MatchKinds.Count == 0)
+                            {
+                                @L["NoMatchKinds"]
+                            }
+                            else
+                            {
+                                <ul>
+                                    <Virtualize Items="@association.MatchKinds" Context="s">
+                                        <li>@s</li>
+                                    </Virtualize>
+                                </ul>
+                            }
+
+                        </CardText>
+                    </CardBody>
+                </Card>
+            </Column>
         @if (PageCondition)
         {
             <Column ColumnSize="ColumnSize.IsHalf">

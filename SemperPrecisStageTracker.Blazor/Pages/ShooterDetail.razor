@@ -17,6 +17,7 @@
     <Authorized>
         @if (PageCondition)
         {
+            <Button Size="Size.Small" Color="Color.Warning" Type="ButtonType.Button" Clicked="@(() => ResetPassword())"><Icon Name="IconName.Key" /> @L["ResetPassword"]</Button>
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["EditShooter"]</Button>
             <Button Size="Size.Small" Color="Color.Danger" Type="ButtonType.Button" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /> @L["DeleteShooter"]</Button>
         }
@@ -106,7 +107,7 @@
                                                             </TableRowHeader>
                                                             <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                             <TableRowCell>
-                                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                                             </TableRowCell>
                                                         </TableRow>
                                                     </Virtualize>
@@ -146,8 +147,8 @@
                                                             </TableRowHeader>
                                                             <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                             <TableRowCell>
-                                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => ApproveTeam(shooterTeam))"><Icon Name="IconName.Check"/></Button>
-                                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => ApproveTeam(shooterTeam))"><Icon Name="IconName.Check" /></Button>
+                                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                                             </TableRowCell>
                                                         </TableRow>
                                                     </Virtualize>
@@ -180,7 +181,7 @@
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    @if (shooterTeams.Count(x=>x.ShooterApprove && x.TeamApprove) > 0)
+                                    @if (shooterTeams.Count(x => x.ShooterApprove && x.TeamApprove) > 0)
                                     {
                                         <Virtualize Items="@shooterTeams.Where(x=>x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                                             <TableRow>
@@ -188,13 +189,13 @@
                                                 <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
-                                                    }
-                                                </TableRowCell>
-                                            </TableRow>
-                                        </Virtualize>
+                                            {
+                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
+                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                            }
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
                                     }
                                     else
                                     {
@@ -618,15 +619,15 @@
         </ModalHeader>
         <ModalBody>
             @{
-               var team = shooterTeams.FirstOrDefault(x => x.Team.TeamId == teamToEdit.TeamId);
-           }
-           @if (team != null)
-           {
-               <Field>
-                   <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
-                   <FieldBody>@team.Team.Name</FieldBody>
-               </Field>
-           }
+                var team = shooterTeams.FirstOrDefault(x => x.Team.TeamId == teamToEdit.TeamId);
+            }
+            @if (team != null)
+            {
+                <Field>
+                    <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
+                    <FieldBody>@team.Team.Name</FieldBody>
+                </Field>
+            }
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
@@ -710,6 +711,39 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+
+<Modal @ref="modalRefResetPassword">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["ResetPassword"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmResetPassword"]</FieldLabel>
+            </Field>
+            @if (shooter != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooter.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Username"]</FieldLabel>
+                    <Text>@shooter.Username</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalResetPassword(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalResetPassword(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 <Modal @ref="modalRefEntityToDelete">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -752,6 +786,7 @@
 
 
     private Modal modalRefEntityToDelete;
+    private Modal modalRefResetPassword;
 
     ShooterContract shooter = new();
     Validations validations;
@@ -776,10 +811,10 @@
 
     IList<string> divisions = new List<string>();
 
-    private Modal modalRefTeamToDelete;
 
-    ShooterTeamContract teamToDelete = new();
     private Modal modalRefTeamToEdit;
+    ShooterTeamContract teamToDelete = new();
+    private Modal modalRefTeamToDelete;
     private Modal modalRefTeamToApprove;
     ShooterTeamCreateRequest teamToEdit = new();
     IList<TeamContract> teams = new List<TeamContract>();
@@ -819,10 +854,36 @@
 
     }
 
+    void ResetPassword()
+    {
+        modalRefResetPassword.Show();
+    }
+
+    private async Task HideModalResetPassword(bool choice)
+    {
+        if (choice && shooter != null)
+        {
+            var response = await Post<OkResponse>("/api/Authorization/ResetUserPassword", new ShooterRequest
+                {
+                    ShooterId = shooter.ShooterId
+                });
+            if (response != null)
+            {
+                if (response.Status)
+                    await ShowNotificationSuccess(L["ResetEmailSend"], L["Success"]);
+                else
+                    await ShowNotificationError(string.Join(",", response.Errors), L["Error"]);
+            }
+        }
+        await modalRefResetPassword.Hide();
+    }
+
     void DeleteEntity()
     {
         modalRefEntityToDelete.Show();
     }
+
+
 
     private async Task HideModalEntityToDelete(bool choice)
     {

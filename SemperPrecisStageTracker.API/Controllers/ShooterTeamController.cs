@@ -48,9 +48,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchShootersFromTeamId(request.TeamId);
             var shooterIds = entities.Select(x => x.ShooterId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
-
+            var shooterData = BasicLayer.FetchShooterDataByShooterIds(shooterIds);
             //Return contract
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, null, shooters.FirstOrDefault(t => t.Id == x.ShooterId))).OrderBy(x=>x.Shooter.CompleteName).ToList());
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, null, shooters.FirstOrDefault(t => t.Id == x.ShooterId),shooterData.FirstOrDefault(s=>s.Id == x.ShooterId))).OrderBy(x=>x.Shooter.CompleteName).ToList());
 
         }
 

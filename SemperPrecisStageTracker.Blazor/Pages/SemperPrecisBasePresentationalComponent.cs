@@ -45,6 +45,8 @@ public class SemperPrecisBasePresentationalComponent : ComponentBase
         //PageLoading = false;
     }
 
+    protected Task ShowNotificationSuccess(string message, string title = "", NotificationType notificationType = NotificationType.Info) => ShowNotification(message,title,NotificationType.Success);
+    protected Task ShowNotificationError(string message, string title = "", NotificationType notificationType = NotificationType.Info) => ShowNotification(message,title,NotificationType.Error);
     protected Task ShowNotification(string message, string title = "", NotificationType notificationType = NotificationType.Info)
     {
         if (string.IsNullOrEmpty(message))

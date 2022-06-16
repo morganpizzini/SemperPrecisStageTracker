@@ -38,14 +38,6 @@
                             </FieldBody>
                         </Field>
                     </Validation>
-                    @if (!string.IsNullOrEmpty(error))
-                    {
-                        <Alert Color="Color.Danger">
-                            <AlertDescription>
-                                @error
-                            </AlertDescription>
-                        </Alert>
-                    }
                     <Div Flex="Flex.JustifyContent.End" Margin="Margin.Is3.FromBottom">
                         <Div Padding="Padding.Is2">
                             <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
@@ -59,6 +51,11 @@
                             @L["NoAccout?"] <NavLink href="@(RouteHelper.GetUrl<SignIn>())">@L["SignIn"]</NavLink>
                         </Div>
                     </Div>
+                    <Div Flex="Flex.JustifyContent.Center" Margin="Margin.Is3.FromBottom">
+                        <Div Padding="Padding.Is2">
+                            @L["ForgotPassword?"] <NavLink href="@(RouteHelper.GetUrl<PasswordForgot>())">@L["ForgotPassword"]</NavLink>
+                        </Div>
+                    </Div>
                 </Validations>
             </CardBody>
         </Card>
@@ -69,7 +66,6 @@
     Validations validations;
     private LogInRequest model = new();
     private bool loading;
-    private string error;
 
     protected override void OnInitialized()
     {
@@ -107,8 +103,7 @@
         }
         catch (Exception ex)
         {
-            error = ex.Message;
-            await NotificationService.Error(L["Error"],error);
+            await NotificationService.Error(L["Error"],ex.Message);
         }
         ApiLoading = false;
 

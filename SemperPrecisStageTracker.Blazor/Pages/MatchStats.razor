@@ -162,7 +162,7 @@ else
                                             <Virtualize Items="@division.Shooters" Context="shooter">
 
                                                 <TableRow>
-                                                    <TableRowHeader>@shooter.Shooter.FirstName @shooter.Shooter.LastName</TableRowHeader>
+                                                    <TableRowHeader>@shooter.Shooter.CompleteName</TableRowHeader>
                                                     <TableRowCell>@shooter.TeamName</TableRowCell>
                                                     <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
                                                 </TableRow>

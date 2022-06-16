@@ -20,3 +20,23 @@ public class SignInRequest
     [Required]
     public string Token { get; set; }
 }
+
+public class ResetPasswordRequest
+{
+    [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
+    public string RestorePasswordAlias { get; set; } = string.Empty;
+    [Required]
+    public string Password { get; set; } = string.Empty;
+        [Required]
+    public string Token { get; set; }
+}
+
+public class ForgotPasswordRequest
+{
+    [Required]
+    public string Username { get; set; } = string.Empty;
+    [Required]
+    public string Token { get; set; }
+}

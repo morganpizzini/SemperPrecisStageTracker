@@ -137,6 +137,12 @@ namespace SemperPrecisStageTracker.EF.Context
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
             
             modelBuilder.Entity<Association>()
+                .Property(e => e.MatchKinds)
+                .HasConversion(
+                    v => string.Join(',', v),
+                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+            
+            modelBuilder.Entity<Association>()
                 .Property(e => e.SoRoles)
                 .HasConversion(
                     v => string.Join(',', v),
@@ -193,6 +199,10 @@ namespace SemperPrecisStageTracker.EF.Context
                 c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                 c => c.ToList());
 
+             modelBuilder.Entity<Association>()
+                .Property(e => e.MatchKinds)
+                .Metadata
+                .SetValueComparer(valueComparerString);
             modelBuilder.Entity<Association>()
                 .Property(e => e.Divisions)
                 .Metadata

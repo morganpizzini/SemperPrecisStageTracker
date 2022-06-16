@@ -105,13 +105,13 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groups = BasicLayer.FetchAllGroupsWithShootersByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
-            
+
             var stageIds = stages.Select(x => x.Id).ToList();
             //var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
-            
+
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity, association, place, groups, stages));
         }
@@ -171,9 +171,10 @@ namespace SemperPrecisStageTracker.API.Controllers
                 OpenMatch = request.OpenMatch,
                 UnifyClassifications = request.UnifyClassifications,
                 Cost = request.Cost,
+                Kind = request.Kind,
                 PaymentDetails = request.PaymentDetails
             };
-            
+
             if (model.OpenMatch && model.UnifyClassifications)
             {
                 return BadRequest(
@@ -200,7 +201,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        [ApiAuthorizationFilter(Permissions.EditMatch,Permissions.ManageMatches )]
+        [ApiAuthorizationFilter(Permissions.EditMatch, Permissions.ManageMatches)]
         public async Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -216,6 +217,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.MatchDateTimeEnd = request.MatchDateTimeEnd;
             entity.AssociationId = request.AssociationId;
             entity.PlaceId = request.PlaceId;
+            entity.Kind = request.Kind;
             // entity.OpenMatch = request.OpenMatch;
             // entity.UnifyClassifications = request.UnifyClassifications;
             entity.Cost = request.Cost;
@@ -239,7 +241,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
-        [ApiAuthorizationFilter(Permissions.ManageMatches )]
+        [ApiAuthorizationFilter(Permissions.ManageMatches)]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {

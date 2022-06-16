@@ -33,6 +33,12 @@ namespace SemperPrecisStageTracker.Blazor.Services
             CurrentTheme = theme;
             NotifyStateChanged();
         }
+
+        public void SetUser(ShooterContract user)
+        {
+            User = user;
+            NotifyStateChanged();
+        }
  
         /// <summary>
         /// The method that will be accessed by the sender component 

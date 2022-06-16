@@ -59,6 +59,25 @@
     </Validation>
     <Validation Validator="@ValidationRule.IsSelected">
         <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MatchKind"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <Select TValue="string" @bind-SelectedValue="@Model.Kind">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var kind in MatchKinds)
+                        {
+                            <SelectItem Value="@kind">@kind</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongMatchKind"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.IsSelected">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Place"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                 <Select TValue="string" @bind-SelectedValue="@Model.Place.PlaceId">
@@ -135,7 +154,9 @@
     public IList<AssociationContract> Associations { get; set; } = new List<AssociationContract>();
     [Parameter]
     public IList<PlaceContract> Places { get; set; } = new List<PlaceContract>();
-    
+
+    public IList<string> MatchKinds => Associations.FirstOrDefault(x => x.AssociationId == Model.Association.AssociationId)?.MatchKinds ?? new List<string>();
+
     void ValidateDate(ValidatorEventArgs e)
     {
         var date = e.Value as DateTime?;

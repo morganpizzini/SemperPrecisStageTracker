@@ -41,6 +41,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 MatchDateTimeEnd = entity.MatchDateTimeEnd,
                 Place = place != null ? GenerateContract(place) : new PlaceContract(),
                 CreationDateTime = entity.CreationDateTime,
+                Kind = entity.Kind,
                 UnifyClassifications = entity.UnifyClassifications,
                 Cost = entity.Cost,
                 PaymentDetails = entity.PaymentDetails,
@@ -89,6 +90,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Divisions = entity.Divisions.OrderBy(x => x).ToList(),
                 Classifications = entity.Classifications,
                 Categories = entity.Categories,
+                MatchKinds= entity.MatchKinds,
                 FirstPenaltyLabel = entity.FirstPenaltyLabel,
                 HitOnNonThreatPointDown = entity.HitOnNonThreatPointDown,
                 FirstProceduralPointDown = entity.FirstProceduralPointDown,
@@ -233,7 +235,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterTeamContract GenerateContract(ShooterTeam entity, Team team = null, Shooter shooter = null)
+        public static ShooterTeamContract GenerateContract(ShooterTeam entity, Team team = null, Shooter shooter = null,ShooterData shooterData = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -242,7 +244,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new ShooterTeamContract()
             {
                 Team = team != null ? GenerateContract(team) : new TeamContract(),
-                Shooter = shooter != null ? GenerateContract(shooter) : new ShooterContract(),
+                Shooter = shooter != null ? GenerateContract(shooter,shooterData,null,null,false) : new ShooterContract(),
                 ShooterApprove = entity.ShooterApprove,
                 TeamApprove = entity.TeamApprove,
                 RegistrationDate = entity.RegistrationDate
@@ -254,13 +256,13 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static ShooterContract GenerateContract(Shooter entity,ShooterData data = null, IList<ShooterAssociation> shooterClassifications = null, IList<Team> shooterTeams = null)
+        public static ShooterContract GenerateContract(Shooter entity,ShooterData data = null, IList<ShooterAssociation> shooterClassifications = null, IList<Team> shooterTeams = null,bool includeData = true)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
             //Ritorno il contratto
-            return new ShooterContract()
+            var result = new ShooterContract()
             {
                 ShooterId = entity.Id,
                 FirstName = entity.FirstName,
@@ -268,22 +270,35 @@ namespace SemperPrecisStageTracker.API.Helpers
                 BirthDate = entity.BirthDate,
                 Email = entity.Email,
                 Username = entity.Username,
-                FirearmsLicence = data?.FirearmsLicence,
-                FirearmsLicenceExpireDate = data?.FirearmsLicenceExpireDate ?? DateTime.MinValue,
-                FirearmsLicenceReleaseDate = data?.FirearmsLicenceReleaseDate ?? DateTime.MinValue,
-                MedicalExaminationExpireDate = data?.MedicalExaminationExpireDate,
-                BirthLocation = data?.BirthLocation,
-                Address = data?.Address,
-                City = data?.City,
-                PostalCode = data?.PostalCode,
-                Province = data?.Province,
-                Country = data?.Country,
-                Phone = data?.Phone,
-                FiscalCode = data?.FiscalCode,
+                
 
                 Classifications = shooterClassifications != null ? shooterClassifications.As(s => GenerateContract(s)) : new List<ShooterAssociationContract>(),
                 Teams = shooterTeams != null ? shooterTeams.As(GenerateContract) : new List<TeamContract>()
             };
+            if(data != null)
+            {
+                if (includeData)
+                {
+                    result.FirearmsLicence = data.FirearmsLicence;
+                    result.FirearmsLicenceExpireDate = data.FirearmsLicenceExpireDate;
+                    result.FirearmsLicenceReleaseDate = data.FirearmsLicenceReleaseDate;
+                    result.MedicalExaminationExpireDate = data.MedicalExaminationExpireDate;
+                    result.BirthLocation = data.BirthLocation;
+                    result.Address = data.Address;
+                    result.City = data.City;
+                    result.PostalCode = data.PostalCode;
+                    result.Province = data.Province;
+                    result.Country = data.Country;
+                    result.Phone = data.Phone;
+                    result.FiscalCode = data.FiscalCode;
+                }
+                else
+                {
+                    result.Warning = result.CalculateWarning(data.FirearmsLicenceExpireDate,data.MedicalExaminationExpireDate);
+                }
+
+            }
+            return result;
         }
 
         /// <summary>

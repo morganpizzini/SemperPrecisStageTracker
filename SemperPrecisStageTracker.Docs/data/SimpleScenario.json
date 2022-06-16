@@ -9,6 +9,7 @@
       "associationId": "1",
       "placeId": "1",
       "shortLink": "ABC",
+      "kind": "Club",
       "cost": 12.03,
       "paymentDetails": "Some payment details"
     },
@@ -21,6 +22,7 @@
       "associationId": "1",
       "placeId": "1",
       "shortLink": "EFG",
+      "kind": "Club",
       "cost": 12.03,
       "unifyClassifications": true,
       "openMatch": false,
@@ -35,6 +37,7 @@
       "associationId": "1",
       "placeId": "1",
       "shortLink": "EFG",
+      "kind": "Club",
       "cost": 12.03,
       "unifyClassifications": false,
       "openMatch": false,
@@ -49,6 +52,7 @@
       "associationId": "2",
       "placeId": "1",
       "shortLink": "EFG",
+      "kind": "Club",
       "cost": 12.03,
       "unifyClassifications": false,
       "openMatch": true,
@@ -393,7 +397,8 @@
       "email": "Shooter@01.it",
       "username": "Shooter01",
       "password": "Shooter01",
-      "birthDate": "2021-05-23T18:25:43.511Z"
+      "birthDate": "2021-05-23T18:25:43.511Z",
+      "restorePasswordAlias": "ABC"
     },
     {
       "id": "2",
@@ -487,9 +492,9 @@
     {
       "id": "2",
       "shooterId": "2",
-      "firearmsLicenceExpireDate": "2021-05-01T18:25:43.511Z",
+      "firearmsLicenceExpireDate": "2023-05-01T18:25:43.511Z",
       "firearmsLicence": "ABCD1",
-      "medicalExaminationExpireDate": "2021-05-02T18:25:43.511Z",
+      "medicalExaminationExpireDate": "2023-05-02T18:25:43.511Z",
       "birthLocation": "birthLocation02",
       "address": "address02",
       "city": "city02",
@@ -898,6 +903,12 @@
       "secondPenaltyLabel": "Flagrant Penality",
       "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
+      "matchKinds": [
+        "Club",
+        "National",
+        "European",
+        "International"
+      ],
       "divisions": [
         "Stock Service Pistol idpa (SSP)",
         "Enhanced Service Pistol idpa (ESP)",
@@ -942,6 +953,12 @@
       "secondPenaltyLabel": "Flagrant Penality",
       "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
+      "matchKinds": [
+        "Club",
+        "National",
+        "European",
+        "International"
+      ],
       "divisions": [
         "Stock Service Pistol (SSP)",
         "Enhanced Service Pistol (ESP)",
@@ -986,6 +1003,12 @@
       "secondPenaltyLabel": "Flagrant Penality",
       "thirdProceduralPointDown": 20,
       "thirdPenaltyLabel": "FTDR",
+      "matchKinds": [
+        "Club",
+        "National",
+        "European",
+        "International"
+      ],
       "divisions": [
         "Division 1",
         "Division 2"

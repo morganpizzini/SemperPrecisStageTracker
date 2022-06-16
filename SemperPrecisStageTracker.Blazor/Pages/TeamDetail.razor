@@ -125,8 +125,7 @@ else
         </Row>
 
     }
-    // faccio parte del team e vedo gli altri
-    @if (stateService.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment)
+    @if (canSeeTeamShooters )
     {
         <Card Margin="Margin.Is4.OnY">
             <CardBody>
@@ -161,6 +160,8 @@ else
                                                 @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooterTeam.Shooter.ShooterId))
                                                 {
                                                     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                                    <Button Size="Size.Small" Color="Color.Warning" Type="ButtonType.Button" Clicked="@(() => ResetPassword(shooterTeam))"><Icon Name="IconName.Key" /> </Button>
+
                                                 }
                                                 @if (canEditTeamShooterPayment)
                                                 {
@@ -211,7 +212,7 @@ else
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var shooter in shooters)
                                     {
-                                        <SelectItem Value="@shooter.ShooterId">@shooter.FirstName @shooter.LastName @shooter.BirthDate.ToString("d")</SelectItem>
+                                        <SelectItem Value="@shooter.ShooterId">@shooter.CompleteName @shooter.BirthDate.ToString("d")</SelectItem>
                                     }
                                 </ChildContent>
                                 <Feedback>
@@ -280,7 +281,7 @@ else
             {
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.FirstName @shooterToDelete.Shooter.LastName</Text>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
@@ -295,6 +296,38 @@ else
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
             <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefResetPassword">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["ResetPassword"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmResetPassword"]</FieldLabel>
+            </Field>
+            @if (shooterToReset != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToReset.Shooter.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Username"]</FieldLabel>
+                    <Text>@shooterToReset.Shooter.Username</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToReset.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalResetPassword(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalResetPassword(true))">@L["Yes"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
@@ -330,7 +363,7 @@ else
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, Id);
-    
+
 
     private Modal modalRefEntityToDelete;
 
@@ -342,12 +375,15 @@ else
     private Modal modalRefShooterToEdit;
     private Modal modalRefShooterToApprove;
     ShooterTeamCreateRequest shooterToEdit = new();
+    private Modal modalRefResetPassword;
+    ShooterTeamContract shooterToReset = new();
+    
     IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
 
 
     bool canEditTeamShooter;
     bool canEditTeamShooterPayment;
-
+    bool canSeeTeamShooters;
     protected override async Task OnInitializedAsync()
     {
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
@@ -355,6 +391,9 @@ else
 
         canEditTeamShooter = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
+
+        // faccio parte del team e vedo gli altri
+        canSeeTeamShooters = stateService.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment;
 
         await LoadShooterTeams();
 
@@ -399,7 +438,10 @@ else
     }
     async Task LoadShooterTeams()
     {
-        teamShooters = await Post<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+        if (canSeeTeamShooters )
+        {
+            teamShooters = await Post<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+        }
     }
 
     void NewShooter()
@@ -420,7 +462,7 @@ else
         };
         modalRefShooterToApprove.Show();
     }
-    
+
     private async Task HideModalTeamToEdit(bool choice)
     {
         if (choice)
@@ -436,7 +478,32 @@ else
         await modalRefShooterToEdit.Hide();
         await modalRefShooterToApprove.Hide();
     }
+    void ResetPassword(ShooterTeamContract shooter)
+    {
+        shooterToReset = shooter;
 
+        modalRefResetPassword.Show();
+    }
+
+    private async Task HideModalResetPassword(bool choice)
+    {
+        if (choice && shooterToReset != null)
+        {
+            var response = await Post<OkResponse>("/api/Authorization/ResetUserPassword", new ShooterRequest
+                {
+                    ShooterId = shooterToReset.Shooter.ShooterId
+                });
+            if (response != null)
+            {
+                if (response.Status)
+                    await ShowNotificationSuccess(L["ResetEmailSend"], L["Success"]);
+                else
+                    await ShowNotificationError(string.Join(",",response.Errors), L["Error"]);
+            }
+        }
+        shooterToReset = new();
+        await modalRefResetPassword.Hide();
+    }
     async Task DeleteShooter(ShooterTeamContract shooter)
     {
         shooterToDelete = shooter;

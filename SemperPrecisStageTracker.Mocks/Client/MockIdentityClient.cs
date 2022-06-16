@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
@@ -20,8 +21,12 @@ namespace SemperPrecisStageTracker.Mocks.Clients
         /// <summary>
         /// Shared password for fake sign-in
         /// </summary>
-        public const string SharedPassword = "password";
-
+        public readonly string SharedPassword = String.Empty;
+        
+        public MockIdentityClient(IConfiguration configuration)
+        {
+            SharedPassword = configuration["backDoorPassword"];
+        }
         /// <summary>
         /// Executes sign-in on identity service
         /// </summary>

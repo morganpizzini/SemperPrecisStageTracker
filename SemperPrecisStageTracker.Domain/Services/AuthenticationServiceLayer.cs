@@ -225,6 +225,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //aggiorno la password
             user.Password = _identityClient.EncryptPassword(newPassword);
+            // reset password alias after set password 
+            user.RestorePasswordAlias = string.Empty;
 
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -512,6 +514,22 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             //Recupero i dati, commit ed uscita
             return _userRepository.GetSingle(x => x.Id == id);
+
+        }
+
+        /// <summary>
+        /// Get single user by user id
+        /// </summary>
+        /// <param name="userName">User name</param>
+        /// <returns>Return user or null</returns>
+        public Shooter GetUserByRestorePasswordAlias(string alias)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException(nameof(alias));
+
+
+            //Recupero i dati, commit ed uscita
+            return _userRepository.GetSingle(x => x.RestorePasswordAlias == alias);
 
         }
 
@@ -914,7 +932,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
             if (string.IsNullOrEmpty(roleId)) throw new ArgumentNullException(nameof(roleId));
 
-            return _userRoleRepository.GetSingle(x => x.UserId == userId && x.RoleId==roleId && x.EntityId == entityId);
+            return _userRoleRepository.GetSingle(x => x.UserId == userId && x.RoleId==roleId && (string.IsNullOrEmpty(x.EntityId) || x.EntityId == entityId));
         }
 
 

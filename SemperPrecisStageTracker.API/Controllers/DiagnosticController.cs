@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Contracts.Requests;
 using Microsoft.Extensions.Configuration;
+using SemperPrecisStageTracker.API.Services.Interfaces;
+using SemperPrecisStageTracker.API.Models;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {

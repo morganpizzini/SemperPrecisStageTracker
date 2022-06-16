@@ -180,6 +180,26 @@
                 </FieldBody>
             </Field>
         </Column>
+        <Column ColumnSize="ColumnSize.IsFull.OnTablet.IsHalf.OnDesktop">
+            <Field>
+                <FieldLabel>@L["MatchKind"]<Button class="ms-2" Size="Size.Small" Type="ButtonType.Button" Color="Color.Success" Clicked="@(() => { Model.MatchKinds.Add(""); })"><Icon Name="IconName.PlusSquare" /></Button></FieldLabel>
+                <FieldBody>
+                    @for (int i = 0; i < Model.MatchKinds.Count; i++)
+                    {
+                        var tmp = i;
+                        <Addons class="mb-1">
+                            <Addon AddonType="AddonType.Body">
+                                <input value="@Model.MatchKinds[tmp]" class="form-control"
+                                       @onchange="@(e => Model.MatchKinds[tmp] = e.Value != null ? e.Value.ToString() : string.Empty)" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <Button Size="Size.Small" Type="ButtonType.Button" Color="Color.Danger" Clicked="@(() => { Model.MatchKinds.Remove(Model.MatchKinds[tmp]); })"><Icon Name="IconName.Delete" /></Button>
+                            </Addon>
+                        </Addons>
+                    }
+                </FieldBody>
+            </Field>
+        </Column>
     </Row>
     
     <Field Horizontal="true" JustifyContent="JustifyContent.End">

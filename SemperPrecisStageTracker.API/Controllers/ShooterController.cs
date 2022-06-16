@@ -28,9 +28,13 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllShooters();
+            var shooterIds = entities.Select(x=>x.Id).ToList();
+
+            var shooterDatas = BasicLayer.FetchShooterDataByShooterIds(shooterIds);
+
 
             //Ritorno i contratti
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x,shooterDatas.FirstOrDefault(y=>y.ShooterId == x.Id),null,null,false)));
         }
 
         /// <summary>
@@ -127,6 +131,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Email = request.Email;
             entity.Username = request.Username;
             data.FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate;
+            data.FirearmsLicenceReleaseDate = request.FirearmsLicenceReleaseDate;
             data.FirearmsLicence = request.FirearmsLicence;
             data.MedicalExaminationExpireDate = request.MedicalExaminationExpireDate;
             data.BirthLocation = request.BirthLocation;

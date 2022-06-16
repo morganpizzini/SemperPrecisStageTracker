@@ -2,6 +2,7 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<PlaceDetail> L
 @inject IAuthenticationService authService
+@inject StateService stateService
 
 <Heading Size="HeadingSize.Is1">@L["Profile"]</Heading>
 @if (ApiLoading)
@@ -13,7 +14,7 @@
 else
 {
     <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
+        <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsHalf.OnTablet">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
                     @if (!showEditModel)
@@ -117,19 +118,212 @@ else
                 </CardBody>
             </Card>
         </Column>
+        <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["ShooterRequested"]</CardTitle>
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (shooterTeams.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                            {
+                                <Virtualize Items="@shooterTeams.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                                    <TableRow>
+                                        <TableRowHeader>
+                                            @shooterTeam.Team.Name
+                                        </TableRowHeader>
+                                        <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                        @L["NoTeams"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["WaitingShooterForApproval"]</CardTitle>
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (shooterTeams.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                            {
+                                <Virtualize Items="@shooterTeams.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                    <TableRow>
+                                        <TableRowHeader>
+                                            @shooterTeam.Team.Name
+                                        </TableRowHeader>
+                                        <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                        <TableRowCell>
+                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => ApproveTeam(shooterTeam))"><Icon Name="IconName.Check"/></Button>
+                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete"/></Button>
+                                        </TableRowCell>
+                                    </TableRow>
+                                </Virtualize>
+                            }
+                            else
+                            {
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                        @L["NoTeams"]
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Column>
     </Row>
+    <Card Margin="Margin.Is4.OnY">
+        <CardBody>
+            <CardTitle>@L["Teams"]</CardTitle>
+
+            <Table Striped="true" Hoverable="true">
+                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                    <TableRow>
+                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                        <TableHeaderCell></TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @if (shooterTeams.Count(x=>x.ShooterApprove && x.TeamApprove) > 0)
+                    {
+                        <Virtualize Items="@shooterTeams.Where(x=>x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                            <TableRow>
+                                <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
+                                <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                <TableRowCell>
+                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                </TableRowCell>
+                            </TableRow>
+                        </Virtualize>
+                    }
+                    else
+                    {
+                        <TableRow>
+                            <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                @L["NoTeams"]
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        </CardBody>
+    </Card>
 }
+<Modal @ref="modalRefTeamToApprove">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["ApproveTeam"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @{
+               var team = shooterTeams.FirstOrDefault(x => x.Team.TeamId == teamToEdit.TeamId);
+           }
+           @if (team != null)
+           {
+               <Field>
+                   <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
+                   <FieldBody>@team.Team.Name</FieldBody>
+               </Field>
+           }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefTeamToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteTeam"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (teamToDelete.Team != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@teamToDelete.Team.Name</Text>
+                </Field>
+            }
+            <Field>
+                <FieldLabel>@L["RegistrationDate"]</FieldLabel>
+                <Text>@teamToDelete.RegistrationDate.ToString("d")</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 @code {
     ShooterContract user = new();
     Validations validations;
     UserUpdateRequest model = new();
+    ShooterInformationResponse shooterInfo = new ();
+    IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
+    ShooterTeamContract teamToDelete = new();
+    private Modal modalRefTeamToDelete;
+    private Modal modalRefTeamToApprove;
+    ShooterTeamCreateRequest teamToEdit = new();
     bool showEditModel;
 
     protected override async Task OnInitializedAsync()
     {
-        user = await Post<ShooterContract>("api/Profile/GetProfile");
-
+        user = stateService.User;
+        shooterInfo = stateService.ShooterInfo;
+        stateService.OnStateChange += StateServiceOnOnStateChange;
+        await LoadShooterTeams();
         await base.OnInitializedAsync();
+    }
+    async Task LoadShooterTeams()
+    {
+        shooterTeams = await Post<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = user.ShooterId });
+    }
+    public void Dispose()
+    {
+        stateService.OnStateChange -= StateServiceOnOnStateChange;
+    }
+
+    private void StateServiceOnOnStateChange(StateService state)
+    {
+        user = state.User;
+        shooterInfo = state.ShooterInfo;
     }
 
     private void EditProfile()
@@ -170,9 +364,63 @@ else
         if (! (await validations.ValidateAll()))
             return;
         await validations.ClearAll();
-        user = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
-        if (user == null) return;
+        var response = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
+        if (response == null)
+            return;
         authService.UpdateLogin(user);
         showEditModel = false;
+    }
+
+    void ApproveTeam(ShooterTeamContract shooterTeam)
+    {
+
+        teamToEdit = new ShooterTeamCreateRequest
+            {
+                ShooterId = user.ShooterId,
+                TeamId = shooterTeam.Team.TeamId,
+                RegistrationDate = shooterTeam.RegistrationDate
+            };
+        modalRefTeamToApprove.Show();
+    }
+
+    private async Task HideModalTeamToEdit(bool choice)
+    {
+        if (choice)
+        {
+            teamToEdit.FromShooter = true;
+            var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", teamToEdit);
+            if (response is not { Status: true })
+            {
+                return;
+            }
+            await LoadShooterTeams();
+        }
+        teamToEdit = new ShooterTeamCreateRequest();
+        await modalRefTeamToApprove.Hide();
+    }
+    void DeleteTeam(ShooterTeamContract team)
+    {
+        if (team == null)
+            return;
+        teamToDelete = team;
+        modalRefTeamToDelete.Show();
+    }
+    private async Task HideModalTeamToDelete(bool choice)
+    {
+        if (choice && teamToDelete.Team != null)
+        {
+            var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
+                {
+                    TeamId = teamToDelete.Team.TeamId,
+                    ShooterId = user.ShooterId
+                });
+            if (response == null)
+            {
+                return;
+            }
+            await LoadShooterTeams();
+        }
+        teamToDelete = new ShooterTeamContract();
+        await modalRefTeamToDelete.Hide();
     }
 }

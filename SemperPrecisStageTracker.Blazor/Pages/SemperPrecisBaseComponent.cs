@@ -7,46 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace SemperPrecisStageTracker.Blazor.Pages
 {
-    public class SemperPrecisBaseComponent<T> : SemperPrecisBaseComponent where T: new()
-    {
-        protected T Model = new();
-
-        protected override async Task<string> Post1(string uri, object value,bool pageOperation = true)
-        {
-            if(pageOperation)
-                ApiLoading = true;
-            
-            var apiResponse = await Service.Post<T>(uri, value);
-            if (apiResponse == null)
-            {
-                await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(apiResponse.Error))
-                {
-                    await ShowNotification(apiResponse.Error, "Error in API request", NotificationType.Error);
-                }
-                else
-                {
-                    Model = apiResponse.Result;
-                }
-            }
-            if(pageOperation)
-                ApiLoading = false;    
-
-            return apiResponse?.Error ?? string.Empty;
-        }
-    }
-
-    [Authorize]
-    public class SemperPrecisBaseComponent : SemperPrecisBasePresentationalComponent
+    public class SemperPrecisComponent : SemperPrecisBasePresentationalComponent
     {
         [Inject]
         protected IHttpService Service { get; set; }
-        
-        [Inject]
-        protected MainServiceLayer MainServiceLayer { get; set; }
         
         public Task<T?> Post<T>(string uri) => Post<T>(uri, new { });
 
@@ -88,6 +52,45 @@ namespace SemperPrecisStageTracker.Blazor.Pages
             var result = await method();
             ApiLoading = false;
             return result;
+        }
+    }
+
+    [Authorize]
+    public class SemperPrecisBaseComponent : SemperPrecisComponent
+    {
+        [Inject]
+        protected MainServiceLayer MainServiceLayer { get; set; }
+    }
+
+    public class SemperPrecisBaseComponent<T> : SemperPrecisBaseComponent where T: new()
+    {
+        protected T Model = new();
+
+        protected override async Task<string> Post1(string uri, object value,bool pageOperation = true)
+        {
+            if(pageOperation)
+                ApiLoading = true;
+            
+            var apiResponse = await Service.Post<T>(uri, value);
+            if (apiResponse == null)
+            {
+                await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(apiResponse.Error))
+                {
+                    await ShowNotification(apiResponse.Error, "Error in API request", NotificationType.Error);
+                }
+                else
+                {
+                    Model = apiResponse.Result;
+                }
+            }
+            if(pageOperation)
+                ApiLoading = false;    
+
+            return apiResponse?.Error ?? string.Empty;
         }
     }
 }

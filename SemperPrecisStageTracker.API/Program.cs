@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Caching.Memory;
@@ -8,6 +9,9 @@ using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
+using SemperPrecisStageTracker.API.Models;
+using SemperPrecisStageTracker.API.Services;
+using SemperPrecisStageTracker.API.Services.Interfaces;
 using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Configurations;
@@ -124,6 +128,23 @@ public class Program
                     .AllowAnyHeader());
             }
         });
+
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
+        }
+        else
+        {
+            // smtp
+            var emailConfig = builder.Configuration
+                                .GetSection("EmailConfiguration")
+                                .Get<EmailConfiguration>();
+            builder.Services.AddSingleton(emailConfig);
+            builder.Services.AddScoped<IEmailSender, EmailSender>();
+        }
+        
+
+
         //Aggiungo l'autentications basic e il default di schema
         builder.Services
             .AddAuthentication(o => o.DefaultScheme = BasicAuthenticationOptions.Scheme)
@@ -135,6 +156,7 @@ public class Program
             options.JsonSerializerOptions.WriteIndented = false;
             options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         });
+
 
         builder.Services.AddHealthChecks();
 

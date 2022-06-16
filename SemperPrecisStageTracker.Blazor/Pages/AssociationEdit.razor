@@ -68,7 +68,8 @@
             SecondProceduralPointDown = model.SecondProceduralPointDown,
             ThirdPenaltyLabel = model.ThirdPenaltyLabel,
             ThirdProceduralPointDown = model.ThirdProceduralPointDown,
-            SoRoles = model.SoRoles
+            SoRoles = model.SoRoles,
+            MatchKinds = model.MatchKinds
         };
         var response = await Post<AssociationContract>("/api/Association/UpdateAssociation", request);
         if (response != null)

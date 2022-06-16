@@ -21,7 +21,14 @@ dotnet user-secrets set "adminUsername" "Shooter01"
   "webPushPublic": "",
   "webPushUser": "",
   "connectionStrings:SqlDb": "only for migrations / specify just for local develop",
-  "adminUsername":"Shooter01"
+  "adminUsername":"Shooter01",
+  "EmailConfiguration": {
+    "From": "email@domain.it",
+    "SmtpServer": "smtps.domain.it",
+    "Port": 465,
+    "Username": "noreply@domain.it",
+    "Password": "strongPassword"
+  }
 }
 ```
 

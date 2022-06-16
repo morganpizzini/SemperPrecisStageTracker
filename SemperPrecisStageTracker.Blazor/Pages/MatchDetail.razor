@@ -7,7 +7,7 @@
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink Class="me-2" href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
 @{
-    var currentShooterRegistration = stateService.ShooterInfo.ShooterMatchInfos.FirstOrDefault(x => x.MatchId == Id);
+    var currentShooterRegistration = shooterInfo.ShooterMatchInfos.FirstOrDefault(x => x.MatchId == Id);
     if (currentShooterRegistration != null)
     {
         if (!string.IsNullOrEmpty(currentShooterRegistration.GroupName))
@@ -62,6 +62,8 @@ else
                     <CardBody>
                         <CardTitle>@L["Match"]</CardTitle>
                         <CardText>@match.Name - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
+                        <CardTitle>@L["Kind"]</CardTitle>
+                        <CardText>@match.Kind</CardText>
                         <CardTitle>@L["Location"]</CardTitle>
                         <CardText>@match.Place.Name</CardText>
                         <CardTitle>@L["Cost"]</CardTitle>
@@ -412,6 +414,7 @@ else
     MatchContract match = new();
     IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
     IList<ShooterContract> availableMatchDirectors = new List<ShooterContract>();
+    ShooterInformationResponse shooterInfo = new ();
 
     bool canManageSO = false;
     bool canManageMD = false;
@@ -428,8 +431,19 @@ else
         canManageGroups = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups, Id);
         canManageStages = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStages, Id);
         canManageMatch = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchHandling, Id);
-
+        shooterInfo = stateService.ShooterInfo;
+        stateService.OnStateChange += StateServiceOnOnStateChange;
         await base.OnInitializedAsync();
+    }
+
+    public void Dispose()
+    {
+        stateService.OnStateChange -= StateServiceOnOnStateChange;
+    }
+
+    private void StateServiceOnOnStateChange(StateService state)
+    {
+        shooterInfo = state.ShooterInfo;
     }
 
     async Task LoadMatch()

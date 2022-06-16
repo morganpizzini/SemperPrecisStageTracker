@@ -12,6 +12,7 @@ namespace SemperPrecisStageTracker.Contracts
         public DateTime MatchDateTimeStart { get; set; } = DateTime.Now;
         public DateTime MatchDateTimeEnd { get; set; } = DateTime.Now;
         public string ShortLink { get; set; } = string.Empty;
+        public string Kind { get; set; } = string.Empty;
 
         public DateTime CreationDateTime { get; set; }
         public float Cost { get; set; }

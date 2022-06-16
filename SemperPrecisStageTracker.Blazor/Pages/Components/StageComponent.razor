@@ -179,8 +179,10 @@
                             </FieldBody>
                         </Field>
                     </Validation>
-                    <Button Size="Size.Small" Color="Color.Primary" Clicked="@(()=>DeleteString(stageString))">@L["DeleteString"]</Button>
-
+                    @if (Model.Strings.Count > 0)
+                    {
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(()=>DeleteString(stageString))">@L["DeleteString"]</Button>
+                    }
                 </TabPanel>
             </Virtualize>
         </Content>

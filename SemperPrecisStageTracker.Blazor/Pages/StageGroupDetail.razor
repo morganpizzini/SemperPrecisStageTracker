@@ -76,7 +76,7 @@ else
                                                         
                                                         if (shooter.ShooterStatus != ShooterStatusEnum.IsDisqualified || current is {Disqualified: true })
                                                         {
-                                                            <Button Color="Color.Link" Clicked="@(() => FillShooter(shooter,stageString))">
+                                                            <Button Clicked="@(() => FillShooter(shooter,stageString))">
                                                                 @stageString.Name
                                                             </Button>
                                                         }

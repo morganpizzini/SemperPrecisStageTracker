@@ -66,6 +66,7 @@
             OpenMatch = model.OpenMatch,
             UnifyClassifications = model.UnifyClassifications,
             Cost = model.Cost,
+            Kind = model.Kind,
             PaymentDetails = model.PaymentDetails
         };
         var response = await Post<MatchContract>("/api/Match/UpdateMatch", request);

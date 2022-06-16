@@ -89,7 +89,7 @@ else
                             {
                                 <Virtualize Items="@group.Shooters" Context="groupShooter">
                                     <TableRow>
-                                        <TableRowHeader>@groupShooter.Shooter.LastName @groupShooter.Shooter.FirstName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         @if (!group.Match.UnifyClassifications)
                                         {
@@ -150,7 +150,7 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
@@ -230,7 +230,7 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.LastName @shooterToDelete.Shooter.FirstName</Text>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
