@@ -9,11 +9,11 @@ namespace SemperPrecisStageTracker.Shared.Permissions
     public static class KnownRoles
     {
         public static string Admin => nameof(Admin);
-        public static string TeamHolder => nameof(Admin);
-        public static string TeamSecretary => nameof(Admin);
-        public static string TeamContributor => nameof(Admin);
-        public static string MatchContributor => nameof(Admin);
-        public static string MatchSO => nameof(Admin);
+        public static string TeamHolder => nameof(TeamHolder);
+        public static string TeamSecretary => nameof(TeamSecretary);
+        public static string TeamContributor => nameof(TeamContributor);
+        public static string MatchContributor => nameof(MatchContributor);
+        public static string MatchSO => nameof(MatchSO);
 
 
         public static void Each<T>(this IEnumerable<T> instance, Action<T> action)
