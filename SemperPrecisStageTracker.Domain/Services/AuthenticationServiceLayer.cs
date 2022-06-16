@@ -428,7 +428,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                     return validations;
 
                 _userPermissionRepository.Save(newPermission);
-
             }
             return validations;
         }
@@ -446,7 +445,6 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             _permissionRepository.Save(entity);
 
-            
             return validations;
         }
 

@@ -180,7 +180,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 teamEditPerm = new Permission()
                 {
-                    Name = Permissions.TeamEditShooters.ToDescriptionString()
+                    Name = Permissions.EditTeam.ToDescriptionString()
                 };
                 authenticationService.SavePermission(teamEditPerm);
             }
