@@ -10,11 +10,7 @@
     <Button Clicked="@Get">get</Button>
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
-    <ul>        
-        inserire i ruoli nel fill del db
-
-        Graduatoria del match club/nazionale/europeo.. lista libera
-
+    <ul>
         Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
 
         Controllare regole idpa 9.4.5 (calcolare parametri in base a queste regole)
@@ -26,8 +22,6 @@
 
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
 
-        Bottone nella pagina del team per resettare la password
-        Smtp server per invio email
         salvare il numero di volte in cui il risultato viene editato (all'interno dell'upsert) e salvare risultato precedente
 
         [Blazor]
@@ -38,7 +32,7 @@
         possibilità cambiare la tipologia di match solo se non ho shooter registrati
         metodo UpdateShooterInfo dovrebbe essere richiamato ogni volta che viene svolta un'operazione che potrebbe cambiare la risposta
 
-        controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
+        durante processo di inport controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
         Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)
 
