@@ -86,7 +86,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Associations");
+                    b.ToTable("Associations", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Contact", b =>
@@ -121,7 +121,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts");
+                    b.ToTable("Contacts", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Group", b =>
@@ -156,7 +156,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.GroupShooter", b =>
@@ -201,7 +201,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupShooters");
+                    b.ToTable("GroupShooters", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Match", b =>
@@ -258,7 +258,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.NotificationSubscription", b =>
@@ -293,7 +293,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NotificationSubscriptions");
+                    b.ToTable("NotificationSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Permission", b =>
@@ -331,7 +331,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PermissionGroups");
+                    b.ToTable("PermissionGroups", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.PermissionGroupRole", b =>
@@ -354,7 +354,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PermissionGroupRoles");
+                    b.ToTable("PermissionGroupRoles", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.PermissionRole", b =>
@@ -377,7 +377,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PermissionsRoles");
+                    b.ToTable("PermissionsRoles", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Place", b =>
@@ -397,7 +397,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Places");
+                    b.ToTable("Places", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.PlaceData", b =>
@@ -455,7 +455,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlaceDatas");
+                    b.ToTable("PlaceDatas", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Role", b =>
@@ -478,7 +478,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Shooter", b =>
@@ -522,7 +522,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Shooters");
+                    b.ToTable("Shooters", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterAssociation", b =>
@@ -563,7 +563,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterAssociations");
+                    b.ToTable("ShooterAssociations", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterAssociationInfo", b =>
@@ -602,7 +602,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterAssociationInfos");
+                    b.ToTable("ShooterAssociationInfos", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterData", b =>
@@ -666,7 +666,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterDatas");
+                    b.ToTable("ShooterDatas", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterRole", b =>
@@ -769,7 +769,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterStages");
+                    b.ToTable("ShooterStages", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterTeam", b =>
@@ -803,7 +803,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterTeams");
+                    b.ToTable("ShooterTeams", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterTeamPayment", b =>
@@ -845,7 +845,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShooterTeamPayments");
+                    b.ToTable("ShooterTeamPayments", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Stage", b =>
@@ -891,7 +891,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stages");
+                    b.ToTable("Stages", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.StageString", b =>
@@ -940,7 +940,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StageStrings");
+                    b.ToTable("StageStrings", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.Team", b =>
@@ -960,7 +960,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.TeamHolder", b =>
@@ -989,7 +989,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TeamHolders");
+                    b.ToTable("TeamHolders", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.UserPermission", b =>
@@ -1016,7 +1016,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserPermissions");
+                    b.ToTable("UserPermissions", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.UserPermissionGroup", b =>
@@ -1039,7 +1039,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserPermissionGroups");
+                    b.ToTable("UserPermissionGroups", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.UserRole", b =>
@@ -1066,7 +1066,7 @@ namespace SemperPrecisStageTracker.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("SemperPrecisStageTracker.Models.ShooterMatch", b =>

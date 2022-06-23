@@ -30,7 +30,7 @@ namespace SemperPrecisStageTracker.Blazor.Utils
         [JSInvokable]
         public void UpdateOnlineStatus(bool status)
         {
-            _dispatcher.Dispatch(new SetOnlineStatusAction(status));
+            _dispatcher.Dispatch(new SetHasNetworkAction(status));
         }
 
         //public bool IsOnline { get; private set; }

@@ -12,12 +12,21 @@ public class ChangeThemeAction
     }
 }
 
-public class SetOnlineStatusAction
+public class SetHasNetworkAction
 {
-    public bool Status { get; set; }
-    public SetOnlineStatusAction(bool status)
+    public bool HasNetwork { get; set; }
+    public SetHasNetworkAction(bool status)
     {
-        Status = status;
+        HasNetwork = status;
+    }
+}
+
+public class SetOfflineAction
+{
+    public bool Offline { get; set; }
+    public SetOfflineAction(bool offline)
+    {
+        Offline = offline;
     }
 }
 

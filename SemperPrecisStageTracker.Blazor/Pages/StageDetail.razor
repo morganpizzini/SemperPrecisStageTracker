@@ -68,7 +68,7 @@ else
                                     <TableRow>
                                         <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                         <TableRowCell>
-                                            @if (SettingState.Value.Online && canInsertScore)
+                                            @if (SettingState.Value.HasNetwork && canInsertScore)
                                     {
                                         <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
                                             <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;<Icon Name="IconName.Phone" /></LoadingTemplate>
@@ -89,7 +89,7 @@ else
                             }
                         </TableBody>
                     </Table>
-                    @if (MainServiceLayer.Online && canManageSO)
+                    @if (!SettingState.Value.Offline && canManageSO)
                     {
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
                     }
@@ -111,7 +111,7 @@ else
                                         <TableRowHeader>@stageSo.Shooter.CompleteName</TableRowHeader>
                                         <TableRowHeader>@stageSo.Role</TableRowHeader>
                                         <TableRowCell>
-                                            @if (MainServiceLayer.Online && canManageSO)
+                                            @if (!SettingState.Value.Offline && canManageSO)
                                     {
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteStageSo(stageSo))"><Icon Name="IconName.Delete" /></Button>
                                     }
@@ -376,7 +376,7 @@ else
     async Task LoadSO()
     {
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
-        if (MainServiceLayer.Online)
+        if (!SettingState.Value.Offline)
         {
             availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId });
         }

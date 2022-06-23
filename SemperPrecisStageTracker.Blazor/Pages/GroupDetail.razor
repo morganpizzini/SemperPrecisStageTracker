@@ -2,8 +2,9 @@
 @using Microsoft.Extensions.Logging
 @using System.Text.Json
 @inherits SemperPrecisBaseComponent
-@inject ILogger<GroupDetail> log;
+@inject ILogger<GroupDetail> log
 @inject IStringLocalizer<GroupDetail> L
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -56,7 +57,7 @@ else
         }
     </Row>
     <Divider />
-    @if (MainServiceLayer.Online && availableShooters.Count > 0 && canEditGroup)
+    @if (!SettingState.Value.Offline && availableShooters.Count > 0 && canEditGroup)
     {
         <ShooterInGroup AvailableShooters="availableShooters" SubmitCallback="Submit" Model="model" Match="group.Match"/>
         <Divider />
@@ -110,7 +111,7 @@ else
                                             </TableRowHeader>
                                         }
                                         <TableRowCell>
-                                            @if (MainServiceLayer.Online && canEditGroup)
+                                            @if (!SettingState.Value.Offline && canEditGroup)
                                             {
                                                 <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(groupShooter))"><Icon Name="IconName.Pen" /></Button>
                                                 <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
@@ -289,7 +290,7 @@ else
 
     async Task LoadShooters()
     {
-        if (MainServiceLayer.Online)
+        if (!SettingState.Value.Offline)
         {
             availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
         }

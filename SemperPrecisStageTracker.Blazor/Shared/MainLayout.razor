@@ -2,8 +2,8 @@
 @using Fluxor;
 @using SemperPrecisStageTracker.Blazor.Store.AppUseCase
 @using SemperPrecisStageTracker.Blazor.Store
-@inject IState<SettingsState> SettingsState
-@inherits FluxorLayout 
+@inject IState<SettingsState> SettingState
+@inherits FluxorLayout
 @implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
@@ -11,7 +11,7 @@
 @inject IHttpService httpService
 @inject IDispatcher Dispatcher
 
-<div class="page @SettingsState.Value.Theme">
+<div class="page @SettingState.Value.Theme">
 
     <div class="sidebar">
         <NavMenu/>

@@ -5,6 +5,7 @@
 @inject IStringLocalizer<MatchGroups> L
 @inject NavigationManager UriHelper
 @inject IState<UserState> UserState
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["GroupsDetail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -71,7 +72,7 @@ else
                                     <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                 }
                                 <TableRowCell>
-                                    @if (MainServiceLayer.Online && 
+                                    @if (!SettingState.Value.Offline && 
                                          (canManageShooter || UserState.Value.User.ShooterId == groupShooter.Shooter.ShooterId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking"/></Button>
@@ -139,7 +140,7 @@ else
                                         <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                     }
                                     <TableRowCell>
-                                        @if (MainServiceLayer.Online && (canManageShooter || UserState.Value.User.ShooterId == groupShooter.Shooter.ShooterId))
+                                        @if (!SettingState.Value.Offline && (canManageShooter || UserState.Value.User.ShooterId == groupShooter.Shooter.ShooterId))
                                         {
                                             <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>

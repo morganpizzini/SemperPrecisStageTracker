@@ -3,8 +3,9 @@
 @inject IStringLocalizer<Home> L
 @inject NavigationManager UriHelper
 @inject IState<UserState> UserState 
+@inject IState<SettingsState> SettingState 
 
-@if (MainServiceLayer.Online)
+@if (!SettingState.Value.Offline)
 {
     
 <Row>
@@ -87,7 +88,7 @@
     BaseShooterInMatchCreateRequest model = new();
     protected override async Task OnInitializedAsync()
     {
-        if (MainServiceLayer.Online)
+        if (!SettingState.Value.Offline)
         {
             var result = await Post<IList<MatchContract>>("api/Match/FetchAvailableMatches");
 

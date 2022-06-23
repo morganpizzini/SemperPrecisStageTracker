@@ -2,9 +2,10 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Matches> L
 @inject NavigationManager UriHelper
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["Matches"]</Heading>
-@if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.CreateMatches))
+@if (!SettingState.Value.Offline && AuthService.CheckPermissions(PermissionCtor.ManageMatches.CreateMatches))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<MatchNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewMatch"]</Button>
 }
@@ -41,12 +42,12 @@
                         <TableRowCell>@match.Association.Name - @match.Kind</TableRowCell>
                         <TableRowCell>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
-                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch, match.MatchId))
+                            @if (!SettingState.Value.Offline && AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch, match.MatchId))
                             {
                                 <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
                             <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))"><Icon Name="IconName.Search" /></Button>
-                            @if (MainServiceLayer.Online && AuthService.CheckPermissions(Permissions.ManageMatches, match.MatchId))
+                            @if (!SettingState.Value.Offline && AuthService.CheckPermissions(Permissions.ManageMatches, match.MatchId))
                             {
                                 <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(match))"><Icon Name="IconName.Delete" /></Button>
                             }

@@ -4,20 +4,25 @@ namespace SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 
 public static partial class Reducers
 {
-  [ReducerMethod]
-  public static SettingsState ReduceChangeThemeAction(SettingsState state, ChangeThemeAction action) =>
-        state with
-        {
-            Theme = action.Theme
-        };
     [ReducerMethod]
-  public static SettingsState ReduceIncrementCounterAction(SettingsState state, SetOnlineStatusAction action) =>
+    public static SettingsState ReduceChangeThemeAction(SettingsState state, ChangeThemeAction action) =>
+          state with
+          {
+              Theme = action.Theme
+          };
+
+    [ReducerMethod]
+    public static SettingsState ReduceSetHasNetworkAction(SettingsState state, SetHasNetworkAction action) =>
         state with
         {
-            Online = action.Status
+            HasNetwork = action.HasNetwork
         };
-    
-  //  [ReducerMethod(typeof(ChangeThemeAction))]
-  //public static SettingsState ReduceIncrementCounterAction(SettingsState state) =>
-  //  new CounterState(clickCount: state.ClickCount + 1);
+
+    [ReducerMethod]
+    public static SettingsState ReduceSetOfflineAction(SettingsState state, SetOfflineAction action) =>
+        state with
+        {
+            Offline = action.Offline
+        };
 }
+

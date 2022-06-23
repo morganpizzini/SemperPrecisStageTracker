@@ -4,7 +4,7 @@
 @using SemperPrecisStageTracker.Blazor.Store.AppUseCase
 @inherits FluxorComponent 
 @inject IStringLocalizer<ThemeSelector> L
-@inject IState<SettingsState> SettingsState 
+@inject IState<SettingsState> SettingState 
 @inject IDispatcher Dispatcher
 
 <strong>@L["Theme"]:</strong>
@@ -16,7 +16,7 @@
 @code{
     string CurrentTheme
     {
-        get => SettingsState.Value.Theme;
+        get => SettingState.Value.Theme;
         set
         {
             Dispatcher.Dispatch(new ChangeThemeAction(value));

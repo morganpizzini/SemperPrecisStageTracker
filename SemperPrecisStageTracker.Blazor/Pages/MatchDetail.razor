@@ -3,6 +3,7 @@
 @inject IStringLocalizer<MatchDetail> L
 @inject NavigationManager UriHelper
 @inject IState<UserState> UserState 
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink Class="me-2" href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
@@ -28,7 +29,7 @@
 }
 
 
-@if (MainServiceLayer.Online)
+@if (!SettingState.Value.Offline)
 {
     @if(canManageGroups){
         <Button Class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewGroup"]</Button>
@@ -135,7 +136,7 @@ else
                 </Column>
             }
         </Row>
-        @if (MainServiceLayer.Online)
+        @if (!SettingState.Value.Offline)
         {
             <Row>
                 <Column ColumnSize="ColumnSize.IsFull">
@@ -444,7 +445,7 @@ else
     async Task LoadMatchDirectors()
     {
         matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
-        if(MainServiceLayer.Online)
+        if(!SettingState.Value.Offline)
             availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
     }
 
