@@ -30,8 +30,8 @@
         else
         {
             <Row>
-                <Column ColumnSize="ColumnSize.Is6">
-                    <Card Margin="Margin.Is4.OnY">
+                <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+                    <Card Margin="Margin.Is2.OnY">
                         <CardBody>
                             <CardTitle>@L["Shooter"]</CardTitle>
                             <CardText>@shooter.LastName @shooter.FirstName</CardText>
@@ -47,8 +47,8 @@
                     </Card>
                 </Column>
 
-                <Column ColumnSize="ColumnSize.Is6">
-                    <Card Margin="Margin.Is4.OnY">
+                <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+                    <Card Margin="Margin.Is2.OnY">
                         <CardBody>
                             <CardTitle>@L["Email"]</CardTitle>
                             <CardText>@shooter.Email</CardText>
@@ -81,9 +81,6 @@
                     @if (PageCondition)
                     {
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewTeam())"><Icon Name="IconName.PlusSquare" /> @L["NewTeam"]</Button>
-                    }
-                    @if (PageCondition)
-                    {
                         <Row>
                             <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
                                 <Card Margin="Margin.Is4.OnY">
@@ -290,13 +287,13 @@
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
                                     }
                                     else
                                     {

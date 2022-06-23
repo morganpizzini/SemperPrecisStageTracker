@@ -11,14 +11,12 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
+        reducer creare effetto per settare il valore del tema nel localhost e creare metodi per recupero allo startup https://github.com/mrpmorris/Fluxor/blob/master/Source/Tutorials/01-BasicConcepts/01A-StateActionsReducersTutorial/README.md
+
         Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
 
         Controllare regole idpa 9.4.5 (calcolare parametri in base a queste regole)
         Salvare posizionamento totale, percentuale di tempo
-
-        Le classificazioni nel match devono essere ordinabili per rank di importanza
-
-        nella pagina del team mettere il pulsante per richiedere l'iscrizione al team
 
         cancellazione logica dei groupshooter? in modo che non si possano re-iscrivere
         Quando uno shooter viene escluso da un match, solo chi ha il permesso di gestione dei gruppi/aggiunta tiratori può re-inserirlo (per evitare le re-iscrizioni continue) (possible implementando cancellazione logica oppure con tabella parallela, in cui salvo chi ho eliminato dal match)

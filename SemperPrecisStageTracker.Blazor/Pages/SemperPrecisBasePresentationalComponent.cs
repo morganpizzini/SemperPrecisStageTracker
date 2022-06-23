@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Blazorise;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using SemperPrecisStageTracker.Blazor.Services;
@@ -27,7 +28,7 @@ public class SemperPrecisBasePresentationalValidationComponent<T> : SemperPrecis
     }
 }
 
-public class SemperPrecisBasePresentationalComponent : ComponentBase
+public class SemperPrecisBasePresentationalComponent : FluxorComponent
 {
     [Inject]
     protected IAuthenticationService AuthService { get; set; }
@@ -39,10 +40,9 @@ public class SemperPrecisBasePresentationalComponent : ComponentBase
     [Parameter]
     public virtual bool ApiLoading { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void Dispose(bool disposed)
     {
-        await base.OnInitializedAsync();
-        //PageLoading = false;
+      base.Dispose(disposed);
     }
 
     protected Task ShowNotificationSuccess(string message, string title = "", NotificationType notificationType = NotificationType.Info) => ShowNotification(message,title,NotificationType.Success);

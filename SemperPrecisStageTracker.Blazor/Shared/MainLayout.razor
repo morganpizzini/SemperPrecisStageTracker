@@ -1,13 +1,17 @@
-﻿@using SemperPrecisStageTracker.Contracts.Utilities
-@inherits LayoutComponentBase
+﻿@using Fluxor.Blazor.Web.Components
+@using Fluxor;
+@using SemperPrecisStageTracker.Blazor.Store.AppUseCase
+@using SemperPrecisStageTracker.Blazor.Store
+@inject IState<SettingsState> SettingsState
+@inherits FluxorLayout 
 @implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<MainLayout> L
-@inject NetworkService NetworkService
-@inject StateService stateService
+@inject ILocalStorageService localStorage
 @inject IHttpService httpService
+@inject IDispatcher Dispatcher
 
-<div class="page @CurrentTheme">
+<div class="page @SettingsState.Value.Theme">
 
     <div class="sidebar">
         <NavMenu/>
@@ -35,14 +39,14 @@
             </div>
         }
         <div class="content px-4">
-            @if (NetworkService.IsOnline)
+            @Body
+            @*@if (NetworkService.IsOnline)
             {
-                @Body
             }
             else
             {
                 <span style="color: red">@L["Offline"]</span>
-            }
+            }*@
         </div>
     </div>
 </div>
@@ -64,43 +68,42 @@
     </ModalContent>
 </Modal>
 @code{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     private static Action action;
     private Modal modalInstallRef;
     private static Action actionNotification;
     private bool ShowNotificationAlertStatus;
     private static Action<bool> actionPwaInstallation;
     private bool ShowPwaInstallationProgress;
-
-    string CurrentTheme = string.Empty;
-
-
-    protected override void OnInitialized()
+    
+    protected override async Task OnInitializedAsync()
     {
         action = ShowIntallModal;
         actionNotification = ShowNotificationAlert;
         actionPwaInstallation = ShowPwaInstallation;
+
+        Dispatcher.Dispatch(new ChangeThemeAction(localStorage.GetItem<string>("theme")));
+
         // In the background, ask if they want to be notified about order updates
-        RequestNotificationSubscriptionAsync();
+        await RequestNotificationSubscriptionAsync();
 
-        stateService.OnStateChange += SetTheme;
-
-
-        base.OnInitialized();
+        await base.OnInitializedAsync();
     }
-    public void Dispose()
+    
+    protected override void Dispose(bool disposed)
     {
-        stateService.OnStateChange -= SetTheme;
+      base.Dispose(disposed);
     }
-
-    public void SetTheme(StateService state)
+    public void UpdateInterface(object _,EventArgs __) => StateHasChanged();
+    
+    async Task RequestNotificationSubscriptionAsync()
     {
-        CurrentTheme = state.CurrentTheme;
-        StateHasChanged();
-    }
-
-    void RequestNotificationSubscriptionAsync()
-    {
-        if (!stateService.IsAuth)
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+         
+        if (!(authState.User?.Identity?.IsAuthenticated ?? false))
             return;
         ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
     }

@@ -204,7 +204,10 @@
   <data name="DeleteShooter" xml:space="preserve">
     <value>Delete shooter</value>
   </data>
-  <data name="WrongRegistrationDate" xml:space="preserve">
+  <data name="WrongRegistrationDate_Duplicate[1]" xml:space="preserve">
     <value>Registration date is not valid!</value>
+  </data>
+  <data name="WantToJoin" xml:space="preserve">
+    <value>Want to join {0}?</value>
   </data>
 </root>

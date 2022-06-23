@@ -1,5 +1,6 @@
 ﻿@using SemperPrecisStageTracker.Blazor.Pages
 @using Permissions = SemperPrecisStageTracker.Shared.Permissions.Permissions
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @inject IStringLocalizer<NavMenu> L
 @inject IAuthenticationService AuthService
 @inject MainServiceLayer mainServiceLayer
@@ -83,6 +84,11 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void Dispose(bool disposed)
+    {
+      base.Dispose(disposed);
+    }
 
     private void ToggleNavMenu()
     {

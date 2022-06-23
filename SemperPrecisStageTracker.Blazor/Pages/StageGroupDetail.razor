@@ -3,7 +3,7 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
-@inject StateService stateService
+@inject IState<UserState> UserState 
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -18,8 +18,8 @@
 else
 {
     <Row>
-        <Column ColumnSize="ColumnSize.Is6">
-            <Card Margin="Margin.Is4.OnY">
+        <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is2.OnY">
                 <CardBody>
                     <CardTitle>@L["Group"]</CardTitle>
                     <CardText>@group.Name</CardText>
@@ -30,8 +30,8 @@ else
         </Column>
         @if (group.Match != null)
         {
-            <Column ColumnSize="ColumnSize.Is6">
-                <Card Margin="Margin.Is4.OnY">
+            <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+                <Card Margin="Margin.Is2.OnY">
                     <CardBody>
                         <CardTitle>@L["Match"]</CardTitle>
                         <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@group.Match.Name</NavLink> - @group.Match.MatchDateTimeStart.ToString("d") / @group.Match.MatchDateTimeEnd.ToString("d")</CardText>
@@ -43,90 +43,79 @@ else
         }
     </Row>
     <Divider />
-    <Row>
-        <Column ColumnSize="ColumnSize.IsFull">
-            <Card Margin="Margin.Is4.OnY">
-                <CardBody>
-                    <CardTitle>@L["Shooters"]</CardTitle>
-                        <Table Striped="true" Hoverable="true">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell>@L["Division"]</TableHeaderCell>
-                                    @if (!match.UnifyClassifications)
-                                    {
-                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
-                                    }
-                                    <TableHeaderCell>@L["Total"]</TableHeaderCell>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (shooters.Count > 0)
-                                {
-                                    <Virtualize Context="shooter" Items="@shooters">
-                                        <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
-                                            <TableRowHeader>
-                                                @shooter.GroupShooter.Shooter.CompleteName
+   
+    <Card Margin="Margin.Is4.OnY">
+        <CardBody>
+            <CardTitle>@L["Shooters"]</CardTitle>
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Division"]@(!match.UnifyClassifications ? $" / {L["Classification"]}" : string.Empty)</TableHeaderCell>
+                            <TableHeaderCell>@L["Total"]</TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (shooters.Count > 0)
+                        {
+                            <Virtualize Context="shooter" Items="@shooters">
+                                <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                    <TableRowHeader>
+                                        @shooter.GroupShooter.Shooter.CompleteName
                                                 
-                                                @if (canInsertScore)
-                                                {
-                                                    @foreach (var stageString in stage.Strings)
-                                                    {
-                                                        var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
-                                                        
-                                                        if (shooter.ShooterStatus != ShooterStatusEnum.IsDisqualified || current is {Disqualified: true })
-                                                        {
-                                                            <Button Clicked="@(() => FillShooter(shooter,stageString))">
-                                                                @stageString.Name
-                                                            </Button>
-                                                        }
-                                                        
-                                                    }
-                                                }
-                                                
-                                            </TableRowHeader>
-                                            <TableRowCell>@shooter.GroupShooter.Division</TableRowCell>
-                                            @if (!match.UnifyClassifications)
-                                            {
-                                                <TableRowCell>@shooter.GroupShooter.Classification</TableRowCell>
-                                            }
-                                            <TableRowCell>
-                                                @foreach (var stageString in stage.Strings)
-                                                {
-                                                    var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
-                                                    if (current != null)
-                                                    {
-                                                        <span>@((current as IStageResult).TotalString)</span>
-                                                    }
-                                                }
-                                            </TableRowCell>
-                                        </TableRow>
-                                        @if (shooter.ShooterStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
+                                        @if (canInsertScore)
                                         {
-                                            <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
-                                                <TableRowCell></TableRowCell>
-                                                <TableRowCell ColumnSpan="3">
-                                                    @(string.Join(", ",shooter.ShooterStage.Select(x=>x.Notes)))
-                                                </TableRowCell>
-                                            </TableRow>
+                                            @foreach (var stageString in stage.Strings)
+                                            {
+                                                var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                                        
+                                                if (shooter.ShooterStatus != ShooterStatusEnum.IsDisqualified || current is {Disqualified: true })
+                                                {
+                                                    <Button Clicked="@(() => FillShooter(shooter,stageString))">
+                                                        @stageString.Name
+                                                    </Button>
+                                                }
+                                                        
+                                            }
                                         }
-                                    </Virtualize>
-                                }
-                                else
+                                                
+                                    </TableRowHeader>
+                                    <TableRowCell>@shooter.GroupShooter.Division @(!match.UnifyClassifications ? $" / {@shooter.GroupShooter.Classification}" : string.Empty)</TableRowCell>
+                                    <TableRowCell>
+                                        @foreach (var stageString in stage.Strings)
+                                        {
+                                            var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                            if (current != null)
+                                            {
+                                                <span>@((current as IStageResult).TotalString)</span>
+                                            }
+                                        }
+                                    </TableRowCell>
+                                </TableRow>
+                                @if (shooter.ShooterStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
                                 {
-                                    <TableRow>
-                                        <TableRowCell ColumnSpan="@(match.UnifyClassifications ? 3 : 4)" TextAlignment="TextAlignment.Center">
-                                            @L["NoShooters"]
+                                    <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                        <TableRowCell></TableRowCell>
+                                        <TableRowCell ColumnSpan="2">
+                                            @(string.Join(", ",shooter.ShooterStage.Select(x=>x.Notes)))
                                         </TableRowCell>
                                     </TableRow>
                                 }
-                            </TableBody>
-                        </Table>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                    @L["NoShooters"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
                     
-                </CardBody>
-            </Card>
-        </Column>
-    </Row>
+        </CardBody>
+    </Card>
 }
 <Modal @ref="modalRef">
     <ModalContent Centered="true" Size="@ModalSize.Fullscreen">
@@ -501,7 +490,7 @@ else
             var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x=>x.Shooter.ShooterId);
             userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x=>x.Shooter.ShooterId).ToList());
             canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) || 
-                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(stateService.User.ShooterId));
+                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User.ShooterId));
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 

@@ -3,21 +3,21 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<TeamDetail> L
 @inject NavigationManager UriHelper
-@inject StateService stateService
-
+@inject IState<UserState> UserState 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
 @if (PageCondition)
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
 @if (AuthService.CheckPermissions(PermissionCtor.ManageTeams.TeamEditShooters,Id))
 {
-    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewShooter())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewShooter"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 }
-@if (PageCondition)
+@if(UserState.Value.User.Teams.All(x => x.TeamId != team.TeamId) && teamShooters.All(x=>x.Shooter.ShooterId != UserState.Value.User.ShooterId))
 {
-    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Button" Clicked="AskToJoin"><Icon Name="IconName.PlusSquare" /> @L["AskToJoin"]</Button>
 }
 @if (ApiLoading)
 {
@@ -243,6 +243,25 @@ else
     </ModalContent>
 </Modal>
 
+<Modal @ref="modalRefAskToJoin">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AskToJoinTeam"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+               <Field>
+                   <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
+                   <FieldBody>@L["WantToJoin",team.Name]</FieldBody>
+               </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalAskToJoin(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalAskToJoin(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 <Modal @ref="modalRefShooterToApprove">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -376,8 +395,9 @@ else
     private Modal modalRefShooterToApprove;
     ShooterTeamCreateRequest shooterToEdit = new();
     private Modal modalRefResetPassword;
+    private Modal modalRefAskToJoin;
     ShooterTeamContract shooterToReset = new();
-    
+
     IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
 
 
@@ -393,7 +413,7 @@ else
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
 
         // faccio parte del team e vedo gli altri
-        canSeeTeamShooters = stateService.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment;
+        canSeeTeamShooters = UserState.Value.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment;
 
         await LoadShooterTeams();
 
@@ -478,6 +498,30 @@ else
         await modalRefShooterToEdit.Hide();
         await modalRefShooterToApprove.Hide();
     }
+
+    void AskToJoin()
+    {
+        shooterToEdit = new ShooterTeamCreateRequest
+        {
+            ShooterId = UserState.Value.User.ShooterId,
+            TeamId = Id,
+            FromShooter = true,
+            RegistrationDate = DateTime.Now
+        };
+        modalRefAskToJoin.Show();
+    }
+
+    private async Task HideModalAskToJoin(bool choice)
+    {
+        if (choice)
+        {
+            var response = await Post<OkResponse>("/api/ShooterTeam/UpsertShooterTeam", shooterToEdit);
+            await LoadShooterTeams();
+        }
+        shooterToEdit = new ShooterTeamCreateRequest();
+        await modalRefAskToJoin.Hide();
+    }
+
     void ResetPassword(ShooterTeamContract shooter)
     {
         shooterToReset = shooter;

@@ -1,9 +1,12 @@
 ﻿@page "/"
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Home> L
-@inject StateService stateService
 @inject NavigationManager UriHelper
+@inject IState<UserState> UserState 
 
+@if (MainServiceLayer.Online)
+{
+    
 <Row>
     <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
         <Card Margin="Margin.Is4.OnY">
@@ -11,7 +14,7 @@
                 <CardTitle>
                     @L["MatchRegistration"]
                 </CardTitle>
-                <ShooterInGroup SubmitCallback="Submit" Model="model" Shooter="stateService.User" AvailableMatches="AvailableMatches"></ShooterInGroup>
+                <ShooterInGroup SubmitCallback="Submit" Model="model" Shooter="UserState.Value.User" AvailableMatches="AvailableMatches"></ShooterInGroup>
             </CardBody>
         </Card>
     </Column>
@@ -40,7 +43,7 @@
                         }
                         else
                         {
-                            @if (shooterInfo.ShooterMatchInfos.Count == 0)
+                            @if (UserState.Value.Info.ShooterMatchInfos.Count == 0)
                             {
                                 <TableRow>
                                     <TableRowCell ColumnSpan="5" TextAlignment="@TextAlignment.Center">@L["NoMatches"]</TableRowCell>
@@ -48,7 +51,7 @@
                             }
                             else
                             {
-                                <Virtualize Items="@shooterInfo.ShooterMatchInfos" Context="match">
+                                <Virtualize Items="@UserState.Value.Info.ShooterMatchInfos" Context="match">
                                     <TableRow>
                                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new { id = match.MatchId }))">@match.Name</NavLink></TableRowHeader>
                                         <TableRowCell>@match.AssociationName</TableRowCell>
@@ -76,32 +79,22 @@
         </Card>
     </Column>
 </Row>
+}
 
 @code
 {
     IList<MatchContract> AvailableMatches = new List<MatchContract>();
     BaseShooterInMatchCreateRequest model = new();
-    ShooterInformationResponse shooterInfo = new ();
     protected override async Task OnInitializedAsync()
     {
-        var result = await Post<IList<MatchContract>>("api/Match/FetchAvailableMatches");
+        if (MainServiceLayer.Online)
+        {
+            var result = await Post<IList<MatchContract>>("api/Match/FetchAvailableMatches");
 
-        if (result != null)
-            AvailableMatches = result;
-
-        shooterInfo = stateService.ShooterInfo;
-        stateService.OnStateChange += StateServiceOnOnStateChange;
+            if (result != null)
+                AvailableMatches = result;
+        }
         await base.OnInitializedAsync();
-    }
-    
-    public void Dispose()
-    {
-        stateService.OnStateChange -= StateServiceOnOnStateChange;
-    }
-
-    private void StateServiceOnOnStateChange(StateService state)
-    {
-        shooterInfo = state.ShooterInfo;
     }
 
     async Task Submit()

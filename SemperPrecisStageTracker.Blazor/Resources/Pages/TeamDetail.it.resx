@@ -204,7 +204,10 @@
   <data name="WrongRegistrationDate" xml:space="preserve">
     <value>Errore nella data di registrazione!</value>
   </data>
-  <data name="WrongRegistrationDate" xml:space="preserve">
+  <data name="WrongRegistrationDate_Duplicate[1]" xml:space="preserve">
     <value>Data di registrazione non valida!</value>
+  </data>
+  <data name="WantToJoin" xml:space="preserve">
+    <value>Richiedere registazione a {0}?</value>
   </data>
 </root>

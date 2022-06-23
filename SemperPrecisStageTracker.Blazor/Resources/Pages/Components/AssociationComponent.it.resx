@@ -144,4 +144,7 @@
   <data name="BackToList" xml:space="preserve">
     <value>Torna alla lista</value>
   </data>
+  <data name="ClassificationsSortHint" xml:space="preserve">
+    <value>Inserisci i valori dal più piccolo al più grande</value>
+  </data>
 </root>

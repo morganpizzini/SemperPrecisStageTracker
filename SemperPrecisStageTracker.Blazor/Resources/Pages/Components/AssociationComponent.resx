@@ -144,4 +144,7 @@
   <data name="BackToList" xml:space="preserve">
     <value>Back to list</value>
   </data>
+  <data name="ClassificationsSortHint" xml:space="preserve">
+    <value>Write values from lower to higher</value>
+  </data>
 </root>

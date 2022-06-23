@@ -2,7 +2,8 @@
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<StageDetail> L
 @inject NetworkService networkService
-@inject StateService stateService
+@inject IState<UserState> UserState
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 @if (canManageStages)
@@ -20,8 +21,8 @@
 else
 {
     <Row>
-        <Column ColumnSize="ColumnSize.Is6">
-            <Card Margin="Margin.Is4.OnY">
+        <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is2.OnY">
                 <CardBody>
                     <CardTitle>@L["Stage"]</CardTitle>
                     <CardText>@stage.Name</CardText>
@@ -33,7 +34,6 @@ else
                     <CardText>@stage.Strings.Count</CardText>
                     <CardTitle>@L["Rules"]:</CardTitle>
                     <CardText>@stage.Rules</CardText>
-               
                     <CardTitle>@L["GunReadyCondition"]</CardTitle>
                     <CardText>@stage.GunReadyCondition</CardText>
                     <CardTitle>@L["StageProcedure"]</CardTitle>
@@ -46,8 +46,8 @@ else
                 </CardBody>
             </Card>
         </Column>
-        <Column ColumnSize="ColumnSize.Is6">
-            <Card Margin="Margin.Is4.OnY">
+        <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is2.OnY">
                 <CardBody>
                     <CardTitle>@L["Match"]</CardTitle>
                     <CardText><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new {id = match.MatchId}))">@match.Name</NavLink> - @match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")</CardText>
@@ -68,7 +68,7 @@ else
                                     <TableRow>
                                         <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
                                         <TableRowCell>
-                                            @if (networkOnline && canInsertScore)
+                                            @if (SettingState.Value.Online && canInsertScore)
                                     {
                                         <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => CallMatchDirector(matchDirector))" Loading="matchDirectorCall" Disabled="matchDirectorCall">
                                             <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;<Icon Name="IconName.Phone" /></LoadingTemplate>
@@ -134,7 +134,7 @@ else
         </Column>
     </Row>
     <Virtualize Items="@stage.Strings" Context="stageString">
-        <Card Margin="Margin.Is4.OnY">
+        <Card Margin="Margin.Is2.OnY">
             <CardBody>
                 <CardTitle>@stageString.Name</CardTitle>
                 <Row>
@@ -177,46 +177,42 @@ else
     @if (canInsertScore)
     {
         <Divider />
-        <Row>
-            <Column ColumnSize="ColumnSize.IsFull">
-                <Card Margin="Margin.Is4.OnY">
-                    <CardBody>
-                        <CardTitle>@L["Groups"]</CardTitle>
+        <Card>
+            <CardBody>
+                <CardTitle>@L["Groups"]</CardTitle>
 
-                        <Table Striped="true" Hoverable="true">
-                            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell></TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (match.Groups.Count > 0)
+                        {
+                            <Virtualize Items="@match.Groups" Context="group">
                                 <TableRow>
-                                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                    <TableHeaderCell></TableHeaderCell>
+                                    <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
+                                    <TableRowCell>
+                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
+                                    </TableRowCell>
                                 </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                @if (match.Groups.Count > 0)
-                                {
-                                    <Virtualize Items="@match.Groups" Context="group">
-                                        <TableRow>
-                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))">@group.Name</NavLink></TableRowHeader>
-                                            <TableRowCell>
-                                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<StageGroupDetail>(new {id = match.MatchId, stageId = stage.StageId, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
-                                            </TableRowCell>
-                                        </TableRow>
-                                    </Virtualize>
-                                }
-                                else
-                                {
-                                    <TableRow>
-                                        <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
-                                            @L["NoGroups"]
-                                        </TableRowCell>
-                                    </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="2" TextAlignment="TextAlignment.Center">
+                                    @L["NoGroups"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
 
-                    </CardBody>
-                </Card>
-            </Column>
-        </Row>
+            </CardBody>
+        </Card>
     }
 
 }
@@ -352,8 +348,6 @@ else
     IList<ShooterSOStageContract> stageSos = new List<ShooterSOStageContract>();
     IList<ShooterContract> availableStageSo = new List<ShooterContract>();
 
-    bool networkOnline = false;
-
     bool canManageSO;
     bool canManageStages;
     bool canInsertScore;
@@ -371,25 +365,14 @@ else
         var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x => x.Shooter.ShooterId);
         userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x => x.Shooter.ShooterId).ToList());
         canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) ||
-                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(stateService.User.ShooterId));
+                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User.ShooterId));
 
         await LoadSO();
 
-        networkOnline = networkService.IsOnline;
-        networkService.OnlineChanged += OnlineChanged;
         await base.OnInitializedAsync();
     }
 
-    public void Dispose()
-    {
-        networkService.OnlineChanged -= OnlineChanged;
-    }
 
-    void OnlineChanged(bool status)
-    {
-        networkOnline = status;
-        this.StateHasChanged();
-    }
     async Task LoadSO()
     {
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);

@@ -1,10 +1,9 @@
 ﻿@page "/signin"
-@attribute [AllowAnonymous]
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisComponent
 @inject IStringLocalizer<SignIn> L
-@inject StateService stateService
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime;
+@inject IJSRuntime JSRuntime
+@inject IState<UserState> UserState 
 @inject ClientConfiguration config
 
 <Heading Size="HeadingSize.Is1">@L["SignIn"]</Heading>
@@ -122,24 +121,23 @@
     Validations validations;
     SignInRequest model = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-    // redirect to home if already logged in
-        if (stateService.User != null)
+        await base.OnAfterRenderAsync(firstRender);
+        if(firstRender)
         {
-            NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
+            if(UserState.Value.User != null)
+            {
+                NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
+            }
+            else
+            {
+                ((IJSInProcessRuntime)JSRuntime).InvokeVoid("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
+            }
         }
+        
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            ((IJSInProcessRuntime)JSRuntime).InvokeVoid("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
-        }
-
-        base.OnAfterRender(firstRender);
-    }
 
     void ValidateDate(ValidatorEventArgs e)
     {

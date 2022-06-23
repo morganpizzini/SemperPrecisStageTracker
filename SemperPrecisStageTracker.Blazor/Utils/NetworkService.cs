@@ -1,4 +1,6 @@
+using Fluxor;
 using Microsoft.JSInterop;
+using SemperPrecisStageTracker.Blazor.Store;
 using System;
 using System.Threading.Tasks;
 
@@ -7,15 +9,18 @@ namespace SemperPrecisStageTracker.Blazor.Utils
     public class NetworkService : IDisposable
     {
         private readonly IJSInProcessRuntime _jsRuntime;
+        private readonly IDispatcher _dispatcher;
         private readonly DotNetObjectReference<NetworkService> _dotNetObjectReference;
+        //public event Action<bool> OnlineChanged;
 
-        public NetworkService(IJSRuntime jsRuntime)
+
+        public NetworkService(IJSRuntime jsRuntime,IDispatcher dispatcher)
         {
             _dotNetObjectReference = DotNetObjectReference.Create(this);
             _jsRuntime = (IJSInProcessRuntime)jsRuntime;
+            _dispatcher = dispatcher;
         }
 
-        public event Action<bool> OnlineChanged;
 
         public void Init()
         {
@@ -25,16 +30,16 @@ namespace SemperPrecisStageTracker.Blazor.Utils
         [JSInvokable]
         public void UpdateOnlineStatus(bool status)
         {
-            OnOnlineChanged(status);
+            _dispatcher.Dispatch(new SetOnlineStatusAction(status));
         }
 
-        public bool IsOnline { get; private set; }
+        //public bool IsOnline { get; private set; }
 
-        protected void OnOnlineChanged(bool status)
-        {
-            IsOnline = status;
-            OnlineChanged?.Invoke(IsOnline);
-        }
+        //protected void OnOnlineChanged(bool status)
+        //{
+        //    IsOnline = status;
+        //    OnlineChanged?.Invoke(IsOnline);
+        //}
 
         public void Dispose()
         {

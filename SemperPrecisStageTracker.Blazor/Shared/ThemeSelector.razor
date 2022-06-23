@@ -1,6 +1,11 @@
-﻿@inject IStringLocalizer<ThemeSelector> L
-@inject ILocalStorageService localStorage
-@inject StateService stateService
+﻿@using Fluxor
+@using Fluxor.Blazor.Web.Components
+@using SemperPrecisStageTracker.Blazor.Store
+@using SemperPrecisStageTracker.Blazor.Store.AppUseCase
+@inherits FluxorComponent 
+@inject IStringLocalizer<ThemeSelector> L
+@inject IState<SettingsState> SettingsState 
+@inject IDispatcher Dispatcher
 
 <strong>@L["Theme"]:</strong>
 <select class="form-control" @bind="CurrentTheme">
@@ -9,22 +14,16 @@
 </select>
 
 @code{
-    string _currentTheme;
     string CurrentTheme
     {
-        get => _currentTheme;
+        get => SettingsState.Value.Theme;
         set
         {
-            _currentTheme = value;
-            localStorage.SetItem("theme",_currentTheme);
-            stateService.SetTheme(_currentTheme);
+            Dispatcher.Dispatch(new ChangeThemeAction(value));
         }
     }
-
-     protected override async Task OnInitializedAsync()
+    protected override void Dispose(bool disposed)
     {
-        // set theme
-         CurrentTheme = localStorage.GetItem<string>("theme");
-        await base.OnInitializedAsync();
+      base.Dispose(disposed);
     }
 }

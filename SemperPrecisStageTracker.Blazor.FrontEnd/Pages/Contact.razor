@@ -106,12 +106,12 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        base.OnAfterRender(firstRender);
         if (firstRender)
         {
             ((IJSInProcessRuntime)JSRuntime).InvokeVoid("loadScript", $"https://www.google.com/recaptcha/api.js?render={config.Recaptcha.RecaptchaToken}");
         }
 
-        base.OnAfterRender(firstRender);
     }
 
 

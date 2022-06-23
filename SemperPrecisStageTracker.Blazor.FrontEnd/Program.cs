@@ -36,7 +36,6 @@ builder.Services.AddBlazorise(options =>
     .AddFontAwesomeIcons();
 
 builder.Services
-    .AddScoped<StateService>()
     .AddScoped<IHttpService, HttpService>();
 
 var baseAddress = builder.Configuration["baseAddress"];
@@ -60,7 +59,6 @@ using var responseConfig = await httpClient.SendAsync(serverConfig);
 if (responseConfig.IsSuccessStatusCode)
 {
     await using var stream = await responseConfig.Content.ReadAsStreamAsync();
-
     builder.Configuration.AddJsonStream(stream);
 }
 

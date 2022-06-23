@@ -733,13 +733,13 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// Fetch user role
         /// </summary>
         /// <returns></returns>
-        public IList<Role> FetchRoles() => _roleRepository.Fetch();
+        public IList<Role> FetchRoles() => _roleRepository.Fetch(null,null,null,x=>x.Name);
 
         /// <summary>
         /// Fetch permission
         /// </summary>
         /// <returns></returns>
-        public IList<Permission> FetchPermission() => _permissionRepository.Fetch();
+        public IList<Permission> FetchPermission() => _permissionRepository.Fetch(null,null,null,x=>x.Name);
 
         /// <summary>
         /// Get place by commissionDrawingId

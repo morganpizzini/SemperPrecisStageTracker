@@ -8,6 +8,8 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using SemperPrecisStageTracker.Blazor.Services.Models;
+using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
+using Fluxor;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -16,18 +18,20 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly HttpClient _httpClient;
         private readonly NavigationManager _navigationManager;
         //private ILocalStorageService _localStorageService;
-        private readonly StateService _stateService;
-        
+        //private readonly StateService _stateService;
+        private readonly IState<UserState> _userState;
         public HttpService(
             HttpClient httpClient,
             NavigationManager navigationManager,
-            StateService stateService
+            IState<UserState> UserState
+            //StateService stateService
         //ILocalStorageService localStorageService
         )
         {
+            _userState = UserState;
             _httpClient = httpClient;
             _navigationManager = navigationManager;
-            _stateService = stateService;
+            //_stateService = stateService;
             //_localStorageService = localStorageService;
         }
 
@@ -52,15 +56,16 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             // add basic auth header if user is logged in and request is to the api url
             var isApiUrl = !request.RequestUri?.IsAbsoluteUri ?? true;
-            if (_stateService.IsAuth && isApiUrl)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _stateService.User.AuthData);
+
+            if (_userState.Value.User != null && isApiUrl)
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic", _userState.Value.User.AuthData);
 
             using var response = await _httpClient.SendAsync(request);
 
             // auto logout on 401 response
-            if (response.StatusCode == HttpStatusCode.Unauthorized && !request.RequestUri.ToString().EndsWith("Authorization/SignIn"))
+            if (response.StatusCode == HttpStatusCode.Unauthorized && !(request?.RequestUri?.ToString().EndsWith("Authorization/SignIn") ?? false))
             {
-                _navigationManager.NavigateTo("logout");
+                //_navigationManager.NavigateTo("logout");
                 return default;
             }
 

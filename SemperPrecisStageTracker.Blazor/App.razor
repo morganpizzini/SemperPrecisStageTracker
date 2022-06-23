@@ -1,38 +1,45 @@
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 @inject NavigationManager NavigationManager
-<CascadingAuthenticationState>
-<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
-    <Found Context="routeData">
-        @*<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />*@
-        <AuthorizeRouteView RouteData="@routeData"
-                            DefaultLayout="@typeof(MainLayout)">
-            <NotAuthorized>
-                @if (!context.User.Identity.IsAuthenticated)
-                {
-                    <RedirectToLogin />
-                }
-                else
-                {
-                    <p>
-                        You are not authorized to access
-                        this resource.
-                    </p>
-                }
-            </NotAuthorized>
-            <Authorizing>
-                <h1>Authorization in progress</h1>
-                <p>Only visible while authorization is in progress.</p>
-            </Authorizing>
-        </AuthorizeRouteView>
-    </Found>
-    <NotFound>
-        @*@{
-            // redirect to home page if not found
-            NavigationManager.NavigateTo("");
-        }*@
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p>Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
-<NotificationAlert/>
-</CascadingAuthenticationState>
+@inject IState<UserState> UserState
+<Fluxor.Blazor.Web.StoreInitializer />
+@if (UserState.Value.Initialize)
+{
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData"
+                                DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        @if (!context.User.Identity.IsAuthenticated)
+                        {
+                            <RedirectToLogin />
+                        }
+                        else
+                        {
+                            <p>
+                                You are not authorized to access
+                                this resource.
+                            </p>
+                        }
+                    </NotAuthorized>
+                    <Authorizing>
+                        <h1>Authorization in progress</h1>
+                        <p>Only visible while authorization is in progress.</p>
+                    </Authorizing>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p>Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+        <NotificationAlert />
+    </CascadingAuthenticationState>
+}
+@code {
+    protected override void Dispose(bool disposed)
+    {
+        base.Dispose(disposed);
+    }
+}

@@ -20,7 +20,8 @@ using SemperPrecisStageTracker.Blazor.Services.IndexDB;
 using Blazorise.Bootstrap5;
 using Microsoft.AspNetCore.Components.Web;
 using SemperPrecisStageTracker.Blazor;
-
+using Fluxor;
+using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -50,10 +51,21 @@ builder.Services.AddBlazorise(options =>
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
-                .AddScoped<StateService>()
                 .AddScoped<IAuthorizationHandler, PermissionHandler>();
 
 
+var currentAssembly = typeof(UserState).Assembly;
+//var currentAssembly = typeof(Program).Assembly;
+builder.Services.AddFluxor(options =>{ 
+    options.ScanAssemblies(currentAssembly);
+
+#if DEBUG
+    options.UseReduxDevTools(rdt =>
+    {
+        rdt.EnableStackTrace();
+    });
+#endif
+});
 
 builder.Services
     .AddScoped<IHttpService, HttpService>()
@@ -133,17 +145,17 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 var host = builder.Build();
 
+//init auth service
+var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
+await authenticationService.Initialize().ConfigureAwait(false);
+
 // init network service
 var network = host.Services.GetRequiredService<NetworkService>();
 network.Init();
 
 // init Main service
 var main = host.Services.GetRequiredService<MainServiceLayer>();
-await main.Init();
-
-//init auth service
-var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
-await authenticationService.Initialize();
+await main.Init().ConfigureAwait(false);
 
 host.SetDefaultCulture();
 await host.RunAsync();
