@@ -44,6 +44,12 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            var configuration = ServiceResolver.Resolve<IConfiguration>();
+            var enableDev = bool.Parse(configuration["enableDev"] ?? "false");
+            if (enableDev)
+            {
+                optionsBuilder.EnableSensitiveDataLogging();
+            }
             optionsBuilder.UseSqlServer(ConnectionString);
             base.OnConfiguring(optionsBuilder);
         }

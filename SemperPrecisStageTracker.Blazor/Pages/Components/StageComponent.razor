@@ -208,14 +208,14 @@
         get => _model;
         set
         {
-            if (value.Strings.Count == 0)
+            _model = value;
+            if (_model.Strings.Count == 0)
             {
-                value.Strings.Add(new StageStringContract()
+                _model.Strings.Add(new StageStringContract()
                 {
                     Name = "String 1"
                 });
             }
-            _model = value;
         }
     }
 
