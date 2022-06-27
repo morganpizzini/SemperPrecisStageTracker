@@ -210,7 +210,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //sendEmail
-            var message = new Message(new string[] { user.Email }, "Reset assword", $"Reset password from <a href=\"https://asdsemperprecis.it/app/reset-password?data={user.RestorePasswordAlias}\">here</a>");
+            var message = new Message(new string[] { user.Email }, "Reset assword", $"Reset password from <a href=\"https://asdsemperprecis.it/app/reset-password?data={user.RestorePasswordAlias}\">here</a>",null,true);
             _emailSender.SendEmail(message);
             //Se è tutto ok, serializzo e restituisco
             return validations;
