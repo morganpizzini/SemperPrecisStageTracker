@@ -139,7 +139,7 @@
                                     sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                                         // ready
                                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
-                                    }).catch(() => {
+                                    }).catch((e) => {
                                         // timeout
                                         console.error(e);
                                     });
@@ -175,7 +175,7 @@
                     sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                         // ready
                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation");
-                    }).catch(() => {
+                    }).catch((e) => {
                         // timeout
                         console.error(e);
                     });
@@ -193,7 +193,7 @@
                 sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                     // ready
                     DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
-                }).catch(() => {
+                }).catch((e) => {
                     // timeout
                     console.error(e);
                 });
