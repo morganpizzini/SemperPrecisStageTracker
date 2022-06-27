@@ -2539,7 +2539,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpdateShooter(Shooter entity, ShooterData data, string userId)
+        public async Task<IList<ValidationResult>> UpdateShooter(Shooter entity, ShooterData data, string userId,bool authorizedMethod = true)
         {
             //TODO: sistemare permessi
             //Validazione argomenti
@@ -2551,9 +2551,9 @@ namespace SemperPrecisStageTracker.Domain.Services
 
 
             IList<ValidationResult> validations = new List<ValidationResult>();
-
+            
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
+            if (authorizedMethod && !await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateShooter)} with Id: {entity.Id}");
                 return validations;

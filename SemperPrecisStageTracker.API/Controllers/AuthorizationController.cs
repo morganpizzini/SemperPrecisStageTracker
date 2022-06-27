@@ -183,7 +183,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var user = BasicLayer.GetShooterFromEmailOrUsername(request.Username);
             if (user == null)
             {
-                return NotFound();
+                return BadRequest(new ValidationResult("User not found").AsList());
             }
             var validations = await SetPassworAliasOnShooter(user);
 
@@ -202,7 +202,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             user.RestorePasswordAlias = Guid.NewGuid().ToString();
 
-            var validations = await BasicLayer.UpdateShooter(user, data, userId);
+            var validations = await BasicLayer.UpdateShooter(user, data, userId,false);
 
             if (validations.Count > 0)
             {
