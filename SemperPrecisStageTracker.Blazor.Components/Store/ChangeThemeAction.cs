@@ -24,10 +24,27 @@ public class SetHasNetworkAction
 public class SetOfflineAction
 {
     public bool Offline { get; set; }
-    public SetOfflineAction(bool offline)
+    public string MatchId { get; set; }
+    public SetOfflineAction(bool offline,string matchId)
     {
         Offline = offline;
+        MatchId = matchId;
     }
+}
+
+public class SettingsSetInitializedAction {}
+public class SettingsSetReadyAction {}
+
+public record TryLoginAction
+{
+    public string Username { get; init; } = string.Empty;
+    public string Password { get; init; } = string.Empty;
+    public string ReturnUrl {get; init; } = string.Empty;
+}
+
+public record SetUserWithoutLoginAction{    
+    public SignInResponse UserData { get; init; } = new SignInResponse();
+    public string Password { get; init; } = string.Empty;
 }
 
 public class SetUserInformationAction
@@ -39,7 +56,7 @@ public class SetUserInformationAction
     }
 }
 
-public class UserSetInitializedAction { }
+//public class UserSetInitializedAction { }
 
 
 public class SetUserAction

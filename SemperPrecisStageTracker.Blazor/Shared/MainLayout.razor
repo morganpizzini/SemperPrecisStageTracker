@@ -14,7 +14,7 @@
 <div class="page @SettingState.Value.Theme">
 
     <div class="sidebar">
-        <NavMenu/>
+        <NavMenu />
     </div>
     <div class="main">
         <div class="top-row px-4 auth">
@@ -22,10 +22,14 @@
             {
                 <Button Class="me-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
             }
+
             <AuthorizeView>
                 <Authorized>
                     <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="@(RouteHelper.GetUrl<Profile>())">@(context.User?.Identity?.Name ?? L["NoName"])</NavLink>!</span>
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
+                    @if (!SettingState.Value.Offline)
+                    {
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
+                    }
                 </Authorized>
                 <NotAuthorized>
                     <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Login>())">@L["Login"]</NavLink>
@@ -41,12 +45,12 @@
         <div class="content px-4">
             @Body
             @*@if (NetworkService.IsOnline)
-            {
-            }
-            else
-            {
+                {
+                }
+                else
+                {
                 <span style="color: red">@L["Offline"]</span>
-            }*@
+                }*@
         </div>
     </div>
 </div>
@@ -67,7 +71,7 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-@code{
+@code {
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -77,7 +81,7 @@
     private bool ShowNotificationAlertStatus;
     private static Action<bool> actionPwaInstallation;
     private bool ShowPwaInstallationProgress;
-    
+
     protected override async Task OnInitializedAsync()
     {
         action = ShowIntallModal;
@@ -91,18 +95,18 @@
 
         await base.OnInitializedAsync();
     }
-    
+
     protected override void Dispose(bool disposed)
     {
-      base.Dispose(disposed);
+        base.Dispose(disposed);
     }
-    public void UpdateInterface(object _,EventArgs __) => StateHasChanged();
-    
+    public void UpdateInterface(object _, EventArgs __) => StateHasChanged();
+
     async Task RequestNotificationSubscriptionAsync()
     {
         var authState = await authenticationStateTask;
         var user = authState.User;
-         
+
         if (!(authState.User?.Identity?.IsAuthenticated ?? false))
             return;
         ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
@@ -128,7 +132,7 @@
         actionPwaInstallation.Invoke(false);
         return Task.CompletedTask;
     }
-    
+
     [JSInvokable]
     public static Task BlazorInstallHandler()
     {

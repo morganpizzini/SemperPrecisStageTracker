@@ -27,6 +27,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterStage = new ShooterStageString
             {
                 StageStringId = request.StageStringId,
+                StageId = request.StageId,
                 Time = request.Time,
                 ShooterId = request.ShooterId,
                 DownPoints = request.DownPoints,

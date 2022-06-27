@@ -10,8 +10,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
     {
         //ShooterContract User { get; }
         //bool IsAuth { get; }
-        Task Initialize();
-        Task<bool> Login(string username, string password);
+        //Task Initialize();
+        void Login(string username, string password);
         Task<bool> SignIn(SignInRequest request);
         void UpdateLogin(ShooterContract user);
         void Logout();

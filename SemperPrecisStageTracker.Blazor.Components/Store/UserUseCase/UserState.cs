@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 //[FeatureState]
 public record UserState
 {
-    public bool Initialize { get; init; }// = new ShooterContract();
+    //public bool Initialize { get; init; }// = new ShooterContract();
     public ShooterContract? User { get; init; }// = new ShooterContract();
     public ShooterInformationResponse Info { get; init; } = new ShooterInformationResponse();
     public UserPermissionContract Permissions { get; init; } = new UserPermissionContract();
@@ -30,7 +30,7 @@ public class UserFeature : Feature<UserState>
     {
         return new UserState 
         {
-            Initialize = false,
+            //Initialize = false,
             User = null,
             Info = new ShooterInformationResponse(),
             Permissions = new UserPermissionContract(),

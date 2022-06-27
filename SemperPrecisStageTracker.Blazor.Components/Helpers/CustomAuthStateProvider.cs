@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Contracts;
 
-namespace SemperPrecisStageTracker.Blazor
+namespace SemperPrecisStageTracker.Blazor.Components
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {

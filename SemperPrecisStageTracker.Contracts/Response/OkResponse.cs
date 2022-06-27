@@ -10,7 +10,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     {
         public bool Status { get; set; }
         public IList<string> Errors { get; set; } = new List<string>();
-
+        public string ErrorString => String.Join(",", Errors);
     }
 
     /// <summary>

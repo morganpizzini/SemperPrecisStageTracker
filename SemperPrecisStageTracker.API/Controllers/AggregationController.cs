@@ -163,7 +163,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> UpdateDataForMatch(UpdateDataRequest request)
         {
             var validations = await BasicLayer.UpsertShooterStages(
-                request.ShooterStages
+                request.ShooterStages.Where(x=>x.Time>0)
                     .Select(x => new ShooterStageString
                     {
                         StageStringId = x.StageStringId,

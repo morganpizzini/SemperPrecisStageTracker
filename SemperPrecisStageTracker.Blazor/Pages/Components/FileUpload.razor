@@ -48,7 +48,7 @@
                 using (var reader = new StreamReader(stream))
                 {
                     var csv = new CSVHelper(await reader.ReadToEndAsync());
-                    
+
                     foreach (var line in csv)
                     {
                         var tmp = new ShooterStageStringContract
@@ -118,14 +118,15 @@
 
     async Task Upload()
     {
-        if (await mainServiceLayer.UploadData(shooterStageContracts))
+        var result = await mainServiceLayer.UploadData(shooterStageContracts);
+        if (result.Status)
         {
             shooterStageContracts.Clear();
             await NotificationService.Success(L["Success"], L["UploadSuccessfull"]);
         }
         else
         {
-            await NotificationService.Error(L["Error"], L["UploadFailed"]);
+            await NotificationService.Error(result.ErrorString, L["UploadFailed"]);
         }
     }
 }

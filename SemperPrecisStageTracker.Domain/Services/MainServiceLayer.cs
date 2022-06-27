@@ -905,7 +905,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 }
 
                 // swap if same points
-                for (int i = 0; i < shooters.Count-1 || shooters[i].TotalTime != 0; i++)
+                for (int i = 0; i < shooters.Count-1 && shooters[i].TotalTime != 0; i++)
                 {
                     ShooterMatchResult item = shooters[i];
                     if(item.TotalTime == shooters[i + 1].TotalTime
@@ -3519,7 +3519,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (stageId == null) throw new ArgumentNullException(nameof(stageId));
             if (shooterIds == null) throw new ArgumentNullException(nameof(shooterIds));
 
-            return FetchEntities(e => e.StageStringId == stageId && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
+            return FetchEntities(e => e.StageId == stageId && shooterIds.Contains(e.ShooterId), null, null, null, true, _shooterStageRepository);
         }
 
         /// <summary>
@@ -3624,6 +3624,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 var stageString = existingStageStrings.FirstOrDefault(x => x.Id == shooterStage.StageStringId);
                 var stage = existingStages.FirstOrDefault(x => x.Id == stageString.StageId);
+                shooterStage.StageId = stage.Id;
                 var allowedUsers = matchMd.Where(x => x.MatchId == stage.MatchId).Select(x => x.ShooterId).Concat(
                     stageSO.Where(x => x.StageId == stage.Id).Select(x => x.ShooterId)).ToList();
 
@@ -3670,12 +3671,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            // check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageMatches.MatchInsertScore))
-            {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(UpsertShooterStage)}");
-                return validations;
-            }
+            
 
             // check for stage role
 
@@ -3687,12 +3683,17 @@ namespace SemperPrecisStageTracker.Domain.Services
                 this._shooterSOStageRepository.FetchWithProjection(x => x.ShooterId,
                     x => x.StageId == existingMatch.Id)
                 );
-
-            if (!allowedUsers.Contains(userId))
+            // check permissions
+            var permissions = await authenticationService.ValidateUserPermissions(userId, existingMatch.Id, PermissionCtor.ManageMatches.MatchInsertScore);
+            
+            if (!permissions && !allowedUsers.Contains(userId))
             {
                 validations.AddMessage($"User {userId} has no role on {nameof(UpsertShooterStage)}");
                 return validations;
             }
+
+            //attach stageId to entity for retrive it later (override the value provided by API)
+            entity.StageId = existingStage.Id;
 
             var existingAssociationId = this._matchRepository.GetSingle(x => x.Id == existingStage.MatchId)?.AssociationId;
 

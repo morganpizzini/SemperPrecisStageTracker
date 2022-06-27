@@ -11,13 +11,13 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
-        BUG: Quando sono offline non si salva il punteggio
-        BUG: Inserire uno shooter in un gruppo pieno
-        BUG: bottone delete string in creazione stage non deve essere visibile se ho 1 sola stringa
-        BUG: edit dello stage va in errore The Name field is required. nella stringa
+        BUG: getconfig e login se offline devono essere cachati
+        BUG: bottone delete string in creazione stage non deve essere visibile se ho 1 sola stringa // se elimino la string 1 e la ri-creo trovo 2 volte string 2
         BUG: Se sono admin e vado offline devo vedere tutti gli stage
-        BUG: All'aggiunta dell'SO nello stage, non deve partire il ri-caricamento di tutta la pagina
 
+
+        bloccare i gruppi sul giorno, es: gruppo 1 il sabato, gruppo 2 la domenica
+        sistemare il nullpointer sulle chiamate in post, se nullo restituisco il default
 
         reducer creare effetto per settare il valore del tema nel localhost e creare metodi per recupero allo startup https://github.com/mrpmorris/Fluxor/blob/master/Source/Tutorials/01-BasicConcepts/01A-StateActionsReducersTutorial/README.md
 

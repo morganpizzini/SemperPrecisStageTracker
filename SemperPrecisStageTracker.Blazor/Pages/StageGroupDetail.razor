@@ -84,9 +84,9 @@ else
                                         @foreach (var stageString in stage.Strings)
                                         {
                                             var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
-                                            if (current != null)
+                                            if (current != null && current.Time > 0)
                                             {
-                                                <span>@((current as IStageResult).TotalString)</span>
+                                                <span class="me-2">@((current as IStageResult).TotalString)</span>
                                             }
                                         }
                                     </TableRowCell>
@@ -473,7 +473,7 @@ else
     MatchContract match = new();
     GroupContract group = new ();
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
-    
+
     Validations validations;
     Validations noteValidations;
     ShooterStageRequest model = new();
@@ -493,7 +493,7 @@ else
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 
-        model.StageStringId = stage.StageId;
+        //model.StageStringId = stage.StageId;
         await base.OnInitializedAsync();
     }
 
@@ -513,7 +513,9 @@ else
         model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
         model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
         model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
-
+        model.StageStringId = stageString.StageStringId;
+        model.StageId = stage.StageId;
+        // add user results
         var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId) ?? new ShooterStageStringContract
         {
             StageStringId = stageString.StageStringId
@@ -571,6 +573,10 @@ else
             await noteValidations.ClearAll();
 
             var response = await MainServiceLayer.UpsertShooterStage(model);
+            if(!response.Status){
+                await this.ShowNotificationError(string.Join(",",response.Errors),L["Error"]);
+                return;
+            }
             await LoadShooters();
             shooterToFill = new ShooterContract();
             model.DownPoints.Clear();

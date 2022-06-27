@@ -9,11 +9,26 @@ public partial class Effects
 {
     private readonly ILocalStorageService _localStorage;
     private readonly IHttpService _httpService;
-    public Effects(ILocalStorageService localStorage, IHttpService httpService)
+    private readonly IState<SettingsState> _settingsState;
+    private readonly IState<UserState> _userState;
+    public Effects(ILocalStorageService localStorage, IHttpService httpService,IState<SettingsState> settingsState,IState<UserState> userState)
     {
         _httpService = httpService;
         _localStorage = localStorage;
+        _settingsState = settingsState;
+        _userState = userState;
     }
+
+
+    //[EffectMethod]
+    //public Task HandleUserSetInitializedAction(UserSetInitializedAction action, IDispatcher dispatcher)
+    //{
+    //    if(_settingsState.Value.Initialize && !_settingsState.Value.Offline && _userState.Value.User != null)
+    //    {
+    //        //validate login
+    //    }
+    //    return Task.CompletedTask;
+    //}
 
     [EffectMethod]
     public Task HandleSetUserAction(SetUserAction action, IDispatcher dispatcher)
@@ -49,5 +64,6 @@ public partial class Effects
         {
             dispatcher.Dispatch(new SetUserInformationAction(shooterInfo.Result));
         }
+        //dispatcher.Dispatch(new UserSetInitializedAction());
     }
 }

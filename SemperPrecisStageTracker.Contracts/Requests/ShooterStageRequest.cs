@@ -11,6 +11,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string StageStringId { get; set; }
         [Required]
+        public string StageId { get; set; }
+        [Required]
         public string ShooterId { get; set; }
         [Required]
         public IList<int> DownPoints { get; set; } = new List<int>();

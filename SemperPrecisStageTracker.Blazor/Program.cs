@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Components.Web;
 using SemperPrecisStageTracker.Blazor;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
+using SemperPrecisStageTracker.Blazor.Components;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -146,8 +147,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 var host = builder.Build();
 
 //init auth service
-var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
-await authenticationService.Initialize().ConfigureAwait(false);
+//var authenticationService = host.Services.GetRequiredService<IAuthenticationService>();
+//await authenticationService.Initialize().ConfigureAwait(false);
 
 // init network service
 var network = host.Services.GetRequiredService<NetworkService>();

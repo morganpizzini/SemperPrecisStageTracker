@@ -11,6 +11,7 @@ using Fluxor;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Store;
 using SemperPrecisStageTracker.Blazor.Components.Utils;
+using SemperPrecisStageTracker.Blazor.Components;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -18,22 +19,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
     {
         private readonly IHttpService _httpService;
         private readonly NavigationManager _navigationManager;
-        private readonly ILocalStorageService _localStorageService;
-        //private readonly AuthenticationStateProvider _authenticationStateProvider;
-        //private readonly StateService _stateService;
         private readonly IState<UserState> _userState;
         private readonly IDispatcher _dispatcher;
-        //private string userKey => nameof(_userState.Value.User);
-        //private string permissionKey => nameof(_userState.Value.Permissions);
-        //private string authCode => nameof(authCode);
 
-
-        private CustomAuthStateProvider _customAuthenticationStateProvider; //=> _authenticationStateProvider as CustomAuthStateProvider;
+        private CustomAuthStateProvider _customAuthenticationStateProvider;
 
         public AuthenticationService(
             IHttpService httpService,
             NavigationManager navigationManager,
-            ILocalStorageService localStorageService,
             AuthenticationStateProvider authenticationStateProvider,
             IState<UserState> UserState,
             IDispatcher Dispatcher
@@ -42,45 +35,20 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _dispatcher = Dispatcher;
             _httpService = httpService;
             _navigationManager = navigationManager;
-            _localStorageService = localStorageService;
             _customAuthenticationStateProvider = authenticationStateProvider as CustomAuthStateProvider ?? new CustomAuthStateProvider();
-            //_authenticationStateProvider = authenticationStateProvider;
             _userState = UserState;
         }
 
-        public async Task Initialize()
+        public void Login(string username, string password)
         {
-            var loggedUser = _localStorageService.GetItem<ShooterContract>(CommonVariables.UserKey);
-            if (loggedUser == null)
+            _dispatcher.Dispatch(new TryLoginAction
             {
-                _dispatcher.Dispatch(new UserSetInitializedAction());
-                return;
-            }
-            
-            var secret = await _localStorageService.DecodeSecret(loggedUser.Username, CommonVariables.AuthCode);
-            if (string.IsNullOrEmpty(secret))
-            {
-                _dispatcher.Dispatch(new UserSetInitializedAction());
-                return;
-            }
-
-            var userParams = secret.DecodeBase64().Split(":");
-
-            await Login(userParams[0], userParams[1]);
-
+                Username = username,
+                Password = password,
+                ReturnUrl = _navigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>()
+            });
         }
 
-        public async Task<bool> Login(string username, string password)
-        {
-            var response = await _httpService.Post<SignInResponse>("/api/Authorization/LogIn", new LogInRequest { Username = username, Password = password });
-
-            if (response is not { WentWell: true })
-                return false;
-
-            await SetUser(response.Result,password);
-            return true;
-            
-        }
         public async Task<bool> SignIn(SignInRequest request)
         {
             var response = await _httpService.Post<SignInResponse>("/api/Authorization/SignIn", request);
@@ -88,24 +56,22 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (response is not { WentWell: true })
                 return false;
 
-            await SetUser(response.Result, request.Password);
+            _dispatcher.Dispatch(new SetUserWithoutLoginAction()
+            {
+                Password = request.Password,
+                UserData = response.Result
+            });
+
             return true;
-        }
-
-        private async Task SetUser(SignInResponse response,string password)
-        {
-            // set auth data
-            response.Shooter.AuthData = $"{response.Shooter.Username}:{password}".EncodeBase64();
-
-            _dispatcher.Dispatch(new SetUserAndPermissionAction(response.Shooter,response.Permissions));
-            
-            _customAuthenticationStateProvider.LoginNotify(response.Shooter);
         }
 
         public void UpdateLogin(ShooterContract user)
         {
             // update username
-            var userParams = _userState.Value.User.AuthData.DecodeBase64().Split(":");
+            var userParams = _userState.Value.User?.AuthData.DecodeBase64().Split(":");
+            if(userParams == null)
+                return;
+
             userParams[0] = user.Username;
             user.AuthData = string.Join(":", userParams).EncodeBase64();
 
@@ -117,6 +83,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public void Logout()
         {
             _dispatcher.Dispatch(new SetUserAction(null));
+            _dispatcher.Dispatch(new SetOfflineAction(false,string.Empty));
             _customAuthenticationStateProvider.LogoutNotify();
             _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
         }

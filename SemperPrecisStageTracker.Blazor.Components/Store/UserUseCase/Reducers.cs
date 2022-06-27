@@ -9,7 +9,7 @@ public static partial class Reducers
         if(action.User == null){
             return state with
             {
-                Initialize = true,
+                //Initialize = true,
                 User = action.User,
                 Info = new Contracts.Requests.ShooterInformationResponse(),
                 Permissions = new Contracts.UserPermissionContract()
@@ -17,7 +17,7 @@ public static partial class Reducers
         }
         return state with
             {
-                Initialize = true,
+                //Initialize = true,
                 User = action.User
             };
     }
@@ -26,7 +26,7 @@ public static partial class Reducers
     public static UserState ReduceSetUserAndPermissionAction(UserState state, SetUserAndPermissionAction action) {
         return state with
         {
-            Initialize = true,
+            //Initialize = true,
             User = action.User,
             Permissions = action.Permissions
         };
@@ -46,11 +46,11 @@ public static partial class Reducers
                 Permissions= action.Permissions
             };
 
-    [ReducerMethod(typeof(UserSetInitializedAction))]
-    public static UserState ReduceSetUserPermissionsAction(UserState state) =>
-        state with
-            {
-                Initialize= true
-            };
+    //[ReducerMethod(typeof(UserSetInitializedAction))]
+    //public static UserState ReduceUserSetInitializedAction(UserState state) =>
+    //    state with
+    //        {
+    //            Initialize= true
+    //        };
 
 }

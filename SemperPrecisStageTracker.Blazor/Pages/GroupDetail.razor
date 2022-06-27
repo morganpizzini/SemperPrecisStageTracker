@@ -292,7 +292,7 @@ else
     {
         if (!SettingState.Value.Offline)
         {
-            availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId });
+            availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId },false);
         }
     }
 
@@ -306,8 +306,8 @@ else
             GroupId = model.GroupId,
             TeamId = model.TeamId
         };
-        var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request);
-        if (result.Count == 0)
+        var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request,false);
+        if (result == null || result.Count == 0)
             return;
 
         group.Shooters = result;

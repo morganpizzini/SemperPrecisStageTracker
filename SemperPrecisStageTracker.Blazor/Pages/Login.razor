@@ -87,24 +87,7 @@
             return;
         ApiLoading = true;
         await validations.ClearAll();
-        try
-        {
-            var loginResult = await AuthService.Login(model.Username, model.Password);
-            if (loginResult)
-            {
-                ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>
-                    ("BlazorPWA.requestSubscription");
-                var returnUrl = NavigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>();
-
-                NavigationManager.NavigateTo(returnUrl);
-                return;
-            }
-            await NotificationService.Error(L["Error"], L["LoginFailed"]);
-        }
-        catch (Exception ex)
-        {
-            await NotificationService.Error(L["Error"],ex.Message);
-        }
+        AuthService.Login(model.Username, model.Password); 
         ApiLoading = false;
 
     }

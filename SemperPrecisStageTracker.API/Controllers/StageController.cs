@@ -99,7 +99,8 @@ namespace SemperPrecisStageTracker.API.Controllers
                 ScoredHits = x.ScoredHits,
                 StartStop = x.StartStop,
                 Distance = x.Distance,
-                CoverGarment = x.CoverGarment
+                CoverGarment = x.CoverGarment,
+                Name = x.Name
             }).ToList();
 
             //Invocazione del service layer

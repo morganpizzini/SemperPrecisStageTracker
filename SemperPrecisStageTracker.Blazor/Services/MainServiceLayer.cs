@@ -39,7 +39,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public async Task Init()
         {
             var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
-            _dispatcher.Dispatch(new SetOfflineAction(model?.OfflineMode ?? false));
+            _dispatcher.Dispatch(new SetOfflineAction(model?.OfflineMode ?? false,model.MatchId));
             var openResult = await _matchServiceIndexDb.OpenIndexedDb();
         }
         
@@ -60,8 +60,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
         public async Task<OkResponse> UpdateModel(ClientSetting model)
         {
-            _localStorage.SetItem(CommonVariables.ClientSettingsKey, model);
-            _dispatcher.Dispatch(new SetOfflineAction(model.OfflineMode));
+            _dispatcher.Dispatch(new SetOfflineAction(model.OfflineMode,model.MatchId));
 
             if (!model.OfflineMode)
                 return new OkResponse()
@@ -129,9 +128,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 .ToList();
         }
 
-        public async Task<bool> UploadData(IList<ShooterStageStringContract>? listToUpload = null)
+        public async Task<OkResponse> UploadData(IList<ShooterStageStringContract>? listToUpload = null)
         {
-            ApiResponse<OkResponse> response;
+            ApiResponse<OkResponse>? response;
             if (listToUpload == null)
             {
                 var changes = await GetChanges();
@@ -151,14 +150,18 @@ namespace SemperPrecisStageTracker.Blazor.Services
             }
 
             if (response is not { WentWell: true })
-                return false;
+                return new OkResponse
+                {
+                    Errors = new List<string>{"Generic error"},
+                    Status = false
+                };
 
             // cleanup changes
             if (response.Result.Status && listToUpload == null)
             {
                 await _matchServiceIndexDb.DeleteAll<EditedEntity>();
             }
-            return response.Result.Status;
+            return response.Result;
         }
 
 
@@ -253,7 +256,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
                 
-                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageStringId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
                 if (shooterStage == null)
                     return new OkResponse() { Status = false };
 
@@ -272,15 +275,19 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 singleEntity.Disqualified = model.Disqualified;
                 singleEntity.Notes = model.Notes;
 
-                var editedEntity = new EditedEntity()
-                {
-                    EntityName = nameof(ShooterStageAggregationResult),
-                    EntityId = shooterStage.EditedEntityId
-                };
-
                 await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
-                await _matchServiceIndexDb.AddItems(new List<EditedEntity> { editedEntity });
 
+                var updates = await _matchServiceIndexDb.GetAll<EditedEntity>();
+                var entityName = nameof(ShooterStageAggregationResult);
+                if(updates.All(x=>x.EntityName != entityName || x.EntityId != shooterStage.EditedEntityId))
+                {
+                    var editedEntity = new EditedEntity()
+                    {
+                        EntityName = entityName,
+                        EntityId = shooterStage.EditedEntityId
+                    };
+                    await _matchServiceIndexDb.AddItems(new List<EditedEntity> { editedEntity });
+                }
                 return new OkResponse() { Status = true };
             }
             var response = await _httpService.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);

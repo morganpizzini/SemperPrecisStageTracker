@@ -222,10 +222,15 @@
 
     async Task UploadData()
     {
-        await mainServiceLayer.UploadData();
-        await InitPageOps();
+        var result = await mainServiceLayer.UploadData();
+        if (!result.Status)
+        {
+            await ShowNotificationError(result.ErrorString, L["Error"]);
+            return;
+        }
+           await InitPageOps();
 
-        await ShowNotification(L["DataUploaded"], L["Success"], NotificationType.Success);
+            await ShowNotificationSuccess(L["DataUploaded"], L["Success"]);
     }
 
     async Task ClearUnsavedModels()

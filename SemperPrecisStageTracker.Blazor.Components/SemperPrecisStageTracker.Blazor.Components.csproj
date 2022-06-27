@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="Fluxor.Blazor.Web" Version="5.4.0" />
+	  <PackageReference Include="Blazorise.Components" Version="1.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
   </ItemGroup>

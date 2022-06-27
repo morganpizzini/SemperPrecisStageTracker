@@ -24,5 +24,19 @@ public static partial class Reducers
         {
             Offline = action.Offline
         };
+
+    [ReducerMethod(typeof(SettingsSetInitializedAction))]
+    public static SettingsState ReduceUserSetInitializedAction(SettingsState state) =>
+        state with
+            {
+                Initialize= true
+            };
+
+    [ReducerMethod(typeof(SettingsSetReadyAction))]
+    public static SettingsState ReduceSettingsSetReadyAction(SettingsState state) =>
+        state with
+            {
+                Ready= true
+            };
 }
 

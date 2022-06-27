@@ -378,7 +378,7 @@ else
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
         if (!SettingState.Value.Offline)
         {
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId });
+            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId },false);
         }
     }
 
@@ -403,9 +403,9 @@ else
             if (!(await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit);
+            stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit,false);
             //update available match director
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
+            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
         }
         stageSoToEdit = new ShooterSOStageCreateRequest();
         await modalRefStageSoToEdit.Hide();
@@ -418,8 +418,8 @@ else
             stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
                 {
                     ShooterSOStageId = stageSoToDelete.ShooterSOStageId
-                });
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId });
+                },false);
+            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
             //await LoadSO();
         }
         stageSoToDelete = new ShooterSOStageContract();
