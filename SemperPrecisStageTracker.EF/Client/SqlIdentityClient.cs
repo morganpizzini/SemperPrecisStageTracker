@@ -44,7 +44,7 @@ namespace SemperPrecisStageTracker.EF.Clients
 
             //Estrazione dell'utente con username
             var user = GetUserReporitory()
-                .GetSingle(u => u.Username.ToLower() == username.ToLower());
+                .GetSingle(u => u.Username.ToLower() == username.ToLower() || u.Email.ToLower() == username.ToLower());
 
             //Se non è stato trovato, ritorno unauthorized
             if (user == null)
