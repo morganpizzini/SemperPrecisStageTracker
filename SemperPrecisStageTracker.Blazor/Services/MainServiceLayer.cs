@@ -24,8 +24,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly IDispatcher _dispatcher;
         IState<SettingsState> _settingsState;
         private bool Offline => _settingsState.Value.Offline;
-        //public bool Offline { get; private set; }
-        //public bool Online => !Offline;
 
         public MainServiceLayer(ILocalStorageService localStorage, IHttpService httpService, MatchServiceIndexedDb matchServiceIndexDb, IState<SettingsState> settingsState, IDispatcher dispatcher)
         {
@@ -39,7 +37,12 @@ namespace SemperPrecisStageTracker.Blazor.Services
         public async Task Init()
         {
             var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
-            _dispatcher.Dispatch(new SetOfflineAction(model?.OfflineMode ?? false,model.MatchId));
+            if(model != null)
+                _dispatcher.Dispatch(new SetOfflineAction(model.OfflineMode, model.MatchId));
+            else
+            {
+                _dispatcher.Dispatch(new SettingsSetInitializedAction());
+            }
             var openResult = await _matchServiceIndexDb.OpenIndexedDb();
         }
         

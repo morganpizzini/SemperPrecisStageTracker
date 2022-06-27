@@ -141,7 +141,8 @@
                                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
                                     }).catch((e) => {
                                         // timeout
-                                        console.error(e);
+                                        if(e)
+                                            console.error(e);
                                     });
                                 }
                             },
@@ -174,10 +175,12 @@
                 } else {
                     sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                         // ready
-                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation");
-                    }).catch((e) => {
-                        // timeout
-                        console.error(e);
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation")
+                            .catch((e) => {
+                                // timeout
+                                if (e)
+                                    console.error(e);
+                            });
                     });
                 }
             });
@@ -192,10 +195,11 @@
             if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost') {
                 sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                     // ready
-                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler");
-                }).catch((e) => {
-                    // timeout
-                    console.error(e);
+                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler")
+                        .catch((e) => {
+                            // timeout
+                            console.error(e);
+                        });
                 });
             }
             
