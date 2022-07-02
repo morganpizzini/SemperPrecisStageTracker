@@ -99,326 +99,334 @@
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/DnetIndexedDb/rxjs.min.js"></script>
     <script src="_content/DnetIndexedDb/dnet-indexeddb.js"></script>
+
+    <!-- blazorise modules for offline-->
+    <script src="_content/Blazorise/button.js" type="module"></script>
+    <script src="_content/Blazorise/closable.js" type="module"></script>
+    <script src="_content/Blazorise/modal.js" type="module"></script>
+    <script src="_content/Blazorise/textEdit.js" type="module"></script>
+    <script src="_content/Blazorise/utilities.js" type="module"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
     <script src="js/scriptLoader.js"></script>
     <script src="js/cookieconsent.min.js"></script>
-<script>
+    <script>
 
-    const sleepUntil = async (f, timeoutMs) => {
-        return new Promise((resolve, reject) => {
-            const timeWas = new Date();
-            const wait = setInterval(function() {
-                if (f()) {
-                    console.log("resolved after", new Date() - timeWas, "ms");
-                    clearInterval(wait);
-                    resolve();
-                } else if (new Date() - timeWas > timeoutMs) { // Timeout
-                    console.log("rejected after", new Date() - timeWas, "ms");
-                    clearInterval(wait);
-                    reject();
-                }
-            }, 20);
-        });
-    }
-    window.blazorCulture = {
-        get: () => localStorage['BlazorCulture'],
-        set: (value) => localStorage['BlazorCulture'] = value
-    };
-    if ('serviceWorker' in navigator) {
-        //navigator.serviceWorker.register('service-worker.js');
+        const sleepUntil = async (f, timeoutMs) => {
+            return new Promise((resolve, reject) => {
+                const timeWas = new Date();
+                const wait = setInterval(function () {
+                    if (f()) {
+                        console.log("resolved after", new Date() - timeWas, "ms");
+                        clearInterval(wait);
+                        resolve();
+                    } else if (new Date() - timeWas > timeoutMs) { // Timeout
+                        console.log("rejected after", new Date() - timeWas, "ms");
+                        clearInterval(wait);
+                        reject();
+                    }
+                }, 20);
+            });
+        }
+        window.blazorCulture = {
+            get: () => localStorage['BlazorCulture'],
+            set: (value) => localStorage['BlazorCulture'] = value
+        };
+        if ('serviceWorker' in navigator) {
+            //navigator.serviceWorker.register('service-worker.js');
 
-        // Prompt when the PWA has been installed but a new version is available
-        // Code based on the Blazor.PWA.MSBuild package by SQL-MisterMagoo
-        // Read more at https://github.com/SQL-MisterMagoo/Blazor.PWA.MSBuild/blob/master/LICENSE.txt
-        window.updateAvailable = new Promise(function (resolve, reject) {
-            navigator.serviceWorker.register('service-worker.js')
-                .then(function (registration) {
-                    console.info('Registration successful, scope is:', registration.scope);
-                    registration.onupdatefound = () => {
-                        setTimeout(function() {
+            // Prompt when the PWA has been installed but a new version is available
+            // Code based on the Blazor.PWA.MSBuild package by SQL-MisterMagoo
+            // Read more at https://github.com/SQL-MisterMagoo/Blazor.PWA.MSBuild/blob/master/LICENSE.txt
+            window.updateAvailable = new Promise(function (resolve, reject) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(function (registration) {
+                        console.info('Registration successful, scope is:', registration.scope);
+                        registration.onupdatefound = () => {
+                            setTimeout(function () {
                                 if (window.location.hostname !== 'localhost') {
                                     sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                                         // ready
                                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptPwaInstallation");
                                     }).catch((e) => {
                                         // timeout
-                                        if(e)
+                                        if (e)
                                             console.error(e);
                                     });
                                 }
                             },
-                            3000);
-                        const installingWorker = registration.installing;
-                        installingWorker.onstatechange = () => {
-                            switch (installingWorker.state) {
-                            case 'installed':
-                                if (navigator.serviceWorker.controller) {
-                                    resolve(true);
-                                } else {
-                                    resolve(false);
+                                3000);
+                            const installingWorker = registration.installing;
+                            installingWorker.onstatechange = () => {
+                                switch (installingWorker.state) {
+                                    case 'installed':
+                                        if (navigator.serviceWorker.controller) {
+                                            resolve(true);
+                                        } else {
+                                            resolve(false);
+                                        }
+                                        break;
+                                    default:
                                 }
-                                break;
-                            default:
-                            }
+                            };
                         };
-                    };
-                })
-                .catch(error =>
-                    console.info('Service worker registration failed, error:', error));
-        });
+                    })
+                    .catch(error =>
+                        console.info('Service worker registration failed, error:', error));
+            });
 
-        window['updateAvailable']
-            .then(isAvailable => {
-                if (isAvailable && window.location.hostname !== 'localhost') {
-                    // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
-                    alert('Update available. Reload the page when convenient.');
-                    location.reload();
-                } else {
+            window['updateAvailable']
+                .then(isAvailable => {
+                    if (isAvailable && window.location.hostname !== 'localhost') {
+                        // TODO: Consider adding your own app UI for this as well in a fashion similar to the showAddToHomeScreen() method
+                        alert('Update available. Reload the page when convenient.');
+                        location.reload();
+                    } else {
+                        sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
+                            // ready
+                            DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation")
+                                .catch((e) => {
+                                    // timeout
+                                    if (e)
+                                        console.error(e);
+                                });
+                        });
+                    }
+                });
+
+            window.addEventListener('beforeinstallprompt', function (e) {
+                e.preventDefault();
+                // Stash the event so it can be triggered later.
+                // where you store it is up to you
+                window.PWADeferredPrompt = e;
+                // Notify C# Code that it can show an alert
+                // MyBlazorInstallMethod must be [JSInvokable]
+                if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost') {
                     sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
                         // ready
-                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "DismissPwaInstallation")
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler")
                             .catch((e) => {
                                 // timeout
-                                if (e)
-                                    console.error(e);
+                                console.error(e);
                             });
                     });
                 }
+
             });
-
-        window.addEventListener('beforeinstallprompt', function (e) {
-            e.preventDefault();
-            // Stash the event so it can be triggered later.
-            // where you store it is up to you
-            window.PWADeferredPrompt = e;
-            // Notify C# Code that it can show an alert
-            // MyBlazorInstallMethod must be [JSInvokable]
-            if (localStorage.getItem('skipInstall') != "true" && window.location.hostname !== 'localhost') {
-                sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
-                    // ready
-                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler")
-                        .catch((e) => {
-                            // timeout
-                            console.error(e);
-                        });
-                });
-            }
-            
-        });
-    }
-</script>
-<script>
-    var encrFunctions = (function () {
-        async function sha256(value) {
-            return await crypto.subtle.digest(
-                'SHA-256',
-                new TextEncoder().encode(value)
-            );
-        };
-        function getCryptoKey() {
-            const stored = localStorage.getItem('cKey');
-            if (stored)
-                return new Uint8Array(stored.split(/\s*,\s*/).map(Number));
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            localStorage.setItem('cKey',iv.toString());
-            return iv;
-        };
-        async function getKey(password) {
-            return await crypto.subtle.importKey(
-                'raw',
-                await sha256(password),
-                {name: 'AES-GCM'},
-                false,
-                ['encrypt', 'decrypt']
-            );
-        };
-        function ab2str(buf) {
-            return String.fromCharCode.apply(null, new Uint16Array(buf));
         }
-        function str2ab(str) {
-            var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-            var bufView = new Uint16Array(buf);
-            for (var i=0, strLen=str.length; i < strLen; i++) {
-                bufView[i] = str.charCodeAt(i);
-            }
-            return buf;
-        }
-        return {
-            // k => key
-            // name => localstorage key
-            // value => string to encode
-            encrypt: async (k, name, value) => {
-                const iv = getCryptoKey();
-                const key = await getKey(k);
-
-                const encArray = await crypto.subtle.encrypt(
-                    {
-                        iv,
-                        name: 'AES-GCM'
-                    },
-                    key,
+    </script>
+    <script>
+        var encrFunctions = (function () {
+            async function sha256(value) {
+                return await crypto.subtle.digest(
+                    'SHA-256',
                     new TextEncoder().encode(value)
                 );
-                const encString = ab2str(encArray);
-                localStorage.setItem(name, encString);
-                return encString;
-            },
-            // k => key
-            // value => string to decode
-            decrypt: async (k,value) => {
-                const key = await getKey(k);
-                const iv = getCryptoKey();
-                let encodedString = localStorage.getItem(value);
-
-                if (!encodedString)
-                    return '';
-
-                const encArray = str2ab(encodedString);
-                
-                const decrypted = await crypto.subtle.decrypt(
-                    {
-                        iv,
-                        name: 'AES-GCM'
-                    },
-                    key,
-                    encArray
+            };
+            function getCryptoKey() {
+                const stored = localStorage.getItem('cKey');
+                if (stored)
+                    return new Uint8Array(stored.split(/\s*,\s*/).map(Number));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                localStorage.setItem('cKey', iv.toString());
+                return iv;
+            };
+            async function getKey(password) {
+                return await crypto.subtle.importKey(
+                    'raw',
+                    await sha256(password),
+                    { name: 'AES-GCM' },
+                    false,
+                    ['encrypt', 'decrypt']
                 );
-                return new TextDecoder().decode(decrypted);
+            };
+            function ab2str(buf) {
+                return String.fromCharCode.apply(null, new Uint16Array(buf));
             }
-        }
-    })();
-    var customFunctions = (function () {
-        //function privateMethod() {
-        //    //...
-        //}
-        return {
-            focusElement: function (id) {
-                element = document.getElementById(id);
-                if (element)
-                    element.focus();
-            },
-            selectElement: function (id) {
-                element = document.getElementById(id);
-                if (element)
-                    element.select();
-            },
-            isDevice: function () {
-                return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
-            },
-            saveAsFile: function(filename, bytesBase64) {
-                var link = document.createElement('a');
-                link.download = filename;
-                link.href = "data:application/octet-stream;base64," + bytesBase64;
-                document.body.appendChild(link); // Needed for Firefox
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-    })();
-
-    window.BlazorPWA = (function () {
-        applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
-
-        function syncSubToServer(newSubscription) {
-            if (newSubscription) {
-                return {
-                    url: newSubscription.endpoint,
-                    p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
-                    auth: arrayBufferToBase64(newSubscription.getKey('auth'))
-                };
-            }
-        }
-
-        function subscribe(worker) {
-            return new Promise(function (resolve, reject) {
-                worker.pushManager.getSubscription().then(function (sub) {
-                    if (sub === null) {
-                        worker.pushManager.subscribe({
-                            userVisibleOnly: true,
-                            applicationServerKey: applicationServerPublicKey
-                        }).then(function (sub) {
-                            resolve(syncSubToServer(sub));
-                        }).catch(function (e) {
-                            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
-                                return null;
-                            }
-                            console.error("Unable to subscribe to push", e);
-                            reject(e);
-                        });
-                    } else {
-                        resolve(syncSubToServer(sub));
-                    }
-                });
-            });
-        }
-
-        function arrayBufferToBase64(buffer) {
-            // https://stackoverflow.com/a/9458996
-            var binary = '';
-            var bytes = new Uint8Array(buffer);
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return window.btoa(binary);
-        }
-        return {
-            dismissInstallPWA: function () {
-                localStorage.setItem('skipInstall', "true");
-            },
-            hasPWAInstalled: function() {
-                return window.PWADeferredPrompt != undefined;
-            },
-            installPWA: function () {
-                return new Promise((resolve, reject) => {
-                    //localStorage.setItem('skipInstall', "true");
-                    if (window.PWADeferredPrompt) {
-                        // Use the stashed event to continue the install process
-                        window.PWADeferredPrompt.prompt();
-                        window.PWADeferredPrompt.userChoice
-                            .then(function(choiceResult) {
-                                window.PWADeferredPrompt = null;
-                                resolve();
-                            });
-                    }
-                })
-            },
-            requestSubscription: async () => {
-                const worker = await navigator.serviceWorker.getRegistration();
-                const existingSubscription = await worker.pushManager.getSubscription();
-                if (!existingSubscription) {
-                    DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+            function str2ab(str) {
+                var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
+                var bufView = new Uint16Array(buf);
+                for (var i = 0, strLen = str.length; i < strLen; i++) {
+                    bufView[i] = str.charCodeAt(i);
                 }
-            },
-            createSubscription: async () => {
-                const worker = await navigator.serviceWorker.getRegistration();
-                var subContract = await new Promise(function (resolve, reject) {
-                    Notification.requestPermission(function (status) {
-                        if (status == "granted") {
+                return buf;
+            }
+            return {
+                // k => key
+                // name => localstorage key
+                // value => string to encode
+                encrypt: async (k, name, value) => {
+                    const iv = getCryptoKey();
+                    const key = await getKey(k);
 
-                            resolve(subscribe(worker));
+                    const encArray = await crypto.subtle.encrypt(
+                        {
+                            iv,
+                            name: 'AES-GCM'
+                        },
+                        key,
+                        new TextEncoder().encode(value)
+                    );
+                    const encString = ab2str(encArray);
+                    localStorage.setItem(name, encString);
+                    return encString;
+                },
+                // k => key
+                // value => string to decode
+                decrypt: async (k, value) => {
+                    const key = await getKey(k);
+                    const iv = getCryptoKey();
+                    let encodedString = localStorage.getItem(value);
+
+                    if (!encodedString)
+                        return '';
+
+                    const encArray = str2ab(encodedString);
+
+                    const decrypted = await crypto.subtle.decrypt(
+                        {
+                            iv,
+                            name: 'AES-GCM'
+                        },
+                        key,
+                        encArray
+                    );
+                    return new TextDecoder().decode(decrypted);
+                }
+            }
+        })();
+        var customFunctions = (function () {
+            //function privateMethod() {
+            //    //...
+            //}
+            return {
+                focusElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.focus();
+                },
+                selectElement: function (id) {
+                    element = document.getElementById(id);
+                    if (element)
+                        element.select();
+                },
+                isDevice: function () {
+                    return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(navigator.userAgent);
+                },
+                saveAsFile: function (filename, bytesBase64) {
+                    var link = document.createElement('a');
+                    link.download = filename;
+                    link.href = "data:application/octet-stream;base64," + bytesBase64;
+                    document.body.appendChild(link); // Needed for Firefox
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        })();
+
+        window.BlazorPWA = (function () {
+            applicationServerPublicKey = 'BL78AGXB1iRsP9CLGbzIIm5KNZvEgE36jbkImp0ow6U7Xp6cYji1C5-KGbPOxBTOX0fvABbNmfO9naQsTc79JzU';
+
+            function syncSubToServer(newSubscription) {
+                if (newSubscription) {
+                    return {
+                        url: newSubscription.endpoint,
+                        p256dh: arrayBufferToBase64(newSubscription.getKey('p256dh')),
+                        auth: arrayBufferToBase64(newSubscription.getKey('auth'))
+                    };
+                }
+            }
+
+            function subscribe(worker) {
+                return new Promise(function (resolve, reject) {
+                    worker.pushManager.getSubscription().then(function (sub) {
+                        if (sub === null) {
+                            worker.pushManager.subscribe({
+                                userVisibleOnly: true,
+                                applicationServerKey: applicationServerPublicKey
+                            }).then(function (sub) {
+                                resolve(syncSubToServer(sub));
+                            }).catch(function (e) {
+                                if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
+                                    return null;
+                                }
+                                console.error("Unable to subscribe to push", e);
+                                reject(e);
+                            });
                         } else {
-                            reject(status);
+                            resolve(syncSubToServer(sub));
                         }
                     });
                 });
-                return subContract;
-            },
-            init: (callback) => { // callback è un puntatore a una classe .NET Core
-                const updateOnlineStatus = (e) => {
-                    // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
-                    // di stato della connessione
-                    callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
-                }
-
-                window.addEventListener('online', updateOnlineStatus);
-                window.addEventListener('offline', updateOnlineStatus);
-                updateOnlineStatus();
             }
-        }
 
-    })();
-</script>
+            function arrayBufferToBase64(buffer) {
+                // https://stackoverflow.com/a/9458996
+                var binary = '';
+                var bytes = new Uint8Array(buffer);
+                var len = bytes.byteLength;
+                for (var i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            }
+            return {
+                dismissInstallPWA: function () {
+                    localStorage.setItem('skipInstall', "true");
+                },
+                hasPWAInstalled: function () {
+                    return window.PWADeferredPrompt != undefined;
+                },
+                installPWA: function () {
+                    return new Promise((resolve, reject) => {
+                        //localStorage.setItem('skipInstall', "true");
+                        if (window.PWADeferredPrompt) {
+                            // Use the stashed event to continue the install process
+                            window.PWADeferredPrompt.prompt();
+                            window.PWADeferredPrompt.userChoice
+                                .then(function (choiceResult) {
+                                    window.PWADeferredPrompt = null;
+                                    resolve();
+                                });
+                        }
+                    })
+                },
+                requestSubscription: async () => {
+                    const worker = await navigator.serviceWorker.getRegistration();
+                    const existingSubscription = await worker.pushManager.getSubscription();
+                    if (!existingSubscription) {
+                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+                    }
+                },
+                createSubscription: async () => {
+                    const worker = await navigator.serviceWorker.getRegistration();
+                    var subContract = await new Promise(function (resolve, reject) {
+                        Notification.requestPermission(function (status) {
+                            if (status == "granted") {
+
+                                resolve(subscribe(worker));
+                            } else {
+                                reject(status);
+                            }
+                        });
+                    });
+                    return subContract;
+                },
+                init: (callback) => { // callback è un puntatore a una classe .NET Core
+                    const updateOnlineStatus = (e) => {
+                        // invochiamo il metodo UpdateOnlineStatus per segnalare il cambio
+                        // di stato della connessione
+                        callback.invokeMethodAsync('UpdateOnlineStatus', navigator.onLine);
+                    }
+
+                    window.addEventListener('online', updateOnlineStatus);
+                    window.addEventListener('offline', updateOnlineStatus);
+                    updateOnlineStatus();
+                }
+            }
+
+        })();
+    </script>
 
     <script>
         var cc = new CookieConsent({

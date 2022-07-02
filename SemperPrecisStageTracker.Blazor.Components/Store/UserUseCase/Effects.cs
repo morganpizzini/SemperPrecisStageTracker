@@ -55,15 +55,17 @@ public partial class Effects
 
         _localStorage.SetItem(CommonVariables.UserKey, user );
         await _localStorage.EncodeSecret(user.Username, CommonVariables.AuthCode, user.AuthData);
-        var shooterInfo = await _httpService.Post<ShooterInformationResponse>(
-                "api/Aggregation/FetchShooterInformation", new ShooterRequest
-                {
-                    ShooterId = user.ShooterId
-                });
-        if (shooterInfo is { WentWell: true })
+        if (!_settingsState.Value.Offline)
         {
-            dispatcher.Dispatch(new SetUserInformationAction(shooterInfo.Result));
+            var shooterInfo = await _httpService.Post<ShooterInformationResponse>(
+                    "api/Aggregation/FetchShooterInformation", new ShooterRequest
+                    {
+                        ShooterId = user.ShooterId
+                    });
+            if (shooterInfo is { WentWell: true })
+            {
+                dispatcher.Dispatch(new SetUserInformationAction(shooterInfo.Result));
+            }
         }
-        //dispatcher.Dispatch(new UserSetInitializedAction());
     }
 }

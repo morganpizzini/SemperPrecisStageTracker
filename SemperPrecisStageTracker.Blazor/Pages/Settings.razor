@@ -5,6 +5,7 @@
 @inject IJSRuntime JSRuntime
 @inject IStringLocalizer<Settings> L
 @inject ILocalStorageService localStorage
+@inject IState<SettingsState> SettingState
 @inject MainServiceLayer mainServiceLayer;
 <Heading Size="HeadingSize.Is1">@L["Settings"]</Heading>
 <Divider />
@@ -143,7 +144,7 @@
     protected override async Task OnInitializedAsync()
     {
         canGoOffline = AuthService.CheckPermissions(PermissionCtor.MatchInsertScore.MatchManageMD.ManageMatches);
-        if(canGoOffline)
+        if(canGoOffline && !SettingState.Value.Offline)
             matches = await Post<IList<MatchContract>>("api/Match/FetchMatchesForSO", null);
         await InitPageOps();
 
