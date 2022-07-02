@@ -140,7 +140,7 @@ public partial class AppUseCaseEffects
     [EffectMethod]
     public Task HandleSetOfflineAction(SetOfflineAction action, IDispatcher dispatcher)
     {
-        var config = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+        var config = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
         config.OfflineMode = action.Offline;
         config.MatchId = action.MatchId;
 
