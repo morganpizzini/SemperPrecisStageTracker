@@ -30,7 +30,8 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 
 builder.Services.AddBlazorise(options =>
     {
-        options.Immediate = true;
+        options.Debounce = true;
+        options.DebounceInterval = 300;
         //options.ChangeTextOnKeyPress = true;
         options.ValidationMessageLocalizer = (message, arguments) =>
         {

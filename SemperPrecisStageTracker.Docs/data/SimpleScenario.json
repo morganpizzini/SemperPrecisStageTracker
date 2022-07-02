@@ -64,6 +64,7 @@
       "id": "1",
       "matchId": "1",
       "name": "Stage 01",
+      "description": "Description 01",
       "targets": 10,
       "index": 0,
       "scenario": "scenario",
@@ -76,6 +77,7 @@
       "id": "2",
       "matchId": "1",
       "name": "Stage 02",
+      "description": "Description 02",
       "targets": 8,
       "index": 1,
       "scenario": "scenario",
@@ -88,6 +90,7 @@
       "id": "3",
       "matchId": "1",
       "name": "Stage 03",
+      "description": "Description 03",
       "targets": 11,
       "index": 2,
       "scenario": "scenario",
@@ -100,6 +103,7 @@
       "id": "4",
       "matchId": "1",
       "name": "Stage 04",
+      "description": "Description 04",
       "targets": 12,
       "index": 3,
       "scenario": "scenario",
@@ -120,6 +124,7 @@
       "scoredHits": "scoredHits",
       "startStop": "startStop",
       "distance": "distance",
+      "muzzleSafePlane": "180 degree",
       "coverGarment": true
     },
     {
@@ -132,6 +137,7 @@
       "scoredHits": "scoredHits",
       "startStop": "startStop",
       "distance": "distance",
+      "muzzleSafePlane": "180 degree",
       "coverGarment": true
     },
     {
@@ -144,6 +150,7 @@
       "scoredHits": "scoredHits",
       "startStop": "startStop",
       "distance": "distance",
+      "muzzleSafePlane": "180 degree",
       "coverGarment": true
     },
     {
@@ -156,6 +163,7 @@
       "scoredHits": "scoredHits",
       "startStop": "startStop",
       "distance": "distance",
+      "muzzleSafePlane": "180 degree",
       "coverGarment": true
     }
   ],

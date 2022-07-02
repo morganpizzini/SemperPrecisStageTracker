@@ -277,6 +277,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 singleEntity.Warning = model.Warning;
                 singleEntity.Disqualified = model.Disqualified;
                 singleEntity.Notes = model.Notes;
+                singleEntity.FirstProceduralPointDown = model.FirstProceduralPointDown;
+                singleEntity.SecondProceduralPointDown = model.SecondProceduralPointDown;
+                singleEntity.ThirdProceduralPointDown = model.ThirdProceduralPointDown;
+                singleEntity.HitOnNonThreatPointDown = model.HitOnNonThreatPointDown;
 
                 await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
 

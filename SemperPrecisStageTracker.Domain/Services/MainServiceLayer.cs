@@ -1595,9 +1595,10 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var shooterAssociations = _shooterAssociationInfoRepository.FetchWithProjection(x => x.ShooterId, x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId);
 
-            var stagesInMatch = _stageRepository.FetchWithProjection(x => x.Id, x => x.MatchId == existingMatch.Id);
+            //var stagesInMatch = _stageRepository.FetchWithProjection(x => x.Id, x => x.MatchId == existingMatch.Id);
 
-            var existingShooterSo = _shooterSOStageRepository.FetchWithProjection(x => x.ShooterId, x => stagesInMatch.Contains(x.StageId));
+            // remove current SO on match
+            var existingShooterSo = _shooterSOStageRepository.FetchWithProjection(x => x.ShooterId, x => x.StageId == id);
 
             // not a match director
             var shooterMatches = _shooterMatchRepository.FetchWithProjection(x => x.ShooterId, x => x.MatchId == existingMatch.Id);

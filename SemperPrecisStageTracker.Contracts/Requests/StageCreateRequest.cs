@@ -7,6 +7,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     {
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
         [Required]
         public string MatchId { get; set; }
         [Required]
@@ -49,6 +50,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         /// From 6 yds to 10 yds
         ///
         public string Distance { get; set; }
+         ///
+        /// 180 degree
+        ///
+        public string MuzzleSafePlane { get; set; }
         ///
         /// Required
         ///

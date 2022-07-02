@@ -193,6 +193,6 @@
     <value>Back to list</value>
   </data>
   <data name="InMatchGroup" xml:space="preserve">
-    <value>You are in {0} group</value>
+    <value>You are in &lt;b&gt;{0}&lt;/b&gt; group</value>
   </data>
 </root>

@@ -120,22 +120,37 @@
   <data name="Matches" xml:space="preserve">
     <value>Matches</value>
   </data>
+  <data name="NewMatch" xml:space="preserve">
+    <value>NewMatch</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="Kind" xml:space="preserve">
+    <value>Kind</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="NewMatch" xml:space="preserve">
-    <value>New match</value>
-  </data>
   <data name="Location" xml:space="preserve">
     <value>Location</value>
+  </data>
+  <data name="NoData" xml:space="preserve">
+    <value>NoData</value>
+  </data>
+  <data name="DeleteMatch" xml:space="preserve">
+    <value>DeleteMatch</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>ConfirmDelete</value>
   </data>
   <data name="Association" xml:space="preserve">
     <value>Association</value>
   </data>
-  <data name="NoData" xml:space="preserve">
-    <value>No data</value>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

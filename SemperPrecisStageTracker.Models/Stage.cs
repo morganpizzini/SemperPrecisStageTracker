@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Models
     {
         public string MatchId { get; set; }
         public string Name { get; set; }
-
+        public string Description {get;set;}
         ///
         /// Stage index for sorting
         ///
@@ -55,6 +55,10 @@ namespace SemperPrecisStageTracker.Models
         /// From 6 yds to 10 yds
         ///
         public string Distance { get; set; }
+        ///
+        /// 180 degree
+        ///
+        public string MuzzleSafePlane { get; set; }
         ///
         /// Required
         ///

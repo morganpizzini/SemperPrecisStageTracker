@@ -28,9 +28,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.AP
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Shared", "SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj", "{EF6597EB-425D-4844-BC23-D35E386D28C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemperPrecisStageTracker.Blazor.FrontEnd", "SemperPrecisStageTracker.Blazor.FrontEnd\SemperPrecisStageTracker.Blazor.FrontEnd.csproj", "{2DAF8B08-D746-4A7C-B35C-8ED74F220E4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Blazor.FrontEnd", "SemperPrecisStageTracker.Blazor.FrontEnd\SemperPrecisStageTracker.Blazor.FrontEnd.csproj", "{2DAF8B08-D746-4A7C-B35C-8ED74F220E4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemperPrecisStageTracker.Blazor.Components", "SemperPrecisStageTracker.Blazor.Components\SemperPrecisStageTracker.Blazor.Components.csproj", "{FFD8F148-2A32-46B8-9637-69DDEA0F716E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Blazor.Components", "SemperPrecisStageTracker.Blazor.Components\SemperPrecisStageTracker.Blazor.Components.csproj", "{FFD8F148-2A32-46B8-9637-69DDEA0F716E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{05ABC1D7-4B6D-4C21-8C41-41C29FABB71E}"
+	ProjectSection(SolutionItems) = preProject
+		start_dev.bat = start_dev.bat
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

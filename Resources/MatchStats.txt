@@ -1,0 +1,13 @@
+it
+Stats=Stats,Statistiche
+Match=Match,Gara
+Association=Association,Associazione
+Overall=Overall,Overall
+Division=Division,Divisione
+Categories=Categories,Categorie
+Name=Name,Nome
+Classification=Classification,Classificazione
+RawTime=Raw time,Raw
+DQ=DQ,DQ
+TeamName=Team name,Squadra
+DQ=DQ,DQ

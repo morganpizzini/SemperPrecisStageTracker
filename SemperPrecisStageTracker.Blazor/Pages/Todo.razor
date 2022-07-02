@@ -11,10 +11,18 @@
     <Button Clicked="@Clear">clear</Button>
     @matches.Count
     <ul>
-        BUG: getconfig e login se offline devono essere cachati
-        BUG: bottone delete string in creazione stage non deve essere visibile se ho 1 sola stringa // se elimino la string 1 e la ri-creo trovo 2 volte string 2
-        BUG: Se sono admin e vado offline devo vedere tutti gli stage
+        quando mi registro ad un match aggiornare UserState.Value.Info.ShooterMatchInfos
+        controllare alert Attention InMatchButNotSquad
 
+        bottone reset punteggio
+
+        Codara gregorio appare in 2 team
+
+
+
+        correggere ShootersWihoutGroup
+
+        controllare tutti i DotNet.invokeMethodAsync in index.html: non dovrebbero tirare errori
 
         bloccare i gruppi sul giorno, es: gruppo 1 il sabato, gruppo 2 la domenica
         sistemare il nullpointer sulle chiamate in post, se nullo restituisco il default
@@ -39,6 +47,8 @@
         possibilità cambiare la tipologia di match solo se non ho shooter registrati
         metodo UpdateShooterInfo dovrebbe essere richiamato ogni volta che viene svolta un'operazione che potrebbe cambiare la risposta
         Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)
+
+
 
         durante processo di inport controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
@@ -117,7 +127,8 @@
         impossibilità di modificare i bersagli su uno stage se sono già stati inseriti dei punteggi
         tutti i processi di stagestring
         FetchShooterInformation
-        metodi riguardanti match kind (sia association che match controller)
+        metodi riguardanti match kind (sia association che match controller)\
+        stage description stagestring muzzlesafeplane
 
         [deployment]
         Backup del db

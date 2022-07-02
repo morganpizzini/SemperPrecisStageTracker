@@ -425,6 +425,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 StageId = entity.Id,
                 Name = entity.Name,
+                Description = entity.Description,
                 Index = entity.Index,
                 Match = match != null ? GenerateContract(match, association, place) : null,
                 Scenario = entity.Scenario,
@@ -457,7 +458,8 @@ namespace SemperPrecisStageTracker.API.Helpers
                 ScoredHits = entity.ScoredHits,
                 StartStop = entity.StartStop,
                 Distance = entity.Distance,
-                CoverGarment = entity.CoverGarment
+                CoverGarment = entity.CoverGarment,
+                MuzzleSafePlane = entity.MuzzleSafePlane
             };
         }
 

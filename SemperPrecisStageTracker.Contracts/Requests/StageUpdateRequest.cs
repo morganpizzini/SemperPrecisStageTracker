@@ -9,6 +9,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string StageId { get; set; }
         [Required]
         public string Name { get; set; }
+        public string Description { get; set; }
         [Required]
         public int Index { get; set; }
         public string Scenario { get; set; }

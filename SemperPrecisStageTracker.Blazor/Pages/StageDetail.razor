@@ -26,6 +26,11 @@ else
                 <CardBody>
                     <CardTitle>@L["Stage"]</CardTitle>
                     <CardText>@stage.Name</CardText>
+                    @if (!string.IsNullOrEmpty(stage.Description))
+                    {
+                        <CardTitle>@L["Description"]</CardTitle>
+                        <CardText>@stage.Description</CardText>
+                    }
                     <CardTitle>@L["Index"]</CardTitle>
                     <CardText>@stage.Index</CardText>
                     <CardTitle>@L["Scenario"]</CardTitle>
@@ -94,7 +99,7 @@ else
                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewStageSo())"><Icon Name="IconName.PlusSquare" /> @L["NewStageSo"]</Button>
                     }
 
-                    <CardTitle>@L["So"]</CardTitle>
+                    <CardTitle>@L["SO"]</CardTitle>
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -164,6 +169,10 @@ else
                         <Row>
                             <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Distance"]:</CardTitle>
                             <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.Distance</CardText>
+                        </Row>
+                        <Row>
+                            <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MuzzleSafePlane"]:</CardTitle>
+                            <CardText ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">@stageString.MuzzleSafePlane</CardText>
                         </Row>
                         <Row>
                             <CardTitle ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["CoverGarment"]:</CardTitle>

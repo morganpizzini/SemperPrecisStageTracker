@@ -1,0 +1,20 @@
+it
+Settings=Settings,Impostazioni
+General=General,Generale
+Offline=Offline,Offline
+PWAAvailable=PWA available,PWA Disponibile
+InstallPWA=Install PWA,Installa PWA
+Match=Match,Gara
+WrongMatch=Wrong match,Gara sbagliata
+Loading=Loading,Caricamento
+GoOffline=Go offline,Vai offline
+OfflineStatus=Offline status,Stato offline
+Match=Match,Gara
+PendingChanges=Pending changes,Modifiche in sospeso
+SyncData=Sync data,Sincronizza dati
+BackOnline=Back online,Ritorna online
+UploadData=Upload data,Carica dati
+ExportData=Export data,Esporta dati
+DeleteData=Delete data,Elimina dati
+Close=Close,Chiudi
+Yes=Yes,Sì

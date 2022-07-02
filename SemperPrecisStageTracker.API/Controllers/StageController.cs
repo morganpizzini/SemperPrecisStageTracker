@@ -28,7 +28,6 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllStages(request.MatchId);
 
-
             //seleziono gli id dei posti
             var matchIds = entities.Select(x => x.MatchId).ToList();
 
@@ -82,6 +81,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var model = new Stage
             {
                 Name = request.Name,
+                Description = request.Description,
                 MatchId = request.MatchId,
                 Index = request.Index,
                 Scenario = request.Scenario,
@@ -100,6 +100,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 StartStop = x.StartStop,
                 Distance = x.Distance,
                 CoverGarment = x.CoverGarment,
+                MuzzleSafePlane = x.MuzzleSafePlane,
                 Name = x.Name
             }).ToList();
 
@@ -135,6 +136,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.Name = request.Name;
+            entity.Description = request.Description;
             entity.Index = request.Index;
             entity.Scenario = request.Scenario;
             entity.GunReadyCondition = request.GunReadyCondition;
@@ -156,6 +158,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 existing.ScoredHits = stageString.ScoredHits;
                 existing.StartStop = stageString.StartStop;
                 existing.Distance = stageString.Distance;
+                existing.MuzzleSafePlane = stageString.MuzzleSafePlane;
                 existing.CoverGarment = stageString.CoverGarment;
 
                 newStrings.Add(existing);

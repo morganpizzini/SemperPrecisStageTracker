@@ -216,10 +216,11 @@ else
                             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                                 <Select TValue="string" @bind-SelectedValue="@shooterToMove.GroupId">
                                     <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var group in Model.Groups)
-                                    {
-                                        <SelectItem Value="@group.GroupId">@group.Name</SelectItem>
-                                    }
+                                        {
+                                            <SelectItem Value="@group.GroupId">@group.Name</SelectItem>
+                                        }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongGroup"]</ValidationError>

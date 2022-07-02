@@ -15,7 +15,7 @@
         {
             <Alert Color="Color.Success" Visible>
                 <AlertMessage>@L["Nice"]</AlertMessage>
-                <AlertDescription>@L["InMatchGroup",currentShooterRegistration.GroupName]</AlertDescription>
+                <AlertDescription>@L.Html("InMatchGroup",currentShooterRegistration.GroupName)</AlertDescription>
             </Alert>
         }
         else
@@ -27,7 +27,6 @@
         }
     }
 }
-
 
 @if (!SettingState.Value.Offline)
 {
@@ -42,10 +41,10 @@
         <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditMatch"]</Button>
         <Button Class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
     }
-}
-<Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{Id}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
-@if(!string.IsNullOrEmpty(match.ShortLink)){
-    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{ match.ShortLink}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+    <Button Class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{Id}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["Stats"]</Button>
+    @if(!string.IsNullOrEmpty(match.ShortLink)){
+        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchStats>(new{ match.ShortLink}))"><Icon Name="FontAwesomeIcons.ChartBar" /> @L["ShortLink"]</Button>
+    }
 }
 @if (ApiLoading)
 {

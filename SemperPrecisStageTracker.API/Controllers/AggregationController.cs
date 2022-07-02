@@ -72,7 +72,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             // filter stage by user SO => SO in offline mode will see only their own stages
             var userId = PlatformUtils.GetIdentityUserId(User);
 
-            if (shooterMatches.All(x => x.Id != userId))
+            if (shooterMatches.All(x => x.Id != userId) && !(await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), PermissionCtor.ManageMatches)))
             {
                 var userStages = shooterSoStages.Where(x => x.ShooterId == userId).Select(x => x.StageId).ToList();
                 stages = stages.Where(x => userStages.Contains(x.Id)).ToList();
@@ -211,7 +211,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                     MatchDateTimeEnd = x.MatchDateTimeEnd,
                     MatchDateTimeStart = x.MatchDateTimeStart,
                     MatchId = x.Id,
-                    GroupName = nextMatches.Item2.FirstOrDefault(g=>g.Id == x.Id)?.Name ?? string.Empty
+                    GroupName = nextMatches.Item2.FirstOrDefault(g=>g.MatchId == x.Id)?.Name ?? string.Empty
                 }).ToList()
             });
         }

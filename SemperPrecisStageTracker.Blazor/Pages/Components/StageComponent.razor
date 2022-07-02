@@ -14,6 +14,18 @@
             </FieldBody>
         </Field>
     </Validation>
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Description"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                <TextEdit Placeholder="@L["Description"]" @bind-Text="@Model.Description">
+                    <Feedback>
+                        <ValidationError>@L["WrongDescription"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Validation Validator="@ValidationRule.None">
         <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Index"]</FieldLabel>
@@ -173,6 +185,18 @@
                     </Validation>
                     <Validation Validator="@ValidationRule.None">
                         <Field>
+                            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["MuzzleSafePlane"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                                <TextEdit Placeholder="@L["MuzzleSafePlane"]" @bind-Text="@stageString.MuzzleSafePlane">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongMuzzleSafePlane"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.None">
+                        <Field>
                             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
                             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
                                 <Check TValue="bool" @bind-Checked="@stageString.CoverGarment">@L["CoverGarment"]</Check>
@@ -240,15 +264,33 @@
 
     void AddString()
     {
+        for(int x = 0; x < Model.Strings.Count; x++)
+        {
+            var tmpStringName = $"String {x + 1}";
+            if(Model.Strings[x].Name != tmpStringName)
+            {
+                var s = new StageStringContract()
+                    {
+                        Name = tmpStringName
+                    };
+                Model.Strings.Insert(x, s);
+                return;
+            }
+        }
+        var stringName = $"String {Model.Strings.Count + 1}";
         Model.Strings.Add(new StageStringContract()
         {
-            Name= $"String {Model.Strings.Count + 1}"
+            Name= stringName
         });
+        if (string.IsNullOrEmpty(selectedTab))
+        {
+            selectedTab = stringName;
+        }
     }
 
     void DeleteString(StageStringContract stageStageString)
     {
+        selectedTab = Model.Strings.FirstOrDefault(x=>x.Name!= stageStageString.Name)?.Name ?? string.Empty;
         Model.Strings.Remove(stageStageString);
-        selectedTab = Model.Strings.FirstOrDefault()?.Name ?? string.Empty;
     }
 }

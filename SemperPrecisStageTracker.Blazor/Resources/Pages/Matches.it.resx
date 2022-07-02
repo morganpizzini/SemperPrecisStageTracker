@@ -118,24 +118,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Matches" xml:space="preserve">
-    <value>Gare</value>
-  </data>
-  <data name="Name" xml:space="preserve">
-    <value>Nome</value>
-  </data>
-  <data name="Date" xml:space="preserve">
-    <value>Data</value>
+    <value>Matches</value>
   </data>
   <data name="NewMatch" xml:space="preserve">
-    <value>Nuovo match</value>
+    <value>NewMatch</value>
   </data>
-  <data name="Association" xml:space="preserve">
-    <value>Associazione</value>
+  <data name="Kind" xml:space="preserve">
+    <value>Kind</value>
   </data>
   <data name="Location" xml:space="preserve">
-    <value>Località</value>
+    <value>Location</value>
   </data>
   <data name="NoData" xml:space="preserve">
-    <value>Nessun elemento</value>
+    <value>NoData</value>
+  </data>
+  <data name="DeleteMatch" xml:space="preserve">
+    <value>DeleteMatch</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>ConfirmDelete</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Association" xml:space="preserve">
+    <value>Association</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

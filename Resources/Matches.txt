@@ -1,0 +1,13 @@
+it
+Matches=Matches,Gare
+NewMatch=NewMatch,Nuova gara
+Name=Name,Nome
+Kind=Kind,Tipologia
+Date=Date,Data
+Location=Location,Località
+NoData=No data,Nessun dato
+DeleteMatch=Delete match,Cancella match
+ConfirmDelete=Confirm delete,Conferma eliminazione
+Association=Association,Associazione
+Close=Close,Chiudi
+Yes=Yes,Sì

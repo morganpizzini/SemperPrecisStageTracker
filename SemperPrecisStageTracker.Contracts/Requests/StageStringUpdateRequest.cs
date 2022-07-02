@@ -9,7 +9,7 @@ public class StageStringUpdateRequest
     public string Name { get; set; }
     [Required]
     public int Targets { get; set; }
-        
+
     ///
     /// 12 rounds min, Unlimited
     ///
@@ -30,6 +30,10 @@ public class StageStringUpdateRequest
     /// From 6 yds to 10 yds
     ///
     public string Distance { get; set; }
+    ///
+    /// 180 degree
+    ///
+    public string MuzzleSafePlane { get; set; }
     ///
     /// Required
     ///

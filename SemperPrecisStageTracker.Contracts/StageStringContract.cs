@@ -26,6 +26,10 @@ public class StageStringContract
     /// From 6 yds to 10 yds
     ///
     public string Distance { get; set; }
+     ///
+        /// 180 degree
+        ///
+        public string MuzzleSafePlane { get; set; }
     ///
     /// Required
     ///
