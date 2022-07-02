@@ -103,16 +103,18 @@ var httpClient = new HttpClient() { BaseAddress = apiUrl };
 
 //configure http client
 builder.Services.AddScoped(x => httpClient);
-
-using var serverConfig = new HttpRequestMessage(HttpMethod.Get, "api/config/GetConfig");
-using var responseConfig = await httpClient.SendAsync(serverConfig);
-
-if (responseConfig.IsSuccessStatusCode)
+try
 {
-    await using var stream = await responseConfig.Content.ReadAsStreamAsync();
+    using var serverConfig = new HttpRequestMessage(HttpMethod.Get, "api/config/GetConfig");
+    using var responseConfig = await httpClient.SendAsync(serverConfig);
 
-    builder.Configuration.AddJsonStream(stream);
-}
+    if (responseConfig.IsSuccessStatusCode)
+    {
+        await using var stream = await responseConfig.Content.ReadAsStreamAsync();
+
+        builder.Configuration.AddJsonStream(stream);
+    }
+}catch{}
 
 builder.Services.AddScoped(sp =>
 {

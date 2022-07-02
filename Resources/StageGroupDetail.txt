@@ -1,6 +1,6 @@
 it
 Detail=Detail,Dettaglio
-BackToMatch=Back to nmatch,Torna alla gara
+BackToMatch=Back to match,Torna alla gara
 BackToStage=Back to stage,Torna allo stage
 Group=Group,Gruppo
 Shooters=Shooters,Tiratori
