@@ -28,8 +28,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             }
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterTeamPayments.Count;
+            var countBeforeReminder = Scenario.TeamReminders.Count;
 
             var existingTeam = Scenario.Teams.FirstOrDefault();
+            var existingPaymentType = Scenario.PaymentTypes.FirstOrDefault(x=>x.TeamId == existingTeam.Id);
+
+            if (existingPaymentType == null)
+            {
+                Assert.Inconclusive("No payment type found");
+            }
 
             //Composizione della request
             var request = new ShooterTeamPaymentCreateRequest
@@ -38,7 +45,57 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 ShooterId = existing.Id,
                 Reason = RandomizationUtils.GenerateRandomString(15),
                 Amount = 1,
-                PaymentDateTime = RandomizationUtils.GetRandomDate()
+                PaymentTypeId = existingPaymentType.Id,
+                PaymentDateTime = RandomizationUtils.GetRandomDate(),
+                ExpireDateTime = RandomizationUtils.GetRandomDate(),
+                NotifyExpiration = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateShooterTeamPayment(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterTeamPayments.Count;
+            var countAfterReminder = Scenario.TeamReminders.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+
+            Assert.AreEqual(countBefore + 1,countAfter);
+            Assert.AreEqual(countBeforeReminder + 1,countAfterReminder);
+            Assert.IsTrue(parsed != null
+                          && updatedEntity.TeamId == request.TeamId
+                          && updatedEntity.ShooterId == request.ShooterId
+                          && parsed.Data.Amount == request.Amount
+                          && parsed.Data.PaymentType == existingPaymentType.Name
+                          && parsed.Data.Reason == request.Reason
+                          && parsed.Data.PaymentDateTime == request.PaymentDateTime
+            );
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateShooterTeamPaymentBeOkHavingProvidedNoShooter()
+        {
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterTeamPayments.Count;
+
+            var existingTeam = Scenario.Teams.FirstOrDefault();
+            var existingPaymentType = Scenario.PaymentTypes.FirstOrDefault(x=>x.TeamId == existingTeam.Id);
+
+            if (existingPaymentType == null)
+            {
+                Assert.Inconclusive("No payment type found");
+            }
+            //Composizione della request
+            var request = new ShooterTeamPaymentCreateRequest
+            {
+                TeamId = existingTeam.Id,
+                Reason = RandomizationUtils.GenerateRandomString(15),
+                Amount = 1,
+                PaymentTypeId = existingPaymentType.Id,
+                PaymentDateTime = RandomizationUtils.GetRandomDate(),
             };
 
             //Invoke del metodo
@@ -52,17 +109,105 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
 
+            Assert.AreEqual(countBefore + 1,countAfter);
             Assert.IsTrue(parsed != null
-                          && countAfter == countBefore + 1
                           && updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Amount == request.Amount
-                          && updatedEntity.Reason == request.Reason
-                          && updatedEntity.PaymentDateTime == request.PaymentDateTime
-                          && updatedEntity.ExpireDateTime == request.ExpireDateTime
-                          && updatedEntity.NotifyExpiration == request.NotifyExpiration
+                          && parsed.Data.Amount == request.Amount
+                          && parsed.Data.Reason == request.Reason
+                          && parsed.Data.PaymentType == existingPaymentType.Name
+                          && parsed.Data.PaymentDateTime == request.PaymentDateTime
             );
 
+        }
+         [TestMethod]
+        public async Task ShouldNotCreateReminderAddShooterTeamPaymentBeOkHavingProvidedData()
+        {
+            var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.ShooterId).ToList();
+            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            if (existing == null)
+            {
+                Assert.Inconclusive("No shooter team payment without association exists");
+            }
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterTeamPayments.Count;
+            var countBeforeReminder = Scenario.TeamReminders.Count;
+
+            var existingTeam = Scenario.Teams.FirstOrDefault();
+            var existingPaymentType = Scenario.PaymentTypes.FirstOrDefault(x=>x.TeamId == existingTeam.Id);
+
+            if (existingPaymentType == null)
+            {
+                Assert.Inconclusive("No payment type found");
+            }
+            //Composizione della request
+            var request = new ShooterTeamPaymentCreateRequest
+            {
+                TeamId = existingTeam.Id,
+                ShooterId = existing.Id,
+                Reason = RandomizationUtils.GenerateRandomString(15),
+                PaymentTypeId = existingPaymentType.Id,
+                Amount = 1,
+                PaymentDateTime = RandomizationUtils.GetRandomDate()
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateShooterTeamPayment(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterTeamPayments.Count;
+            var countAfterReminder = Scenario.TeamReminders.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+
+            Assert.AreEqual(countBefore + 1,countAfter);
+            Assert.AreEqual(countBeforeReminder,countAfterReminder);
+            Assert.IsTrue(parsed != null
+                          && updatedEntity.TeamId == request.TeamId
+                          && updatedEntity.ShooterId == request.ShooterId
+                          && parsed.Data.Amount == request.Amount
+                          && parsed.Data.Reason == request.Reason
+                          && parsed.Data.PaymentType == existingPaymentType.Name
+                          && parsed.Data.PaymentDateTime == request.PaymentDateTime
+            );
+
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateShooterTeamPaymentBeBadRequestHavingProvidedWrongRefIds()
+        {
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterTeamPayments.Count;
+            var countBeforeReminder = Scenario.TeamReminders.Count;
+
+            //Composizione della request
+            var request = new ShooterTeamPaymentCreateRequest
+            {
+                TeamId = RandomizationUtils.GenerateRandomString(15),
+                ShooterId = RandomizationUtils.GenerateRandomString(15),
+                Reason = RandomizationUtils.GenerateRandomString(15),
+                PaymentTypeId = RandomizationUtils.GenerateRandomString(15),
+                Amount = 1,
+                PaymentDateTime = RandomizationUtils.GetRandomDate()
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateShooterTeamPayment(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterTeamPayments.Count;
+            var countAfterReminder = Scenario.TeamReminders.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            Assert.AreEqual(countBefore,countAfter);
+            Assert.AreEqual(countBeforeReminder,countAfterReminder);
+            Assert.IsTrue(parsed != null );
+            Assert.AreEqual(3,parsed.Data.Count);
         }
 
         [TestMethod]
@@ -76,13 +221,19 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterTeamPayments.Count;
 
+            var existingPaymentType = Scenario.PaymentTypes.FirstOrDefault(x=>x.TeamId == existing.TeamId && x.Name != existing.PaymentType);
 
+            if (existingPaymentType == null)
+            {
+                Assert.Inconclusive("No payment type found");
+            }
             //Composizione della request
             var request = new ShooterTeamPaymentUpdateRequest
             {
                 ShooterTeamPaymentId = existing.Id,
                 TeamId = existing.TeamId,
                 ShooterId = existing.ShooterId,
+                PaymentTypeId = existingPaymentType.Id,
                 Reason = RandomizationUtils.GenerateRandomString(5),
                 Amount = 1,
                 PaymentDateTime = existing.PaymentDateTime
@@ -103,12 +254,50 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.AreEqual(countAfter, countBefore);
             Assert.IsTrue(updatedEntity.TeamId == request.TeamId
                           && updatedEntity.ShooterId == request.ShooterId
-                          && updatedEntity.Reason == request.Reason
-                          && updatedEntity.PaymentDateTime == request.PaymentDateTime
-                          && updatedEntity.Amount == request.Amount
-                          && updatedEntity.ExpireDateTime == request.ExpireDateTime
-                          && updatedEntity.NotifyExpiration == request.NotifyExpiration
+                          && parsed.Data.Reason == request.Reason
+                          && parsed.Data.PaymentDateTime == request.PaymentDateTime
+                          && parsed.Data.PaymentType == existingPaymentType.Name
+                          && parsed.Data.Amount == request.Amount
             );
+
+        }
+
+        [TestMethod]
+        public async Task ShouldUpdateShooterTeamPaymentBeBadRequestHavingProvidedWrongRefIds()
+        {
+            var existing = Scenario.ShooterTeamPayments.FirstOrDefault();
+            if (existing == null)
+            {
+                Assert.Inconclusive("No shooter team payment exists");
+            }
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.ShooterTeamPayments.Count;
+
+
+            //Composizione della request
+            var request = new ShooterTeamPaymentUpdateRequest
+            {
+                ShooterTeamPaymentId = existing.Id,
+                TeamId = RandomizationUtils.GenerateRandomString(5),
+                ShooterId = RandomizationUtils.GenerateRandomString(5),
+                Reason = RandomizationUtils.GenerateRandomString(5),
+                PaymentTypeId = RandomizationUtils.GenerateRandomString(5),
+                Amount = 1,
+                PaymentDateTime = existing.PaymentDateTime
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateShooterTeamPayment(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.ShooterTeamPayments.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            Assert.AreEqual(countAfter, countBefore);
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(parsed.Data.Count,3);
 
         }
 

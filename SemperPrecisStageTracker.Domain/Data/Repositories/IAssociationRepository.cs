@@ -8,7 +8,22 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     /// <summary>
     /// Repository interface for "ShooterTeamPayment"
     /// </summary>
-    public interface IShooterTeamPaymentRepository : IRepository<ShooterTeamPayment>
+    public interface IShooterTeamPaymentRepository : IRepository<TeamPayment>
+    {
+
+    }
+    /// <summary>
+    /// Repository interface for "TeamReminder"
+    /// </summary>
+    public interface ITeamReminderRepository : IRepository<TeamReminder>
+    {
+
+    }
+    
+    /// <summary>
+    /// Repository interface for "TeamReminder"
+    /// </summary>
+    public interface IPaymentTypeRepository : IRepository<PaymentType>
     {
 
     }

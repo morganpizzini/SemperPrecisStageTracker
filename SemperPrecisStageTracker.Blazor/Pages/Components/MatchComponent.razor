@@ -38,6 +38,28 @@
             </FieldBody>
         </Field>
     </Validation>
+    @if (string.IsNullOrEmpty(Model.MatchId))
+    {
+        <Validation Validator="@ValidationRule.IsSelected">
+            <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Team"]</FieldLabel>
+                <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                    <Select TValue="string" @bind-SelectedValue="@Model.Team.TeamId">
+                        <ChildContent>
+                            <SelectItem Value="@("")"></SelectItem>
+                            @foreach (var team in Teams)
+                            {
+                                <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                            }
+                        </ChildContent>
+                        <Feedback>
+                            <ValidationError>@L["WrongTeam"]</ValidationError>
+                        </Feedback>
+                    </Select>
+                </FieldBody>
+            </Field>
+        </Validation>
+    }
     <Validation Validator="@ValidationRule.IsSelected">
         <Field Horizontal="true" JustifyContent="JustifyContent.End">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
@@ -152,6 +174,8 @@
 @code {
     [Parameter]
     public IList<AssociationContract> Associations { get; set; } = new List<AssociationContract>();
+    [Parameter]
+    public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();
     [Parameter]
     public IList<PlaceContract> Places { get; set; } = new List<PlaceContract>();
 

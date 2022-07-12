@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SemperPrecisStageTracker.Contracts
 {
@@ -10,6 +11,7 @@ namespace SemperPrecisStageTracker.Contracts
         [IndexDbIndex]
         public string Name { get; set; }
         public string Description { get; set; }
+        public DateTime GroupDay {get; set; }
         public int Index { get; set; }
         public int MaxShooterNumber { get; set; }
         public MatchContract Match { get; set; }

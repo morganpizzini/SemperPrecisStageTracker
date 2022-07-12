@@ -13,41 +13,6 @@ using ZenProgramming.Chakra.Core.Utilities.Data;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers
 {
-    [TestClass]
-    public class AssociationControllerTests : ApiControllerTestsBase<AssociationController, SimpleScenario>
-    {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
-
-        [TestMethod]
-        public async Task ShouldFetchAvailableShooterAssociationBeOkHavingProvidedData()
-        {
-            var existing = Scenario.ShooterAssociationInfos.FirstOrDefault();
-
-            if (existing == null)
-            {
-                Assert.Inconclusive("No shooter association exists");
-            }
-
-            var count = Scenario.ShooterAssociationInfos.Count(x => x.ShooterId == existing.ShooterId);
-
-            var request = new ShooterRequest
-            {
-                ShooterId = existing.ShooterId
-            };
-
-            //Invoke del metodo
-            var response = await Controller.FetchAvailableAssociationsForShooter(request);
-
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<AssociationContract>>(response);
-
-            Assert.AreEqual(count, parsed.Data.Count);
-            Assert.IsTrue(parsed.Data.All(x => !string.IsNullOrEmpty(x.Name)));
-
-        }
-
-    }
 
     [TestClass]
     public class ShooterAssociationControllerTests : ApiControllerTestsBase<ShooterAssociationController, SimpleScenario>
@@ -63,8 +28,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                         (x,y)=>new
                         {
                             x,
-                            match = y.DefaultIfEmpty()
-                        }).FirstOrDefault(x=>x.match== null)?.x;
+                            match = y.Any()
+                        }).FirstOrDefault(x=>!x.match)?.x;
 
             if (match == null)
             {

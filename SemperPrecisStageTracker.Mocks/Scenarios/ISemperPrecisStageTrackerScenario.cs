@@ -37,7 +37,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of Shooter Team Payment
         /// </summary>
-        IList<ShooterTeamPayment> ShooterTeamPayments { get; set; }
+        IList<TeamPayment> ShooterTeamPayments { get; set; }
 
         /// <summary>
         /// List of shooter
@@ -155,5 +155,16 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// List of entity permissions
         /// </summary>
         IList<PermissionGroupRole> PermissionGroupRoles { get; set; }
+
+        /// <summary>
+        /// List of team reminder
+        /// </summary>
+        IList<TeamReminder> TeamReminders { get; set; }
+
+        /// <summary>
+        /// List of team reminder
+        /// </summary>
+        IList<PaymentType> PaymentTypes { get; set; }
+        
     }
 }

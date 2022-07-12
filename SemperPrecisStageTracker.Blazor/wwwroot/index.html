@@ -101,15 +101,15 @@
     <script src="_content/DnetIndexedDb/dnet-indexeddb.js"></script>
 
     <!-- blazorise modules for offline-->
-    <script src="_content/Blazorise/button.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/closable.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/textEdit.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/validators/NumericMaskValidator.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/validators/DateTimeMaskValidator.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/validators/RegExMaskValidator.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/validators/NoValidator.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise/utilities.js?v=1.0.4.0" type="module"></script>
-    <script src="_content/Blazorise.Bootstrap5/modal.js?v=1.0.4.0" type="module"></script>
+    <script src="_content/Blazorise/button.js" type="module"></script>
+    <script src="_content/Blazorise/closable.js" type="module"></script>
+    <script src="_content/Blazorise/textEdit.js" type="module"></script>
+    <script src="_content/Blazorise/validators/NumericMaskValidator.js" type="module"></script>
+    <script src="_content/Blazorise/validators/DateTimeMaskValidator.js" type="module"></script>
+    <script src="_content/Blazorise/validators/RegExMaskValidator.js" type="module"></script>
+    <script src="_content/Blazorise/validators/NoValidator.js" type="module"></script>
+    <script src="_content/Blazorise/utilities.js" type="module"></script>
+    <script src="_content/Blazorise.Bootstrap5/modal.js" type="module"></script>
 
     <script src="js/bootstrap.js"></script>
     <script src="js/scriptLoader.js"></script>
@@ -211,7 +211,8 @@
                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler")
                             .catch((e) => {
                                 // timeout
-                                console.error(e);
+                                if(e)
+                                    console.error(e);
                             });
                     });
                 }
@@ -399,7 +400,14 @@
                     const worker = await navigator.serviceWorker.getRegistration();
                     const existingSubscription = await worker.pushManager.getSubscription();
                     if (!existingSubscription) {
-                        DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+                        sleepUntil(() => !document.getElementById("spinner-loader"), 7000).then(() => {
+                            // ready
+                            DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "PromptNotificationAlert");
+                        }).catch((e) => {
+                            // timeout
+                            if (e)
+                                console.error(e);
+                        });
                     }
                 },
                 createSubscription: async () => {

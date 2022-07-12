@@ -52,25 +52,25 @@
                                         <ChildContent>
                                             <SelectItem Value="@("")" Disabled></SelectItem>
                                             @foreach (var match in matches)
-                                            {
-                                                <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
-                                            }
-                                        </ChildContent>
-                                        <Feedback>
-                                            <ValidationError>@L["WrongMatch"]</ValidationError>
-                                        </Feedback>
-                                    </Select>
-                                </FieldBody>
-                            </Field>
-                        </Validation>
-                        <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
-                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
-                                <ChildContent>@L["GoOffline"]</ChildContent>
-                            </Button>
+                                        {
+                                            <SelectItem Value="@match.MatchId">@match.Name</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongMatch"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
                         </Field>
-                    </Validations>
-                    <FileUpload/>
+                    </Validation>
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                            <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Loading"]</LoadingTemplate>
+                            <ChildContent>@L["GoOffline"]</ChildContent>
+                        </Button>
+                    </Field>
+                </Validations>
+                    <FileUpload />
                 }
                 else
                 {
@@ -136,7 +136,7 @@
     IList<MatchContract> matches = new List<MatchContract>();
     private int pendingChanges = 0;
 
-    bool canGoOffline; 
+    bool canGoOffline;
 
     string selectedTab = "tab1";
 
@@ -144,8 +144,6 @@
     protected override async Task OnInitializedAsync()
     {
         canGoOffline = AuthService.CheckPermissions(PermissionCtor.MatchInsertScore.MatchManageMD.ManageMatches);
-        if(canGoOffline && !SettingState.Value.Offline)
-            matches = await Post<IList<MatchContract>>("api/Match/FetchMatchesForSO", null);
         await InitPageOps();
 
 
@@ -173,7 +171,7 @@
         CheckPwaInstallStatus();
     }
 
-    private Task OnSelectedTabChanged( string name )
+    private Task OnSelectedTabChanged(string name)
     {
         selectedTab = name;
 
@@ -184,6 +182,11 @@
         model = localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey) ?? new ClientSetting();
         if (model.OfflineMode)
             pendingChanges = await mainServiceLayer.CountUnsavedModels();
+        else
+        {
+            if (canGoOffline && !SettingState.Value.Offline)
+                matches = await Post<List<MatchContract>>("api/Match/FetchMatchesForSO", null);
+        }
     }
     async Task Submit()
     {
@@ -229,9 +232,9 @@
             await ShowNotificationError(result.ErrorString, L["Error"]);
             return;
         }
-           await InitPageOps();
+        await InitPageOps();
 
-            await ShowNotificationSuccess(L["DataUploaded"], L["Success"]);
+        await ShowNotificationSuccess(L["DataUploaded"], L["Success"]);
     }
 
     async Task ClearUnsavedModels()

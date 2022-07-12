@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
@@ -9,6 +10,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+        [Required]
+        public DateTime GroupDay { get; set; }
         [Required]
         public int Index { get; set; }
         [Required]

@@ -825,7 +825,7 @@
         }
 
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
-        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams", null);
         await LoadShooterAssociationInfo();
         await LoadShooterClassifications();
         await LoadShooterTeams();
@@ -834,20 +834,20 @@
 
     async Task LoadShooterTeams()
     {
-        shooterTeams = await Post<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
+        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
     }
     async Task LoadShooterClassifications()
     {
-        shooterClassifications = await Post<IList<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+        shooterClassifications = await Post<List<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
     }
 
     async Task LoadShooterAssociationInfo()
     {
         categoriesEdit = new List<string>();
         var request = new ShooterRequest() { ShooterId = Id };
-        associationNotAssigned = await Post<IList<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAvailableAssociationsForShooter", request);
-        shooterAssociationInfos = await Post<IList<ShooterAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
+        associationNotAssigned = await Post<List<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAvailableAssociationsForShooter", request);
+        shooterAssociationInfos = await Post<List<ShooterAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
 
     }
 

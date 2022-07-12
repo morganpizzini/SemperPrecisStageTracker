@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 using Blazorise;
 using Microsoft.AspNetCore.Authorization;
+using SemperPrecisStageTracker.Contracts.Requests;
 
 namespace SemperPrecisStageTracker.Blazor.Pages
 {
@@ -11,37 +12,38 @@ namespace SemperPrecisStageTracker.Blazor.Pages
     {
         [Inject]
         protected IHttpService Service { get; set; }
-        
-        public Task<T?> Post<T>(string uri) => Post<T>(uri, new { });
+
+        public Task<T> Post<T>(string uri) where T : new() => Post<T>(uri, new { });
 
 
         protected virtual Task<string> Post1(string uri, object value, bool pageOperation = true)
         {
             return Task.FromResult(string.Empty);
         }
-        protected virtual async Task<T?> Post<T>(string uri, object value,bool pageOperation = true)
+
+        protected virtual async Task<T> Post<T>(string uri, object value, bool pageOperation = true) where T : new()
         {
-            if(pageOperation)
+            if (pageOperation)
                 ApiLoading = true;
-            T? result = default;
-            
-                var apiResponse = await Service.Post<T>(uri, value);
-                if (apiResponse == null)
+            T result = new();
+
+            var apiResponse = await Service.Post<T>(uri, value);
+            if (apiResponse == null)
+            {
+                await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(apiResponse.Error))
                 {
-                    await ShowNotification("Please retry in a while", "Generic error", NotificationType.Error);   
+                    await ShowNotification(apiResponse.Error, "Error in API request", NotificationType.Error);
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(apiResponse.Error))
-                    {
-                        await ShowNotification(apiResponse.Error, "Error in API request", NotificationType.Error);
-                    }
-                    else
-                    {
-                        result = apiResponse.Result;
-                    }
+                    result = apiResponse.Result;
                 }
-            ApiLoading = false;    
+            }
+            ApiLoading = false;
             return result;
         }
 
@@ -61,15 +63,15 @@ namespace SemperPrecisStageTracker.Blazor.Pages
         protected MainServiceLayer MainServiceLayer { get; set; }
     }
 
-    public class SemperPrecisBaseComponent<T> : SemperPrecisBaseComponent where T: new()
+    public class SemperPrecisBaseComponent<T> : SemperPrecisBaseComponent where T : new()
     {
         protected T Model = new();
 
-        protected override async Task<string> Post1(string uri, object value,bool pageOperation = true)
+        protected override async Task<string> Post1(string uri, object value, bool pageOperation = true)
         {
-            if(pageOperation)
+            if (pageOperation)
                 ApiLoading = true;
-            
+
             var apiResponse = await Service.Post<T>(uri, value);
             if (apiResponse == null)
             {
@@ -86,8 +88,8 @@ namespace SemperPrecisStageTracker.Blazor.Pages
                     Model = apiResponse.Result;
                 }
             }
-            if(pageOperation)
-                ApiLoading = false;    
+            if (pageOperation)
+                ApiLoading = false;
 
             return apiResponse?.Error ?? string.Empty;
         }

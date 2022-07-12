@@ -6,6 +6,15 @@ using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
+    public class DeleteShooterStageRequest
+    {
+        [Required]
+        public string StageStringId { get; set; }
+        [Required]
+        public string StageId { get; set; }
+        [Required]
+        public string ShooterId { get; set; } 
+    }
     public class ShooterStageRequest : IStageResult
     {
         [Required]

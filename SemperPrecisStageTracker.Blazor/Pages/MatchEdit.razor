@@ -44,8 +44,8 @@
             await base.OnInitializedAsync();
             return;
         }
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
-        places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
 
         model =  await Post<MatchContract>("api/Match/GetMatch", new MatchRequest { MatchId = Id });
 

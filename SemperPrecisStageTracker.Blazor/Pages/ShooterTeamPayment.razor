@@ -330,7 +330,7 @@
 
     async Task LoadShooterTeamPayments()
     {
-        shooterTeamPayments = await Post<IList<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId });
+        shooterTeamPayments = await Post<List<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId });
     }
 
     void ValidateDate(ValidatorEventArgs e)

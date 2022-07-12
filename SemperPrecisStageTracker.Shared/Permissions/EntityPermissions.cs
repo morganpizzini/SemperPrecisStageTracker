@@ -10,6 +10,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
     {
         public static string Admin => nameof(Admin);
         public static string TeamHolder => nameof(TeamHolder);
+        public static string Contributor => nameof(Contributor);
         public static string TeamSecretary => nameof(TeamSecretary);
         public static string TeamContributor => nameof(TeamContributor);
         public static string MatchContributor => nameof(MatchContributor);
@@ -72,12 +73,14 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         // entity
         [Description("EditShooter")]
         EditShooter = 1,
-        [Description("EditMatch")]
-        EditMatch = 14,
+        [Description("ShooterDelete")]
+        ShooterDelete = 2,
         [Description("EditTeam")]
         EditTeam = 5,
-        [Description("EditAssociation")]
-        EditAssociation = 7,
+        [Description("AssociationDelete")]
+        AssociationDelete = 6,
+        [Description("AssociationEdit")]
+        AssociationEdit = 7,
         [Description("EditPlace")]
         EditPlace = 9,
 
@@ -96,7 +99,13 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("MatchManageStages")]
         MatchManageStages= 21,
         [Description("MatchHandling")]
-        MatchHandling = 22
+        MatchHandling = 22,
+        [Description("MatchDelete")]
+        MatchDelete = 23,
+        [Description("PlaceDelete")]
+        PlaceDelete = 24,
+        [Description("TeamDelete")]
+        TeamDelete = 25
     }
 
     public interface IPermissionInterface
@@ -116,9 +125,8 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         IPermissionInterface ShowShooters {get;}
         IPermissionInterface ManagePermissions {get;}
         IPermissionInterface EditShooter {get;}
-        IPermissionInterface EditMatch {get;}
+        IPermissionInterface ShooterDelete {get;}
         IPermissionInterface EditTeam {get;}
-        IPermissionInterface EditAssociation {get;}
         IPermissionInterface EditPlace {get;}
         IPermissionInterface TeamEditShooters {get;}
         IPermissionInterface TeamEditPayment {get;}
@@ -128,8 +136,14 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         IPermissionInterface MatchManageMD {get;}
         IPermissionInterface MatchManageStages {get;}
         IPermissionInterface MatchHandling {get;}
+        IPermissionInterface MatchDelete {get;}
+        IPermissionInterface AssociationEdit {get;}
+        IPermissionInterface AssociationDelete {get;}
+        
 
         IList<Permissions> List { get; }
+        int Count { get; }
+        bool Find(Permissions permission);
     }
     public class PermissionHandler : IPermissionInterface
     {
@@ -148,6 +162,8 @@ namespace SemperPrecisStageTracker.Shared.Permissions
             return this;
         }
         public IList<Permissions> List => permissions;
+        public int Count => permissions.Count;
+        public bool Find(Permissions permission) => permissions.Contains(permission);
         public override string ToString()
         {
             return string.Join(",", permissions.Select(x=>x.ToDescriptionString()));
@@ -169,9 +185,9 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         public IPermissionInterface ShowShooters => AddPermission(Permissions.ShowShooters);
         public IPermissionInterface ManagePermissions => AddPermission(Permissions.ManagePermissions);
         public IPermissionInterface EditShooter => AddPermission(Permissions.EditShooter);
-        public IPermissionInterface EditMatch => AddPermission(Permissions.EditMatch);
+        public IPermissionInterface ShooterDelete => AddPermission(Permissions.ShooterDelete);
         public IPermissionInterface EditTeam => AddPermission(Permissions.EditTeam);
-        public IPermissionInterface EditAssociation => AddPermission(Permissions.EditAssociation);
+        public IPermissionInterface AssociationEdit => AddPermission(Permissions.AssociationEdit);
         public IPermissionInterface EditPlace => AddPermission(Permissions.EditPlace);
         public IPermissionInterface TeamEditShooters => AddPermission(Permissions.TeamEditShooters);
         public IPermissionInterface TeamEditPayment => AddPermission(Permissions.TeamEditPayment);
@@ -181,6 +197,9 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         public IPermissionInterface MatchManageMD => AddPermission(Permissions.MatchManageMD);
         public IPermissionInterface MatchManageStages => AddPermission(Permissions.MatchManageStages);
         public IPermissionInterface MatchHandling => AddPermission(Permissions.MatchHandling);
+        public IPermissionInterface MatchDelete => AddPermission(Permissions.MatchDelete);
+        public IPermissionInterface AssociationDelete => AddPermission(Permissions.AssociationDelete);
+        
         public IPermissionInterface Compose(IList<Permissions> perms)
         {
             return AddPermission(perms);
@@ -205,9 +224,9 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         public static IPermissionInterface ShowShooters => new PermissionHandler().ShowShooters;
         public static IPermissionInterface ManagePermissions => new PermissionHandler().ManagePermissions;
         public static IPermissionInterface EditShooter => new PermissionHandler().EditShooter;
-        public static IPermissionInterface EditMatch => new PermissionHandler().EditMatch;
+        public static IPermissionInterface ShooterDelete => new PermissionHandler().ShooterDelete;
+        public static IPermissionInterface MatchDelete => new PermissionHandler().MatchDelete;
         public static IPermissionInterface EditTeam => new PermissionHandler().EditTeam;
-        public static IPermissionInterface EditAssociation => new PermissionHandler().EditAssociation;
         public static IPermissionInterface EditPlace => new PermissionHandler().EditPlace;
         public static IPermissionInterface TeamEditShooters => new PermissionHandler().TeamEditShooters;
         public static IPermissionInterface TeamEditPayment => new PermissionHandler().TeamEditPayment;
@@ -217,5 +236,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         public static IPermissionInterface MatchManageMD => new PermissionHandler().MatchManageMD;
         public static IPermissionInterface MatchManageStages => new PermissionHandler().MatchManageStages;
         public static IPermissionInterface MatchHandling => new PermissionHandler().MatchHandling;
+        public static IPermissionInterface AssociationEdit => new PermissionHandler().AssociationEdit;
+        public static IPermissionInterface AssociationDelete => new PermissionHandler().AssociationDelete;
     }
 }

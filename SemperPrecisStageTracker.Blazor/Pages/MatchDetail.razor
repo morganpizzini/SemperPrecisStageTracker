@@ -56,6 +56,11 @@ else
 {
     if (match != null)
     {
+        @if(canManageMatch){
+            <div class="my-1">
+                <Switch  TValue="bool" Checked="@match.CompetitionReady" CheckedChanged="@OnCompetitionReadyChanged">@L["MatchReady"]</Switch>
+            </div>
+        }
         <Row>
             <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnTablet">
                 <Card Margin="Margin.Is2.OnY">
@@ -90,6 +95,8 @@ else
                         <CardBody>
                             <CardTitle>@L["Association"]</CardTitle>
                             <CardText><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{ id = match.Association.AssociationId}))">@match.Association.Name</NavLink></CardText>
+                            <CardTitle>@L["Team"]</CardTitle>
+                            <CardText><NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new{ id = match.Team.TeamId}))">@match.Team.Name</NavLink></CardText>
                             <CardTitle>@L["MatchMD"]</CardTitle>
 
                             @if (canManageMD)
@@ -147,6 +154,7 @@ else
                                 <TableHeader ThemeContrast="ThemeContrast.Dark">
                                     <TableRow>
                                         <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Date"]</TableHeaderCell>
                                         <TableHeaderCell>@L["Count"]</TableHeaderCell>
                                         <TableHeaderCell></TableHeaderCell>
                                     </TableRow>
@@ -161,6 +169,7 @@ else
                                                     <br/>
                                                     <span class="fw-light">@group.Description</span>
                                                 </TableRowHeader>
+                                                <TableRowHeader>@group.GroupDay.ToString("d")</TableRowHeader>
                                                 <TableRowHeader>@group.Shooters.Count / @group.MaxShooterNumber</TableRowHeader>
                                                 <TableRowCell>
                                                     <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
@@ -176,7 +185,7 @@ else
                                     else
                                     {
                                         <TableRow>
-                                            <TableRowCell ColumnSpan="3" TextAlignment="TextAlignment.Center">
+                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
                                                 @L["NoGroups"]
                                             </TableRowCell>
                                         </TableRow>
@@ -414,7 +423,7 @@ else
     MatchContract match = new();
     IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
     IList<ShooterContract> availableMatchDirectors = new List<ShooterContract>();
-    
+
 
     bool canManageSO = false;
     bool canManageMD = false;
@@ -431,7 +440,7 @@ else
         canManageGroups = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups, Id);
         canManageStages = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStages, Id);
         canManageMatch = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchHandling, Id);
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -445,7 +454,16 @@ else
     {
         matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
         if(!SettingState.Value.Offline)
-            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+    }
+    async Task OnCompetitionReadyChanged(bool value)
+    {
+        if(match.CompetitionReady == value)
+            return;
+        var result = await Post<OkResponse>("api/Match/UpdateMatchCompetitionReady", new MatchCompetitionReadyRequest() { MatchId = Id, Ready = value },false);
+
+        if(result.Status)
+            match.CompetitionReady = value;
     }
 
     void DeleteEntity()
@@ -525,9 +543,9 @@ else
             if (! (await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
+            matchDirectors = await Post<List<ShooterMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
             //update available match director
-            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
         }
         matchesDirectorToEdit = new ShooterMatchCreateRequest();
         await modalRefMatchDirectorToEdit.Hide();
@@ -537,11 +555,11 @@ else
     {
         if (choice && matchDirectorToDelete.Shooter != null)
         {
-            matchDirectors = await Post<IList<ShooterMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
+            matchDirectors = await Post<List<ShooterMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
             {
                 ShooterMatchId = matchDirectorToDelete.ShooterMatchId
             });
-            availableMatchDirectors = await Post<IList<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
             //await LoadMatchDirectors();
         }
         matchDirectorToDelete = new ShooterMatchContract();

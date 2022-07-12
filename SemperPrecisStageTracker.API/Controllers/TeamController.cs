@@ -118,7 +118,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteTeam")]
-        [ApiAuthorizationFilter(new[] { Permissions.ManageTeams })]
+        [ApiAuthorizationFilter(new[] { Permissions.ManageTeams, Permissions.TeamDelete })]
         [ProducesResponseType(typeof(TeamContract), 200)]
         public async Task<IActionResult> DeleteTeam([EntityId] TeamRequest request)
         {

@@ -195,7 +195,7 @@ else
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageAssociations.EditAssociation, Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageAssociations.AssociationEdit, Id);
 
 
     private Modal modalRefEntityToDelete;

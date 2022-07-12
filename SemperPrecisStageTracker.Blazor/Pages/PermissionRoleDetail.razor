@@ -39,15 +39,15 @@
     protected override async Task OnInitializedAsync()
     {
         role = await Post<RoleContract>("api/Permission/GetRole", new RoleRequest() { RoleId = Id });
-        permissions = await Post<IList<PermissionContract>>("api/Permission/FetchPermissions");
-        users = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters");
+        permissions = await Post<List<PermissionContract>>("api/Permission/FetchPermissions");
+        users = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
         await base.OnInitializedAsync();
     }
 
     async Task CreatePermission(RolePermissionCreateRequest request)
     {
 
-        var response = await Post<IList<PermissionContract>>("/api/Permission/CreatePermissionOnRole", request);
+        var response = await Post<List<PermissionContract>>("/api/Permission/CreatePermissionOnRole", request);
         if (response == null)
             return;
         role.Permissions = response;
@@ -55,7 +55,7 @@
 
     private async Task DeletePermission(RolePermissionRequest request)
     {
-        var response = await Post<IList<PermissionContract>>("/api/Permission/DeletePermissionOnRole", request);
+        var response = await Post<List<PermissionContract>>("/api/Permission/DeletePermissionOnRole", request);
         if (response == null)
             return;
         role.Permissions = response;
@@ -64,7 +64,7 @@
     async Task CreateUser(UserRoleCreateRequest request)
     {
 
-        var response = await Post<IList<UserRoleContract>>("/api/Permission/CreateUserRole", request);
+        var response = await Post<List<UserRoleContract>>("/api/Permission/CreateUserRole", request);
         if (response == null)
             return;
         role.UserRoles = response;
@@ -73,7 +73,7 @@
 
     private async Task DeleteUser(UserRoleRequest request)
     {
-        var response = await Post<IList<UserRoleContract>>("/api/Permission/DeleteUserRole", request);
+        var response = await Post<List<UserRoleContract>>("/api/Permission/DeleteUserRole", request);
         if (response == null)
             return;
         role.UserRoles = response;

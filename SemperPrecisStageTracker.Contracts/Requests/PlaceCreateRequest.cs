@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
@@ -20,5 +21,33 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string PostalZipCode { get; set; }
         [Required]
         public string Country { get; set; }
+    }
+
+    public class TeamReminderCreateRequest : EntityFilterValidation
+    {
+        [Required]
+        public string TeamId { get; set; }
+        public string ShooterId { get; set; }
+        [Required]
+        public string Reason { get; set; } = string.Empty;
+        [Required]
+        public DateTime ExpireDateTime { get; set; }
+        public bool NotifyExpiration { get; set; }
+
+        public override string EntityId => TeamId;
+    }
+    public class TeamReminderUpdateRequest : EntityFilterValidation
+    {
+        public string TeamReminderId {get; set;}
+        [Required]
+        public string TeamId { get; set; }
+        public string ShooterId { get; set; }
+        [Required]
+        public string Reason { get; set; } = string.Empty;
+        [Required]
+        public DateTime ExpireDateTime { get; set; }
+        public bool NotifyExpiration { get; set; }
+
+        public override string EntityId => TeamId;
     }
 }

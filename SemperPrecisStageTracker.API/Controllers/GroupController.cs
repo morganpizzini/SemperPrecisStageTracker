@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(
                 new MatchGroupResponse
                 {
-                    Match = ContractUtils.GenerateContract(match,association),
+                    Match = ContractUtils.GenerateContract(match,null,association),
                     Groups = entities.As(x =>
                     {
                         var groupShooter = shooterGroup.Where(e => e.GroupId == x.Id).ToList();
@@ -133,6 +133,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Name = request.Name,
                 MatchId = request.MatchId,
                 Description = request.Description,
+                GroupDay = request.GroupDay,
                 MaxShooterNumber = request.MaxShooterNumber,
                 Index = request.Index
             };
@@ -167,6 +168,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Aggiornamento dell'entità
             entity.Name = request.Name;
             entity.Description = request.Description;
+            entity.GroupDay = request.GroupDay;
             entity.MaxShooterNumber = request.MaxShooterNumber;
             entity.Index = request.Index;
 

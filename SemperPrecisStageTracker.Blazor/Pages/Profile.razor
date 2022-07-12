@@ -309,7 +309,7 @@ else
     }
     async Task LoadShooterTeams()
     {
-        shooterTeams = await Post<IList<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User.ShooterId });
+        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User.ShooterId });
     }
 
     private void EditProfile()

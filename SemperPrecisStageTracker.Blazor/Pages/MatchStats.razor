@@ -51,6 +51,18 @@ else
                                 @stats.Match.Association.Name
                             }
                         </CardText>
+                        <CardTitle>@L["Team"]</CardTitle>
+                        <CardText>
+                            @if (interactive)
+                            {
+                                <NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = stats.Match.Team.TeamId}))">@stats.Match.Team.Name</NavLink>
+                            }
+                            else
+                            {
+                                @stats.Match.Team.Name
+                            }
+                        </CardText>
+
                     </CardBody>
                 </Card>
             </Column>

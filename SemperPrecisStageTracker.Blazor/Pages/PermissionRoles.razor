@@ -106,7 +106,7 @@
     private async Task LoadEntities()
     {
 
-        var result = await Post<IList<RoleContract>>("api/Permission/FetchAllRoles");
+        var result = await Post<List<RoleContract>>("api/Permission/FetchAllRoles");
         if (result == null)
             return;
         entities = result;

@@ -25,8 +25,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Kind { get; set; } = string.Empty;
         public float Cost { get; set; }
         public string PaymentDetails { get; set; } = string.Empty;
-        public bool UnifyClassifications { get; set; }
-        public bool OpenMatch { get; set; }
 
     }
 }

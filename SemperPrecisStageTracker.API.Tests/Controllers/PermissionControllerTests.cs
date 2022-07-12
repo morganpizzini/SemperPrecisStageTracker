@@ -35,7 +35,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldFetchShooterPermissionBeOkHavingProvidedDataOnAnotherUser()
         {
-            UpdateIdentityUser(GetAnotherUser());
+            var permission = Scenario.UserPermissions.FirstOrDefault();
+            UpdateIdentityUser(GetAnotherUser(permission.UserId));
             //Invoke del metodo
             var response = await Controller.FetchAllPermissionsOnUser();
 
@@ -44,9 +45,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             // TODO: controllare permesso su entità
             Assert.IsTrue(parsed != null &&
-                          parsed.Data.EntityPermissions.Any(x => x.Permissions.Contains(Permissions.EditShooter))
-            );
+                          parsed.Data.EntityPermissions.Any());
         }
-
     }
 }

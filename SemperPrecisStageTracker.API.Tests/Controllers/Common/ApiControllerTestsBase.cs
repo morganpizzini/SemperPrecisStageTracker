@@ -18,6 +18,8 @@ using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Extensions;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Options;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 {
@@ -101,28 +103,31 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 .FirstOrDefault(u => !userIds.Contains(u.Id));
         }
 
-        protected Shooter GetUserWithoutPermission(IList<Permissions> adminPermissions)
-            => GetUserWithPermission(adminPermissions, false);
+        protected Shooter GetUserWithoutPermission(IPermissionInterface permissions)
+            => GetUserWithPermission(permissions, false);
 
+       
         /// <summary>
         /// Get User with Permission
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetUserWithPermission(IList<Permissions> permissions, bool inOrOut = true)
+        protected Shooter GetUserWithPermission(IPermissionInterface permissions, bool inOrOut = true)
         {
+            
             if (permissions == null || permissions.Count == 0)
             {
                 Assert.Inconclusive("No permission provided");
                 return null;
             }
             var permissionIds =Scenario.Permissions
-                .Where(x => permissions.Contains(x.Name.ParseEnum<Permissions>()))
+                .Where(x => permissions.Find(x.Name.ParseEnum<Permissions>()))
                 .Select(x=>x.Id)
                 .ToList();
 
 
             var userPermissionIds = Scenario.UserPermissions.Where(x => permissionIds.Contains(x.PermissionId))
                     .Select(x => x.UserId).ToList();
+            
             var rolePermissionIds = Scenario.PermissionRoles.Where(x => permissionIds.Contains(x.PermissionId))
                     .Select(x => x.RoleId).ToList();
             // merge user role permission with user permission
@@ -147,6 +152,44 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             }
         }
 
+        protected UserPermission GetUserPermission(IPermissionInterface permissions)
+        {
+            var permission = Scenario.Permissions
+                .FirstOrDefault(x => permissions.Find(x.Name.ParseEnum<Permissions>()));
+            
+            if (permission == null) {
+                Assert.Inconclusive("Permission not found");
+                return default; 
+            }
+
+            var userPermission = Scenario.UserPermissions.FirstOrDefault(x=>x.PermissionId == permission.Id);
+
+            if (userPermission == null) {
+                Assert.Inconclusive("User permission not found");
+                return default; 
+            }
+            return userPermission;
+        }
+        protected IList<string> FindEntityWithPermission(string userId,IPermissionInterface permissions)
+        {
+            var permissionIds =Scenario.Permissions
+                .Where(x => permissions.Find(x.Name.ParseEnum<Permissions>()))
+                .Select(x=>x.Id)
+                .ToList();
+
+            var entityIds = Scenario.UserPermissions.Where(x => (string.IsNullOrEmpty(userId) || x.UserId==userId) && permissionIds.Contains(x.PermissionId))
+                    .Select(x => x.EntityId).ToList();
+            
+            var rolePermissionIds = Scenario.PermissionRoles.Where(x => permissionIds.Contains(x.PermissionId))
+                    .Select(x => x.RoleId).ToList();
+            // merge user role permission with user permission
+            entityIds.AddRange(
+                Scenario.UserRoles.Where(x => (string.IsNullOrEmpty(userId) || x.UserId==userId) && rolePermissionIds.Contains(x.RoleId))
+                    .Select(x => x.EntityId).ToList()
+                );
+            return entityIds;
+        }
+
         #endregion
 
         /// <summary>
@@ -164,9 +207,23 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             //Registrazione della sessione di default
             SessionFactory.RegisterDefaultDataSession<MockDataSession<TScenario, TransientScenarioOption<TScenario>>>();
 
+
+            var myConfiguration = new Dictionary<string, string>
+            {
+                {"backDoorPassword", "password"}
+            };
+
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(myConfiguration)
+                .Build();
+
             //Registrazione dei servizi
+            ServiceResolver.Register(configuration);
             ServiceResolver.Register<IIdentityClient, MockIdentityClient>();
             ServiceResolver.Register<ICaptchaValidatorService, MockCaptchaValidatorService>();
+
+
+
 
             ServiceResolver.Register<ISemperPrecisMemoryCache, SemperPrecisMemoryCache>();
 
@@ -223,7 +280,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 
             //Mi attendo un 200
             if (!(response is OkObjectResult castedResponse))
-                throw new InvalidProgramException($"Response should be of type {typeof(OkObjectResult).Name}");
+            {
+                if(response is BadRequestObjectResult badResponse && badResponse.Value is SerializableError validations)
+                {
+                    throw new InvalidProgramException($"Errors: {string.Join(", ",validations.SelectMany(x=>(IList<string>)x.Value))}");
+                }
+                throw new InvalidProgramException($"Response should be of type {nameof(OkObjectResult)}");
+
+            }
 
             //Attendo che il risultato del tipo atteso
             if (!(castedResponse.Value is TData castedResult))

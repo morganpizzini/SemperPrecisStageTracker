@@ -12,6 +12,13 @@ public static partial class Reducers
           };
 
     [ReducerMethod]
+    public static SettingsState ReduceChangeIsDeviceAction(SettingsState state, ChangeIsDeviceAction action) =>
+          state with
+          {
+              IsDevice = action.IsDevice
+          };
+
+    [ReducerMethod]
     public static SettingsState ReduceSetHasNetworkAction(SettingsState state, SetHasNetworkAction action) =>
         state with
         {

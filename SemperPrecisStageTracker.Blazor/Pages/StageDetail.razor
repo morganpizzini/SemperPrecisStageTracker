@@ -387,7 +387,7 @@ else
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
         if (!SettingState.Value.Offline)
         {
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId },false);
+            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId },false);
         }
     }
 
@@ -412,9 +412,9 @@ else
             if (!(await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit,false);
+            stageSos = await Post<List<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit,false);
             //update available match director
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
+            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
         }
         stageSoToEdit = new ShooterSOStageCreateRequest();
         await modalRefStageSoToEdit.Hide();
@@ -424,11 +424,11 @@ else
     {
         if (choice && stageSoToDelete.Shooter != null)
         {
-            stageSos = await Post<IList<ShooterSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
+            stageSos = await Post<List<ShooterSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
                 {
                     ShooterSOStageId = stageSoToDelete.ShooterSOStageId
                 },false);
-            availableStageSo = await Post<IList<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
+            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
             //await LoadSO();
         }
         stageSoToDelete = new ShooterSOStageContract();

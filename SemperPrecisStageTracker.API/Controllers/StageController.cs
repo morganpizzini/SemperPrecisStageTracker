@@ -182,26 +182,22 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public Task<IActionResult> DeleteStage(StageRequest request)
+        public IActionResult DeleteStage(StageRequest request)
         {
-
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetStage(request.StageId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
-            {
-                return Task.FromResult<IActionResult>(NotFound());
-
-            }
+                return NotFound();
 
             //Invocazione del service layer
             var validations = BasicLayer.DeleteStage(entity);
             if (validations.Count > 0)
-                return BadRequestTask(validations);
+                return BadRequest(validations);
 
             //Return contract
-            return Reply(ContractUtils.GenerateContract(entity));
+            return Ok(ContractUtils.GenerateContract(entity));
         }
     }
 }

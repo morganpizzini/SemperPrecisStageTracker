@@ -15,6 +15,8 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string AssociationId { get; set; }
         [Required]
+        public string TeamId { get; set; }
+        [Required]
         public string PlaceId { get; set; }
         public string Kind { get; set; } = string.Empty;
         public float Cost { get; set; }

@@ -36,6 +36,17 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return NotFound();
 
             var groups = BasicLayer.FetchAllGroupsByMatchId(match.Id);
+            if (match.CompetitionReady)
+            {
+                var now = DateTime.Now.Date;
+                if(groups.All(x=> x.GroupDay.Date != now))
+                {
+                    // get the closest date
+                    now = groups.OrderBy(x=>x.GroupDay).FirstOrDefault().GroupDay;
+                }
+                groups = groups.Where(x=>x.GroupDay.Date == now).ToList();
+            }
+
             var stages = BasicLayer.FetchAllStagesByMatchId(match.Id);
             var stageIds = stages.Select(x => x.Id).ToList();
             var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
@@ -43,6 +54,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
 
             var association = BasicLayer.GetAssociation(match.AssociationId);
+            var team = BasicLayer.GetTeam(match.TeamId);
             var place = BasicLayer.GetPlace(match.PlaceId);
 
             //Match/FetchAllMatchDirector
@@ -135,7 +147,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Ritorno i contratti
             return Ok(new MatchDataAssociationContract
             {
-                Match = ContractUtils.GenerateContractCasting(match, association, place, groups.Select(x => (x, groupAggregateGroupShooters.Where(g => g.GroupId == x.Id).ToList())).ToList(), stages,stageStrings.Where(x=>stageStringIds.Contains(x.Id)).ToList()),
+                Match = ContractUtils.GenerateContractCasting(match,team, association, place, groups.Select(x => (x, groupAggregateGroupShooters.Where(g => g.GroupId == x.Id).ToList())).ToList(), stages,stageStrings.Where(x=>stageStringIds.Contains(x.Id)).ToList()),
 
                 ShooterMatches = matchDirectors.As(x => ContractUtils.GenerateContract(x, shooterMatches.FirstOrDefault(s => s.Id == x.ShooterId))),
 

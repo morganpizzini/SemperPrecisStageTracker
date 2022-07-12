@@ -4,6 +4,7 @@
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
 @inject IState<UserState> UserState 
+@inject IState<SettingsState> SettingState
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
@@ -74,6 +75,11 @@ else
                                                     <Button class="ms-2" Color="Color.Light" Clicked="@(() => FillShooter(shooter,stageString))">
                                                         @stageString.Name
                                                     </Button>
+                                                    @if(current!= null && (current as IStageResult).Total != 0){
+                                                        <Button class="ms-2" Color="Color.Danger" Clicked="@(() => ShowConfirmDeleteModal(shooter,stageString))">
+                                                            @L["Delete"] @stageString.Name
+                                                        </Button>
+                                                    }
                                                 }
                                             }
                                         }
@@ -446,6 +452,64 @@ else
         </ModalFooter>
     </ModalContent>
 </Modal>
+
+<Modal @ref="modalConfirmDeleteRef">
+    <ModalContent Size="ModalSize.Default" Centered="true">
+        <ModalHeader>
+            <ModalTitle>
+                @L["DeleteTime"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @{
+                var current = shooters.FirstOrDefault(x=>x.GroupShooter.Shooter.ShooterId == deleteModel.ShooterId);
+            }
+            @if(current!=null){
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Field>
+                        <FieldLabel>@L["Shooter"]</FieldLabel>
+                        <FieldBody>
+                            @current.GroupShooter.Shooter.CompleteName
+                        </FieldBody>
+                    </Field>
+                </Column>
+               
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["Stage"]</FieldLabel>
+                        <FieldBody>
+                            @stage.Name
+                        </FieldBody>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Field>
+                        <FieldLabel>@L["String"]</FieldLabel>
+                        <FieldBody>
+                                @{
+                                    var currentStringResult = current.ShooterStage.FirstOrDefault(x => x.StageStringId == deleteModel.StageStringId);
+                                }
+                                @if(currentStringResult!=null){
+                                    var currentString = stage.Strings.FirstOrDefault(x=>x.StageStringId == currentStringResult.StageStringId);
+                                    <span>
+                                        @currentString.Name : @((currentStringResult as IStageResult).TotalString)
+                                    </span>
+                                }
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            }
+
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmDeleteModal(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideConfirmDeleteModal(true))">@L["Approve"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
     [Parameter]
@@ -466,6 +530,8 @@ else
 
     // reference to the modal component
     private Modal modalConfirmRef;
+    private Modal modalConfirmDeleteRef;
+
     private Modal modalRef;
     ShooterContract shooterToFill = new ();
 
@@ -477,6 +543,7 @@ else
     Validations validations;
     Validations noteValidations;
     ShooterStageRequest model = new();
+    DeleteShooterStageRequest deleteModel = new();
 
     bool canInsertScore = false;
     protected override async Task OnInitializedAsync()
@@ -516,11 +583,14 @@ else
         model.StageStringId = stageString.StageStringId;
         model.StageId = stage.StageId;
         // add user results
-        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId) ?? new ShooterStageStringContract
-        {
-            StageStringId = stageString.StageStringId
-        };
-
+        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+        if( currentString == null){
+            currentString = new ShooterStageStringContract
+            {
+                StageStringId = stageString.StageStringId
+            };
+            shooter.ShooterStage.Add(currentString);
+        }
         model.Disqualified = currentString.Disqualified;
         model.DownPoints = currentString.DownPoints;
         model.FlagrantPenalties = currentString.FlagrantPenalties;
@@ -585,6 +655,29 @@ else
         await modalConfirmRef.Hide();
     }
 
+    private async Task ShowConfirmDeleteModal(ShooterStageAggregationResult shooter,StageStringContract stageString)
+    {
+        deleteModel.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
+        deleteModel.StageStringId = stageString.StageStringId;
+        deleteModel.StageId = stage.StageId;
+        await modalConfirmDeleteRef.Show();
+    }
+
+    private async Task HideConfirmDeleteModal(bool choice)
+    {
+        if (choice)
+        {
+            var response = await MainServiceLayer.DeleteShooterStageString(deleteModel);
+            if(!response.Status){
+                await this.ShowNotificationError(string.Join(",",response.Errors),L["Error"]);
+                return;
+            }
+            deleteModel = new DeleteShooterStageRequest();
+            await LoadShooters();
+        }
+        await modalConfirmDeleteRef.Hide();
+    }
+
     private void OnFocus(string elementId)
     {
         ((IJSInProcessRuntime)JSRuntime).InvokeVoid("customFunctions.selectElement", elementId);
@@ -592,7 +685,7 @@ else
     public void Focus(KeyboardEventArgs e, int elementId)
     {
         var js = ((IJSInProcessRuntime)JSRuntime);
-        if (js.Invoke<bool>("customFunctions.isDevice"))
+        if (SettingState.Value.IsDevice)
             return;
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {

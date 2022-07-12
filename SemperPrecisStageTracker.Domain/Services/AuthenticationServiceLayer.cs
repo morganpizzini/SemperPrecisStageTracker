@@ -365,9 +365,9 @@ namespace SemperPrecisStageTracker.Domain.Services
         
 
 
-        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IList<Permissions> permissions, string entityId)
+        public Task<IList<ValidationResult>> DeletePermissionsOnEntity(IPermissionInterface permissions, string entityId)
         {
-            var permissionsAsStringList = permissions.Select(x => x.ToDescriptionString()).ToList();
+            var permissionsAsStringList = permissions.List.Select(x => x.ToDescriptionString()).ToList();
             return this.DeletePermissionsOnEntity(permissionsAsStringList, entityId);
         }
 

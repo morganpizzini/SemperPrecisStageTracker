@@ -93,7 +93,7 @@
     }
     private async Task LoadEntities()
     {
-        places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
     }
 
     void DeleteEntity(PlaceContract entity)

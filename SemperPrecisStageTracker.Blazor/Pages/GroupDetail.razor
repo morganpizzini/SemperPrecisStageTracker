@@ -25,6 +25,8 @@ else
                     <CardText>@group.Name</CardText>
                     <CardTitle>@L["Description"]</CardTitle>
                     <CardText>@group.Description</CardText>
+                    <CardTitle>@L["Day"]</CardTitle>
+                    <CardText>@group.GroupDay.ToString("d")</CardText>
                     <CardTitle>@L["Shooters"]</CardTitle>
                     <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
                 </CardBody>
@@ -279,7 +281,7 @@ else
         canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
         model.GroupId = GroupId;
         model.MatchId = Id;
-        var response = await Post<IList<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
+        var response = await Post<List<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });
         if(response!=null)
             Groups = response;
         await LoadShooters();
@@ -292,7 +294,7 @@ else
     {
         if (!SettingState.Value.Offline)
         {
-            availableShooters = await Post<IList<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId },false);
+            availableShooters = await Post<List<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId },false);
         }
     }
 
@@ -306,7 +308,7 @@ else
             GroupId = model.GroupId,
             TeamId = model.TeamId
         };
-        var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request,false);
+        var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request,false);
         if (result == null || result.Count == 0)
             return;
 
@@ -360,7 +362,7 @@ else
     {
         if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
         {
-            group.Shooters = await Post<IList<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId });
+            group.Shooters = await Post<List<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId });
             await LoadShooters();
         }
         shooterToDelete = new GroupShooterContract();
@@ -376,7 +378,7 @@ else
 
             await validations.ClearAll();
 
-            var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/MoveGroupShooter", shooterToMove);
+            var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/MoveGroupShooter", shooterToMove);
 
             if (result == null)
                 return;
@@ -390,7 +392,7 @@ else
     {
         if (choice && shooterToEdit!= null)
         {
-            var result = await Post<IList<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
+            var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
             if (result.Count == 0)
                 return;
                 

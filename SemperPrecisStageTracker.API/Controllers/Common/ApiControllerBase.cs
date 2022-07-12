@@ -66,7 +66,7 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
 
             //Scorro tutti gli errori, inserisco nel modello ed esco
             foreach (var current in validations)
-                ModelState.AddModelError("", current.ErrorMessage);
+                ModelState.AddModelError(current.MemberNames.Any() ? string.Join(",",current.MemberNames) : "", current.ErrorMessage);
 
             //Ritorno la request
             return BadRequest(ModelState);

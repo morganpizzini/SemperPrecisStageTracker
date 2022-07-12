@@ -11,9 +11,12 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string AssociationId { get; set; }
         [Required]
+        public string TeamId { get; set; }
+        [Required]
         public string ShortLink { get; set; }
         public string PlaceId { get; set; }
         public float Cost { get; set; }
+        public bool CompetitionReady {get; set; }
         public string PaymentDetails { get; set; } = string.Empty;
         public string Kind { get; set; } = string.Empty;
         public DateTime MatchDateTimeStart { get; set; }

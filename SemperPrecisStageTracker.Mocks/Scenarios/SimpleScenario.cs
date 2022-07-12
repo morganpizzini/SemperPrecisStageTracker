@@ -85,7 +85,8 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             PermissionGroupRoles = scenarioClone.PermissionGroupRoles;
             TeamHolders = scenarioClone.TeamHolders;
             ShooterTeamPayments = scenarioClone.ShooterTeamPayments;
-            
+            TeamReminders = scenarioClone.TeamReminders;
+            PaymentTypes = scenarioClone.PaymentTypes;
         }
     }
 }

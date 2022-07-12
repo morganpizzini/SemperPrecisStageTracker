@@ -43,6 +43,12 @@ public partial class Effects
         return DoWork(action.User,dispatcher);
     }
 
+    [EffectMethod(typeof(UpdateUserInfoAction))]
+    public Task HandleUpdateUserInfoAction(IDispatcher dispatcher)
+    {
+        return LoadShooterInfo(_userState.Value.User.ShooterId,dispatcher);
+    }
+
     private async Task DoWork(Contracts.ShooterContract user, IDispatcher dispatcher)
     {
          if (user == null)
@@ -57,15 +63,19 @@ public partial class Effects
         await _localStorage.EncodeSecret(user.Username, CommonVariables.AuthCode, user.AuthData);
         if (!_settingsState.Value.Offline)
         {
-            var shooterInfo = await _httpService.Post<ShooterInformationResponse>(
+            await LoadShooterInfo(user.ShooterId,dispatcher).ConfigureAwait(false);
+        }
+    }
+    private async Task LoadShooterInfo(string userId, IDispatcher dispatcher)
+    {
+        var shooterInfo = await _httpService.Post<ShooterInformationResponse>(
                     "api/Aggregation/FetchShooterInformation", new ShooterRequest
                     {
-                        ShooterId = user.ShooterId
+                        ShooterId = userId
                     });
-            if (shooterInfo is { WentWell: true })
-            {
-                dispatcher.Dispatch(new SetUserInformationAction(shooterInfo.Result));
-            }
+        if (shooterInfo is { WentWell: true })
+        {
+            dispatcher.Dispatch(new SetUserInformationAction(shooterInfo.Result));
         }
     }
 }

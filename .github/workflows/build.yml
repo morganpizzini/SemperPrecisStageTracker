@@ -91,6 +91,16 @@ jobs:
           az cache purge
           az account clear
 
+  sync_configuration:
+    name: Sync configuration
+    needs: deploy
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+    - name: sync
+      shell: pwsh
+      run: Invoke-RestMethod ${{ secrets.API_ENDPOINT }}/api/Diagnostic/InitDatabase -Method GET
+
   ef_migrations:
     name: EF migrations
     needs: deploy

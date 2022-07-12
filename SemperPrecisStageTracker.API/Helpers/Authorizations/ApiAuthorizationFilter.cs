@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Domain.Services;
@@ -36,11 +33,21 @@ namespace SemperPrecisStageTracker.API.Helpers
         {
             if (context.ActionArguments.Any())
             {
-                var argument = context.ActionArguments.Where(p => p.Key == "request")
+                 var parameterName = context.ActionDescriptor.Parameters
+                    .Where(p => p.BindingInfo?.BindingSource == EntityIdAttribute.Instance)
+                    .FirstOrDefault()?.Name;
+                
+                if(string.IsNullOrEmpty(parameterName))
+                    return string.Empty;
+
+                var argument = context.ActionArguments.Where(p => p.Key == parameterName)
                     .Select(s => s.Value)
                     .FirstOrDefault();
+
                 if (argument is EntityFilterValidation entity)
                     return entity.EntityId;
+                else
+                    throw new ArgumentException($"Parameter {parameterName} must inherit from {nameof(EntityFilterValidation)}");
             }
             return string.Empty;
         }

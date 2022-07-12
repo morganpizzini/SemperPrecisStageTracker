@@ -9,7 +9,6 @@
 @inject IStringLocalizer<MainLayout> L
 @inject ILocalStorageService localStorage
 @inject IHttpService httpService
-@inject IDispatcher Dispatcher
 
 <div class="page @SettingState.Value.Theme">
 
@@ -87,8 +86,6 @@
         action = ShowIntallModal;
         actionNotification = ShowNotificationAlert;
         actionPwaInstallation = ShowPwaInstallation;
-
-        Dispatcher.Dispatch(new ChangeThemeAction(localStorage.GetItem<string>("theme")));
 
         // In the background, ask if they want to be notified about order updates
         await RequestNotificationSubscriptionAsync();

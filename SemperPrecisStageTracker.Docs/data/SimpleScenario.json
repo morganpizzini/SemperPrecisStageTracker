@@ -7,6 +7,8 @@
       "matchDateTimeEnd": "2021-05-24T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
+      "teamId": "1",
+      "competitionReady": true,
       "placeId": "1",
       "shortLink": "ABC",
       "kind": "Club",
@@ -20,6 +22,8 @@
       "matchDateTimeEnd": "2021-05-24T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "1",
+      "teamId": "1",
+      "competitionReady": true,
       "placeId": "1",
       "shortLink": "EFG",
       "kind": "Club",
@@ -35,6 +39,8 @@
       "matchDateTimeEnd": "2023-05-21T18:25:43.511Z",
       "creationDateTime": "2021-05-21T18:25:43.511Z",
       "associationId": "1",
+      "teamId": "2",
+      "competitionReady": true,
       "placeId": "1",
       "shortLink": "EFG",
       "kind": "Club",
@@ -50,6 +56,8 @@
       "matchDateTimeEnd": "2023-05-24T18:25:43.511Z",
       "creationDateTime": "2021-05-23T18:25:43.511Z",
       "associationId": "2",
+      "teamId": "2",
+      "competitionReady": true,
       "placeId": "1",
       "shortLink": "EFG",
       "kind": "Club",
@@ -165,6 +173,19 @@
       "distance": "distance",
       "muzzleSafePlane": "180 degree",
       "coverGarment": true
+    },
+    {
+      "id": "5",
+      "stageId": "4",
+      "name": "String 2",
+      "targets": 8,
+      "scoring": "scoring",
+      "targetsDescription": "targetsDescription",
+      "scoredHits": "scoredHits",
+      "startStop": "startStop",
+      "distance": "distance",
+      "muzzleSafePlane": "180 degree",
+      "coverGarment": true
     }
   ],
   "groups": [
@@ -173,6 +194,7 @@
       "matchId": "1",
       "name": "Group 01",
       "description": "Descr 01",
+      "groupDay": "2021-05-23T00:00:00.000Z",
       "index": 0,
       "maxShooterNumber": 10
     },
@@ -181,6 +203,7 @@
       "matchId": "1",
       "name": "Group 02",
       "description": "Descr 02",
+      "groupDay": "2021-05-23T00:00:00.000Z",
       "index": 1,
       "maxShooterNumber": 9
     },
@@ -189,7 +212,17 @@
       "matchId": "1",
       "name": "Group 03",
       "description": "Inverted order",
-      "index": 4,
+      "groupDay": "2021-05-24T00:00:00.000Z",
+      "index": 2,
+      "maxShooterNumber": 8
+    },
+    {
+      "id": "31",
+      "matchId": "1",
+      "name": "Group 05",
+      "description": "group last day",
+      "groupDay": "2021-05-24T00:00:00.000Z",
+      "index": 1,
       "maxShooterNumber": 8
     },
     {
@@ -197,6 +230,7 @@
       "matchId": "1",
       "name": "Group 04",
       "description": "Descr 04",
+      "groupDay": "2021-05-23T00:00:00.000Z",
       "index": 3,
       "maxShooterNumber": 12
     },
@@ -604,6 +638,15 @@
       "registrationDate": "2021-05-02T18:25:43.511Z",
       "safetyOfficier": true,
       "categories": [ "lady", "Industry" ]
+    },
+    {
+      "id": "41",
+      "shooterId": "3",
+      "associationId": "1",
+      "cardNumber": "78912",
+      "registrationDate": "2021-05-05T18:25:43.511Z",
+      "safetyOfficier": false,
+      "categories": []
     },
     {
       "id": "4",
@@ -1055,6 +1098,7 @@
       "shooterId": "1",
       "teamId": "1",
       "amount": 10.0,
+      "paymentType": "Entrata cassa",
       "reason": "Pay XYZ",
       "paymentDateTime": "2021-05-23T18:25:43.511Z"
     },
@@ -1062,9 +1106,37 @@
       "id": "2",
       "shooterId": "2",
       "teamId": "2",
+      "paymentType": "Standard",
       "amount": 20.0,
       "reason": "Pay ABC",
       "paymentDateTime": "2021-06-20T18:25:43.511Z"
+    }
+  ],
+  "paymentTypes": [
+    {
+      "id": "1",
+      "teamId": "1",
+      "name": "Entrata cassa"
+    },
+    {
+      "id": "2",
+      "teamId": "1",
+      "name": "Uscita cassa"
+    },
+    {
+      "id": "3",
+      "teamId": "1",
+      "name": "Entrata banca"
+    },
+    {
+      "id": "4",
+      "teamId": "1",
+      "name": "Uscita banca"
+    },
+    {
+      "id": "5",
+      "teamId": "2",
+      "name": "Standard"
     }
   ],
   "permissions": [
@@ -1155,12 +1227,28 @@
     {
       "id": "22",
       "name": "MatchHandling"
+    },
+    {
+      "id": "23",
+      "name": "MatchDelete"
+    },
+    {
+      "id": "24",
+      "name": "AssociationEdit"
+    },
+    {
+      "id": "25",
+      "name": "AssociationDelete"
     }
   ],
   "roles": [
     {
       "id": "1",
       "name": "Admin"
+    },
+    {
+      "id": "111",
+      "name": "Contributor"
     },
     {
       "id": "2",
@@ -1188,6 +1276,30 @@
       "id": "1",
       "permissionId": "12",
       "entityId": "1",
+      "userId": "2"
+    },
+    {
+      "id": "2",
+      "permissionId": "23",
+      "entityId": "3",
+      "userId": "2"
+    },
+    {
+      "id": "21",
+      "permissionId": "22",
+      "entityId": "3",
+      "userId": "2"
+    },
+    {
+      "id": "3",
+      "permissionId": "24",
+      "entityId": "2",
+      "userId": "2"
+    },
+    {
+      "id": "4",
+      "permissionId": "25",
+      "entityId": "2",
       "userId": "2"
     }
   ],
@@ -1229,6 +1341,21 @@
     },
     {
       "id": "8",
+      "roleId": "111",
+      "permissionId": "4"
+    },
+    {
+      "id": "83",
+      "roleId": "111",
+      "permissionId": "10"
+    },
+    {
+      "id": "82",
+      "roleId": "111",
+      "permissionId": "6"
+    },
+    {
+      "id": "81",
       "roleId": "2",
       "permissionId": "14"
     },
@@ -1299,6 +1426,11 @@
       "roleId": "2",
       "userId": "2",
       "entityId": "1"
+    },
+    {
+      "id": "211",
+      "roleId": "111",
+      "userId": "2"
     },
     {
       "id": "21",

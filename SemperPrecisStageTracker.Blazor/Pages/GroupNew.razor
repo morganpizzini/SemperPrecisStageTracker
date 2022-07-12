@@ -1,34 +1,43 @@
 ﻿@page "/matches/{id}/groups/new"
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisBaseComponent<GroupContract>
 @inject IStringLocalizer<GroupNew> L
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["NewGroup"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new{ id = Id}))">@L["BackToMatch"]</NavLink>
 <Divider />
-<GroupComponent Model="model" SubmitCallback="Submit"></GroupComponent>
+<GroupComponent Model="Model" SubmitCallback="Submit" Match="match"></GroupComponent>
 
 @code {
 
     [Parameter]
     public string Id { get; set; }
 
-    GroupContract model = new();
+    MatchContract match = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        match = await Post<MatchContract>("api/Match/GetMatch", new MatchRequest
+            {
+                MatchId = Id
+            });
+    }
 
     async Task Submit()
     {
-      
         var request = new GroupCreateRequest
         {
             MatchId = Id,
-            Description = model.Description,
-            Index = model.Index,
-            MaxShooterNumber = model.MaxShooterNumber,
-            Name = model.Name
+            Description = Model.Description,
+            Index = Model.Index,
+            GroupDay = Model.GroupDay,
+            MaxShooterNumber = Model.MaxShooterNumber,
+            Name = Model.Name
         };
         
         var response = await Post<GroupContract>("/api/Group/CreateGroup", request);
         if (response != null)
-        UriHelper.NavigateTo(RouteHelper.GetUrl<GroupDetail>(new { id = Id, groupId = response.GroupId }));
+            UriHelper.NavigateTo(RouteHelper.GetUrl<GroupDetail>(new { id = Id, groupId = response.GroupId }));
     }
 }

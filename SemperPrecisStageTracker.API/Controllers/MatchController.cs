@@ -58,12 +58,14 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             var associationIds = entities.Select(x => x.AssociationId).ToList();
             var placeIds = entities.Select(x => x.PlaceId).ToList();
+            var teamIds = entities.Select(x => x.TeamId).ToList();
 
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
+            var teams = BasicLayer.FetchTeamsByIds(teamIds);
             var places = BasicLayer.FetchPlacesByIds(placeIds);
 
             //Ritorno i contratti
-            return entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId)));
+            return entities.As(x => ContractUtils.GenerateContract(x,teams.FirstOrDefault(p => p.Id == x.TeamId), associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId)));
         }
 
         /// <summary>
@@ -78,13 +80,15 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Recupero la lista dal layer
             var entities = await BasicLayer.FetchAllSoMdMatches(PlatformUtils.GetIdentityUserId(User));
             var associationIds = entities.Select(x => x.AssociationId).ToList();
+            var teamIds = entities.Select(x => x.TeamId).ToList();
             var placeIds = entities.Select(x => x.PlaceId).ToList();
 
             var associations = BasicLayer.FetchAssociationsByIds(associationIds);
+            var teams = BasicLayer.FetchTeamsByIds(teamIds);
             var places = BasicLayer.FetchPlacesByIds(placeIds);
 
             //Ritorno i contratti
-            return Ok(entities.As(x => ContractUtils.GenerateContract(x, associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
+            return Ok(entities.As(x => ContractUtils.GenerateContract(x,teams.FirstOrDefault(p => p.Id == x.TeamId), associations.FirstOrDefault(p => p.Id == x.AssociationId), places.FirstOrDefault(p => p.Id == x.PlaceId))));
         }
 
         /// <summary>
@@ -105,15 +109,27 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var groups = BasicLayer.FetchAllGroupsWithShootersByMatchId(entity.Id);
             var stages = BasicLayer.FetchAllStagesByMatchId(entity.Id);
-
+            
+            if (entity.CompetitionReady)
+            {
+                var now = DateTime.Now.Date;
+                if(groups.All(x=> x.Item1.GroupDay.Date != now))
+                {
+                    // get the closest date
+                    now = groups.OrderBy(x=>x.Item1.GroupDay).FirstOrDefault().Item1.GroupDay;
+                }
+                groups = groups.Where(x=>x.Item1.GroupDay.Date == now).ToList();
+            }
+            
             var stageIds = stages.Select(x => x.Id).ToList();
             //var stageStrings = BasicLayer.FetchStageStringsFromStageIds(stageIds);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
+            var team = BasicLayer.GetTeam(entity.TeamId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
 
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity, association, place, groups, stages));
+            return Reply(ContractUtils.GenerateContract(entity,team, association, place, groups, stages));
         }
 
         /// <summary>
@@ -144,9 +160,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var entities = BasicLayer.GetMatchStats(entity.Id);
             var association = BasicLayer.GetAssociation(entity.AssociationId);
+            var team = BasicLayer.GetTeam(entity.TeamId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Serializzazione e conferma
-            return Reply(ContractUtils.GenerateContract(entity, association, place, entities));
+            return Reply(ContractUtils.GenerateContract(entity, team, association, place, entities));
         }
 
         /// <summary>
@@ -160,6 +177,29 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> CreateMatch(MatchCreateRequest request)
         {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            var association = BasicLayer.GetAssociation(request.AssociationId);
+            if(association == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.AssociationId).AsList()));
+            }
+
+            var place = BasicLayer.GetPlace(request.PlaceId);
+            if(place == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.PlaceId).AsList()));
+            }
+
+            var team = BasicLayer.GetTeam(request.TeamId);
+
+            if(team == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.TeamId).AsList()));
+            }
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
             //Creazione modello richiesto da admin
             var model = new Match
             {
@@ -167,6 +207,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 MatchDateTimeStart = request.MatchDateTimeStart,
                 MatchDateTimeEnd = request.MatchDateTimeEnd,
                 AssociationId = request.AssociationId,
+                TeamId = request.TeamId,
                 PlaceId = request.PlaceId,
                 OpenMatch = request.OpenMatch,
                 UnifyClassifications = request.UnifyClassifications,
@@ -182,15 +223,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreateMatch(model, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.CreateMatch(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-            var association = BasicLayer.GetAssociation(model.AssociationId);
-            var place = BasicLayer.GetPlace(model.PlaceId);
             //Return contract
-            return Ok(ContractUtils.GenerateContract(model, association, place));
+            return Ok(ContractUtils.GenerateContract(model,team, association, place));
         }
 
         /// <summary>
@@ -201,9 +240,25 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        [ApiAuthorizationFilter(Permissions.EditMatch, Permissions.ManageMatches)]
+        [ApiAuthorizationFilter(Permissions.MatchHandling, Permissions.ManageMatches)]
         public async Task<IActionResult> UpdateMatch([EntityId] MatchUpdateRequest request)
         {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            var association = BasicLayer.GetAssociation(request.AssociationId);
+            if(association == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.AssociationId).AsList()));
+            }
+
+            var place = BasicLayer.GetPlace(request.PlaceId);
+            if(place == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.PlaceId).AsList()));
+            }
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetMatch(request.MatchId);
 
@@ -218,20 +273,18 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.AssociationId = request.AssociationId;
             entity.PlaceId = request.PlaceId;
             entity.Kind = request.Kind;
-            // entity.OpenMatch = request.OpenMatch;
-            // entity.UnifyClassifications = request.UnifyClassifications;
+            
             entity.Cost = request.Cost;
             entity.PaymentDetails = request.PaymentDetails;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdateMatch(entity, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.UpdateMatch(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-            var association = BasicLayer.GetAssociation(entity.AssociationId);
-            var place = BasicLayer.GetPlace(entity.PlaceId);
+            var team = BasicLayer.GetTeam(entity.TeamId);
             //Confermo
-            return Ok(ContractUtils.GenerateContract(entity, association, place));
+            return Ok(ContractUtils.GenerateContract(entity, team, association, place));
         }
 
         /// <summary>
@@ -241,7 +294,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatch")]
-        [ApiAuthorizationFilter(Permissions.ManageMatches)]
+        [ApiAuthorizationFilter(Permissions.ManageMatches,Permissions.MatchDelete)]
         [ProducesResponseType(typeof(MatchContract), 200)]
         public async Task<IActionResult> DeleteMatch([EntityId] MatchRequest request)
         {
@@ -261,9 +314,41 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(validations);
 
             var association = BasicLayer.GetAssociation(entity.AssociationId);
+            var team = BasicLayer.GetTeam(entity.TeamId);
             var place = BasicLayer.GetPlace(entity.PlaceId);
             //Return contract
-            return Ok(ContractUtils.GenerateContract(entity, association, place));
+            return Ok(ContractUtils.GenerateContract(entity, team, association, place));
+        }
+
+         /// <summary>
+        /// Deletes existing match on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("UpdateMatchCompetitionReady")]
+        [ApiAuthorizationFilter(Permissions.MatchHandling, Permissions.ManageMatches)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
+        public async Task<IActionResult> UpdateMatchCompetitionReady([EntityId] MatchCompetitionReadyRequest request)
+        {
+            //Recupero l'elemento dal business layer
+            var entity = BasicLayer.GetMatch(request.MatchId);
+
+            //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            entity.CompetitionReady = request.Ready;
+
+            //Invocazione del service layer
+            var validations = await BasicLayer.UpdateMatch(entity, PlatformUtils.GetIdentityUserId(User));
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            //Return contract
+            return Ok(new OkResponse(){Status= true});
         }
     }
 }

@@ -137,7 +137,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateAssociation")]
-        [ApiAuthorizationFilter(Permissions.EditAssociation, Permissions.ManageAssociations)]
+        [ApiAuthorizationFilter(Permissions.AssociationEdit, Permissions.ManageAssociations)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
         public async Task<IActionResult> UpdateAssociation([EntityId] AssociationUpdateRequest request)
         {
@@ -180,7 +180,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteAssociation")]
-        [ApiAuthorizationFilter(Permissions.ManageAssociations)]
+        [ApiAuthorizationFilter(Permissions.ManageAssociations,Permissions.AssociationDelete)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
         public async Task<IActionResult> DeleteAssociation([EntityId] AssociationRequest request)
         {

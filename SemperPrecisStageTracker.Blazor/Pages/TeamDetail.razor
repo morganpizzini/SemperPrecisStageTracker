@@ -407,7 +407,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
-        shooters = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+        shooters = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters", null);
 
         canEditTeamShooter = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
@@ -460,7 +460,7 @@ else
     {
         if (canSeeTeamShooters )
         {
-            teamShooters = await Post<IList<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+            teamShooters = await Post<List<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
         }
     }
 

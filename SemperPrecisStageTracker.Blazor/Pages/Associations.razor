@@ -38,7 +38,7 @@
                     <TableRow>
                         <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<AssociationDetail>(new{id = association.AssociationId}))">@association.Name</NavLink></TableRowHeader>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(PermissionCtor.ManageAssociations.EditAssociation, association.AssociationId))
+                            @if (AuthService.CheckPermissions(PermissionCtor.ManageAssociations.AssociationEdit, association.AssociationId))
                             {
                                 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<AssociationEdit>(new {id = association.AssociationId}))"><Icon Name="IconName.Pen" /></Button>
                             }
@@ -92,7 +92,7 @@
 
     private async Task LoadEntities()
     {
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
     }
 
     void DeleteEntity(AssociationContract entity)

@@ -264,6 +264,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     return new OkResponse() { Status = false };
 
                 var singleEntity = shooterStage.ShooterStage.FirstOrDefault(x=>x.StageStringId == model.StageStringId);
+
                 if (singleEntity == null)
                     return new OkResponse() { Status = false };
                 
@@ -298,6 +299,51 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 return new OkResponse() { Status = true };
             }
             var response = await _httpService.Post<OkResponse>("/api/ShooterStage/UpsertShooterStage", model);
+            return response is not { WentWell: true } ? new OkResponse(){ Errors = new List<string>{response?.Error?? "Generic error"}, Status = false} : response.Result;
+        }
+
+        public async Task<OkResponse> DeleteShooterStageString(DeleteShooterStageRequest model)
+        {
+            if (Offline)
+            {
+                var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
+                
+                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                if (shooterStage == null)
+                    return new OkResponse() { Status = true };
+
+                var singleEntity = shooterStage.ShooterStage.FirstOrDefault(x=>x.StageStringId == model.StageStringId);
+                if (singleEntity == null)
+                    return new OkResponse() { Status = false };
+                
+                
+                singleEntity.Time = 0;
+                singleEntity.DownPoints = new List<int>();
+                singleEntity.Bonus = 0;
+                singleEntity.Procedurals = 0;
+                singleEntity.HitOnNonThreat = 0;
+                singleEntity.FlagrantPenalties = 0;
+                singleEntity.Ftdr = 0;
+                singleEntity.Warning = false;
+                singleEntity.Disqualified = false;
+                singleEntity.Notes = string.Empty;
+                singleEntity.FirstProceduralPointDown = 0;
+                singleEntity.SecondProceduralPointDown = 0;
+                singleEntity.ThirdProceduralPointDown = 0;
+                singleEntity.HitOnNonThreatPointDown = 0;
+
+                await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
+
+                var updates = await _matchServiceIndexDb.GetAll<EditedEntity>();
+                var entityName = nameof(ShooterStageAggregationResult);
+                var updated = updates.First(x=>x.EntityName == entityName && x.EntityId == shooterStage.EditedEntityId);
+                if(updated!= null)
+                {
+                    await _matchServiceIndexDb.DeleteByKey(typeof(EditedEntity).Name,updated.EditedEntityId);
+                }
+                return new OkResponse() { Status = true };
+            }
+            var response = await _httpService.Post<OkResponse>("/api/ShooterStage/DeleteShooterStageString", model);
             return response is not { WentWell: true } ? new OkResponse(){ Errors = new List<string>{response?.Error?? "Generic error"}, Status = false} : response.Result;
         }
 

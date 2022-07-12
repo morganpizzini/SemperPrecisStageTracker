@@ -15,4 +15,12 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
         {
         }
     }
+     [Repository]
+    public class MockTeamReminderRepository : MockRepositoryBase<TeamReminder, ISemperPrecisStageTrackerScenario>, ITeamReminderRepository
+    {
+        public MockTeamReminderRepository(IDataSession dataSession)
+            : base(dataSession, c => c.TeamReminders)
+        {
+        }
+    }
 }

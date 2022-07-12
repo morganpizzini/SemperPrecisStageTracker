@@ -63,7 +63,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreatePlace")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.CreatePlaces)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> CreatePlace(PlaceCreateRequest request)
+        public async Task<IActionResult> CreatePlace([EntityId]PlaceCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Place
@@ -146,7 +146,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeletePlace")]
-        [ApiAuthorizationFilter(Permissions.ManagePlaces )]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.PlaceDelete)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
         public async Task<IActionResult> DeletePlace([EntityId] PlaceRequest request)
         {

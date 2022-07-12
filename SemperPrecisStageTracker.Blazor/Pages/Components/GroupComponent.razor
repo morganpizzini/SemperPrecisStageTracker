@@ -38,6 +38,25 @@
             </FieldBody>
         </Field>
     </Validation>
+    <Validation Validator="@ValidationRule.IsSelected">
+        <Field Horizontal="true" JustifyContent="JustifyContent.End">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["GroupDay"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <Select TValue="DateTime" @bind-SelectedValue="@Model.GroupDay">
+                    <ChildContent>
+                        <SelectItem Value="@("")"></SelectItem>
+                        @foreach (var date in DateRange)
+                        {
+                            <SelectItem Value="@date">@date.ToString("d")</SelectItem>
+                        }
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["GroupDay"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
     <Validation Validator="@ValidationRule.None">
         <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Index"]</FieldLabel>
@@ -60,3 +79,11 @@
     </Field>
 </Validations>
 
+@code {
+    [Parameter, EditorRequired]
+    public virtual MatchContract Match { get; set; } = new();
+
+    IEnumerable<DateTime> DateRange => Match.MatchDateTimeStart.SplitDateRange(Match.MatchDateTimeEnd);
+
+    
+}

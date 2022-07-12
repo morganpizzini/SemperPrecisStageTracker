@@ -49,6 +49,24 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Return contract
             return Ok(new OkResponse { Status = true });
         }
+        /// <summary>
+        /// Creates a shooterStage on platform
+        /// </summary>
+        /// <param name="request">Request</param>
+        /// <returns>Returns action result</returns>
+        [HttpPost]
+        [Route("DeleteShooterStageString")]
+        [ProducesResponseType(typeof(OkResponse), 200)]
+        public async Task<IActionResult> DeleteShooterStageString(DeleteShooterStageRequest request)
+        {
+            //Invocazione del service layer
+            var validations = await BasicLayer.DeleteShooterStageString(request.ShooterId,request.StageId,request.StageStringId,PlatformUtils.GetIdentityUserId(User));
 
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            //Return contract
+            return Ok(new OkResponse { Status = true });
+        }
     }
 }

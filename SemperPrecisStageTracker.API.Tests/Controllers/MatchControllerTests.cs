@@ -74,6 +74,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
 
             //Composizione della request
             var request = new MatchCreateRequest
@@ -83,8 +84,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
                 MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = true,
-                UnifyClassifications = true
+                OpenMatch = false,
+                UnifyClassifications = false,
+                TeamId = existingTeam.Id,
+                Kind = existingAssociation.MatchKinds.FirstOrDefault(),
+                Cost = RandomSeed.Next(40),
+                PaymentDetails= RandomizationUtils.GenerateRandomString(10),
             };
 
             //Invoke del metodo
@@ -104,19 +109,21 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                             && parsed.Data.MatchDateTimeEnd == request.MatchDateTimeEnd
                             && parsed.Data.OpenMatch == request.OpenMatch
                             && parsed.Data.UnifyClassifications == request.UnifyClassifications
+                            && parsed.Data.Kind == request.Kind
+                            && parsed.Data.Cost == request.Cost
+                            && parsed.Data.PaymentDetails == request.PaymentDetails
                           );
         }
 
         [TestMethod]
-        public async Task ShouldCreateMatchBeOkAndCreatePermissions()
+        public async Task ShouldCreateMatchBeBadRequestHavingProvidedBadKind()
         {
-            UpdateIdentityUser(GetUserWithPermission(new List<Permissions> { Permissions.CreateMatches }));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
 
             //Composizione della request
             var request = new MatchCreateRequest
@@ -126,8 +133,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
                 MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = true,
-                UnifyClassifications = true
+                OpenMatch = false,
+                UnifyClassifications = false,
+                TeamId = existingTeam.Id,
+                Kind = RandomizationUtils.GenerateRandomString(10),
+                Cost = RandomSeed.Next(40),
+                PaymentDetails= RandomizationUtils.GenerateRandomString(10),
             };
 
             //Invoke del metodo
@@ -135,25 +146,25 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<MatchContract>(response);
-            Assert.IsTrue(parsed != null);
-            Assert.AreEqual(countBefore + 1, countAfter);
-            Assert.AreEqual(countBeforePermission + 2, countAfterPermission);
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null
+                          && countAfter == countBefore
+                          && parsed.Data.Any());
         }
+
         [TestMethod]
-        public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
+        public async Task ShouldCreateMatchBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(
-                GetUserWithPermission(new List<Permissions> { Permissions.ManageMatches }));
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.CreateMatches));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
 
             //Composizione della request
             var request = new MatchCreateRequest
@@ -163,8 +174,52 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
                 MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = true,
-                UnifyClassifications = true
+                OpenMatch = false,
+                UnifyClassifications = false,
+                TeamId = existingTeam.Id,
+                Kind = existingAssociation.MatchKinds.FirstOrDefault()
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<MatchContract>(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore + 1, countAfter);
+            // match handling
+            // match delete
+            Assert.AreEqual(countBeforePermission + 2, countAfterPermission);
+        }
+        [TestMethod]
+        public async Task ShouldCreateMatchBeOkAndNotCreatePermissions()
+        {
+            UpdateIdentityUser(
+                GetUserWithPermission(PermissionCtor.ManageMatches));
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                OpenMatch = false,
+                UnifyClassifications = false,
+                Kind = existingAssociation.MatchKinds.FirstOrDefault(),
+                TeamId = existingTeam.Id
             };
 
             //Invoke del metodo
@@ -185,7 +240,131 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateMatchBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(new List<Permissions> { Permissions.ManageMatches, Permissions.CreateMatches }));
+            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageMatches.CreateMatches));
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                OpenMatch = false,
+                UnifyClassifications = true,
+                TeamId = existingTeam.Id
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore, countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateMatchBeBadRequestWithOpenMatchAndUnify()
+        {
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.ManageMatches.CreateMatches));
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+            var existingPlace = Scenario.Places.FirstOrDefault();
+            var existingTeam = Scenario.Teams.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                OpenMatch = true,
+                UnifyClassifications = true,
+                TeamId = existingTeam.Id,
+                Kind= existingAssociation.MatchKinds.FirstOrDefault()
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(countBefore, countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
+        }
+
+        [TestMethod]
+        public async Task ShouldCreateMatchBeBadRequestWithWrongRefIds()
+        {
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.ManageMatches.CreateMatches));
+
+            //Conteggio gli elementi prima della creazione
+            var countBefore = Scenario.Matches.Count;
+            var countBeforePermission = Scenario.Permissions.Count;
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault();
+
+            //Composizione della request
+            var request = new MatchCreateRequest
+            {
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = RandomizationUtils.GenerateRandomString(50),
+                PlaceId = RandomizationUtils.GenerateRandomString(50),
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                OpenMatch = true,
+                UnifyClassifications = true,
+                TeamId = RandomizationUtils.GenerateRandomString(50),
+                Kind= existingAssociation.MatchKinds.FirstOrDefault()
+            };
+
+            //Invoke del metodo
+            var response = await Controller.CreateMatch(request);
+
+            //Conteggio gli elementi dopo la creazione
+            var countAfter = Scenario.Matches.Count;
+            var countAfterPermission = Scenario.Permissions.Count;
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+            Assert.IsTrue(parsed != null);
+            Assert.AreEqual(parsed.Data.Count, 3);
+            Assert.AreEqual(countBefore, countAfter);
+            // because is made by an admin the permissions should be the same
+            Assert.AreEqual(countBeforePermission, countAfterPermission);
+        }
+
+         [TestMethod]
+        public async Task ShouldCreateMatchBeBadRequestWithBadTeamId()
+        {
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.ManageMatches.CreateMatches));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
@@ -202,8 +381,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
                 MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = true,
-                UnifyClassifications = true
+                OpenMatch = false,
+                UnifyClassifications = true,
+                TeamId = RandomizationUtils.GenerateRandomString(50),
+                Kind= existingAssociation.MatchKinds.FirstOrDefault()
             };
 
             //Invoke del metodo
@@ -219,6 +400,57 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.AreEqual(countBefore, countAfter);
             // because is made by an admin the permissions should be the same
             Assert.AreEqual(countBeforePermission, countAfterPermission);
+        }
+
+        
+        [TestMethod]
+        public async Task ShouldUpdateCompetitionReadyMatchBeOkHavingProvidedData()
+        {
+            //Recupero una Match esistente
+            var existing = Scenario.Matches.FirstOrDefault();
+            if (existing == null)
+                Assert.Inconclusive("Match does not exists");
+
+            //Composizione della request
+            var request = new MatchCompetitionReadyRequest
+            {
+                MatchId = existing.Id,
+                Ready = !existing.CompetitionReady
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateMatchCompetitionReady(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedOk<OkResponse>(response);
+
+            //conteggio esistenti
+
+            var updatedEntity = Scenario.Matches.FirstOrDefault(x=>x.Id == request.MatchId);
+
+            Assert.IsTrue(parsed != null
+                          && parsed.Data.Status
+                          && updatedEntity.CompetitionReady == request.Ready
+                          );
+        }
+
+         [TestMethod]
+        public async Task ShouldUpdateCompetitionReadyMatchBeNotFoundHavingProvidedWrongId()
+        {
+            //Composizione della request
+            var request = new MatchCompetitionReadyRequest
+            {
+                MatchId = RandomizationUtils.GenerateRandomString(10),
+                Ready = true
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateMatchCompetitionReady(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedNotFound(response);
+
+            Assert.IsTrue(parsed != null);
         }
 
         [TestMethod]
@@ -245,8 +477,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
                 MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = !existing.OpenMatch,
-                UnifyClassifications = !existing.UnifyClassifications
+                Kind = existingAssociation.MatchKinds.FirstOrDefault(),
+                Cost = RandomSeed.Next(40),
+                PaymentDetails= RandomizationUtils.GenerateRandomString(10)
             };
 
             //Invoke del metodo
@@ -265,14 +498,104 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                            && parsed.Data.Place.PlaceId == request.PlaceId
                             && parsed.Data.MatchDateTimeStart == request.MatchDateTimeStart
                             && parsed.Data.MatchDateTimeEnd == request.MatchDateTimeEnd
-                            && parsed.Data.OpenMatch == request.OpenMatch
-                            && parsed.Data.UnifyClassifications == request.UnifyClassifications);
+                            && parsed.Data.OpenMatch == existing.OpenMatch
+                            && parsed.Data.UnifyClassifications == existing.UnifyClassifications
+                            && parsed.Data.Kind == existing.Kind
+                            && parsed.Data.Cost == existing.Cost
+                            && parsed.Data.PaymentDetails == existing.PaymentDetails);
 
             //verifica contatori
             Assert.AreEqual(countBefore, countAfter);
         }
 
+        [TestMethod]
+        public async Task ShouldUpdateMatchBeBadRequestHavingProvidedWrongRefIds()
+        {
+            //Recupero una Match esistente
+            var existing = Scenario.Matches.FirstOrDefault();
+            if (existing == null)
+                Assert.Inconclusive("Match does not exists");
 
+
+            //conteggio esistenti
+            var countBefore = Scenario.Matches.Count;
+
+            //Composizione della request
+            var request = new MatchUpdateRequest
+            {
+                MatchId = existing.Id,
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = RandomizationUtils.GenerateRandomString(50),
+                PlaceId = RandomizationUtils.GenerateRandomString(50),
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                Kind = existing.Kind,
+                Cost = RandomSeed.Next(40),
+                PaymentDetails= RandomizationUtils.GenerateRandomString(10)
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateMatch(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            //conteggio esistenti
+            var countAfter = Scenario.Matches.Count;
+
+
+            Assert.IsNotNull(parsed);
+            Assert.AreEqual(parsed.Data.Count, 2);
+
+            //verifica contatori
+            Assert.AreEqual(countBefore, countAfter);
+        }
+
+        [TestMethod]
+        public async Task ShouldUpdateMatchBeBadRequestHavingProvidedWrongKind()
+        {
+            //Recupero una Match esistente
+            var existing = Scenario.Matches.FirstOrDefault();
+            if (existing == null)
+                Assert.Inconclusive("Match does not exists");
+
+            var existingAssociation = Scenario.Associations.FirstOrDefault(x => x.Id != existing.AssociationId);
+            var existingPlace = Scenario.Places.FirstOrDefault(x => x.Id != existing.PlaceId);
+
+            //conteggio esistenti
+            var countBefore = Scenario.Matches.Count;
+
+
+            //Composizione della request
+            var request = new MatchUpdateRequest
+            {
+                MatchId = existing.Id,
+                Name = RandomizationUtils.GenerateRandomString(50),
+                AssociationId = existingAssociation.Id,
+                PlaceId = existingPlace.Id,
+                MatchDateTimeStart = DateTime.Now,
+                MatchDateTimeEnd = DateTime.Now.AddDays(1),
+                Kind = RandomizationUtils.GenerateRandomString(10),
+                Cost = RandomSeed.Next(40),
+                PaymentDetails= RandomizationUtils.GenerateRandomString(10)
+            };
+
+            //Invoke del metodo
+            var response = await Controller.UpdateMatch(request);
+
+            //Parsing della risposta e assert
+            var parsed = ParseExpectedBadRequest(response);
+
+            //conteggio esistenti
+            var countAfter = Scenario.Matches.Count;
+
+
+            Assert.IsTrue(parsed != null
+                          && parsed.Data.Any());
+
+            //verifica contatori
+            Assert.AreEqual(countBefore, countAfter);
+        }
         [TestMethod]
         public async Task ShouldUpdateMatchBeNotFoundHavingProvidedWrongId()
         {
@@ -290,9 +613,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 AssociationId = existingAssociation.Id,
                 PlaceId = existingPlace.Id,
                 MatchDateTimeStart = DateTime.Now,
-                MatchDateTimeEnd = DateTime.Now.AddDays(1),
-                OpenMatch = false,
-                UnifyClassifications = false
+                MatchDateTimeEnd = DateTime.Now.AddDays(1)
             };
 
             //Invoke del metodo
@@ -344,14 +665,19 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldDeleteMatchBeOkAndDeletePermissions()
         {
-            var permission =
-                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditMatch));
+            var basePermission = PermissionCtor.MatchDelete;
+            var currentUser = GetUserWithPermission(basePermission);
+            UpdateIdentityUser(currentUser);
 
-            if (permission == null)
-                Assert.Inconclusive("Permissions not found");
+            var createMatchPermissionEntityId = FindEntityWithPermission(currentUser.Id,basePermission).FirstOrDefault();
+
+            if (createMatchPermissionEntityId == null)
+                Assert.Inconclusive("No permission found");
+
+            var countBefore = Scenario.UserPermissions.Count(x=>x.UserId == currentUser.Id);
 
             //Recupero una Match esistente non utilizzato
-            var existing = Scenario.Matches.FirstOrDefault();
+            var existing = Scenario.Matches.FirstOrDefault(x=> x.Id == createMatchPermissionEntityId);
 
             if (existing == null)
                 Assert.Inconclusive("Match does not exists");
@@ -365,14 +691,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta
             var parsed = ParseExpectedOk<MatchContract>(response);
 
-            var countPermissionAfter = Scenario.Permissions.Count(x =>
-                //x.EntityId == permission.EntityId &&
-                x.Name == nameof(Permissions.EditMatch));
+            var countAfter = Scenario.UserPermissions.Count(x=>x.UserId == currentUser.Id);
 
 
             Assert.IsTrue(parsed.Data.MatchId == existing.Id);
 
-            Assert.AreEqual(0, countPermissionAfter);
+            Assert.AreEqual(countBefore -2, countAfter);
         }
 
 

@@ -124,8 +124,18 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// <summary>
         /// List of Shooter Team Payments
         /// </summary>
-        public IList<ShooterTeamPayment> ShooterTeamPayments { get; set; } = new List<ShooterTeamPayment>();
+        public IList<TeamPayment> ShooterTeamPayments { get; set; } = new List<TeamPayment>();
 
+        /// <summary>
+        /// List of Team reminder
+        /// </summary>
+        public IList<TeamReminder> TeamReminders { get; set; } = new List<TeamReminder>();
+
+        /// <summary>
+        /// List of Payment type
+        /// </summary>
+        public IList<PaymentType> PaymentTypes { get; set; } = new List<PaymentType>();
+        
         /// <summary>
         /// Executes initialization of entities
         /// </summary>

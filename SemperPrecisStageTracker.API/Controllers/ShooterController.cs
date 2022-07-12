@@ -159,7 +159,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooter")]
-        [ApiAuthorizationFilter(Permissions.ManageShooters )]
+        [ApiAuthorizationFilter(Permissions.ManageShooters,Permissions.ShooterDelete )]
         [ProducesResponseType(typeof(ShooterContract), 200)]
         public async Task<IActionResult> DeleteShooter([EntityId] ShooterRequest request)
         {

@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditAssociation"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Associations>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(PermissionCtor.ManageAssociations.EditAssociation.ToString())" Resource="@model.AssociationId">
+<AuthorizeView Roles="@(PermissionCtor.ManageAssociations.AssociationEdit.ToString())" Resource="@model.AssociationId">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -34,7 +34,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(PermissionCtor.ManageAssociations.EditAssociation, Id))
+        if (!AuthService.CheckPermissions(PermissionCtor.ManageAssociations.AssociationEdit, Id))
         {
             await base.OnInitializedAsync();
             return;

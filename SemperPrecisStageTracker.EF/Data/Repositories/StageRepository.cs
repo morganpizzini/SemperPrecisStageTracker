@@ -7,6 +7,15 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
+     [Repository]
+    public class TeamReminderRepository : EntityFrameworkRepositoryBase<TeamReminder, SemperPrecisStageTrackerContext>, ITeamReminderRepository
+    {
+        public TeamReminderRepository(IDataSession dataSession)
+            : base(dataSession, c => c.TeamReminder)
+        {
+        }
+    }
+
     [Repository]
     public class StageRepository : EntityFrameworkRepositoryBase<Stage, SemperPrecisStageTrackerContext>, IStageRepository
     {

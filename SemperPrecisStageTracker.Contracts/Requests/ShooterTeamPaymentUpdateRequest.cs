@@ -3,12 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class ShooterTeamPaymentUpdateRequest
+    public class ShooterTeamPaymentUpdateRequest : EntityFilterValidation
     {
+        public override string EntityId => TeamId;
         [Required]
         public string ShooterTeamPaymentId { get; set; }
         [Required]
         public string TeamId { get; set; }
+        [Required]
+        public string PaymentTypeId { get; set; }
         [Required]
         public string ShooterId { get; set; }
         [Required]
@@ -18,7 +21,16 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Reason { get; set; }
         [Required]
         public DateTime PaymentDateTime { get; set; }
-        public DateTime? ExpireDateTime { get; set; }
-        public bool NotifyExpiration { get; set; }
+    }
+
+        public class PaymentTypeUpdateRequest : EntityFilterValidation
+    {
+        public override string EntityId => TeamId;
+        [Required]
+        public string PaymentTypeId { get; set; }
+        [Required]
+        public string TeamId { get; set; }
+        [Required]
+        public string Name { get; set; } = string.Empty;
     }
 }

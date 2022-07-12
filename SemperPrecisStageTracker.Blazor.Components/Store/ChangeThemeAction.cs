@@ -12,6 +12,15 @@ public class ChangeThemeAction
     }
 }
 
+public class ChangeIsDeviceAction
+{
+    public bool IsDevice { get; set; }
+    public ChangeIsDeviceAction(bool isDevice)
+    {
+        IsDevice = isDevice;
+    }
+}
+
 public class SetHasNetworkAction
 {
     public bool HasNetwork { get; set; }
@@ -34,7 +43,7 @@ public class SetOfflineAction
 
 public class SettingsSetInitializedAction {}
 public class SettingsSetReadyAction {}
-
+public class UpdateUserInfoAction {}
 public record TryLoginAction
 {
     public string Username { get; init; } = string.Empty;

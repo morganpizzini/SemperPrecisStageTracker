@@ -39,6 +39,14 @@ public partial class AppUseCaseEffects
     [EffectMethod(typeof(SettingsSetInitializedAction))]
     public async Task HandleSettingsSetInitializedAction(IDispatcher dispatcher)
     {
+        // load Theme and general acknoledge
+         dispatcher.Dispatch(new ChangeThemeAction(_localStorage.GetItem<string>("theme") ?? "light"));
+        
+        dispatcher.Dispatch(new ChangeIsDeviceAction(_jsRuntime.Invoke<bool>("customFunctions.isDevice")));
+
+        
+
+        // load user
         var loggedUser = _localStorage.GetItem<ShooterContract>(CommonVariables.UserKey);
         if (loggedUser == null)
         {
@@ -69,6 +77,7 @@ public partial class AppUseCaseEffects
                 Shooter = loggedUser
             }, password, dispatcher);
         }
+        
         dispatcher.Dispatch(new SettingsSetReadyAction());
     }
     [EffectMethod]

@@ -8,6 +8,8 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -42,8 +44,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterTeamPaymentByShooterAndTeam")]
+        [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchShooterTeamPaymentByShooterAndTeam(ShooterTeamRequest request)
+        public Task<IActionResult> FetchShooterTeamPaymentByShooterAndTeam([EntityId] ShooterTeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShooterTeamPaymentByTeamAndShooterId(request.TeamId, request.ShooterId);
@@ -60,23 +63,66 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateShooterTeamPayment")]
+        [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
         public async Task<IActionResult> CreateShooterTeamPayment(ShooterTeamPaymentCreateRequest request)
         {
-            //Creazione modello richiesto da admin
-            var model = new ShooterTeamPayment
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            Shooter shooter = null;
+            if (!string.IsNullOrEmpty(request.ShooterId))
             {
-                ShooterId = request.ShooterId,
+                shooter = BasicLayer.GetShooter(request.ShooterId);
+                if(shooter == null)
+                {
+                    validations.Add(new ValidationResult("Not found",nameof(request.ShooterId).AsList()));
+                }
+            }
+            var team = BasicLayer.GetTeam(request.TeamId);
+
+            if(team == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.TeamId).AsList()));
+            }
+            
+            var paymentTypes = BasicLayer.FetchPaymentTypesFromTeamId(request.TeamId);
+
+            var currentPaymentType = paymentTypes.FirstOrDefault(x=>x.Id == request.PaymentTypeId);
+
+            if(currentPaymentType == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.PaymentTypeId).AsList()));
+            }
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            //Creazione modello richiesto da admin
+            var model = new TeamPayment
+            {
+                ShooterId = request.ShooterId ?? "",
                 TeamId = request.TeamId,
                 Amount = request.Amount,
                 Reason = request.Reason,
-                PaymentDateTime = request.PaymentDateTime,
-                ExpireDateTime = request.ExpireDateTime,
-                NotifyExpiration = request.NotifyExpiration
+                PaymentType = currentPaymentType.Name,
+                PaymentDateTime = request.PaymentDateTime
             };
 
+            TeamReminder reminder = null;
+            if (request.ExpireDateTime.HasValue)
+            {
+                reminder = new TeamReminder()
+                {
+                    Reason = shooter != null ? $"{shooter.LastName} {shooter.FirstName} - {request.Reason}" : request.Reason,
+                    TeamId = request.TeamId,
+                    ShooterId=request.ShooterId,
+                    ExpireDateTime = request.ExpireDateTime.Value,
+                    NotifyExpiration = request.NotifyExpiration
+                };
+            }
+
             //Invocazione del service layer
-            var validations = await BasicLayer.CreateShooterTeamPayment(model, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.CreateShooterTeamPayment(model, reminder, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
@@ -92,9 +138,35 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateShooterTeamPayment")]
+        [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
         public async Task<IActionResult> UpdateShooterTeamPayment([EntityId] ShooterTeamPaymentUpdateRequest request)
         {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+
+            var shooter = BasicLayer.GetShooter(request.ShooterId);
+            if(shooter == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.ShooterId).AsList()));
+            }
+            var team = BasicLayer.GetTeam(request.TeamId);
+
+            if(team == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.TeamId).AsList()));
+            }
+             var paymentTypes = BasicLayer.FetchPaymentTypesFromTeamId(request.TeamId);
+
+            var currentPaymentType = paymentTypes.FirstOrDefault(x=>x.Id == request.PaymentTypeId);
+
+            if(currentPaymentType == null)
+            {
+                validations.Add(new ValidationResult("Not found",nameof(request.PaymentTypeId).AsList()));
+            }
+
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamPayment(request.ShooterTeamPaymentId);
 
@@ -106,13 +178,12 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.TeamId = request.TeamId;
             entity.ShooterId = request.ShooterId;
             entity.Amount = request.Amount;
+            entity.PaymentType = currentPaymentType.Name;
             entity.Reason = request.Reason;
             entity.PaymentDateTime = request.PaymentDateTime;
-            entity.ExpireDateTime = request.ExpireDateTime;
-            entity.NotifyExpiration = request.NotifyExpiration;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdateShooterTeamPayment(entity, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.UpdateShooterTeamPayment(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
@@ -127,8 +198,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooterTeamPayment")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> DeleteShooterTeamPayment(ShooterTeamPaymentRequest request)
+        [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
+        [ProducesResponseType(typeof(OkResponse), 200)]
+        public Task<IActionResult> DeleteShooterTeamPayment([EntityId]ShooterTeamPaymentRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamPayment(request.ShooterTeamPaymentId);

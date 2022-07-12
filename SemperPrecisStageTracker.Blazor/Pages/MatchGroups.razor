@@ -109,6 +109,8 @@ else
                                 <CardText>@group.Description</CardText>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is6">
+                                <CardTitle>@L["Day"]</CardTitle>
+                                <CardText>@group.GroupDay.ToString("d")</CardText>
                                 <CardTitle>@L["Spots"]</CardTitle>
                                 <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
                             </Column>
@@ -322,7 +324,7 @@ else
     {
         if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
         {
-            await Post<IList<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId }, false);
+            await Post<List<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId }, false);
             await LoadGroups();
         }
         shooterToDelete = new GroupShooterContract();

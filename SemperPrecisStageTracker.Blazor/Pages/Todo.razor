@@ -1,29 +1,19 @@
 ﻿@page "/todo"
-@using SemperPrecisStageTracker.Blazor.Services.IndexDB
 @inject ClientConfiguration config
-@inject MatchServiceIndexedDb matchServiceIndexDb
 
 
 @if (config.IsLocal)
 {
-    <Button Clicked="@Add">aggiungi</Button>
-    <Button Clicked="@Get">get</Button>
-    <Button Clicked="@Clear">clear</Button>
-    @matches.Count
     <ul>
-        quando mi registro ad un match aggiornare UserState.Value.Info.ShooterMatchInfos
-        
-        bottone reset punteggio
+        Creare shooter SO temporanei per il club: campo in shooter come clubownerId
 
-        Codara gregorio appare in 2 team
+        nel team:
+        modalità per iscrizione annuale o solare / aggiungere oggetti reminder che permettono di essere notificati per qualunque occorrenza
 
-        controllare tutti i DotNet.invokeMethodAsync in index.html: non dovrebbero tirare errori dato che richiamati dopo che il loadin è rimosso dalla pagina
+        Possibilità di disabilitare i controlli sull'inserimento punteggi per match
 
-        bloccare i gruppi sul giorno, es: gruppo 1 il sabato, gruppo 2 la domenica
-        sistemare il nullpointer sulle chiamate in post, se nullo restituisco il default
-
-        reducer creare effetto per settare il valore del tema nel localhost e creare metodi per recupero allo startup https://github.com/mrpmorris/Fluxor/blob/master/Source/Tutorials/01-BasicConcepts/01A-StateActionsReducersTutorial/README.md
-
+        controllare tutti i DotNet.invokeMethodAsync in index.html: non dovrebbero tirare errori dato che richiamati dopo che il loading è rimosso dalla pagina
+   
         Inserire un metodo per chiusura del match che calcola le stats di ogni tiratore e le inserisce in una tabella ad-hoc segnando la posizione ottenuta in classificazione, divisione e in generale (informazioni riguardo piazzamento su altri tiratori nella stessa divisione e con classificazioni più alte)
 
         Controllare regole idpa 9.4.5 (calcolare parametri in base a queste regole)
@@ -34,6 +24,8 @@
 
         salvare il numero di volte in cui il risultato viene editato (all'interno dell'upsert) e salvare risultato precedente
 
+        se in offline, la rimozione del punteggio dovrà essere un'operazione riportata anche al momento del caricamento dati
+
         [Blazor]
         In caso di match unclassified (senza suddivisioni MA/EX/SS/MM/NV), in fase di registrazione le divisioni disponibili dovranno essere presa dal match e non dall'utente es:
         se ho classificazione ESP Limited, posso comunque andare in CDP o SSP, il tiratore dovrà avere solo la registrazione verso l'associazione
@@ -41,9 +33,6 @@
         Se il match è open, i tiratori non iscritti all'associazione sceglieranno la divisione e faranno classifica a parte
         possibilità cambiare la tipologia di match solo se non ho shooter registrati
         metodo UpdateShooterInfo dovrebbe essere richiamato ogni volta che viene svolta un'operazione che potrebbe cambiare la risposta
-        Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)
-
-
 
         durante processo di inport controllo dei tempi già inseriti, tramite una schermata che mostra il prima e dopo, con radio button per accettazione
 
@@ -60,6 +49,9 @@
         nei metodi del dettaglio ruolo => quando aggiungo o rimuovo un'entità restituire la lista aggiornata, e non OkResponse
         applicazione dello score
         recupero dei team corretti sulla base del shooterapprove e teamapprove all'interno delle pagine dettaglio e nell'associazione in homepage e nel team
+        quando mi registro ad un match aggiornare UserState.Value.Info.ShooterMatchInfos in modo che si veda che sono registrato ad un match ma non nel gruppo
+        Rimuovere l'evento sull'invio se sono su device
+        Gestire parimerito con punti down (fare calcolo inverso, chi ha il tempo maggiore vince, perchè ha avuto minor punti down, ed è stato quindi più preciso)
 
         [permessi]
         se elimino un ruolo i permessi associati e gli utenti associati dovrebbero sparire
@@ -73,7 +65,6 @@
         utenti per authn/authz
 
         [infra]
-        aggiungere subdomain all'appservice e caricare l'applicazione per visualizzare solo i risultati, configurare la pipeline
         nel frontend devo poter mostrare le stats del match, utilizzando lo shortlink
 
         [chakra]
@@ -100,38 +91,29 @@
 
         hamburger menu
 
-
         [mettere i test]
-        tests per UpsertShooterStages
         controllare tutti i test che aggiungono/rimuovono permessi
-        Ogni associazione ha i suoi ruoli per SO CSO SSO
-        Ogni associazione impostare quanto vale la penalità
         shooterController campi: data rilascio porto d'armi, nato a, residenza, via, cap, provincia, country, codice fiscale, telefono
-        matchcontroller campi: cost, paymentDetails
         permission controller: create e delete user role
         matchstats controllare che l'ordinamento sia sempre corretto
         match controller FetchMatchSO - recupero dei match per offline / aggregation controller FetchDataForMatch
         metodo UpsertShooterSOStage controllare che vengano aggiunti i permessi giusti
         metodi UpsertShooterStages e UpsertShooterStage
-        tutti i metodi che riguardano unifyclassification e openmatch
         aggiunta groupshooter senza inserire il gruppo e tutti i metodi associati alla selezione di un gruppo
         nuovi metodi creazione gruppo in match
         aggiunta groupshooter disponibilità all'interno del gruppo come numero
         authorization controller SignIn
         FetchAvailableMatches / AddGroupShooter
-        impossibilità di modificare i bersagli su uno stage se sono già stati inseriti dei punteggi
         tutti i processi di stagestring
-        FetchShooterInformation
-        metodi riguardanti match kind (sia association che match controller)\
+        impossibilità di modificare i bersagli su uno stagestring se sono già stati inseriti dei punteggi
         stage description stagestring muzzlesafeplane
-
+        FetchShooterInformation
+        DeleteShooterStageString
+        
         [deployment]
         Backup del db
 
         permessi -> ruolo mettere field per aggiornare name e description
-
-        nel team:
-        modalità per iscrizione annuale o solare
 
         nell'UpsertShooterStages' far risalire il messaggio di errore fino alla risposta
 
@@ -183,30 +165,4 @@
 
         <li>Controllare tastierino numerico su Ios: numberEdit potrebbe non mettere la virgola</li>
     </ul>
-}
-
-@code
-{
-    private IList<MatchContract> matches = new List<MatchContract>();
-
-    private async Task Add()
-    {
-        var openResult = await matchServiceIndexDb.OpenIndexedDb();
-        await matchServiceIndexDb.AddItems(new List<MatchContract> { new() { MatchId = Guid.NewGuid().ToString(), Name = "Match01" } });
-    }
-
-    private async Task Get()
-    {
-        var openResult = await matchServiceIndexDb.OpenIndexedDb();
-
-        matches = await matchServiceIndexDb.GetAll<MatchContract>();
-
-    }
-    private async Task Clear()
-    {
-        var openResult = await matchServiceIndexDb.OpenIndexedDb();
-
-        await matchServiceIndexDb.DeleteAll<MatchContract>();
-
-    }
 }

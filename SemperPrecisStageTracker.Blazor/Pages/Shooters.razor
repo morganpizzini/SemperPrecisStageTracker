@@ -29,7 +29,7 @@
 
     private async Task LoadEntities()
     {
-        var result = await Post<IList<ShooterContract>>("api/Shooter/FetchAllShooters");
+        var result = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
         if (result != null)
         {
             shooters = result;

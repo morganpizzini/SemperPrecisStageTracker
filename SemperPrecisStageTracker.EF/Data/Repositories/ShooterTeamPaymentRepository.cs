@@ -8,7 +8,7 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
     [Repository]
-    public class ShooterTeamPaymentRepository : EntityFrameworkRepositoryBase<ShooterTeamPayment, SemperPrecisStageTrackerContext>, IShooterTeamPaymentRepository
+    public class ShooterTeamPaymentRepository : EntityFrameworkRepositoryBase<TeamPayment, SemperPrecisStageTrackerContext>, IShooterTeamPaymentRepository
     {
         public ShooterTeamPaymentRepository(IDataSession dataSession)
             : base(dataSession, c => c.ShooterTeamPayments)

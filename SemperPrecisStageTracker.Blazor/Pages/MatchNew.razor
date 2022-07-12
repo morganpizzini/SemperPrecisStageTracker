@@ -1,5 +1,5 @@
 ﻿@page "/matches/new"
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisBaseComponent<MatchContract>
 @inject IStringLocalizer<MatchNew> L
 @inject NavigationManager UriHelper
 
@@ -14,14 +14,12 @@
         <h3 class="mt-5">@L["NoAuth"]</h3>
     </NotAuthorized>
     <Authorized>
-        <MatchComponent Model="model" Associations="associations" Places="places" SubmitCallback="Submit"></MatchComponent>
+        <MatchComponent Model="Model" Associations="associations" Teams="teams" Places="places" SubmitCallback="Submit"></MatchComponent>
     </Authorized>
 </AuthorizeView>
 @code {
-
-    Validations validations;
-    MatchContract model = new();
     IList<AssociationContract> associations = new List<AssociationContract>();
+    IList<TeamContract> teams = new List<TeamContract>();
     IList<PlaceContract> places = new List<PlaceContract>();
 
     protected override async Task OnInitializedAsync()
@@ -31,8 +29,9 @@
             await base.OnInitializedAsync();
             return;
         }
-        associations = await Post<IList<AssociationContract>>("api/Association/FetchAllAssociations", null);
-        places = await Post<IList<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams", null);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
 
         await base.OnInitializedAsync();
     }
@@ -42,16 +41,17 @@
     // create request
         var request = new MatchCreateRequest()
         {
-            Name = model.Name,
-            MatchDateTimeStart = model.MatchDateTimeStart,
-            MatchDateTimeEnd = model.MatchDateTimeEnd,
-            PlaceId = model.Place.PlaceId,
-            AssociationId = model.Association.AssociationId,
-            OpenMatch = model.OpenMatch,
-            UnifyClassifications = model.UnifyClassifications,
-            Cost = model.Cost,
-            Kind= model.Kind,
-            PaymentDetails = model.PaymentDetails
+            Name = Model.Name,
+            MatchDateTimeStart = Model.MatchDateTimeStart,
+            MatchDateTimeEnd = Model.MatchDateTimeEnd,
+            PlaceId = Model.Place.PlaceId,
+            AssociationId = Model.Association.AssociationId,
+            TeamId = Model.Team.TeamId,
+            OpenMatch = Model.OpenMatch,
+            UnifyClassifications = Model.UnifyClassifications,
+            Cost = Model.Cost,
+            Kind= Model.Kind,
+            PaymentDetails = Model.PaymentDetails
         };
         var response = await Post<MatchContract>("/api/Match/CreateMatch", request);
         if (response != null)

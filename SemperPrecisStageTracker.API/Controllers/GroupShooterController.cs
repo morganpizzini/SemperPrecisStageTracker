@@ -202,7 +202,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             //check user permission
             var canEdit = await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), request.GroupId,
-                PermissionCtor.ManageMatches.MatchManageGroups.EditMatch);
+                PermissionCtor.ManageMatches.MatchManageGroups.MatchHandling);
 
             if (!canEdit)
             {

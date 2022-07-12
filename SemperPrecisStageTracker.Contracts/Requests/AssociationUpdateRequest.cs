@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class AssociationUpdateRequest
+    public class AssociationUpdateRequest : EntityFilterValidation
     {
+        public override string EntityId => AssociationId;
         [Required]
         public string AssociationId { get; set; }
         [Required]

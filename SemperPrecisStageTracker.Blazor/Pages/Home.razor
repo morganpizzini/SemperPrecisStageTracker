@@ -1,9 +1,11 @@
 ﻿@page "/"
+@using SemperPrecisStageTracker.Blazor.Store
 @inherits SemperPrecisBaseComponent
 @inject IStringLocalizer<Home> L
 @inject NavigationManager UriHelper
 @inject IState<UserState> UserState 
 @inject IState<SettingsState> SettingState 
+@inject IDispatcher Dispatcher
 
 @if (!SettingState.Value.Offline)
 {
@@ -90,7 +92,7 @@
     {
         if (!SettingState.Value.Offline)
         {
-            var result = await Post<IList<MatchContract>>("api/Match/FetchAvailableMatches");
+            var result = await Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
 
             if (result != null)
                 AvailableMatches = result;
@@ -111,6 +113,7 @@
         var result = await Post<OkResponse>("/api/GroupShooter/AddGroupShooter", request);
         if (result is {Status: true })
         {
+            Dispatcher.Dispatch(new UpdateUserInfoAction());
             UriHelper.NavigateTo(RouteHelper.GetUrl<MatchGroups>(new {id = request.MatchId}));
         }
         

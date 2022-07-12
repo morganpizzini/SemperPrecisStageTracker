@@ -48,7 +48,17 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 BirthDate = DateTime.Now,
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
-                FirearmsLicenceExpireDate = DateTime.Now
+                FirearmsLicenceExpireDate = DateTime.Now,
+                Address = RandomizationUtils.GenerateRandomString(10),
+                BirthLocation = RandomizationUtils.GenerateRandomString(10),
+                City = RandomizationUtils.GenerateRandomString(10),
+                Country = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicenceReleaseDate = DateTime.Now,
+                FiscalCode = RandomizationUtils.GenerateRandomString(10),
+                MedicalExaminationExpireDate = DateTime.Now,
+                Phone = RandomizationUtils.GenerateRandomString(10),
+                PostalCode = RandomizationUtils.GenerateRandomString(10),
+                Province=RandomizationUtils.GenerateRandomString(10)
             };
 
             //Invoke del metodo
@@ -68,6 +78,16 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                             && parsed.Data.Username == request.Username
                             && parsed.Data.FirearmsLicence == request.FirearmsLicence
                             && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
+                            && parsed.Data.Address == request.Address 
+                            && parsed.Data.BirthLocation == request.BirthLocation 
+                            && parsed.Data.City == request.City 
+                            && parsed.Data.Country == request.Country 
+                            && parsed.Data.FirearmsLicenceReleaseDate == request.FirearmsLicenceReleaseDate 
+                            && parsed.Data.FiscalCode == request.FiscalCode 
+                            && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate 
+                            && parsed.Data.Phone == request.Phone 
+                            && parsed.Data.PostalCode == request.PostalCode 
+                            && parsed.Data.Province == request.Province 
                           );
         }
 
@@ -103,7 +123,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(new List<Permissions> { Permissions.ManageShooters, Permissions.CreateShooters }));
+            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageShooters.CreateShooters));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Shooters.Count;
@@ -137,9 +157,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetUserWithPermission(new List<Permissions> { Permissions.CreateShooters }));
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.CreateShooters));
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Permissions.Count;
+            var countBefore = Scenario.UserPermissions.Count;
 
             //Composizione della request
             var request = new ShooterCreateRequest
@@ -155,7 +175,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Permissions.Count;
+            var countAfter = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<ShooterContract>(response);
@@ -232,7 +252,16 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicenceExpireDate = DateTime.Now,
-                MedicalExaminationExpireDate = DateTime.Now
+                MedicalExaminationExpireDate = DateTime.Now,
+                Address = RandomizationUtils.GenerateRandomString(10),
+                BirthLocation = RandomizationUtils.GenerateRandomString(10),
+                City = RandomizationUtils.GenerateRandomString(10),
+                Country = RandomizationUtils.GenerateRandomString(10),
+                FirearmsLicenceReleaseDate = DateTime.Now,
+                FiscalCode = RandomizationUtils.GenerateRandomString(10),
+                Phone = RandomizationUtils.GenerateRandomString(10),
+                PostalCode = RandomizationUtils.GenerateRandomString(10),
+                Province=RandomizationUtils.GenerateRandomString(10)
             };
 
             //Invoke del metodo
@@ -253,7 +282,17 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.FirearmsLicence == request.FirearmsLicence
                           && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
                           && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate
-                          && parsed.Data.Username == request.Username);
+                          && parsed.Data.Username == request.Username
+                          && parsed.Data.Address == request.Address 
+                            && parsed.Data.BirthLocation == request.BirthLocation 
+                            && parsed.Data.City == request.City 
+                            && parsed.Data.Country == request.Country 
+                            && parsed.Data.FirearmsLicenceReleaseDate == request.FirearmsLicenceReleaseDate 
+                            && parsed.Data.FiscalCode == request.FiscalCode 
+                            && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate 
+                            && parsed.Data.Phone == request.Phone 
+                            && parsed.Data.PostalCode == request.PostalCode 
+                            && parsed.Data.Province == request.Province );
 
             //verifica contatori
             Assert.AreEqual(countBefore, countAfter);

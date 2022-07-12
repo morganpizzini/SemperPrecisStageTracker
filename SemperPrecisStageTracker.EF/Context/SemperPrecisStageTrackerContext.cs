@@ -160,9 +160,9 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterTeamPayment>()
+            modelBuilder.Entity<TeamPayment>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterTeamPayment>()
+            modelBuilder.Entity<TeamPayment>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
@@ -280,6 +280,17 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
+             modelBuilder.Entity<PaymentType>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<PaymentType>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+             modelBuilder.Entity<TeamReminder>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<TeamReminder>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Permission>().ToTable("ShooterPermissions")
                 .HasKey(f => f.Id);
@@ -395,7 +406,7 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of shooter team payment
         /// </summary>
-        public DbSet<ShooterTeamPayment> ShooterTeamPayments { get; set; }
+        public DbSet<TeamPayment> ShooterTeamPayments { get; set; }
 
 
         /// <summary>
@@ -478,5 +489,15 @@ namespace SemperPrecisStageTracker.EF.Context
         /// </summary>
         public DbSet<PermissionGroupRole> PermissionGroupRoles { get; set; }
 
+        /// <summary>
+        /// List of team reminder
+        /// </summary>
+        public DbSet<TeamReminder> TeamReminder { get; set; }
+
+        /// <summary>
+        /// List of payment type
+        /// </summary>
+        public DbSet<PaymentType> PaymentTypes { get; set; }
+        
     }
 }

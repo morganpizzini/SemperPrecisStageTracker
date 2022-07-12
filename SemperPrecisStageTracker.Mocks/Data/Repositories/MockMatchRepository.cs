@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class MockPaymentTypeRepository : MockRepositoryBase<PaymentType, ISemperPrecisStageTrackerScenario>, IPaymentTypeRepository
+    {
+        public MockPaymentTypeRepository(IDataSession dataSession)
+            : base(dataSession, c => c.PaymentTypes)
+        {
+        }
+    }
 }

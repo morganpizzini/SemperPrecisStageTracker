@@ -1,6 +1,6 @@
 ﻿namespace SemperPrecisStageTracker.Contracts.Requests
 {
-    public class EntityFilterValidation
+    public abstract class EntityFilterValidation
     {
         public virtual string EntityId { get; }
     }

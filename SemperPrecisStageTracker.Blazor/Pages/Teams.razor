@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        teams = await Post<IList<TeamContract>>("api/Team/FetchAllTeams", null);
+        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams", null);
 
         await base.OnInitializedAsync();
     }

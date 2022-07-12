@@ -8,6 +8,18 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
 {
     public static class ExtensionMethods
     {
+
+        public static IEnumerable<DateTime> SplitDateRange(this DateTime start, DateTime end, int dayChunkSize = 1)
+        {
+            DateTime chunkEnd = start;
+            do
+            {
+                yield return start.Date;
+                start = chunkEnd;
+            }while ((chunkEnd = start.AddDays(dayChunkSize)) < end);
+            yield return chunkEnd.Date;
+        }
+
         public static NameValueCollection QueryString(this NavigationManager navigationManager)
         {
             return HttpUtility.ParseQueryString(new Uri(navigationManager.Uri).Query);
