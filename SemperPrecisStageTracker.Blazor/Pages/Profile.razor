@@ -22,17 +22,17 @@ else
                         <Row>
                             <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
                                 <CardTitle>@L["FirstName"]</CardTitle>
-                                <CardText>@UserState.Value.User.FirstName</CardText>
+                                <CardText>@UserState.Value.User?.FirstName</CardText>
                                 <CardTitle>@L["LastName"]</CardTitle>
-                                <CardText>@UserState.Value.User.LastName</CardText>
+                                <CardText>@UserState.Value.User?.LastName</CardText>
                                 <CardTitle>@L["birthDate"]</CardTitle>
-                                <CardText>@UserState.Value.User.BirthDate.ToString("d")</CardText>
+                                <CardText>@UserState.Value.User?.BirthDate.ToString("d")</CardText>
                             </Column>
                             <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop">
                                 <CardTitle>@L["Username"]</CardTitle>
-                                <CardText>@UserState.Value.User.Username</CardText>
+                                <CardText>@UserState.Value.User?.Username</CardText>
                                 <CardTitle>@L["Email"]</CardTitle>
-                                <CardText>@UserState.Value.User.Email</CardText>
+                                <CardText>@UserState.Value.User?.Email</CardText>
                             </Column>
                         </Row>
                         <Button Size="Size.Small" Color="Color.Primary" Clicked="@EditProfile">@L["EditProfile"]</Button>
@@ -292,12 +292,12 @@ else
 </Modal>
 
 @code {
-    Validations validations;
+    Validations validations = default!;
     UserUpdateRequest model = new();
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
     ShooterTeamContract teamToDelete = new();
-    private Modal modalRefTeamToDelete;
-    private Modal modalRefTeamToApprove;
+    private Modal modalRefTeamToDelete = default!;
+    private Modal modalRefTeamToApprove = default!;
     ShooterTeamCreateRequest teamToEdit = new();
     bool showEditModel;
 
@@ -309,19 +309,19 @@ else
     }
     async Task LoadShooterTeams()
     {
-        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User.ShooterId });
+        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User?.ShooterId });
     }
 
     private void EditProfile()
     {
         model = new UserUpdateRequest()
         {
-            UserId = UserState.Value.User.ShooterId,
-            FirstName = UserState.Value.User.FirstName,
-            LastName = UserState.Value.User.LastName,
-            BirthDate = UserState.Value.User.BirthDate,
-            Email = UserState.Value.User.Email,
-            Username = UserState.Value.User.Username
+            UserId = UserState.Value.User?.ShooterId,
+            FirstName = UserState.Value.User?.FirstName,
+            LastName = UserState.Value.User?.LastName,
+            BirthDate = UserState.Value.User?.BirthDate ?? DateTime.MinValue,
+            Email = UserState.Value.User?.Email,
+            Username = UserState.Value.User?.Username
         };
         showEditModel = true;
     }
@@ -362,7 +362,7 @@ else
 
         teamToEdit = new ShooterTeamCreateRequest
             {
-                ShooterId = UserState.Value.User.ShooterId,
+                ShooterId = UserState.Value.User?.ShooterId,
                 TeamId = shooterTeam.Team.TeamId,
                 RegistrationDate = shooterTeam.RegistrationDate
             };
@@ -398,7 +398,7 @@ else
             var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
                 {
                     TeamId = teamToDelete.Team.TeamId,
-                    ShooterId = UserState.Value.User.ShooterId
+                    ShooterId = UserState.Value.User?.ShooterId
                 });
             if (response == null)
             {

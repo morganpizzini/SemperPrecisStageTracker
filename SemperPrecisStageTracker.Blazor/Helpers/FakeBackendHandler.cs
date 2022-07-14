@@ -14,7 +14,7 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var users = new[] { new { Id = 1, Username = "test", Password = "test", FirstName = "Test", LastName = "User" } };
-            var path = request.RequestUri.AbsolutePath;
+            var path = request.RequestUri?.AbsolutePath;
             var method = request.Method;
 
             if (path == "/users/authenticate" && method == HttpMethod.Post)
@@ -35,8 +35,13 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
 
             async Task<HttpResponseMessage> authenticate()
             {
-                var bodyJson = await request.Content.ReadAsStringAsync();
+                var bodyJson = request.Content != null ? await request.Content.ReadAsStringAsync() : string.Empty;
+
                 var body = JsonSerializer.Deserialize<Dictionary<string, string>>(bodyJson);
+                
+                if(body == null)
+                    return await error("Request failed");
+
                 var user = users.FirstOrDefault(x => x.Username == body["username"] && x.Password == body["password"]);
 
                 if (user == null)
@@ -83,7 +88,7 @@ namespace SemperPrecisStageTracker.Blazor.Helpers
                 };
 
                 // delay to simulate real api call
-                await Task.Delay(500);
+                await Task.Delay(500,CancellationToken.None);
 
                 return response;
             }

@@ -118,7 +118,7 @@
     </Column>
 </Row>
 @code {
-    Validations validations;
+    Validations validations = default!;
     SignInRequest model = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

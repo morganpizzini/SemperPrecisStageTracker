@@ -399,25 +399,25 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch,Id);
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchHandling,Id);
 
     // reference to the modal component
-    private Modal modalRefGroup;
+    private Modal modalRefGroup = default!;
     GroupContract groupToDelete = new();
-    private Modal modalRefStage;
+    private Modal modalRefStage = default!;
     StageContract stageToDelete = new();
 
 
-    Validations validations;
-    private Modal modalRefMatchDirectorToDelete;
+    Validations validations = default!;
+    private Modal modalRefMatchDirectorToDelete = default!;
     ShooterMatchContract matchDirectorToDelete = new();
-    private Modal modalRefMatchDirectorToEdit;
+    private Modal modalRefMatchDirectorToEdit = default!;
     ShooterMatchCreateRequest matchesDirectorToEdit = new();
 
     MatchContract match = new();

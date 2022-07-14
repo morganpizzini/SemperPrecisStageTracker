@@ -42,7 +42,7 @@
                         <TableRowCell>@match.Association.Name - @match.Kind</TableRowCell>
                         <TableRowCell>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")<br />@match.Place.Name</TableRowCell>
                         <TableRowCell>
-                            @if (!SettingState.Value.Offline && AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch, match.MatchId))
+                            @if (!SettingState.Value.Offline && AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchHandling, match.MatchId))
                             {
                                 <Button class="me-2" Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchEdit>(new {id = match.MatchId}))"><Icon Name="IconName.Pen" /></Button>
                             }
@@ -94,7 +94,7 @@
 @code {
     IList<MatchContract> matches = new List<MatchContract>();
 
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
     MatchContract entityToDelete = new();
 
     protected override async Task OnInitializedAsync()

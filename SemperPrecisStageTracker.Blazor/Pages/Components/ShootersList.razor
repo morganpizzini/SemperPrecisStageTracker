@@ -115,7 +115,7 @@
 </Modal>
 @code {
     ElementReference searchInput;
-    public string SearchText = "";
+    public string SearchText = string.Empty;
     [Parameter]
     public IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
 
@@ -139,7 +139,7 @@
         }
     }
 
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
     ShooterContract entityToDelete = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

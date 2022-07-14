@@ -293,16 +293,16 @@
 
     RoleContract _role = new ();
 
-    Validations validations;
-    Validations modelValidations;
+    Validations validations = default!;
+    Validations modelValidations = default!;
     RolePermissionCreateRequest formModel = new();
     UserRoleCreateRequest userModel = new();
     PermissionContract permissionToDelete = new();
     UserRoleContract userToDelete = new();
 
-    private Modal modalRefEntityToDelete;
-    private Modal modalRefPermissionToDelete;
-    private Modal modalRefUserToDelete;
+    private Modal modalRefEntityToDelete = default!;
+    private Modal modalRefPermissionToDelete = default!;
+    private Modal modalRefUserToDelete = default!;
     
     [Parameter]
     public EventCallback<RolePermissionCreateRequest> SubmitCallbackNewPermission { get; set; }

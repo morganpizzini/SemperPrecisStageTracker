@@ -124,8 +124,8 @@
 </Modal>
 @code {
 
-    Validations validations;
-    private Modal modalRefPrompt;
+    Validations validations = default!;
+    private Modal modalRefPrompt = default!;
     private string modalState = string.Empty;
 
     private string modalTitle = string.Empty;
@@ -185,7 +185,7 @@
         else
         {
             if (canGoOffline && !SettingState.Value.Offline)
-                matches = await Post<List<MatchContract>>("api/Match/FetchMatchesForSO", null);
+                matches = await Post<List<MatchContract>>("api/Match/FetchMatchesForSO");
         }
     }
     async Task Submit()

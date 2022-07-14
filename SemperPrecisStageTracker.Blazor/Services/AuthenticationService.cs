@@ -22,7 +22,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly IState<UserState> _userState;
         private readonly IDispatcher _dispatcher;
 
-        private CustomAuthStateProvider _customAuthenticationStateProvider;
+        private readonly CustomAuthStateProvider _customAuthenticationStateProvider;
 
         public AuthenticationService(
             IHttpService httpService,

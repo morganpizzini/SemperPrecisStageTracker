@@ -120,7 +120,7 @@
     </Field>
 </Validations>
 @code {
-    Validations validations;
+    Validations validations = default!;
 
     [Parameter]
 
@@ -151,7 +151,7 @@
     [Parameter]
     public MatchContract? Match { get; set; }
     
-    private BaseShooterInMatchCreateRequest _model;
+    private BaseShooterInMatchCreateRequest _model = new BaseShooterInMatchCreateRequest();
 
     [Parameter,EditorRequired]
     public BaseShooterInMatchCreateRequest Model

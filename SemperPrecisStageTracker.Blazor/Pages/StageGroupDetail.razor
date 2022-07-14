@@ -494,7 +494,7 @@ else
                                 @if(currentStringResult!=null){
                                     var currentString = stage.Strings.FirstOrDefault(x=>x.StageStringId == currentStringResult.StageStringId);
                                     <span>
-                                        @currentString.Name : @((currentStringResult as IStageResult).TotalString)
+                                        @currentString?.Name : @((currentStringResult as IStageResult).TotalString)
                                     </span>
                                 }
                         </FieldBody>
@@ -513,13 +513,13 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     [Parameter]
-    public string StageId { get; set; }
+    public string StageId { get; set; } = string.Empty;
 
     [Parameter]
-    public string GroupId { get; set; }
+    public string GroupId { get; set; } = string.Empty;
 
     string selectedTab = "penalties";
 
@@ -529,10 +529,10 @@ else
     }
 
     // reference to the modal component
-    private Modal modalConfirmRef;
-    private Modal modalConfirmDeleteRef;
+    private Modal modalConfirmRef = default!;
+    private Modal modalConfirmDeleteRef = default!;
 
-    private Modal modalRef;
+    private Modal modalRef = default!;
     ShooterContract shooterToFill = new ();
 
     StageContract stage = new ();
@@ -540,8 +540,8 @@ else
     GroupContract group = new ();
     IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
 
-    Validations validations;
-    Validations noteValidations;
+    Validations validations = default!;
+    Validations noteValidations = default!;
     ShooterStageRequest model = new();
     DeleteShooterStageRequest deleteModel = new();
 
@@ -556,7 +556,7 @@ else
             var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x=>x.Shooter.ShooterId);
             userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x=>x.Shooter.ShooterId).ToList());
             canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) || 
-                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User.ShooterId));
+                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.ShooterId));
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 

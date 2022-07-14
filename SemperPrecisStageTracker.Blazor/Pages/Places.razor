@@ -83,7 +83,7 @@
 </Modal>
 @code {
     IList<PlaceContract> places = new List<PlaceContract>();
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
     PlaceContract entityToDelete = new();
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +93,7 @@
     }
     private async Task LoadEntities()
     {
-        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces");
     }
 
     void DeleteEntity(PlaceContract entity)

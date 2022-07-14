@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Components.Utils;
 using SemperPrecisStageTracker.Blazor.Models;
@@ -207,6 +201,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 var shooters = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
 
                 var group = match.Groups.FirstOrDefault(x => x.GroupId == groupId);
+                if(group == null)
+                    return new GroupContract();
+
                 group.Match = match;
                 group.Shooters = shooters.Where(x => x.GroupId == groupId).Select(x => x.GroupShooter)
                     .DistinctBy(x => x.Shooter.ShooterId)
@@ -226,7 +223,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
                 var stage = match.Stages.FirstOrDefault(x => x.StageId == stageId);
 
-                return stage;
+                return stage ?? new StageContract();
             }
 
             var response = await _httpService.Post<StageContract>("api/Stage/GetStage", new StageRequest() { StageId = stageId });

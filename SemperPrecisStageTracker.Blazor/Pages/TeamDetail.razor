@@ -15,7 +15,7 @@
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewShooter"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 }
-@if(UserState.Value.User.Teams.All(x => x.TeamId != team.TeamId) && teamShooters.All(x=>x.Shooter.ShooterId != UserState.Value.User.ShooterId))
+@if(UserState.Value.User?.Teams.All(x => x.TeamId != team.TeamId) ?? false && teamShooters.All(x=>x.Shooter.ShooterId != UserState.Value.User?.ShooterId))
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Button" Clicked="AskToJoin"><Icon Name="IconName.PlusSquare" /> @L["AskToJoin"]</Button>
 }
@@ -377,25 +377,25 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, Id);
 
 
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
 
     IList<ShooterContract> shooters = new List<ShooterContract>();
     TeamContract team = new();
-    Validations shooterValidations;
-    private Modal modalRefShooterToDelete;
+    Validations shooterValidations = default!;
+    private Modal modalRefShooterToDelete = default!;
     ShooterTeamContract shooterToDelete = new();
-    private Modal modalRefShooterToEdit;
-    private Modal modalRefShooterToApprove;
+    private Modal modalRefShooterToEdit = default!;
+    private Modal modalRefShooterToApprove = default!;
     ShooterTeamCreateRequest shooterToEdit = new();
-    private Modal modalRefResetPassword;
-    private Modal modalRefAskToJoin;
+    private Modal modalRefResetPassword = default!;
+    private Modal modalRefAskToJoin = default!;
     ShooterTeamContract shooterToReset = new();
 
     IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
@@ -407,13 +407,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
-        shooters = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters", null);
+        shooters = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
 
         canEditTeamShooter = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
 
         // faccio parte del team e vedo gli altri
-        canSeeTeamShooters = UserState.Value.User.Teams.Any(x => x.TeamId == team.TeamId) || canEditTeamShooter || canEditTeamShooterPayment;
+        canSeeTeamShooters = (UserState.Value.User?.Teams.Any(x => x.TeamId == team.TeamId) ?? false) || canEditTeamShooter || canEditTeamShooterPayment;
 
         await LoadShooterTeams();
 
@@ -503,7 +503,7 @@ else
     {
         shooterToEdit = new ShooterTeamCreateRequest
         {
-            ShooterId = UserState.Value.User.ShooterId,
+            ShooterId = UserState.Value.User?.ShooterId,
             TeamId = Id,
             FromShooter = true,
             RegistrationDate = DateTime.Now

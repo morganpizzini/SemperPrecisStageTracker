@@ -73,7 +73,7 @@ else
                                 }
                                 <TableRowCell>
                                     @if (!SettingState.Value.Offline && 
-                                         (canManageShooter || UserState.Value.User.ShooterId == groupShooter.Shooter.ShooterId))
+                                         (canManageShooter || UserState.Value.User?.ShooterId == groupShooter.Shooter.ShooterId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking"/></Button>
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete"/></Button>
@@ -142,7 +142,7 @@ else
                                         <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                     }
                                     <TableRowCell>
-                                        @if (!SettingState.Value.Offline && (canManageShooter || UserState.Value.User.ShooterId == groupShooter.Shooter.ShooterId))
+                                        @if (!SettingState.Value.Offline && (canManageShooter || UserState.Value.User?.ShooterId == groupShooter.Shooter.ShooterId))
                                         {
                                             <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
@@ -269,12 +269,12 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
-    Validations validations;
+    Validations validations = default!;
     // reference to the modal component
-    private Modal modalRef;
-    private Modal modalMoveRef;
+    private Modal modalRef = default!;
+    private Modal modalMoveRef = default!;
     GroupShooterContract shooterToDelete = new();
 
     //MatchGroupResponse Groups = new();
@@ -287,7 +287,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LoadGroups();
-        canManageShooter = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
+        canManageShooter = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.MatchHandling, Id);
         await base.OnInitializedAsync();
     }
 

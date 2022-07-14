@@ -84,7 +84,7 @@
 @code {
     private bool collapseNavMenu = true;
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
 
     protected override void Dispose(bool disposed)
     {

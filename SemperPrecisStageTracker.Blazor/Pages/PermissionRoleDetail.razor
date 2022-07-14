@@ -29,7 +29,7 @@
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     RoleContract role = new();
     IList<PermissionContract> permissions= new List<PermissionContract>();

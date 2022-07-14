@@ -331,7 +331,7 @@
                                                 <TableRowHeader>@classification.Association.Name</TableRowHeader>
                                                 <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
                                                 <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
-                                                <TableRowCell>@classification.ExpireDate.Value.ToString("d")</TableRowCell>
+                                                <TableRowCell>@(classification.ExpireDate?.ToString("d") ?? L["NoExpiration"])</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
                                             {
@@ -775,26 +775,26 @@
 </Modal>
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id);
 
 
-    private Modal modalRefEntityToDelete;
-    private Modal modalRefResetPassword;
+    private Modal modalRefEntityToDelete = default!;
+    private Modal modalRefResetPassword = default!;
 
     ShooterContract shooter = new();
-    Validations validations;
-    Validations validationInfos;
-    Validations teamValidations;
-    private Modal modalRefAssociationToDelete;
-    private Modal modalRefAssociationInfoToDelete;
+    Validations validations = default!;
+    Validations validationInfos = default!;
+    Validations teamValidations = default!;
+    private Modal modalRefAssociationToDelete = default!;
+    private Modal modalRefAssociationInfoToDelete = default!;
     ShooterAssociationContract associationToDelete = new();
     ShooterAssociationInfoContract associationInfoToDelete = new();
-    private Modal modalRefAssociationToEdit;
-    private Modal modalRefAssociationInfoToEdit;
+    private Modal modalRefAssociationToEdit = default!;
+    private Modal modalRefAssociationInfoToEdit = default!;
     private IReadOnlyList<string> categoriesEdit = new List<string>();
     ShooterAssociationCreateRequest associationToEdit = new();
     ShooterAssociationInfoUpdateRequest associationInfoToEdit = new();
@@ -809,10 +809,10 @@
     IList<string> divisions = new List<string>();
 
 
-    private Modal modalRefTeamToEdit;
+    private Modal modalRefTeamToEdit = default!;
     ShooterTeamContract teamToDelete = new();
-    private Modal modalRefTeamToDelete;
-    private Modal modalRefTeamToApprove;
+    private Modal modalRefTeamToDelete = default!;
+    private Modal modalRefTeamToApprove = default!;
     ShooterTeamCreateRequest teamToEdit = new();
     IList<TeamContract> teams = new List<TeamContract>();
     IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
@@ -825,7 +825,7 @@
         }
 
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
-        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams", null);
+        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams");
         await LoadShooterAssociationInfo();
         await LoadShooterClassifications();
         await LoadShooterTeams();

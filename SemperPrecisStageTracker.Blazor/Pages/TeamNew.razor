@@ -40,7 +40,7 @@
 </AuthorizeView>
 @code {
 
-    Validations validations;
+    Validations validations = default!;
     TeamCreateRequest model = new();
     void ValidateDate(ValidatorEventArgs e)
     {

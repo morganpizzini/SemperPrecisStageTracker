@@ -333,10 +333,10 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     [Parameter]
-    public string StageId { get; set; }
+    public string StageId { get; set; } = string.Empty;
 
     StageContract stage = new();
 
@@ -345,14 +345,14 @@ else
     IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
     private bool matchDirectorCall;
     private bool callMatchDirectorSuccess;
-    private string callMatchDirectorError;
-    private Modal modalRefCallMatchDirector;
+    private string callMatchDirectorError = default!;
+    private Modal modalRefCallMatchDirector = default!;
 
 
-    Validations validations;
-    private Modal modalRefStageSoToDelete;
+    Validations validations = default!;
+    private Modal modalRefStageSoToDelete = default!;
     ShooterSOStageContract stageSoToDelete = new();
-    private Modal modalRefStageSoToEdit;
+    private Modal modalRefStageSoToEdit = default!;
     ShooterSOStageCreateRequest stageSoToEdit = new();
     IList<ShooterSOStageContract> stageSos = new List<ShooterSOStageContract>();
     IList<ShooterContract> availableStageSo = new List<ShooterContract>();
@@ -374,7 +374,7 @@ else
         var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x => x.Shooter.ShooterId);
         userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x => x.Shooter.ShooterId).ToList());
         canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) ||
-                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User.ShooterId));
+                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.ShooterId));
 
         await LoadSO();
 

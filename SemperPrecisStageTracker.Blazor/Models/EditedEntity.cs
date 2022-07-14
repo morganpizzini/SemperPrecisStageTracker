@@ -10,8 +10,8 @@ namespace SemperPrecisStageTracker.Blazor.Models
     {
         [IndexDbKey]
         public string EditedEntityId { get; set; } = Guid.NewGuid().ToString();
-        public string EntityName { get; set; }
-        public string EntityId { get; set; }
+        public string EntityName { get; set; } = string.Empty;
+        public string EntityId { get; set; } = string.Empty;
         public DateTime EditDateTime { get; set; } = DateTime.UtcNow;
     }
 }

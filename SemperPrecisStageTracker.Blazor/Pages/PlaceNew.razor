@@ -136,7 +136,7 @@
 </AuthorizeView>
 @code {
 
-    Validations validations;
+    Validations validations = default!;
     PlaceCreateRequest model = new();
 
     protected override async Task OnInitializedAsync()

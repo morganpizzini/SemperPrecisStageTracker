@@ -64,10 +64,9 @@
 </Row>
 
 @code {
-    Validations validations;
+    Validations validations = default!;
     private LogInRequest model = new();
-    private bool loading;
-
+    
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && UserState.Value.User != null)

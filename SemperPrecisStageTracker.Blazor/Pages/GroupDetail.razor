@@ -250,17 +250,17 @@ else
 @code {
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     [Parameter]
-    public string GroupId { get; set; }
+    public string GroupId { get; set; } = string.Empty;
 
 
-    Validations validations;
+    Validations validations = default!;
     // reference to the modal component
-    private Modal modalRef;
-    private Modal modalEditRef;
-    private Modal modalMoveRef;
+    private Modal modalRef = default!;
+    private Modal modalEditRef = default!;
+    private Modal modalMoveRef = default!;
     GroupShooterContract  shooterToDelete = new();
 
     IList<GroupContract> Groups = new List<GroupContract>();
@@ -278,7 +278,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.EditMatch, Id);
+        canEditGroup = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageGroups.MatchHandling, Id);
         model.GroupId = GroupId;
         model.MatchId = Id;
         var response = await Post<List<GroupContract>>("api/Group/FetchAllGroupsByMatchId", new MatchRequest() { MatchId = Id });

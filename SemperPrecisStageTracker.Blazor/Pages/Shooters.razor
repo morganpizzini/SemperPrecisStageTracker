@@ -37,12 +37,11 @@
     }
     private async Task DeleteShooter(string id)
     {
-        
         await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
         {
             ShooterId = id
         });
 
-        LoadEntities();
+        await LoadEntities();
     }
 }

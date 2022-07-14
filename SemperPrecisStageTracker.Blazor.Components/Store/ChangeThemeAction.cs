@@ -70,8 +70,8 @@ public class SetUserInformationAction
 
 public class SetUserAction
 {
-    public ShooterContract User { get; set; }
-    public SetUserAction(ShooterContract user)
+    public ShooterContract? User { get; set; }
+    public SetUserAction(ShooterContract? user)
     {
         User = user;
     }

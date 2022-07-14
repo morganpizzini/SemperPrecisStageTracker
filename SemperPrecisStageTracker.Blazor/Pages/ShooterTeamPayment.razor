@@ -61,7 +61,6 @@
                                         <TableHeaderCell>@L["Amount"]</TableHeaderCell>
                                         <TableHeaderCell>@L["Date"]</TableHeaderCell>
                                         <TableHeaderCell>@L["Description"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
                                         <TableHeaderCell></TableHeaderCell>
                                     </TableRow>
                                 </TableHeader>
@@ -73,12 +72,6 @@
                                                 <TableRowHeader>@payment.Amount</TableRowHeader>
                                                 <TableRowCell>@payment.PaymentDateTime.ToString("d")</TableRowCell>
                                                 <TableRowCell>@payment.Reason</TableRowCell>
-                                                <TableRowCell>
-                                                    @if (payment.NotifyExpiration)
-                                                    {
-                                                        <span class="text-danger">!! </span>
-                                                    }
-                                                    @payment.ExpireDateTime?.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
                                                     {
@@ -225,26 +218,6 @@
                     </Field>
                 </Validation>
             </Validations>
-            <Validation Validator="@ValidationRule.None">
-                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["ExpireDateTime"]</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <DateEdit TValue="DateTime?" @bind-Date="@paymentToEdit.ExpireDateTime">
-                                <Feedback>
-                                    <ValidationError>@L["WrongExpireDateTime"]</ValidationError>
-                                </Feedback>
-                            </DateEdit>
-                        </FieldBody>
-                    </Field>
-                </Validation>
-            <Validation Validator="@ValidationRule.None">
-                <Field>
-                    <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">&nbsp;</FieldLabel>
-                    <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        <Check TValue="bool" @bind-Checked="@paymentToEdit.NotifyExpiration">@L["NotifyExpiration"]</Check>
-                    </FieldBody>
-                </Field>
-            </Validation>
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPaymentToEdit(false))">@L["Close"]</Button>
@@ -284,9 +257,9 @@
 </Modal>
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     [Parameter]
-    public string TeamId { get; set; }
+    public string TeamId { get; set; } = string.Empty;
     
     private bool? pageCondition = null;
 
@@ -295,25 +268,16 @@
 
     ShooterContract shooter = new();
     TeamContract team = new();
-    Validations validations;
-    Validations validationsCreate;
-    private Modal modalRefPaymentToDelete;
+    Validations validations = default!;
+    Validations validationsCreate = default!;
+    private Modal modalRefPaymentToDelete = default!;
     ShooterTeamPaymentContract paymentToDelete = new();
-    private Modal modalRefPaymentToEdit;
-    private Modal modalRefPaymentToCreate;
+    private Modal modalRefPaymentToEdit = default!;
+    private Modal modalRefPaymentToCreate = default!;
     ShooterTeamPaymentUpdateRequest paymentToEdit = new();
     ShooterTeamPaymentCreateRequest paymentToCreate = new();
     IList<ShooterTeamPaymentContract> shooterTeamPayments = new List<ShooterTeamPaymentContract>();
-    IList<string> classifications = new List<string>();
-
-    IList<string> divisions = new List<string>();
-
-    private Modal modalRefTeamToDelete;
-
-    ShooterTeamContract teamToDelete = new();
-    private Modal modalRefTeamToEdit;
-    ShooterTeamCreateRequest teamToEdit = new();
-    IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
+    
     protected override async Task OnInitializedAsync()
     {
         if (!(AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
@@ -381,9 +345,7 @@
             TeamId = team.TeamId,
             Amount = shooterTeamPayment.Amount,
             PaymentDateTime = shooterTeamPayment.PaymentDateTime,
-            Reason = shooterTeamPayment.Reason,
-            ExpireDateTime = shooterTeamPayment.ExpireDateTime,
-            NotifyExpiration = shooterTeamPayment.NotifyExpiration
+            Reason = shooterTeamPayment.Reason
         };
 
         modalRefPaymentToEdit.Show();

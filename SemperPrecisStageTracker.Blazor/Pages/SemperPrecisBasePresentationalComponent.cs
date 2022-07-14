@@ -9,7 +9,7 @@ namespace SemperPrecisStageTracker.Blazor.Pages;
 
 public class SemperPrecisBasePresentationalValidationComponent<T> : SemperPrecisBasePresentationalComponent where T : new()
 {
-    protected Validations validations;
+    protected Validations validations = default!;
 
     [Parameter,EditorRequired]
     public virtual T Model { get; set; } = new();
@@ -31,10 +31,10 @@ public class SemperPrecisBasePresentationalValidationComponent<T> : SemperPrecis
 public class SemperPrecisBasePresentationalComponent : FluxorComponent
 {
     [Inject]
-    protected IAuthenticationService AuthService { get; set; }
+    protected IAuthenticationService AuthService { get; set; } = default!;
         
     [Inject]
-    private INotificationService NotificationService { get; set; }
+    private INotificationService NotificationService { get; set; } = default!;
 
     //public bool PageLoading { get; set; } = true;
     [Parameter]
@@ -53,17 +53,12 @@ public class SemperPrecisBasePresentationalComponent : FluxorComponent
         {
             return Task.CompletedTask;
         }
-        switch (notificationType)
+        return notificationType switch
         {
-            case NotificationType.Warning:
-                return NotificationService.Warning(message, title);
-            case NotificationType.Error:
-                return NotificationService.Error(message, title);
-            case NotificationType.Success:
-                return NotificationService.Success(message, title);
-            case NotificationType.Info:
-            default:
-                return NotificationService.Warning(message, title);
-        }
+            NotificationType.Warning => NotificationService.Warning(message, title),
+            NotificationType.Error => NotificationService.Error(message, title),
+            NotificationType.Success => NotificationService.Success(message, title),
+            _ => NotificationService.Warning(message, title),
+        };
     }
 }

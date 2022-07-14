@@ -1,6 +1,5 @@
 using Microsoft.JSInterop;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -18,9 +17,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
             var json = _jsRuntime.Invoke<string>("localStorage.getItem", key);
 
             if (json == null)
-                return default;
+                return default!;
 
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(json) ?? default!;
         }
 
         public void SetItem<T>(string key, T value)

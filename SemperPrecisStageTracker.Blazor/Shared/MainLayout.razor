@@ -72,13 +72,13 @@
 </Modal>
 @code {
     [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = default!;
 
-    private static Action action;
-    private Modal modalInstallRef;
-    private static Action actionNotification;
+    private static Action action = default!;
+    private Modal modalInstallRef = default!;
+    private static Action actionNotification = default!;
     private bool ShowNotificationAlertStatus;
-    private static Action<bool> actionPwaInstallation;
+    private static Action<bool> actionPwaInstallation = default!;
     private bool ShowPwaInstallationProgress;
 
     protected override async Task OnInitializedAsync()

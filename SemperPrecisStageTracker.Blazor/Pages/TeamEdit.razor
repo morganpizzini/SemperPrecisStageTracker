@@ -49,8 +49,8 @@
 </AuthorizeView>
 @code {
     [Parameter]
-    public string Id { get; set; }
-    Validations validations;
+    public string Id { get; set; } = string.Empty;
+    Validations validations = default!;
     TeamUpdateRequest model = new ();
 
     protected override async Task OnInitializedAsync()

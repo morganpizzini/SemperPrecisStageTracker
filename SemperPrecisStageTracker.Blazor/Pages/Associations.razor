@@ -81,7 +81,7 @@
 @code {
     IList<AssociationContract> associations = new List<AssociationContract>();
 
-    private Modal modalRefEntityToDelete;
+    private Modal modalRefEntityToDelete = default!;
     AssociationContract entityToDelete = new();
 
     protected override async Task OnInitializedAsync()
@@ -92,7 +92,7 @@
 
     private async Task LoadEntities()
     {
-        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations");
     }
 
     void DeleteEntity(AssociationContract entity)

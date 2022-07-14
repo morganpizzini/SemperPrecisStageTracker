@@ -6,7 +6,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditMatch"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Matches>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(PermissionCtor.ManageMatches.EditMatch.ToString())" Resource="@Id">
+<AuthorizeView Roles="@(PermissionCtor.ManageMatches.MatchHandling.ToString())" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -31,7 +31,7 @@
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = string.Empty;
     
     MatchContract model = new();
     IList<AssociationContract> associations = new List<AssociationContract>();
@@ -39,13 +39,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(PermissionCtor.ManageMatches.EditMatch,Id))
+        if (!AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchHandling,Id))
         {
             await base.OnInitializedAsync();
             return;
         }
-        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
-        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations");
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces");
 
         model =  await Post<MatchContract>("api/Match/GetMatch", new MatchRequest { MatchId = Id });
 
@@ -63,8 +63,6 @@
             MatchDateTimeEnd = model.MatchDateTimeEnd,
             PlaceId = model.Place.PlaceId,
             AssociationId = model.Association.AssociationId,
-            OpenMatch = model.OpenMatch,
-            UnifyClassifications = model.UnifyClassifications,
             Cost = model.Cost,
             Kind = model.Kind,
             PaymentDetails = model.PaymentDetails

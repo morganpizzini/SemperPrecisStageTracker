@@ -29,9 +29,9 @@
             await base.OnInitializedAsync();
             return;
         }
-        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams", null);
-        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations", null);
-        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces", null);
+        teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams");
+        associations = await Post<List<AssociationContract>>("api/Association/FetchAllAssociations");
+        places = await Post<List<PlaceContract>>("api/Place/FetchAllPlaces");
 
         await base.OnInitializedAsync();
     }
