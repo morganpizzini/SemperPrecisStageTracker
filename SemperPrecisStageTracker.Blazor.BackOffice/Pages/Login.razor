@@ -1,0 +1,86 @@
+﻿@page "/login"
+@inherits SemperPrecisBasePresentationalComponent
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Login> L
+@inject IJSRuntime JSRuntime
+@inject INotificationService NotificationService;
+@inject IState<UserState> UserState 
+@inject IState<SettingsState> SettingState
+
+<Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
+<Row>
+    <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+        <Card Margin="Margin.Is4.OnY">
+            <CardHeader>@L["Login"]</CardHeader>
+            <CardBody>
+                <Validations @ref="validations" Mode="ValidationMode.Manual" Model="@model">
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field Horizontal="true">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Username"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull">
+                                <TextEdit Placeholder="@L["Username"]" @bind-Text="@model.Username" @onkeydown="@Enter">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongUsername"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation Validator="@ValidationRule.IsNotEmpty">
+                        <Field Horizontal="true">
+                            <FieldLabel ColumnSize="ColumnSize.IsFull">@L["Password"]</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.IsFull">
+                                <TextEdit Placeholder="@L["Password"]" Role="TextRole.Password" @bind-Text="@model.Password" @onkeydown="@Enter">
+                                    <Feedback>
+                                        <ValidationError>@L["WrongPassword"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Div Flex="Flex.JustifyContent.End" Margin="Margin.Is3.FromBottom">
+                        <Div Padding="Padding.Is2">
+                            <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Login"]</LoadingTemplate>
+                                <ChildContent>@L["Login"]</ChildContent>
+                            </Button>
+                        </Div>
+                    </Div>
+                </Validations>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+@code {
+    Validations validations = default!;
+    private LogInRequest model = new();
+    
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && UserState.Value.User != null)
+        {
+            NavigationManager.NavigateTo(RouteHelper.GetUrl<Home>());
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+    public Task Enter(KeyboardEventArgs e)
+    {
+        if (SettingState.Value.IsDevice)
+            return Task.CompletedTask;
+        if (e.Code != "Enter" && e.Code != "NumpadEnter")
+            return Task.CompletedTask;
+        return Submit();
+    }
+    private async Task Submit()
+    {
+        if (! (await validations.ValidateAll()))
+            return;
+        ApiLoading = true;
+        await validations.ClearAll();
+        AuthService.Login(model.Username, model.Password); 
+        ApiLoading = false;
+
+    }
+
+}

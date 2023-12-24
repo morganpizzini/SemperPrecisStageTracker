@@ -1,11 +1,15 @@
-using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Text.Json;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.API.Middlewares;
@@ -22,12 +26,14 @@ using SemperPrecisStageTracker.EF.Context;
 using SemperPrecisStageTracker.Mocks.Clients;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models.Diagnostics.Tracers;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using ZenProgramming.Chakra.Core.Configurations;
 using ZenProgramming.Chakra.Core.Configurations.Utils;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Diagnostic;
 using ZenProgramming.Chakra.Core.EntityFramework.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
+using static Microsoft.Azure.KeyVault.WebKey.JsonWebKeyVerifier;
 
 namespace SemperPrecisStageTracker.API;
 
@@ -107,7 +113,28 @@ public class Program
         });
         // register configuration across application
         ServiceResolver.Register<IConfiguration>(builder.Configuration);
-        
+
+        //builder.Services.AddProblemDetails();
+        builder.Services.Configure<RouteOptions>(options => { options.LowercaseUrls = true; });
+        builder.Services
+            .AddApiVersioning(options =>
+            {
+                //indicating whether a default version is assumed when a client does
+                // does not provide an API version.
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.DefaultApiVersion = new ApiVersion(1.0);
+            })
+            .AddApiExplorer(options =>
+            {
+                // Add the versioned API explorer, which also adds IApiVersionDescriptionProvider service
+                // note: the specified format code will format the version as "'v'major[.minor][-status]"
+                options.GroupNameFormat = "'v'VVV";
+
+                // note: this option is only necessary when versioning by url segment. the SubstitutionFormat
+                // can also be used to control the format of the API version in route templates
+                options.SubstituteApiVersionInUrl = true;
+            });
 
         builder.Services.AddCors(options =>
         {
@@ -150,19 +177,30 @@ public class Program
             .AddAuthentication(o => o.DefaultScheme = BasicAuthenticationOptions.Scheme)
             .AddBasicAuthentication();
 
-
         builder.Services.AddControllers().AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.WriteIndented = false;
             options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         });
 
+        builder.Services.AddApiVersioning(opt =>
+        {
+            opt.DefaultApiVersion = new ApiVersion(1, 0);
+            opt.AssumeDefaultVersionWhenUnspecified = true;
+            opt.ReportApiVersions = true;
+            opt.ApiVersionReader = ApiVersionReader.Combine(new UrlSegmentApiVersionReader(),
+                                                            new HeaderApiVersionReader("x-api-version"),
+                                                            new MediaTypeApiVersionReader("x-api-version"));
+        });
 
         builder.Services.AddHealthChecks();
-
         builder.Services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
+            c.OperationFilter<SwaggerDefaultValues>();
+            //c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
 
             c.OperationFilter<PermissionsFilter>();
 
@@ -189,14 +227,26 @@ public class Program
                 }
             });
         });
+        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         var app = builder.Build();
         var enableDev = bool.Parse(builder.Configuration["enableDev"] ?? "false");
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
+
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SemperPrecisStageTracker v1"));
+            app.UseSwaggerUI(options => {
+                var descriptions = app.DescribeApiVersions();
+
+                // Build a swagger endpoint for each discovered API version
+                foreach (var description in descriptions)
+                {
+                    var url = $"/swagger/{description.GroupName}/swagger.json";
+                    var name = description.GroupName.ToUpperInvariant();
+                    options.SwaggerEndpoint(url, name);
+                }
+            });
         }
         else
         {
@@ -243,5 +293,86 @@ public class Program
             endpoints.MapControllers();
         });
         app.Run();
+    }
+}
+
+public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+{
+    private readonly IApiVersionDescriptionProvider _provider;
+
+    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => _provider = provider;
+
+    public void Configure(SwaggerGenOptions options)
+    {
+        foreach (var description in _provider.ApiVersionDescriptions)
+        {
+            options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
+        }
+    }
+
+    private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
+    {
+        var info = new OpenApiInfo()
+        {
+            Title = "Example Web API",
+            Version = description.ApiVersion.ToString(),
+            Description = "Description for the example Web API",
+            Contact = new OpenApiContact { Name = "Author name", Email = "author-main@org.com" },
+            License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
+        };
+
+        if (description.IsDeprecated)
+        {
+            info.Description += " This API version has been deprecated.";
+        }
+
+        return info;
+    }
+}
+
+public class SwaggerDefaultValues : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        var apiDescription = context.ApiDescription;
+        operation.Deprecated |= apiDescription.IsDeprecated();
+
+        foreach (var responseType in context.ApiDescription.SupportedResponseTypes)
+        {
+            var responseKey = responseType.IsDefaultResponse ? "default" : responseType.StatusCode.ToString();
+            var response = operation.Responses[responseKey];
+
+            foreach (var contentType in response.Content.Keys)
+            {
+                if (responseType.ApiResponseFormats.All(x => x.MediaType != contentType))
+                {
+                    response.Content.Remove(contentType);
+                }
+            }
+        }
+
+        if (operation.Parameters == null)
+        {
+            return;
+        }
+
+        foreach (var parameter in operation.Parameters)
+        {
+            var description = apiDescription.ParameterDescriptions.First(p => p.Name == parameter.Name);
+
+            parameter.Description ??= description.ModelMetadata?.Description;
+
+            if (parameter.Schema.Default == null &&
+                 description.DefaultValue != null &&
+                 description.DefaultValue is not DBNull &&
+                 description.ModelMetadata is ModelMetadata modelMetadata)
+            {
+                // REF: https://github.com/Microsoft/aspnet-api-versioning/issues/429#issuecomment-605402330
+                var json = JsonSerializer.Serialize(description.DefaultValue, modelMetadata.ModelType);
+                parameter.Schema.Default = OpenApiAnyFactory.CreateFromJson(json);
+            }
+
+            parameter.Required |= description.IsRequired;
+        }
     }
 }

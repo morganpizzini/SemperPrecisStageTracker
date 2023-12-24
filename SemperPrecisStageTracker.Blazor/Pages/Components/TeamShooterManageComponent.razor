@@ -1,0 +1,298 @@
+﻿@inherits SemperPrecisBasePresentationalComponent
+@inject IStringLocalizer<SemperPrecisBasePresentationalComponent> L
+
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewShooter"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
+<Row>
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["ShooterRequested"]</CardTitle>
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                            <TableHeaderCell></TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (TeamShooters.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                        {
+                            <Virtualize Items="@TeamShooters.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                                <TableRow>
+                                    <TableRowHeader>
+                                        @shooterTeam.Shooter.CompleteName
+                                        <br />
+                                        @shooterTeam.Shooter.BirthDate.ToString("d")
+                                    </TableRowHeader>
+                                    <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                    <TableRowCell>
+                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(shooterTeam))"><Icon Name="IconName.Check" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                    @L["NoShooters"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>@L["WaitingShooterForApproval"]</CardTitle>
+                <Table Striped="true" Hoverable="true">
+                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                        <TableRow>
+                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                            <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                            <TableHeaderCell></TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @if (TeamShooters.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                        {
+                            <Virtualize Items="@TeamShooters.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                <TableRow>
+                                    <TableRowHeader>
+                                        @shooterTeam.Shooter.CompleteName
+                                        <br />
+                                        @shooterTeam.Shooter.BirthDate.ToString("d")
+                                    </TableRowHeader>
+                                    <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
+                                    <TableRowCell>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                    @L["NoShooters"]
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+
+<Modal @ref="modalRefShooterToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AddShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="shooterValidations" Mode="ValidationMode.Manual" Model="@shooterToEdit">
+                <Validation Validator="@ValidationRule.IsSelected">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"] / @L["Birthdate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@shooterToEdit.ShooterId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var shooter in Shooters)
+                                            {
+                                    <SelectItem Value="@shooter.ShooterId">@shooter.CompleteName @shooter.BirthDate.ToString("d")</SelectItem>
+                                            }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidateDate">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <DateEdit TValue="DateTime" @bind-Date="@shooterToEdit.RegistrationDate">
+                                <Feedback>
+                                    <ValidationError>@L["WrongRegistrationDate"]</ValidationError>
+                                </Feedback>
+                            </DateEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
+<Modal @ref="modalRefShooterToApprove">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["ApproveShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @{
+                var shooter = TeamShooters.FirstOrDefault(x => x.Shooter.ShooterId == shooterToEdit.ShooterId);
+            }
+            @if (shooter != null)
+            {
+                <Field>
+                    <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
+                    <FieldBody>@shooter.Shooter.CompleteName - @shooter.Shooter.BirthDate.ToString("d")</FieldBody>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefShooterToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteShooter"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (shooterToDelete.Shooter != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+            <Field>
+                <FieldLabel>@L["RegistrationDate"]</FieldLabel>
+                <Text>@shooterToDelete.RegistrationDate.ToString("d")</Text>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter, EditorRequired]
+    public virtual TeamContract Team { get; set; } = new();
+
+    [Parameter, EditorRequired]
+    public virtual IList<ShooterTeamContract> TeamShooters { get; set; } = new List<ShooterTeamContract>();
+    
+    [Parameter, EditorRequired]
+    public virtual IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
+
+    [Parameter, EditorRequired]
+    public EventCallback<ShooterTeamCreateRequest> UpsertShooterCallback { get; set; }
+
+
+    [Parameter, EditorRequired]
+    public EventCallback<ShooterTeamDeleteRequest> DeleteShooterTeamCallback { get; set; }
+
+    Validations shooterValidations = default!;
+    private Modal modalRefShooterToDelete = default!;
+    private Modal modalRefShooterToEdit = default!;
+    private Modal modalRefShooterToApprove = default!;
+    ShooterTeamContract shooterToDelete = new();
+    ShooterTeamCreateRequest shooterToEdit = new();
+
+
+    void ValidateDate(ValidatorEventArgs e)
+    {
+        var date = e.Value as DateTime?;
+
+        if (date == null)
+        {
+            e.Status = ValidationStatus.Error;
+        }
+        else if (date <= new DateTime(1980, 1, 1))
+        {
+            e.Status = ValidationStatus.Error;
+            e.ErrorText = L["WrongRegistrationDate"];
+        }
+        else
+        {
+            e.Status = ValidationStatus.Success;
+        }
+    }
+
+    void NewShooter()
+    {
+        shooterToEdit = new ShooterTeamCreateRequest { TeamId = Team.TeamId };
+        modalRefShooterToEdit.Show();
+    }
+
+    void EditShooter(ShooterTeamContract shooterTeam)
+    {
+        shooterToEdit = new ShooterTeamCreateRequest
+            {
+                ShooterId = shooterTeam.Shooter.ShooterId,
+                TeamId = Team.TeamId,
+                FromShooter = false,
+                RegistrationDate = shooterTeam.RegistrationDate
+            };
+        modalRefShooterToApprove.Show();
+    }
+
+    private async Task HideModalTeamToEdit(bool choice)
+    {
+        if (choice)
+        {
+            if (!(await shooterValidations.ValidateAll()))
+                return;
+            await shooterValidations.ClearAll();
+            shooterToEdit.FromShooter = false;
+            await UpsertShooterCallback.InvokeAsync(shooterToEdit);
+
+        }
+        shooterToEdit = new ShooterTeamCreateRequest();
+        await modalRefShooterToEdit.Hide();
+        await modalRefShooterToApprove.Hide();
+    }
+    async Task DeleteShooter(ShooterTeamContract shooter)
+    {
+        shooterToDelete = shooter;
+        await modalRefShooterToDelete.Show();
+    }
+
+    private async Task HideModalShooterToDelete(bool choice)
+    {
+        if (choice && shooterToDelete.Team != null)
+        {
+            await DeleteShooterTeamCallback.InvokeAsync(new ShooterTeamDeleteRequest
+                {
+                    ShooterId = shooterToDelete.Shooter.ShooterId,
+                    TeamId = Team.TeamId
+                });
+        }
+        shooterToDelete = new ShooterTeamContract();
+        await modalRefShooterToDelete.Hide();
+    }
+}

@@ -37,6 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		start_dev.bat = start_dev.bat
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemperPrecisStageTracker.Blazor.BackOffice", "SemperPrecisStageTracker.Blazor.BackOffice\SemperPrecisStageTracker.Blazor.BackOffice.csproj", "{7E761248-A36E-4590-BA0A-A8EB62D1995F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{FFD8F148-2A32-46B8-9637-69DDEA0F716E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD8F148-2A32-46B8-9637-69DDEA0F716E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFD8F148-2A32-46B8-9637-69DDEA0F716E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E761248-A36E-4590-BA0A-A8EB62D1995F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E761248-A36E-4590-BA0A-A8EB62D1995F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E761248-A36E-4590-BA0A-A8EB62D1995F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E761248-A36E-4590-BA0A-A8EB62D1995F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

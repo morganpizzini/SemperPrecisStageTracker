@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Shared.Permissions;
@@ -34,7 +35,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             if (context.ActionArguments.Any())
             {
                  var parameterName = context.ActionDescriptor.Parameters
-                    .Where(p => p.BindingInfo?.BindingSource == EntityIdAttribute.Instance)
+                    .Where(p => p.BindingInfo?.BindingSource == BindingSource.Body)
                     .FirstOrDefault()?.Name;
                 
                 if(string.IsNullOrEmpty(parameterName))

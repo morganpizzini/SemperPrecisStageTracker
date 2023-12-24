@@ -270,7 +270,6 @@ namespace SemperPrecisStageTracker.Domain.Services
             // user group TODO to be implemented
             // var permissionGroupIds = _userPermissionGroupRepository.FetchWithProjection(x=>x.PermissionGroupId,x => x.UserId == userId);
 
-            
             // user permission
             var userPermissions = _userPermissionRepository.Fetch(x => x.UserId == userId);
             // extract permission

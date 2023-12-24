@@ -1,10 +1,4 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Blazorise;
 using Blazorise.Icons.FontAwesome;
 using DnetIndexedDb;
@@ -53,7 +47,7 @@ builder.Services.AddBlazorise(options =>
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
-                .AddScoped<IAuthorizationHandler, PermissionHandler>();
+                .AddScoped<IAuthorizationHandler, PermissionServiceHandler>();
 
 
 var currentAssembly = typeof(UserState).Assembly;
@@ -74,7 +68,8 @@ builder.Services
     .AddScoped<IAuthenticationService, AuthenticationService>()
     .AddScoped<ILocalStorageService, LocalStorageService>()
     .AddScoped<NetworkService>()
-    .AddScoped<MainServiceLayer>();
+    .AddScoped<MainServiceLayer>()
+    .AddScoped<PresentationalServiceLayer>();
 
 //builder.Services.AddScoped(x =>
 //{
@@ -121,7 +116,6 @@ builder.Services.AddScoped(sp =>
     var config = sp.GetService<IConfiguration>();
     var result = new ClientConfiguration();
     config.Bind(result);
-
     return result;
 });
 

@@ -51,7 +51,7 @@
                         }
                     </ChildContent>
                     <Feedback>
-                        <ValidationError>@L["GroupDay"]</ValidationError>
+                        <ValidationError>@L["WrongGroupDay"]</ValidationError>
                     </Feedback>
                 </Select>
             </FieldBody>
@@ -85,5 +85,4 @@
 
     IEnumerable<DateTime> DateRange => Match.MatchDateTimeStart.SplitDateRange(Match.MatchDateTimeEnd);
 
-    
 }

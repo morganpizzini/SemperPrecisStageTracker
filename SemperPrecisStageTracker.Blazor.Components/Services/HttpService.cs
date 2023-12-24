@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             HttpClient httpClient,
             NavigationManager navigationManager,
             IState<UserState> UserState
-            //StateService stateService
+        //StateService stateService
         //ILocalStorageService localStorageService
         )
         {
@@ -35,24 +35,22 @@ namespace SemperPrecisStageTracker.Blazor.Services
             //_localStorageService = localStorageService;
         }
 
-        public async Task<ApiResponse<T>?> Get<T>(string uri)
+        public Task<ApiResponse<T>> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await SendRequest<T>(request);
+            return SendRequest<T>(request);
         }
 
-        public Task<ApiResponse<T>?> Post<T>(string uri) => Post<T>(uri, new { });
-
-        public async Task<ApiResponse<T>?> Post<T>(string uri, object? value)
+        public Task<ApiResponse<T>> Post<T>(string uri, object? value = null)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
-            return await SendRequest<T>(request);
+            request.Content = new StringContent(value != null ? JsonSerializer.Serialize(value) : "", Encoding.UTF8, "application/json");
+            return SendRequest<T>(request);
         }
 
         // helper methods
 
-        private async Task<ApiResponse<T>?> SendRequest<T>(HttpRequestMessage request)
+        private async Task<ApiResponse<T>> SendRequest<T>(HttpRequestMessage request)
         {
             // add basic auth header if user is logged in and request is to the api url
             var isApiUrl = !request.RequestUri?.IsAbsoluteUri ?? true;
@@ -62,38 +60,54 @@ namespace SemperPrecisStageTracker.Blazor.Services
 
             using var response = await _httpClient.SendAsync(request);
 
-            // auto logout on 401 response
-            if (response.StatusCode == HttpStatusCode.Unauthorized && !(request?.RequestUri?.ToString().EndsWith("Authorization/SignIn") ?? false))
-            {
-                //_navigationManager.NavigateTo("logout");
-                return default;
-            }
-
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
             {
                 Dictionary<string, IList<string>> error;
-                switch (response.StatusCode)
+                // auto logout on 401 response
+                if (response.StatusCode == HttpStatusCode.Unauthorized && !(request?.RequestUri?.ToString().EndsWith("Authorization/SignIn") ?? false))
                 {
-                    case HttpStatusCode.Unauthorized:
-                        error = new Dictionary<string, IList<string>>
-                        {
-                            {"401",new List<string>{"Unauthorized"} }
-                        };
-                        break;
-                    case HttpStatusCode.NotFound:
-                        error = new Dictionary<string, IList<string>>
-                        {
-                            {"404",new List<string>{"Endpoint not found"} }
-                        };
-                        break;
-                    default:
-                        error = await response.Content.ReadFromJsonAsync<Dictionary<string, IList<string>>>();
-                        break;
+                    //_navigationManager.NavigateTo("logout");
+                    error = new Dictionary<string, IList<string>>
+                            {
+                                {"401",new List<string>{"Unauthorized"} }
+                            };
+                }
+                else
+                {
+                    switch (response.StatusCode)
+                    {
+                        case HttpStatusCode.Unauthorized:
+                            error = new Dictionary<string, IList<string>>
+                            {
+                                {"401",new List<string>{"Unauthorized"} }
+                            };
+                            break;
+                        case HttpStatusCode.NotFound:
+                            error = new Dictionary<string, IList<string>>
+                            {
+                                {"404",new List<string>{"Endpoint not found"} }
+                            };
+                            break;
+                        case HttpStatusCode.BadRequest:
+                            error = new Dictionary<string, IList<string>>
+                            {
+                                {"400",new List<string>{"Bad request"} }
+                            };
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                        default:
+                            error = new Dictionary<string, IList<string>>
+                            {
+                                {"500",new List<string>{"Server error, please retry later"} }
+                            };
+                            Console.WriteLine(await response.Content.ReadAsStringAsync());
+                            break;
+                    }
                 }
                 return new ApiResponse<T>()
                 {
-                    Error = string.Join(", ",error?.SelectMany(x=>x.Value) ?? new List<string>{"Generic error"})
+                    Error = string.Join(", ", error?.SelectMany(x => x.Value) ?? new List<string> { "Generic error" })
                 };
             }
             return new ApiResponse<T>()

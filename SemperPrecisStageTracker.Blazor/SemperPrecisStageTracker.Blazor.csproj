@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
 	  <Nullable>enable</Nullable>
 	  <ImplicitUsings>enable</ImplicitUsings>
     <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
@@ -23,23 +23,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap5" Version="1.0.4" />
-    <PackageReference Include="Blazorise.Components" Version="1.0.4" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
-    <PackageReference Include="Blazorise.Snackbar" Version="1.0.4" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.4.0" />
+    <PackageReference Include="Blazorise.Components" Version="1.4.0" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.0" />
+    <PackageReference Include="Blazorise.Snackbar" Version="1.4.0" />
     <PackageReference Include="DnetIndexedDb" Version="2.4.1" />
-    <PackageReference Include="Fluxor.Blazor.Web" Version="5.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.4" PrivateAssets="all" />
+    <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />    
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="6.0.4" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />    
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
   </ItemGroup>
 	
 	<ItemGroup Condition="$(Configuration)=='Debug'">
-    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.4.0" />
+    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.1" />
   </ItemGroup>
 
   <ItemGroup>

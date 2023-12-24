@@ -1,6 +1,6 @@
 ﻿@page "/matches/{id}/stages/{stageId}/group/{groupId}"
 @using SemperPrecisStageTracker.Shared.StageResults
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisBaseMainComponent
 @inject IStringLocalizer<StageGroupDetail> L
 @inject IJSRuntime JSRuntime
 @inject IState<UserState> UserState 
@@ -502,7 +502,7 @@ else
                 </Column>
             </Row>
             }
-
+ 
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideConfirmDeleteModal(false))">@L["Close"]</Button>

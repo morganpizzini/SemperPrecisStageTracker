@@ -1,10 +1,10 @@
 ﻿@page "/shooters/{id}/payments/{teamId}"
-@inherits SemperPrecisBaseComponent
+@inherits SemperPrecisBaseMainComponent
 @inject IStringLocalizer<ShooterTeamPayment> L
 @inject NavigationManager UriHelper
 
 <Heading Size="HeadingSize.Is1">@L["Detail"] @shooter.CompleteName, @L["Team"]: @team.Name</Heading>
-<NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
+<NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = TeamId}))">@L["BackToTeam"]</NavLink>
 
 <Divider />
 <AuthorizeView Roles="@(PermissionCtor.ManageShooters.ShowShooters.EditShooter.ToString())" Resource="@Id">
@@ -18,7 +18,6 @@
         @if (PageCondition)
         {
             <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new {id = Id}))"><Icon Name="IconName.Pen" /> @L["DetailShooter"]</Button>
-            <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new {id = TeamId}))"><Icon Name="IconName.Pen" /> @L["DetailTeam"]</Button>
             <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewPayment"]</Button>
         }
         @if (ApiLoading)
@@ -59,6 +58,7 @@
                                 <TableHeader ThemeContrast="ThemeContrast.Dark">
                                     <TableRow>
                                         <TableHeaderCell>@L["Amount"]</TableHeaderCell>
+                                        <TableHeaderCell>@L["Type"]</TableHeaderCell>
                                         <TableHeaderCell>@L["Date"]</TableHeaderCell>
                                         <TableHeaderCell>@L["Description"]</TableHeaderCell>
                                         <TableHeaderCell></TableHeaderCell>
@@ -70,6 +70,7 @@
                                         <Virtualize Items="@shooterTeamPayments" Context="payment">
                                             <TableRow>
                                                 <TableRowHeader>@payment.Amount</TableRowHeader>
+                                                <TableRowHeader>@payment.PaymentType</TableRowHeader>
                                                 <TableRowCell>@payment.PaymentDateTime.ToString("d")</TableRowCell>
                                                 <TableRowCell>@payment.Reason</TableRowCell>
                                                 <TableRowCell>
@@ -85,7 +86,7 @@
                                     else
                                     {
                                         <TableRow>
-                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                            <TableRowCell ColumnSpan="5" TextAlignment="TextAlignment.Center">
                                                 @L["NoPayment"]
                                             </TableRowCell>
                                         </TableRow>
@@ -118,6 +119,25 @@
                                     <ValidationError>@L["WrongAmount"]</ValidationError>
                                 </Feedback>
                             </NumericEdit>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+                <Validation Validator="@ValidationRule.IsSelected">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["PaymentType"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@paymentToCreate.PaymentTypeId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var paymentType in paymentTypes)
+                                    {
+                                        <SelectItem Value="@paymentType.PaymentTypeId">@paymentType.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongPaymentType"]</ValidationError>
+                                </Feedback>
+                            </Select>
                         </FieldBody>
                     </Field>
                 </Validation>
@@ -193,6 +213,25 @@
                         </FieldBody>
                     </Field>
                 </Validation>
+                <Validation Validator="@ValidationRule.IsSelected">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["PaymentType"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@paymentToEdit.PaymentTypeId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var paymentType in paymentTypes)
+                                    {
+                                        <SelectItem Value="@paymentType.PaymentTypeId">@paymentType.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongPaymentType"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
                 <Validation Validator="@ValidateDate">
                     <Field Horizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["RegistrationDate"]</FieldLabel>
@@ -260,7 +299,7 @@
     public string Id { get; set; } = string.Empty;
     [Parameter]
     public string TeamId { get; set; } = string.Empty;
-    
+
     private bool? pageCondition = null;
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
@@ -276,8 +315,9 @@
     private Modal modalRefPaymentToCreate = default!;
     ShooterTeamPaymentUpdateRequest paymentToEdit = new();
     ShooterTeamPaymentCreateRequest paymentToCreate = new();
+    IList<PaymentTypeContract> paymentTypes = new List<PaymentTypeContract>();
     IList<ShooterTeamPaymentContract> shooterTeamPayments = new List<ShooterTeamPaymentContract>();
-    
+
     protected override async Task OnInitializedAsync()
     {
         if (!(AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
@@ -286,6 +326,7 @@
             await base.OnInitializedAsync();
             return;
         }
+        paymentTypes = await Post<List<PaymentTypeContract>>("api/PaymentType/FetchPaymentTypeByTeam", new TeamRequest() { TeamId = TeamId });
         shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = TeamId });
         await LoadShooterTeamPayments();
@@ -294,7 +335,7 @@
 
     async Task LoadShooterTeamPayments()
     {
-        shooterTeamPayments = await Post<List<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId });
+        shooterTeamPayments = await Post<List<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId },false);
     }
 
     void ValidateDate(ValidatorEventArgs e)
@@ -345,7 +386,8 @@
             TeamId = team.TeamId,
             Amount = shooterTeamPayment.Amount,
             PaymentDateTime = shooterTeamPayment.PaymentDateTime,
-            Reason = shooterTeamPayment.Reason
+            Reason = shooterTeamPayment.Reason,
+            PaymentTypeId = paymentTypes.FirstOrDefault(x=>x.Name == shooterTeamPayment.PaymentType)?.PaymentTypeId ?? string.Empty
         };
 
         modalRefPaymentToEdit.Show();

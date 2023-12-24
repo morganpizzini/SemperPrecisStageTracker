@@ -1,4 +1,6 @@
-﻿namespace SemperPrecisStageTracker.Contracts.Requests
+﻿using System.Text.Json.Serialization;
+
+namespace SemperPrecisStageTracker.Contracts.Requests
 {
     public abstract class EntityFilterValidation
     {
