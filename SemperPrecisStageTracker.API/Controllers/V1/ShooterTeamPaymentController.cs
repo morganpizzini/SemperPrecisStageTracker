@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamPaymentByTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchShooterTeamPaymentByTeam(TeamRequest request)
+        public Task<IActionResult> FetchShooterTeamPaymentByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShooterTeamPaymentsFromTeamId(request.TeamId);
@@ -48,7 +48,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("FetchShooterTeamPaymentByShooterAndTeam")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public IActionResult FetchShooterTeamPaymentByShooterAndTeam(ShooterTeamRequest request)
+        public IActionResult FetchShooterTeamPaymentByShooterAndTeam([FromBody]ShooterTeamRequest request)
         {
             var shooter = BasicLayer.GetShooter(request.ShooterId);
             if(shooter == null)
@@ -69,7 +69,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateShooterTeamPayment")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
-        public async Task<IActionResult> CreateShooterTeamPayment(ShooterTeamPaymentCreateRequest request)
+        public async Task<IActionResult> CreateShooterTeamPayment([FromBody]ShooterTeamPaymentCreateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -144,7 +144,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateShooterTeamPayment")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
-        public async Task<IActionResult> UpdateShooterTeamPayment( ShooterTeamPaymentUpdateRequest request)
+        public async Task<IActionResult> UpdateShooterTeamPayment([FromBody]ShooterTeamPaymentUpdateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -204,7 +204,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteShooterTeamPayment")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> DeleteShooterTeamPayment(ShooterTeamPaymentRequest request)
+        public Task<IActionResult> DeleteShooterTeamPayment([FromBody]ShooterTeamPaymentRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamPayment(request.ShooterTeamPaymentId);

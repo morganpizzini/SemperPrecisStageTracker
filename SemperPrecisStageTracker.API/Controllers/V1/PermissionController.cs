@@ -18,6 +18,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for permissions
     /// </summary>
     [ApiVersion("1.0")]
+    [Obsolete]
     public class PermissionController : ApiControllerBase
     {
         [HttpPost]
@@ -85,7 +86,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(RoleContract), 200)]
-        public async Task<IActionResult> CreateRole(RoleCreateRequest request)
+        public async Task<IActionResult> CreateRole([FromBody]RoleCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Role
@@ -113,7 +114,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(RoleContract), 200)]
-        public async Task<IActionResult> UpdateRole(RoleUpdateRequest request)
+        public async Task<IActionResult> UpdateRole([FromBody]RoleUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = AuthorizationLayer.GetRole(request.RoleId);
@@ -147,7 +148,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreatePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
-        public async Task<IActionResult> CreatePermissionOnRole(RolePermissionCreateRequest request)
+        public async Task<IActionResult> CreatePermissionOnRole([FromBody]RolePermissionCreateRequest request)
         {
             //Recupero l'elemento dal business layer
             var permission = AuthorizationLayer.GetPermission(request.PermissionId);
@@ -181,6 +182,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Return contract
             return Ok(permissions.As(ContractUtils.GenerateContract));
         }
+
         /// <summary>
         /// Deletes existing match on platform
         /// </summary>
@@ -190,7 +192,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeletePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
-        public async Task<IActionResult> DeletePermissionOnRole(RolePermissionRequest request)
+        public async Task<IActionResult> DeletePermissionOnRole([FromBody]RolePermissionRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = AuthorizationLayer.GetPermissionRole(request.PermissionId,request.RoleId);
@@ -221,7 +223,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateUserRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(IList<UserRoleContract>), 200)]
-        public async Task<IActionResult> CreateUserRole(UserRoleCreateRequest request)
+        public async Task<IActionResult> CreateUserRole([FromBody]UserRoleCreateRequest request)
         {
             //Recupero l'elemento dal business layer
             var user = BasicLayer.GetShooter(request.UserId);
@@ -269,7 +271,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteUserRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(IList<UserRoleContract>), 200)]
-        public async Task<IActionResult> DeleteUserROle(UserRoleRequest request)
+        public async Task<IActionResult> DeleteUserRole([FromBody]UserRoleRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = AuthorizationLayer.GetUserRole(request.UserRoleId);
@@ -304,7 +306,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
         [ProducesResponseType(typeof(RoleContract), 200)]
-        public async Task<IActionResult> DeleteRole(RoleRequest request)
+        public async Task<IActionResult> DeleteRole([FromBody]RoleRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = AuthorizationLayer.GetRole(request.RoleId);

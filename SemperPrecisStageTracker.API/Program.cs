@@ -2,13 +2,12 @@ using System.Reflection;
 using System.Text.Json;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SemperPrecisStageTracker.API.Helpers;
@@ -21,6 +20,7 @@ using SemperPrecisStageTracker.Domain.Clients;
 using SemperPrecisStageTracker.Domain.Configurations;
 using SemperPrecisStageTracker.Domain.Containers;
 using SemperPrecisStageTracker.Domain.Services;
+using SemperPrecisStageTracker.Domain.Services.Mocks;
 using SemperPrecisStageTracker.EF.Clients;
 using SemperPrecisStageTracker.EF.Context;
 using SemperPrecisStageTracker.Mocks.Clients;
@@ -33,7 +33,9 @@ using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.Diagnostic;
 using ZenProgramming.Chakra.Core.EntityFramework.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
-using static Microsoft.Azure.KeyVault.WebKey.JsonWebKeyVerifier;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Microsoft.AspNetCore.Mvc;
+
 
 namespace SemperPrecisStageTracker.API;
 
@@ -83,37 +85,38 @@ public class Program
                              $".{assembly.Version?.Build ?? 0}";
 
         var builder = WebApplication.CreateBuilder(args);
-
-        builder.Host.ConfigureAppConfiguration((hostContext, config) =>
+        var isDev = builder.Environment.IsDevelopment();
+        if (isDev)
         {
-            var isDev = hostContext.HostingEnvironment.IsDevelopment();
-            if (isDev)
-            {
-                config.AddUserSecrets<Program>();
-            }
+            builder.Services.AddScoped<IKeyVaultService, KeyVaultServiceMock>();
+        }
+        else
+        {
+            var keyvaultConnection = builder.Configuration.GetConnectionString("KeyVault");
 
-            var settings = config.Build();
+            if (string.IsNullOrEmpty(keyvaultConnection))
+                throw new ArgumentNullException($"Connection string {nameof(keyvaultConnection)} is empty");
 
-            if (!isDev)
-            {
-                // use az key vault
-                var kvName = settings["azKVName"];
+            var keyvaultUri = new Uri(keyvaultConnection);
+            var client = new SecretClient(keyvaultUri, new DefaultAzureCredential());
+            builder.Configuration.AddAzureKeyVault(
+                keyvaultUri,
+                new DefaultAzureCredential(),
+                new AzureKeyVaultConfigurationOptions()
+                {
+                    Manager = new SampleKeyVaultSecretManager(),
+                    ReloadInterval = TimeSpan.FromMinutes(10)
+                });
 
-                if (string.IsNullOrEmpty(kvName))
-                    throw new NullReferenceException("Azure KeyVault name not provided");
+            builder.Services.AddSingleton<SecretClient>(client);
+            builder.Services.AddScoped<IKeyVaultService, KeyVaultService>();
 
-                var vaultName = $"https://{kvName}.vault.azure.net/";
+        }
 
-                var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                var keyVaultClient = new KeyVaultClient(
-                    new KeyVaultClient.AuthenticationCallback(
-                        azureServiceTokenProvider.KeyVaultTokenCallback));
-                config.AddAzureKeyVault(vaultName, keyVaultClient, new DefaultKeyVaultSecretManager());
-            }
-        });
         // register configuration across application
         ServiceResolver.Register<IConfiguration>(builder.Configuration);
 
+        builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressInferBindingSourcesForParameters = true);
         //builder.Services.AddProblemDetails();
         builder.Services.Configure<RouteOptions>(options => { options.LowercaseUrls = true; });
         builder.Services

@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchDataForMatch")]
         [ProducesResponseType(typeof(MatchDataAssociationContract), 200)]
-        public async Task<IActionResult> FetchDataForMatch(MatchRequest request)
+        public async Task<IActionResult> FetchDataForMatch([FromBody]MatchRequest request)
         {
             var availableMatches = await BasicLayer.FetchAllSoMdMatches(PlatformUtils.GetIdentityUserId(User));
 
@@ -174,7 +174,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateDataForMatch")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> UpdateDataForMatch(UpdateDataRequest request)
+        public async Task<IActionResult> UpdateDataForMatch([FromBody]UpdateDataRequest request)
         {
             var validations = await BasicLayer.UpsertShooterStages(
                 request.ShooterStages.Where(x=>x.Time>0)
@@ -205,7 +205,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterInformation")]
         [ProducesResponseType(typeof(ShooterInformationResponse), 200)]
-        public IActionResult FetchShooterInformation(ShooterRequest request)
+        public IActionResult FetchShooterInformation([FromBody]ShooterRequest request)
         {
             var nextMatches = BasicLayer.FetchMatchRegistrationForUser(request.ShooterId);
 

@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetPlace")]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public Task<IActionResult> GetPlace(PlaceRequest request)
+        public Task<IActionResult> GetPlace([FromBody]PlaceRequest request)
         {
             var entity = BasicLayer.GetPlace(request.PlaceId);
             var data = BasicLayer.GetPlaceData(request.PlaceId);
@@ -65,7 +65,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreatePlace")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.CreatePlaces)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> CreatePlace(PlaceCreateRequest request)
+        public async Task<IActionResult> CreatePlace([FromBody]PlaceCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Place
@@ -104,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdatePlace")]
         [ApiAuthorizationFilter(Permissions.EditPlace, Permissions.ManagePlaces )]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> UpdatePlace( PlaceUpdateRequest request)
+        public async Task<IActionResult> UpdatePlace([FromBody]PlaceUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);
@@ -150,7 +150,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeletePlace")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.PlaceDelete)]
         [ProducesResponseType(typeof(PlaceContract), 200)]
-        public async Task<IActionResult> DeletePlace( PlaceRequest request)
+        public async Task<IActionResult> DeletePlace([FromBody]PlaceRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPlace(request.PlaceId);

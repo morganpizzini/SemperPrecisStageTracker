@@ -1,13 +1,22 @@
-﻿using System;
+﻿using SemperPrecisStageTracker.Models.Commons;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using ZenProgramming.Chakra.Core.Entities;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {
+    public static class SemperPrecisEntityExtensions
+    {
+        public static object GetRouteIdentifier(this SemperPrecisEntity entity)
+        {
+            return new { id = entity.Id };
+        }
+    }
     /// <summary>
     /// Extensions class
     /// </summary>
-    public static class Extensions
+    public static class TimeExtensions
     {
         /// <summary>
         /// Sum timespan into single timespan

@@ -27,7 +27,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterAssociationContract>), 200)]
-        public Task<IActionResult> FetchShooterAssociation(ShooterRequest request)
+        public Task<IActionResult> FetchShooterAssociation([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
@@ -56,7 +56,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterAssociation")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> UpsertShooterAssociation(ShooterAssociationCreateRequest request)
+        public Task<IActionResult> UpsertShooterAssociation([FromBody]ShooterAssociationCreateRequest request)
         {
             var availableAssociationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId).Select(x=>x.AssociationId);
 
@@ -104,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterAssociation")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> DeleteShooterAssociation(ShooterAssociationRequest request)
+        public Task<IActionResult> DeleteShooterAssociation([FromBody]ShooterAssociationRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterAssociationById(request.ShooterAssociationId);

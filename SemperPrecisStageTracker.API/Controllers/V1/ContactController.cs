@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateContact")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> CreateContact(ContactCreateRequest request)
+        public async Task<IActionResult> CreateContact([FromBody]ContactCreateRequest request)
         {
             var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
 

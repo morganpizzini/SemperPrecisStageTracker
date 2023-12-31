@@ -14,6 +14,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for profile
     /// </summary>
     [ApiVersion("1.0")]
+    [Obsolete]
     public class ProfileController : ApiControllerBase
     {
         /// <summary>
@@ -46,7 +47,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateProfile")]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public IActionResult UpdateProfile(UserUpdateRequest request)
+        public IActionResult UpdateProfile([FromBody]UserUpdateRequest request)
         {
             //User id corrente
             var userId = PlatformUtils.GetIdentityUserId(User);
@@ -85,7 +86,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateUserPassword")]
         [ProducesResponseType(typeof(BooleanResponse), 200)]
-        public IActionResult UpdateUserPassword(UserPasswordUpdateRequest request)
+        public IActionResult UpdateUserPassword([FromBody]UserPasswordUpdateRequest request)
         {
             //User id corrente
             var userId = PlatformUtils.GetIdentityUserId(User);

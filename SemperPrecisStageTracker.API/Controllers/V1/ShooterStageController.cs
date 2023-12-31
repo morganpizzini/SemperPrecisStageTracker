@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterStage")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> UpsertShooterStage(ShooterStageRequest request)
+        public async Task<IActionResult> UpsertShooterStage([FromBody]ShooterStageRequest request)
         {
             var shooterStage = new ShooterStageString
             {
@@ -59,7 +59,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterStageString")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> DeleteShooterStageString(DeleteShooterStageRequest request)
+        public async Task<IActionResult> DeleteShooterStageString([FromBody]DeleteShooterStageRequest request)
         {
             //Invocazione del service layer
             var validations = await BasicLayer.DeleteShooterStageString(request.ShooterId,request.StageId,request.StageStringId,PlatformUtils.GetIdentityUserId(User));

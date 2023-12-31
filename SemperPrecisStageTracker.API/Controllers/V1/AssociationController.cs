@@ -41,7 +41,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAvailableAssociationsForShooter")]
         [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
-        public Task<IActionResult> FetchAvailableAssociationsForShooter(ShooterRequest request)
+        public Task<IActionResult> FetchAvailableAssociationsForShooter([FromBody]ShooterRequest request)
         {
             var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
                 .Select(x => x.AssociationId)
@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAssociationsNotAssignedForShooter")]
         [ProducesResponseType(typeof(IList<AssociationContract>), 200)]
-        public Task<IActionResult> FetchAssociationsNotAssignedForShooter(ShooterRequest request)
+        public Task<IActionResult> FetchAssociationsNotAssignedForShooter([FromBody]ShooterRequest request)
         {
             var associationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId)
                 .Select(x => x.AssociationId)
@@ -80,7 +80,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetAssociation")]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public Task<IActionResult> GetAssociation(AssociationRequest request)
+        public Task<IActionResult> GetAssociation([FromBody]AssociationRequest request)
         {
             var entity = BasicLayer.GetAssociation(request.AssociationId);
 
@@ -101,7 +101,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateAssociation")]
         [ApiAuthorizationFilter(Permissions.ManageAssociations, Permissions.CreateAssociations)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public async Task<IActionResult> CreateAssociation(AssociationCreateRequest request)
+        public async Task<IActionResult> CreateAssociation([FromBody]AssociationCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Association
@@ -141,7 +141,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateAssociation")]
         [ApiAuthorizationFilter(Permissions.AssociationEdit, Permissions.ManageAssociations)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public async Task<IActionResult> UpdateAssociation( AssociationUpdateRequest request)
+        public async Task<IActionResult> UpdateAssociation([FromBody]AssociationUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);
@@ -184,7 +184,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteAssociation")]
         [ApiAuthorizationFilter(Permissions.ManageAssociations,Permissions.AssociationDelete)]
         [ProducesResponseType(typeof(AssociationContract), 200)]
-        public async Task<IActionResult> DeleteAssociation( AssociationRequest request)
+        public async Task<IActionResult> DeleteAssociation([FromBody]AssociationRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetAssociation(request.AssociationId);

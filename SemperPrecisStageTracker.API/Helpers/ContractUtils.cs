@@ -8,6 +8,7 @@ using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {
+
     /// <summary>
     /// Utilities for generate contracts
     /// </summary>

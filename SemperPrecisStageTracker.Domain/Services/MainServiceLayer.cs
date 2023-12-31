@@ -2663,6 +2663,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns shooter or null</returns>
+        [Obsolete]
         public Shooter GetShooter(string id, string userId = null)
         {
             //Validazione argomenti

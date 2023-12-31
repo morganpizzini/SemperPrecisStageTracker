@@ -17,6 +17,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for shooter
     /// </summary>
     [ApiVersion("1.0")]
+    [Obsolete]
     public class ShooterController : ApiControllerBase
     {
         /// <summary>
@@ -47,7 +48,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetShooter")]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public Task<IActionResult> GetShooter(ShooterRequest request)
+        public Task<IActionResult> GetShooter([FromBody]ShooterRequest request)
         {
             var entity = BasicLayer.GetShooter(request.ShooterId);
 
@@ -70,7 +71,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateShooter")]
         [ApiAuthorizationFilter(Permissions.ManageShooters, Permissions.CreateShooters)]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public async Task<IActionResult> CreateShooter(ShooterCreateRequest request)
+        public async Task<IActionResult> CreateShooter([FromBody]ShooterCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Shooter
@@ -116,7 +117,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateShooter")]
         [ApiAuthorizationFilter(Permissions.EditShooter ,Permissions.ManageShooters )]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public async Task<IActionResult> UpdateShooter( ShooterUpdateRequest request)
+        public async Task<IActionResult> UpdateShooter([FromBody]ShooterUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
@@ -163,7 +164,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteShooter")]
         [ApiAuthorizationFilter(Permissions.ManageShooters,Permissions.ShooterDelete )]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public async Task<IActionResult> DeleteShooter( ShooterRequest request)
+        public async Task<IActionResult> DeleteShooter([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);

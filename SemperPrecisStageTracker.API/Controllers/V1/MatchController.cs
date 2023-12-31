@@ -102,7 +102,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("GetMatch")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public Task<IActionResult> GetMatch(MatchRequest request)
+        public Task<IActionResult> GetMatch([FromBody]MatchRequest request)
         {
             var entity = BasicLayer.GetMatch(request.MatchId);
 
@@ -144,7 +144,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [AllowAnonymous]
         [Route("GetMatchStats")]
         [ProducesResponseType(typeof(MatchStatsResultContract), 200)]
-        public Task<IActionResult> GetMatchStats(MatchStatsRequest request)
+        public Task<IActionResult> GetMatchStats([FromBody]MatchStatsRequest request)
         {
             Match entity;
             if (string.IsNullOrEmpty(request.MatchId))
@@ -178,7 +178,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateMatch")]
         [ApiAuthorizationFilter(Permissions.ManageMatches, Permissions.CreateMatches)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public async Task<IActionResult> CreateMatch(MatchCreateRequest request)
+        public async Task<IActionResult> CreateMatch([FromBody]MatchCreateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -244,7 +244,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateMatch")]
         [ProducesResponseType(typeof(MatchContract), 200)]
         [ApiAuthorizationFilter(Permissions.MatchHandling, Permissions.ManageMatches)]
-        public async Task<IActionResult> UpdateMatch( MatchUpdateRequest request)
+        public async Task<IActionResult> UpdateMatch([FromBody]MatchUpdateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -299,7 +299,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteMatch")]
         [ApiAuthorizationFilter(Permissions.ManageMatches,Permissions.MatchDelete)]
         [ProducesResponseType(typeof(MatchContract), 200)]
-        public async Task<IActionResult> DeleteMatch( MatchRequest request)
+        public async Task<IActionResult> DeleteMatch([FromBody]MatchRequest request)
         {
 
             //Recupero l'elemento dal business layer
@@ -332,7 +332,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateMatchCompetitionReady")]
         [ApiAuthorizationFilter(Permissions.MatchHandling, Permissions.ManageMatches)]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> UpdateMatchCompetitionReady( MatchCompetitionReadyRequest request)
+        public async Task<IActionResult> UpdateMatchCompetitionReady([FromBody]MatchCompetitionReadyRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetMatch(request.MatchId);

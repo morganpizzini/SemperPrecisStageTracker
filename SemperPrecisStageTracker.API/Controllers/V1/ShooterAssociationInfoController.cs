@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterAssociationInfo")]
         [ProducesResponseType(typeof(IList<ShooterAssociationInfoContract>), 200)]
-        public Task<IActionResult> FetchShooterAssociationInfo(ShooterRequest request)
+        public Task<IActionResult> FetchShooterAssociationInfo([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooter(request.ShooterId);
@@ -53,7 +53,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateShooterAssociationInfo")]
         [ProducesResponseType(typeof(ShooterAssociationInfoContract), 200)]
-        public async Task<IActionResult> CreateShooterAssociationInfo(ShooterAssociationInfoCreateRequest request)
+        public async Task<IActionResult> CreateShooterAssociationInfo([FromBody]ShooterAssociationInfoCreateRequest request)
         {
             var (validations,shooter,association) = CheckRequest(request.ShooterId, request.AssociationId,request.Categories);
             if (validations.Count > 0)
@@ -87,7 +87,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateShooterAssociationInfo")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public async Task<IActionResult> UpdateShooterAssociationInfo(ShooterAssociationInfoUpdateRequest request)
+        public async Task<IActionResult> UpdateShooterAssociationInfo([FromBody]ShooterAssociationInfoUpdateRequest request)
         {
             var entity = this.BasicLayer.GetShooterAssociationInfo(request.ShooterAssociationInfoId);
 
@@ -149,7 +149,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterAssociationInfo")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public async Task<IActionResult> DeleteShooterAssociationInfo(ShooterAssociationInfoRequest request)
+        public async Task<IActionResult> DeleteShooterAssociationInfo([FromBody]ShooterAssociationInfoRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterAssociationInfo(request.ShooterAssociationInfoId);

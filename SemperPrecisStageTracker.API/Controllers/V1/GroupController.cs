@@ -25,7 +25,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllGroupsByMatchId")]
         [ProducesResponseType(typeof(IList<GroupContract>), 200)]
-        public Task<IActionResult> FetchAllGroups(MatchRequest request)
+        public Task<IActionResult> FetchAllGroups([FromBody]MatchRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllGroupsByMatchId(request.MatchId);
@@ -41,7 +41,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllGroupsWithDetailsByMatchId")]
         [ProducesResponseType(typeof(MatchGroupResponse), 200)]
-        public Task<IActionResult> FetchAllGroupsWithDetailsByMatchId(MatchRequest request)
+        public Task<IActionResult> FetchAllGroupsWithDetailsByMatchId([FromBody]MatchRequest request)
         {
             //Recupero la lista dal layer
             var match = BasicLayer.GetMatch(request.MatchId);
@@ -90,7 +90,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public Task<IActionResult> GetGroup(GroupRequest request)
+        public Task<IActionResult> GetGroup([FromBody]GroupRequest request)
         {
             var entity = BasicLayer.GetGroup(request.GroupId);
 
@@ -127,7 +127,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public Task<IActionResult> CreateGroup(GroupCreateRequest request)
+        public Task<IActionResult> CreateGroup([FromBody]GroupCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Group
@@ -158,7 +158,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public Task<IActionResult> UpdateGroup(GroupUpdateRequest request)
+        public Task<IActionResult> UpdateGroup([FromBody]GroupUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
@@ -192,7 +192,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteGroup")]
         [ProducesResponseType(typeof(GroupContract), 200)]
-        public Task<IActionResult> DeleteGroup(GroupRequest request)
+        public Task<IActionResult> DeleteGroup([FromBody]GroupRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);

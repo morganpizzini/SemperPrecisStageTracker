@@ -36,7 +36,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateNotificationSubscription")]
         [ProducesResponseType(typeof(object), 200)]
-        public Task<IActionResult> CreateNotificationSubscription(NotificationSubscriptionCreateRequest request)
+        public Task<IActionResult> CreateNotificationSubscription([FromBody]NotificationSubscriptionCreateRequest request)
         {
             var currentUserId = PlatformUtils.GetIdentityUserId(User);
             var existingUser = AuthorizationLayer.GetUserById(currentUserId);
@@ -62,7 +62,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("SendNotificationAsync")]
         [ProducesResponseType(typeof(object), 200)]
-        public async Task<IActionResult> SendNotificationAsync(SendNotificationSubscriptionRequest subscription)
+        public async Task<IActionResult> SendNotificationAsync([FromBody]SendNotificationSubscriptionRequest subscription)
         {
             await Task.CompletedTask;
             return Ok(new OkResponse { Status = true });
@@ -90,7 +90,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CallShooter")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> CallShooter(CallShooterRequest request)
+        public async Task<IActionResult> CallShooter([FromBody]CallShooterRequest request)
         {
             // For a real application, generate your own
             var currentUserId = PlatformUtils.GetIdentityUserId(User);

@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAvailableGroupShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchAvailableGroupShooter(GroupRequest request)
+        public Task<IActionResult> FetchAvailableGroupShooter([FromBody]GroupRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroup(request.GroupId);
@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchGroupShooterStage")]
         [ProducesResponseType(typeof(IList<ShooterStageAggregationResult>), 200)]
-        public Task<IActionResult> FetchGroupShooterStage(GroupStageRequest request)
+        public Task<IActionResult> FetchGroupShooterStage([FromBody]GroupStageRequest request)
         {
             //Invocazione del service layer
             var groupShooter = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
@@ -96,7 +96,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("MoveGroupShooter")]
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
-        public Task<IActionResult> MoveGroupShooter(ShooterGroupMoveRequest request)
+        public Task<IActionResult> MoveGroupShooter([FromBody]ShooterGroupMoveRequest request)
         {
             var entity = this.BasicLayer.GetGroupShooterById(request.GroupShooterId);
 
@@ -149,7 +149,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("AddGroupShooter")]
         [ProducesResponseType(typeof(IList<OkResponse>), 200)]
-        public IActionResult AddGroupShooter(MatchShooterCreateRequest request)
+        public IActionResult AddGroupShooter([FromBody]MatchShooterCreateRequest request)
         {
             // check entities
             var existingMatch = this.BasicLayer.GetMatch(request.MatchId);
@@ -200,7 +200,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertGroupShooter")]
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
-        public async Task<IActionResult> UpsertGroupShooter( GroupShooterCreateRequest request)
+        public async Task<IActionResult> UpsertGroupShooter([FromBody]GroupShooterCreateRequest request)
         {
             //check user permission
             var canEdit = await AuthorizationLayer.ValidateUserPermissions(PlatformUtils.GetIdentityUserId(User), request.GroupId,
@@ -379,7 +379,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteGroupShooter")]
         [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
-        public Task<IActionResult> DeleteGroupShooter(GroupShooterRequest request)
+        public Task<IActionResult> DeleteGroupShooter([FromBody]GroupShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetGroupShooterById(request.GroupShooterId);

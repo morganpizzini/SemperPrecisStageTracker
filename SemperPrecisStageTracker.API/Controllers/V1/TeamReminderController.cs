@@ -26,7 +26,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("FetchAllTeamReminders")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment)]
         [ProducesResponseType(typeof(IList<TeamReminderContract>), 200)]
-        public async Task<IActionResult> FetchAllTeamReminders(TeamRequest request)
+        public async Task<IActionResult> FetchAllTeamReminders([FromBody]TeamRequest request)
         {
             //Recupero la lista dal layer
             var entities = await  BasicLayer.FetchAllTeamReminders(request.TeamId,PlatformUtils.GetIdentityUserId(User));
@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("GetTeamReminder")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment)]
         [ProducesResponseType(typeof(TeamReminderContract), 200)]
-        public Task<IActionResult> GetTeamReminder(TeamReminderRequest request)
+        public Task<IActionResult> GetTeamReminder([FromBody]TeamReminderRequest request)
         {
             var entity = BasicLayer.GetTeamReminder(request.TeamReminderId);
 
@@ -64,7 +64,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateTeamReminder")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(TeamReminderContract), 200)]
-        public async Task<IActionResult> CreateTeamReminder(TeamReminderCreateRequest request)
+        public async Task<IActionResult> CreateTeamReminder([FromBody]TeamReminderCreateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -114,7 +114,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateTeamReminder")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(TeamReminderContract), 200)]
-        public async Task<IActionResult> UpdateTeamReminder( TeamReminderUpdateRequest request)
+        public async Task<IActionResult> UpdateTeamReminder([FromBody]TeamReminderUpdateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -168,7 +168,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteTeamReminder")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(TeamReminderContract), 200)]
-        public async Task<IActionResult> DeleteTeamReminder( TeamReminderRequest request)
+        public async Task<IActionResult> DeleteTeamReminder([FromBody]TeamReminderRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetTeamReminder(request.TeamReminderId);

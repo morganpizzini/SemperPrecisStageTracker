@@ -23,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamByShooter")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchShooterTeamByShooter(ShooterRequest request)
+        public Task<IActionResult> FetchShooterTeamByShooter([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamsFromShooterId(request.ShooterId);
@@ -41,7 +41,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamByTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchShooterTeamByTeam(TeamRequest request)
+        public Task<IActionResult> FetchShooterTeamByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShootersFromTeamId(request.TeamId);
@@ -62,7 +62,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertShooterTeam")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> UpsertShooterTeam(ShooterTeamCreateRequest request)
+        public Task<IActionResult> UpsertShooterTeam([FromBody]ShooterTeamCreateRequest request)
         {
             var entity = this.BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId, request.ShooterId);
 
@@ -104,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooterTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> DeleteShooterTeam(ShooterTeamDeleteRequest request)
+        public Task<IActionResult> DeleteShooterTeam([FromBody]ShooterTeamDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetShooterTeamByTeamAndShooterId(request.TeamId, request.ShooterId);

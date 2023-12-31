@@ -25,7 +25,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchAllStages")]
         [ProducesResponseType(typeof(IList<StageContract>), 200)]
-        public Task<IActionResult> FetchAllStages(MatchRequest request)
+        public Task<IActionResult> FetchAllStages([FromBody]MatchRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchAllStages(request.MatchId);
@@ -55,7 +55,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public Task<IActionResult> GetStage(StageRequest request)
+        public Task<IActionResult> GetStage([FromBody]StageRequest request)
         {
             var entity = BasicLayer.GetStage(request.StageId);
 
@@ -77,7 +77,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public Task<IActionResult> CreateStage(StageCreateRequest request)
+        public Task<IActionResult> CreateStage([FromBody]StageCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Stage
@@ -125,7 +125,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public Task<IActionResult> UpdateStage(StageUpdateRequest request)
+        public Task<IActionResult> UpdateStage([FromBody]StageUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetStage(request.StageId);
@@ -184,7 +184,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteStage")]
         [ProducesResponseType(typeof(StageContract), 200)]
-        public IActionResult DeleteStage(StageRequest request)
+        public IActionResult DeleteStage([FromBody]StageRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetStage(request.StageId);

@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("GetTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public Task<IActionResult> GetTeam(TeamRequest request)
+        public Task<IActionResult> GetTeam([FromBody]TeamRequest request)
         {
             var entity = BasicLayer.GetTeam(request.TeamId);
 
@@ -64,7 +64,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreateTeam")]
         [ApiAuthorizationFilter(Permissions.ManageTeams, Permissions.CreateTeams)]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public async Task<IActionResult> CreateTeam(TeamCreateRequest request)
+        public async Task<IActionResult> CreateTeam([FromBody]TeamCreateRequest request)
         {
             //Creazione modello richiesto da admin
             var model = new Team
@@ -92,7 +92,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdateTeam")]
         [ProducesResponseType(typeof(TeamContract), 200)]
         [ApiAuthorizationFilter(new[] { Permissions.EditTeam, Permissions.ManageTeams })]
-        public async Task<IActionResult> UpdateTeam( TeamUpdateRequest request)
+        public async Task<IActionResult> UpdateTeam([FromBody]TeamUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetTeam(request.TeamId);
@@ -122,7 +122,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeleteTeam")]
         [ApiAuthorizationFilter(new[] { Permissions.ManageTeams, Permissions.TeamDelete })]
         [ProducesResponseType(typeof(TeamContract), 200)]
-        public async Task<IActionResult> DeleteTeam( TeamRequest request)
+        public async Task<IActionResult> DeleteTeam([FromBody]TeamRequest request)
         {
 
             //Recupero l'elemento dal business layer

@@ -29,7 +29,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("FetchPaymentTypeByTeam")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(IList<PaymentTypeContract>), 200)]
-        public Task<IActionResult> FetchPaymentTypeByTeam(TeamRequest request)
+        public Task<IActionResult> FetchPaymentTypeByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchPaymentTypesFromTeamId(request.TeamId);
@@ -46,7 +46,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("CreatePaymentType")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(PaymentTypeContract), 200)]
-        public async Task<IActionResult> CreatePaymentType(PaymentTypeCreateRequest request)
+        public async Task<IActionResult> CreatePaymentType([FromBody]PaymentTypeCreateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -85,7 +85,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("UpdatePaymentType")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(PaymentTypeContract), 200)]
-        public async Task<IActionResult> UpdatePaymentType( PaymentTypeUpdateRequest request)
+        public async Task<IActionResult> UpdatePaymentType([FromBody]PaymentTypeUpdateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -127,7 +127,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("DeletePaymentType")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> DeletePaymentType(PaymentTypeRequest request)
+        public Task<IActionResult> DeletePaymentType([FromBody]PaymentTypeRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetPaymentType(request.PaymentTypeId);

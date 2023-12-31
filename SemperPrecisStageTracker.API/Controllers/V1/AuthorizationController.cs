@@ -40,7 +40,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [AllowAnonymous]
         [Route("LogIn")]
         [ProducesResponseType(typeof(SignInResponse), 200)]
-        public async Task<IActionResult> LogIn(LogInRequest request)
+        public async Task<IActionResult> LogIn([FromBody]LogInRequest request)
         {
             //Tento il signin ed ottengo l'utente se è completato
             var result = await AuthorizationLayer.LogIn(request.Username, request.Password);
@@ -79,7 +79,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [AllowAnonymous]
         [Route("SignIn")]
         [ProducesResponseType(typeof(SignInResponse), 200)]
-        public async Task<IActionResult> SignIn(SignInRequest request)
+        public async Task<IActionResult> SignIn([FromBody]SignInRequest request)
         {
             var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
 
@@ -118,11 +118,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <response code="400">Bad request</response>
         [HttpPost]
         [AllowAnonymous]
+        [Obsolete]
         [Route("SyncPassword")]
         [ProducesResponseType(typeof(OkResponse), 200)]
         public Task<IActionResult> SyncPassword()
         {
-            //Tento il signin ed ottengo l'utente se è completato
             var result = AuthorizationLayer.SyncPasswords();
 
             //Se è tutto ok, serializzo il contratto
@@ -138,8 +138,9 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <response code="400">Bad request</response>
         [HttpPost]
         [Route("ResetUserPassword")]
+        [Obsolete]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> ResetUserPassword(ShooterRequest request)
+        public async Task<IActionResult> ResetUserPassword([FromBody]ShooterRequest request)
         {
             //user identifier
             var userId = PlatformUtils.GetIdentityUserId(User);
@@ -171,7 +172,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("PasswordForgot")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public async Task<IActionResult> PasswordForgot(ForgotPasswordRequest request)
+        public async Task<IActionResult> PasswordForgot([FromBody]ForgotPasswordRequest request)
         {
             var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
 
@@ -227,9 +228,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <response code="400">Bad request</response>
         [HttpPost]
         [AllowAnonymous]
+        [Obsolete]
         [Route("GetUserFromRestorePasswordAlias")]
         [ProducesResponseType(typeof(ShooterContract), 200)]
-        public IActionResult GetUserFromRestorePasswordAlias(ShooterRequest request)
+        public IActionResult GetUserFromRestorePasswordAlias([FromBody]ShooterRequest request)
         {
             var user = AuthorizationLayer.GetUserByRestorePasswordAlias(request.ShooterId);
             if (user == null)
@@ -249,7 +251,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("ResetPassword")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(StringResponse), 200)]
-        public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordRequest request)
         {
             var captchaService = ServiceResolver.Resolve<ICaptchaValidatorService>();
 
@@ -287,7 +289,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdatePassword")]
         [ProducesResponseType(typeof(StringResponse), 200)]
-        public async Task<IActionResult> UpdatePassword(ChangePasswordRequest request)
+        public async Task<IActionResult> UpdatePassword([FromBody]ChangePasswordRequest request)
         {
             //user identifier
             var userId = PlatformUtils.GetIdentityUserId(User);

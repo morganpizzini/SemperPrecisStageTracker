@@ -26,7 +26,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchTeamHolderByTeam")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> FetchTeamHolderByTeam(TeamRequest request)
+        public Task<IActionResult> FetchTeamHolderByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamHoldersFromTeamId(request.TeamId);
@@ -46,7 +46,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpsertTeamHolder")]
         [ProducesResponseType(typeof(OkResponse), 200)]
-        public Task<IActionResult> UpsertTeamHolder(TeamHolderCreateRequest request)
+        public Task<IActionResult> UpsertTeamHolder([FromBody]TeamHolderCreateRequest request)
         {
             var entity = this.BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId, request.ShooterId);
 
@@ -79,7 +79,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteTeamHolder")]
         [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> DeleteTeamHolder(TeamHolderDeleteRequest request)
+        public Task<IActionResult> DeleteTeamHolder([FromBody]TeamHolderDeleteRequest request)
         {
             //Recupero l'elemento dal business layer
             var entity = BasicLayer.GetTeamHolderByTeamAndShooterId(request.TeamId, request.ShooterId);
