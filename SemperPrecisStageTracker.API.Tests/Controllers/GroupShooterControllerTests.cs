@@ -15,7 +15,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class GroupShooterControllerTests : ApiControllerTestsBase<GroupShooterController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task FetchAvailableGroupShooterShouldBeOkHavingElements()
@@ -29,9 +29,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var association = Scenario.Associations.FirstOrDefault(x => x.Id == match.AssociationId);
 
-            var shootersAlreadyInGroupIds = Scenario.GroupShooters.Where(x => groupInMatchIds.Contains(x.GroupId)).Select(x => x.ShooterId);
+            var shootersAlreadyInGroupIds = Scenario.GroupShooters.Where(x => groupInMatchIds.Contains(x.GroupId)).Select(x => x.UserId);
 
-            var shootersInAssociationIds = Scenario.ShooterAssociations.Where(x => x.AssociationId == association.Id).Select(x => x.ShooterId).ToList();
+            var shootersInAssociationIds = Scenario.ShooterAssociations.Where(x => x.AssociationId == association.Id).Select(x => x.UserId).ToList();
 
             var shooterIds = shootersInAssociationIds.Count(x => !shootersAlreadyInGroupIds.Contains(x));
 
@@ -44,7 +44,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAvailableGroupShooter(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserContract>>(response);
 
             var shooterClassifications = parsed.Data.SelectMany(x => x.Classifications).Count();
             var shooterTeams = parsed.Data.SelectMany(x => x.Teams).Count();
@@ -65,15 +65,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var association = Scenario.Associations.FirstOrDefault(x => x.Id == match.AssociationId);
 
-            var shootersAlreadyInGroupIds = Scenario.GroupShooters.Where(x => groupInMatchIds.Contains(x.GroupId)).Select(x => x.ShooterId);
+            var shootersAlreadyInGroupIds = Scenario.GroupShooters.Where(x => groupInMatchIds.Contains(x.GroupId)).Select(x => x.UserId);
 
-            var shootersInAssociationIds = Scenario.ShooterAssociations.Where(x => x.AssociationId == association.Id).Select(x => x.ShooterId).ToList();
+            var shootersInAssociationIds = Scenario.ShooterAssociations.Where(x => x.AssociationId == association.Id).Select(x => x.UserId).ToList();
 
             var shooterId = shootersInAssociationIds.Where(x => !shootersAlreadyInGroupIds.Contains(x)).FirstOrDefault();
 
-            var shooterAssociation = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == association.Id && x.ShooterId == shooterId);
+            var shooterAssociation = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == association.Id && x.UserId == shooterId);
 
-            var shooterTeam = Scenario.ShooterTeams.FirstOrDefault(x => x.ShooterId == shooterId);
+            var shooterTeam = Scenario.ShooterTeams.FirstOrDefault(x => x.UserId == shooterId);
 
             var request = new GroupShooterCreateRequest
             {
@@ -88,10 +88,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.UpsertGroupShooter(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<GroupShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<GroupUserContract>>(response);
 
             Assert.IsTrue(parsed.Data.Any());
-            Assert.IsNotNull(parsed.Data.FirstOrDefault(x => x.Shooter.ShooterId == request.ShooterId && x.Division == request.DivisionId));
+            Assert.IsNotNull(parsed.Data.FirstOrDefault(x => x.User.UserId == request.ShooterId && x.Division == request.DivisionId));
         }
 
     }

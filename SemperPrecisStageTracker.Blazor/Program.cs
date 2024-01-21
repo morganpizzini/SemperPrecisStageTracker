@@ -130,9 +130,9 @@ builder.Services.AddIndexedDbDatabase<MatchServiceIndexedDb>(options =>
     //indexedDbDatabaseModel.AddStore<ShooterContract>();
     //indexedDbDatabaseModel.AddStore<StageContract>();
     //indexedDbDatabaseModel.AddStore<GroupContract>();
-    indexedDbDatabaseModel.AddStore<ShooterStageAggregationResult>();
-    indexedDbDatabaseModel.AddStore<ShooterMatchContract>();
-    indexedDbDatabaseModel.AddStore<ShooterSOStageContract>();
+    indexedDbDatabaseModel.AddStore<UserStageAggregationResult>();
+    indexedDbDatabaseModel.AddStore<UserMatchContract>();
+    indexedDbDatabaseModel.AddStore<UserSOStageContract>();
     indexedDbDatabaseModel.AddStore<EditedEntity>();
     
     options.UseDatabase(indexedDbDatabaseModel);

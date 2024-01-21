@@ -26,7 +26,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllShooters")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchAllShooters()
         {
             //Recupero la lista dal layer
@@ -37,7 +37,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
 
             //Ritorno i contratti
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x,shooterDatas.FirstOrDefault(y=>y.ShooterId == x.Id),null,null,false)));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x,shooterDatas.FirstOrDefault(y=>y.UserId == x.Id),null,null,false)));
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("GetShooter")]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public Task<IActionResult> GetShooter([FromBody]ShooterRequest request)
         {
             var entity = BasicLayer.GetShooter(request.ShooterId);
@@ -70,11 +70,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateShooter")]
         [ApiAuthorizationFilter(Permissions.ManageShooters, Permissions.CreateShooters)]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public async Task<IActionResult> CreateShooter([FromBody]ShooterCreateRequest request)
         {
             //Creazione modello richiesto da admin
-            var model = new Shooter
+            var model = new User
             {
                 FirstName = request.FirstName,
                 LastName = request.LastName,
@@ -82,7 +82,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Email = request.Email,
                 Username = request.Username
             };
-            var data = new ShooterData
+            var data = new UserData
             {
                 FirearmsLicence = request.FirearmsLicence,
                 FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate,
@@ -116,7 +116,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateShooter")]
         [ApiAuthorizationFilter(Permissions.EditShooter ,Permissions.ManageShooters )]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public async Task<IActionResult> UpdateShooter([FromBody]ShooterUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -163,7 +163,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeleteShooter")]
         [ApiAuthorizationFilter(Permissions.ManageShooters,Permissions.ShooterDelete )]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public async Task<IActionResult> DeleteShooter([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer

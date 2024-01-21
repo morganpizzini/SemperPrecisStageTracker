@@ -28,7 +28,7 @@ else
                     <CardTitle>@L["Day"]</CardTitle>
                     <CardText>@group.GroupDay.ToString("d")</CardText>
                     <CardTitle>@L["Shooters"]</CardTitle>
-                    <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
+                    <CardText>@group.Users.Count / @group.MaxUserNumber</CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -88,11 +88,11 @@ else
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @if (group.Shooters.Count > 0)
+                            @if (group.Users.Count > 0)
                             {
-                                <Virtualize Items="@group.Shooters" Context="groupShooter">
+                                <Virtualize Items="@group.Users" Context="groupShooter">
                                     <TableRow>
-                                        <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.User.CompleteName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         @if (!group.Match.UnifyClassifications)
                                         {
@@ -153,11 +153,11 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -216,7 +216,7 @@ else
                 <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <ShooterInGroup AvailableShooters="group.Shooters.Select(x=>x.Shooter).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit" Match="group.Match"/>
+                <ShooterInGroup AvailableShooters="group.Users.Select(x=>x.User).ToList()" SubmitCallback="() => HideEditModal(true)" Model="shooterToEdit" Match="group.Match"/>
             </ModalBody>
         </ModalContent>
     </Modal>
@@ -233,11 +233,11 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -261,13 +261,13 @@ else
     private Modal modalRef = default!;
     private Modal modalEditRef = default!;
     private Modal modalMoveRef = default!;
-    GroupShooterContract  shooterToDelete = new();
+    GroupUserContract  shooterToDelete = new();
 
     IList<GroupContract> Groups = new List<GroupContract>();
 
     GroupContract group = new();
     //MatchContract match = new();
-    IList<ShooterContract> availableShooters = new List<ShooterContract>();
+    IList<UserContract> availableShooters = new List<UserContract>();
 
 
     BaseShooterInMatchCreateRequest model = new();
@@ -294,7 +294,7 @@ else
     {
         if (!SettingState.Value.Offline)
         {
-            availableShooters = await Post<List<ShooterContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId },false);
+            availableShooters = await Post<List<UserContract>>("api/GroupShooter/FetchAvailableGroupShooter", new GroupRequest() { GroupId = GroupId },false);
         }
     }
 
@@ -308,11 +308,11 @@ else
             GroupId = model.GroupId,
             TeamId = model.TeamId
         };
-        var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", request,false);
+        var result = await Post<List<GroupUserContract>>("/api/GroupShooter/UpsertGroupShooter", request,false);
         if (result == null || result.Count == 0)
             return;
 
-        group.Shooters = result;
+        group.Users = result;
         await LoadShooters();
         model.ShooterId = string.Empty;
         model.DivisionId = string.Empty;
@@ -321,28 +321,28 @@ else
 
     }
 
-    void MoveShooter(GroupShooterContract shooter)
+    void MoveShooter(GroupUserContract shooter)
     {
         if (shooter == null)
             return;
         shooterToMove = new ShooterGroupMoveRequest()
         {
-            GroupShooterId = shooter.GroupShooterId,
+            GroupShooterId = shooter.GroupUserId,
             GroupId = model.GroupId,
-            ShooterName = shooter.Shooter.CompleteName,
+            ShooterName = shooter.User.CompleteName,
             ResponseAsGroup = true
         };
         modalMoveRef.Show();
     }
 
-    void EditShooter(GroupShooterContract shooter)
+    void EditShooter(GroupUserContract shooter)
     {
         if (shooter == null)
             return;
         shooterToEdit = new BaseShooterInMatchCreateRequest()
         {
             HasPay = shooter.HasPay,
-            ShooterId = shooter.Shooter.ShooterId,
+            ShooterId = shooter.User.UserId,
             DivisionId = shooter.Division,
             GroupId = model.GroupId,
             TeamId = shooter.Team.TeamId
@@ -350,7 +350,7 @@ else
         modalEditRef.Show();
     }
 
-    void DeleteShooter(GroupShooterContract shooter)
+    void DeleteShooter(GroupUserContract shooter)
     {
         if (shooter == null)
             return;
@@ -360,12 +360,12 @@ else
 
     private async Task HideModal(bool choice)
     {
-        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupUserId))
         {
-            group.Shooters = await Post<List<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId });
+            group.Users = await Post<List<GroupUserContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupUserId });
             await LoadShooters();
         }
-        shooterToDelete = new GroupShooterContract();
+        shooterToDelete = new GroupUserContract();
         await modalRef.Hide();
     }
 
@@ -378,11 +378,11 @@ else
 
             await validations.ClearAll();
 
-            var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/MoveGroupShooter", shooterToMove);
+            var result = await Post<List<GroupUserContract>>("/api/GroupShooter/MoveGroupShooter", shooterToMove);
 
             if (result == null)
                 return;
-            group.Shooters = result;
+            group.Users = result;
         }
         shooterToMove = new();
         await modalMoveRef.Hide();
@@ -392,11 +392,11 @@ else
     {
         if (choice && shooterToEdit!= null)
         {
-            var result = await Post<List<GroupShooterContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
+            var result = await Post<List<GroupUserContract>>("/api/GroupShooter/UpsertGroupShooter", shooterToEdit);
             if (result.Count == 0)
                 return;
                 
-            group.Shooters = result;
+            group.Users = result;
             await LoadShooters();
         }
         shooterToEdit = new();

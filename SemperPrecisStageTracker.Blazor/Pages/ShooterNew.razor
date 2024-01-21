@@ -19,7 +19,7 @@
 </AuthorizeView>
 @code {
 
-    ShooterContract model = new();
+    UserContract model = new();
 
     async Task Submit()
     {
@@ -45,8 +45,8 @@
             FiscalCode = model.FiscalCode
         };
 
-        var response = await Post<ShooterContract>("/api/Shooter/CreateShooter", request);
+        var response = await Post<UserContract>("/api/Shooter/CreateShooter", request);
         if (response != null)
-            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
+            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.UserId }));
     }
 }

@@ -14,7 +14,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class ProfileControllerTests : ApiControllerTestsBase<ProfileController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public void ShouldGetUserBeOkHavingProvidedIdentifier()
@@ -25,9 +25,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = Controller.GetProfile();
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
             Assert.IsTrue(parsed.Data != null
-                          && parsed.Data.ShooterId == existing.Id
+                          && parsed.Data.UserId == existing.Id
                           && parsed.Data.FirstName == existing.FirstName
                           && parsed.Data.LastName == existing.LastName
                           && parsed.Data.Username == existing.Username
@@ -59,14 +59,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = Controller.UpdateProfile(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
             var countAfter = Scenario.Shooters.Count;
 
 
             Assert.IsTrue(parsed != null
-                          && parsed.Data.ShooterId == request.UserId
+                          && parsed.Data.UserId == request.UserId
                           && parsed.Data.FirstName == request.FirstName
                           && parsed.Data.LastName == request.LastName
                           && parsed.Data.Username == request.Username

@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Domain.Identities
         /// <param name="authenticationType">Authentication type (ex. "Basic")</param>
         /// <param name="user">User instance</param>
         /// <returns>Returns claims identity</returns>
-        public static ClaimsPrincipal GeneratesClaimsPrincipal(string authenticationType, Shooter user)
+        public static ClaimsPrincipal GeneratesClaimsPrincipal(string authenticationType, User user)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(authenticationType)) throw new ArgumentNullException(nameof(authenticationType));

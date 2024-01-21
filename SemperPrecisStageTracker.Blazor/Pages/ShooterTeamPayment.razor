@@ -305,18 +305,18 @@
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
                                                  && AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, TeamId);
 
-    ShooterContract shooter = new();
+    UserContract shooter = new();
     TeamContract team = new();
     Validations validations = default!;
     Validations validationsCreate = default!;
     private Modal modalRefPaymentToDelete = default!;
-    ShooterTeamPaymentContract paymentToDelete = new();
+    UserTeamPaymentContract paymentToDelete = new();
     private Modal modalRefPaymentToEdit = default!;
     private Modal modalRefPaymentToCreate = default!;
     ShooterTeamPaymentUpdateRequest paymentToEdit = new();
     ShooterTeamPaymentCreateRequest paymentToCreate = new();
     IList<PaymentTypeContract> paymentTypes = new List<PaymentTypeContract>();
-    IList<ShooterTeamPaymentContract> shooterTeamPayments = new List<ShooterTeamPaymentContract>();
+    IList<UserTeamPaymentContract> shooterTeamPayments = new List<UserTeamPaymentContract>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -327,7 +327,7 @@
             return;
         }
         paymentTypes = await Post<List<PaymentTypeContract>>("api/PaymentType/FetchPaymentTypeByTeam", new TeamRequest() { TeamId = TeamId });
-        shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+        shooter = await Post<UserContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = TeamId });
         await LoadShooterTeamPayments();
         await base.OnInitializedAsync();
@@ -335,7 +335,7 @@
 
     async Task LoadShooterTeamPayments()
     {
-        shooterTeamPayments = await Post<List<ShooterTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId },false);
+        shooterTeamPayments = await Post<List<UserTeamPaymentContract>>("api/ShooterTeamPayment/FetchShooterTeamPaymentByShooterAndTeam", new ShooterTeamRequest() { ShooterId = Id, TeamId = TeamId },false);
     }
 
     void ValidateDate(ValidatorEventArgs e)
@@ -359,7 +359,7 @@
     
     void NewClassification()
     {
-        paymentToCreate = new ShooterTeamPaymentCreateRequest { ShooterId = shooter.ShooterId, TeamId = team.TeamId };
+        paymentToCreate = new ShooterTeamPaymentCreateRequest { ShooterId = shooter.UserId, TeamId = team.TeamId };
         modalRefPaymentToCreate.Show();
     }
     
@@ -370,19 +370,19 @@
             if (! (await validationsCreate.ValidateAll()))
                 return;
             await validationsCreate.ClearAll();
-            var response = await Post<ShooterTeamPaymentContract>("/api/ShooterTeamPayment/CreateShooterTeamPayment", paymentToCreate);
+            var response = await Post<UserTeamPaymentContract>("/api/ShooterTeamPayment/CreateShooterTeamPayment", paymentToCreate);
             await LoadShooterTeamPayments();
         }
         paymentToCreate = new ShooterTeamPaymentCreateRequest();
         await modalRefPaymentToCreate.Hide();
     }
 
-    void EditPayment(ShooterTeamPaymentContract shooterTeamPayment)
+    void EditPayment(UserTeamPaymentContract shooterTeamPayment)
     {
         paymentToEdit = new ShooterTeamPaymentUpdateRequest
         {
-            ShooterTeamPaymentId = shooterTeamPayment.ShooterTeamPaymentId,
-            ShooterId = shooter.ShooterId,
+            ShooterTeamPaymentId = shooterTeamPayment.UserTeamPaymentId,
+            ShooterId = shooter.UserId,
             TeamId = team.TeamId,
             Amount = shooterTeamPayment.Amount,
             PaymentDateTime = shooterTeamPayment.PaymentDateTime,
@@ -400,14 +400,14 @@
             if (! (await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            var response = await Post<ShooterTeamPaymentContract>("/api/ShooterTeamPayment/UpdateShooterTeamPayment", paymentToEdit);
+            var response = await Post<UserTeamPaymentContract>("/api/ShooterTeamPayment/UpdateShooterTeamPayment", paymentToEdit);
             await LoadShooterTeamPayments();
         }
         paymentToEdit = new ShooterTeamPaymentUpdateRequest();
         await modalRefPaymentToEdit.Hide();
     }
 
-    void DeletePayment(ShooterTeamPaymentContract payment)
+    void DeletePayment(UserTeamPaymentContract payment)
     {
         if (payment == null)
             return;
@@ -420,11 +420,11 @@
         {
             await Post<GroupContract>("/api/ShooterAssociation/DeleteShooterTeamPayment", new ShooterTeamPaymentRequest
             {
-                ShooterTeamPaymentId = paymentToDelete.ShooterTeamPaymentId
+                ShooterTeamPaymentId = paymentToDelete.UserTeamPaymentId
             });
             await LoadShooterTeamPayments();
         }
-        paymentToDelete = new ShooterTeamPaymentContract();
+        paymentToDelete = new UserTeamPaymentContract();
         await modalRefPaymentToDelete.Hide();
     }
 }

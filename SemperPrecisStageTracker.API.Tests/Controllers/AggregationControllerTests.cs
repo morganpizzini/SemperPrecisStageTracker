@@ -15,7 +15,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class AggregationControllerTests : ApiControllerTestsBase<AggregationController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
         
         [TestMethod]
         public async Task ShouldUpdateDataForMatchBeOkHavingProvidedData()
@@ -36,7 +36,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var groupIds = Scenario.Groups.Where(x=>x.MatchId == existing.Id).Select(x=>x.Id).ToList();
 
             var groupShooters = Scenario.GroupShooters.Where(x=>groupIds.Contains(x.GroupId)).ToList();
-            var shootersIds = groupShooters.Select(x=>x.ShooterId).ToList();
+            var shootersIds = groupShooters.Select(x=>x.UserId).ToList();
             
             var stringWithNoResult = stageStrings.FirstOrDefault(x=> shooterResult.All(y=>y.StageStringId != x.Id));
 
@@ -50,10 +50,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             for (int i = 0; i < 3; i++)
             {
-                request.ShooterStages.Add(new ShooterStageStringContract()
+                request.ShooterStages.Add(new UserStageStringContract()
                 {
                     StageStringId = stringWithNoResult.Id,
-                    ShooterId = shootersIds[i],
+                    UserId = shootersIds[i],
                     Time = RandomSeed.Next(150),
                     DownPoints = ListExtensions.Repeated(()=>RandomSeed.Next(20), stringWithNoResult.Targets),
                     Procedurals = association.FirstProceduralPointDown > 0 ? RandomSeed.Next(20) : 0,

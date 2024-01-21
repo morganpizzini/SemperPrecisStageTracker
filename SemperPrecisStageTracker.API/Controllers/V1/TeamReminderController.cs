@@ -88,7 +88,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Creazione modello richiesto da admin
             var model = new TeamReminder
             {
-                ShooterId = request.ShooterId,
+                UserId = request.ShooterId,
                 TeamId = request.TeamId,
                 ExpireDateTime = request.ExpireDateTime,
                 NotifyExpiration = request.NotifyExpiration,
@@ -143,7 +143,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return NotFound();
 
             //Aggiornamento dell'entità
-            entity.ShooterId = request.ShooterId;
+            entity.UserId = request.ShooterId;
             entity.TeamId = request.TeamId;
             entity.ExpireDateTime = request.ExpireDateTime;
             entity.NotifyExpiration = request.NotifyExpiration;

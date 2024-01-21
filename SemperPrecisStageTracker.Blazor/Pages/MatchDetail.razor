@@ -116,7 +116,7 @@ else
                                     {
                                         <Virtualize Items="@matchDirectors" Context="matchDirector">
                                             <TableRow>
-                                                <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
+                                                <TableRowHeader>@matchDirector.User.CompleteName</TableRowHeader>
                                                 <TableRowCell>
                                                     @if (canManageMD)
                                                     {
@@ -148,7 +148,7 @@ else
                 <Column ColumnSize="ColumnSize.IsFull">
                     <Card Margin="Margin.Is4.OnY">
                         <CardBody>
-                            <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Shooters.Count) @L["Shooters"] )</CardTitle>
+                            <CardTitle>@L["Groups"] ( @match.Groups.Sum(x=>x.Users.Count) @L["Shooters"] )</CardTitle>
 
                             <Table Striped="true" Hoverable="true">
                                 <TableHeader ThemeContrast="ThemeContrast.Dark">
@@ -170,7 +170,7 @@ else
                                                     <span class="fw-light">@group.Description</span>
                                                 </TableRowHeader>
                                                 <TableRowHeader>@group.GroupDay.ToString("d")</TableRowHeader>
-                                                <TableRowHeader>@group.Shooters.Count / @group.MaxShooterNumber</TableRowHeader>
+                                                <TableRowHeader>@group.Users.Count / @group.MaxUserNumber</TableRowHeader>
                                                 <TableRowCell>
                                                     <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<GroupDetail>(new{ id = Id, groupId = group.GroupId}))"><Icon Name="IconName.Search" /></Button>
                                                     @if (canManageGroups)
@@ -316,7 +316,7 @@ else
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var availableMatchDirector in availableMatchDirectors)
                                     {
-                                        <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
+                                        <SelectItem Value="@availableMatchDirector.UserId">@availableMatchDirector.CompleteName</SelectItem>
                                     }
                                 </ChildContent>
                                 <Feedback>
@@ -345,11 +345,11 @@ else
             <Field>
                 <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
             </Field>
-            @if (matchDirectorToDelete.Shooter != null)
+            @if (matchDirectorToDelete.User != null)
             {
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@matchDirectorToDelete.Shooter.CompleteName</Text>
+                    <Text>@matchDirectorToDelete.User.CompleteName</Text>
                 </Field>
             }
         </ModalBody>
@@ -416,13 +416,13 @@ else
 
     Validations validations = default!;
     private Modal modalRefMatchDirectorToDelete = default!;
-    ShooterMatchContract matchDirectorToDelete = new();
+    UserMatchContract matchDirectorToDelete = new();
     private Modal modalRefMatchDirectorToEdit = default!;
     ShooterMatchCreateRequest matchesDirectorToEdit = new();
 
     MatchContract match = new();
-    IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
-    IList<ShooterContract> availableMatchDirectors = new List<ShooterContract>();
+    IList<UserMatchContract> matchDirectors = new List<UserMatchContract>();
+    IList<UserContract> availableMatchDirectors = new List<UserContract>();
 
 
     bool canManageSO = false;
@@ -454,7 +454,7 @@ else
     {
         matchDirectors = await MainServiceLayer.FetchAllMatchDirector(Id);
         if(!SettingState.Value.Offline)
-            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<UserContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
     }
     async Task OnCompetitionReadyChanged(bool value)
     {
@@ -528,7 +528,7 @@ else
         await modalRefMatchDirectorToEdit.Show();
     }
 
-    async Task DeleteMatchDirector(ShooterMatchContract matchDirector)
+    async Task DeleteMatchDirector(UserMatchContract matchDirector)
     {
         if (matchDirector == null)
             return;
@@ -543,9 +543,9 @@ else
             if (! (await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            matchDirectors = await Post<List<ShooterMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
+            matchDirectors = await Post<List<UserMatchContract>>("/api/Match/CreateMatchDirector", matchesDirectorToEdit);
             //update available match director
-            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<UserContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
         }
         matchesDirectorToEdit = new ShooterMatchCreateRequest();
         await modalRefMatchDirectorToEdit.Hide();
@@ -553,16 +553,16 @@ else
 
     private async Task HideModalMatchDirectorToDelete(bool choice)
     {
-        if (choice && matchDirectorToDelete.Shooter != null)
+        if (choice && matchDirectorToDelete.User != null)
         {
-            matchDirectors = await Post<List<ShooterMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
+            matchDirectors = await Post<List<UserMatchContract>>("/api/Match/DeleteMatchDirector", new ShooterMatchRequest
             {
-                ShooterMatchId = matchDirectorToDelete.ShooterMatchId
+                ShooterMatchId = matchDirectorToDelete.UserMatchId
             });
-            availableMatchDirectors = await Post<List<ShooterContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
+            availableMatchDirectors = await Post<List<UserContract>>("api/Match/FetchAvailableMatchDirector", new MatchRequest() { MatchId = Id });
             //await LoadMatchDirectors();
         }
-        matchDirectorToDelete = new ShooterMatchContract();
+        matchDirectorToDelete = new UserMatchContract();
         await modalRefMatchDirectorToDelete.Hide();
     }
 }

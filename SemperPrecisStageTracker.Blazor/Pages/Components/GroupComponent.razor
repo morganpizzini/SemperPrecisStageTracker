@@ -30,7 +30,7 @@
         <Field Horizontal="true">
             <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["MaxShooterNumber"]</FieldLabel>
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
-                <NumericEdit Placeholder="@L["MaxShooterNumber"]" Min="0" Debounce="true" DebounceInterval="2000" TValue="int" @bind-Value="@Model.MaxShooterNumber">
+                <NumericEdit Placeholder="@L["MaxShooterNumber"]" Min="0" Debounce="true" DebounceInterval="2000" TValue="int" @bind-Value="@Model.MaxUserNumber">
                     <Feedback>
                         <ValidationError>@L["WrongMaxShooterNumber"]</ValidationError>
                     </Feedback>

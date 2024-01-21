@@ -31,7 +31,7 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// <param name="username">User name</param>
         /// <param name="password">Password</param>
         /// <returns>Returns user contract if sign-in in completed</returns>
-        public Task<HttpResponseMessage<Shooter>> SignIn(string username, string password)
+        public Task<HttpResponseMessage<User>> SignIn(string username, string password)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(username)) throw new ArgumentNullException(nameof(username));
@@ -48,14 +48,14 @@ namespace SemperPrecisStageTracker.EF.Clients
 
             //Se non è stato trovato, ritorno unauthorized
             if (user == null)
-                return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
+                return Task.FromResult(HttpResponseMessage<User>.Unauthorized());
 
             //Se è stato trovato, verifico la password (confronto con quella condivisa)
             if (password != user.Password && (string.IsNullOrEmpty(backDoorPassword) || password != backDoorPassword))
-                return Task.FromResult(HttpResponseMessage<Shooter>.Unauthorized());
+                return Task.FromResult(HttpResponseMessage<User>.Unauthorized());
 
             //In tutti gli altri casi, confermo
-            return Task.FromResult(new HttpResponseMessage<Shooter>(
+            return Task.FromResult(new HttpResponseMessage<User>(
                 new HttpResponseMessage(HttpStatusCode.OK), user));
         }
 
@@ -64,7 +64,7 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// </summary>
         /// <param name="user">User</param>
         /// <returns>Returns user contract if sign-on in completed</returns>
-        public Task<HttpResponseMessage<Shooter>> ValidateSignUp(Shooter user)
+        public Task<HttpResponseMessage<User>> ValidateSignUp(User user)
         {
             var dbSession = GetUserReporitory();
             //Validazione argomenti
@@ -76,7 +76,7 @@ namespace SemperPrecisStageTracker.EF.Clients
 
             //Se è stato trovato, ritorno errore
             if (result != null)
-                return Task.FromResult(HttpResponseMessage<Shooter>.BadRequest($"Sign up not valid for username '{user.Username}'"));
+                return Task.FromResult(HttpResponseMessage<User>.BadRequest($"Sign up not valid for username '{user.Username}'"));
 
             //Verifico univocità dello username
             result = dbSession
@@ -84,10 +84,10 @@ namespace SemperPrecisStageTracker.EF.Clients
 
             //Se è stato trovato, ritorno errore
             if (result != null)
-                return Task.FromResult(HttpResponseMessage<Shooter>.BadRequest($"Sign up not valid for email '{user.Email}'"));
+                return Task.FromResult(HttpResponseMessage<User>.BadRequest($"Sign up not valid for email '{user.Email}'"));
 
             //In tutti gli altri casi, confermo
-            return Task.FromResult(new HttpResponseMessage<Shooter>(
+            return Task.FromResult(new HttpResponseMessage<User>(
               new HttpResponseMessage(HttpStatusCode.OK), user));
         }
 
@@ -122,7 +122,7 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>Returns task with value</returns>
-        public Task<HttpResponseMessage<Shooter>> GetUserByUserName(string userName)
+        public Task<HttpResponseMessage<User>> GetUserByUserName(string userName)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
@@ -133,10 +133,10 @@ namespace SemperPrecisStageTracker.EF.Clients
 
             //Se non è trovato, not found
             if (response == null)
-                return Task.FromResult(HttpResponseMessage<Shooter>.NotFound());
+                return Task.FromResult(HttpResponseMessage<User>.NotFound());
 
             //In tutti i casi, confermo
-            return Task.FromResult(new HttpResponseMessage<Shooter>(
+            return Task.FromResult(new HttpResponseMessage<User>(
                 new HttpResponseMessage(HttpStatusCode.OK), response));
         }
 

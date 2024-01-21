@@ -16,6 +16,6 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public int Index { get; set; }
         [Required]
-        public int MaxShooterNumber { get; set; }
+        public int MaxUserNumber { get; set; }
     }
 }

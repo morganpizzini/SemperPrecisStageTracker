@@ -8,7 +8,7 @@ using ZenProgramming.Chakra.Core.Mocks.Data.Repositories;
 namespace SemperPrecisStageTracker.Mocks.Data.Repositories;
 
 [Repository]
-public class MockShooterAssociationInfoRepository : MockRepositoryBase<ShooterAssociationInfo, ISemperPrecisStageTrackerScenario>, IShooterAssociationInfoRepository
+public class MockShooterAssociationInfoRepository : MockRepositoryBase<UserAssociationInfo, ISemperPrecisStageTrackerScenario>, IShooterAssociationInfoRepository
 {
     public MockShooterAssociationInfoRepository(IDataSession dataSession)
         : base(dataSession, c => c.ShooterAssociationInfos)

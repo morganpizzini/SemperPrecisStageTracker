@@ -16,5 +16,5 @@ public class MatchGroupResponse
     /// <summary>
     /// List of 
     /// </summary>
-    public IList<GroupShooterContract> UnGrouped { get; set; }
+    public IList<GroupUserContract> UnGrouped { get; set; }
 }

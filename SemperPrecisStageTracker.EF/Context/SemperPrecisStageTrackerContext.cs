@@ -76,21 +76,21 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<GroupShooter>()
+            modelBuilder.Entity<GroupUser>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<GroupShooter>()
+            modelBuilder.Entity<GroupUser>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterData>()
+            modelBuilder.Entity<UserData>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterData>()
+            modelBuilder.Entity<UserData>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterTeam>()
+            modelBuilder.Entity<UserTeam>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterTeam>()
+            modelBuilder.Entity<UserTeam>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
@@ -166,9 +166,9 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<Shooter>()
+            modelBuilder.Entity<User>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<Shooter>()
+            modelBuilder.Entity<User>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
@@ -183,13 +183,13 @@ namespace SemperPrecisStageTracker.EF.Context
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedureNotes).HasMaxLength(1000);
             modelBuilder.Entity<Stage>().Property(f => f.StageProcedure).HasMaxLength(1000);
 
-            modelBuilder.Entity<ShooterStageString>()
+            modelBuilder.Entity<UserStageString>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterStageString>()
+            modelBuilder.Entity<UserStageString>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterStageString>()
+            modelBuilder.Entity<UserStageString>()
                 .Property(e => e.DownPoints)
                 .HasConversion(
                     v => string.Join(',', v),
@@ -222,7 +222,7 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Metadata
                 .SetValueComparer(valueComparerString);
 
-            modelBuilder.Entity<ShooterStageString>()
+            modelBuilder.Entity<UserStageString>()
                 .Property(e => e.DownPoints)
                 .Metadata
                 .SetValueComparer(valueComparerInt);
@@ -238,25 +238,25 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterAssociation>()
+            modelBuilder.Entity<UserAssociation>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterAssociation>()
+            modelBuilder.Entity<UserAssociation>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterAssociationInfo>()
+            modelBuilder.Entity<UserAssociationInfo>()
                 .HasKey(f => f.Id);
-            modelBuilder.Entity<ShooterAssociationInfo>()
+            modelBuilder.Entity<UserAssociationInfo>()
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterAssociationInfo>()
+            modelBuilder.Entity<UserAssociationInfo>()
                 .Property(e => e.Categories)
                 .HasConversion(
                     v => string.Join(',', v),
                     v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
-            modelBuilder.Entity<ShooterAssociationInfo>()
+            modelBuilder.Entity<UserAssociationInfo>()
                 .Property(e => e.Categories)
                 .Metadata
                 .SetValueComparer(valueComparerString);
@@ -267,10 +267,10 @@ namespace SemperPrecisStageTracker.EF.Context
                         .Property(f => f.Id)
                         .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<ShooterRole>().ToTable("ShooterRoles")
+            modelBuilder.Entity<UserRelationRole>().ToTable("ShooterRoles")
                 .HasKey(f => f.Id);
 
-            modelBuilder.Entity<ShooterRole>()
+            modelBuilder.Entity<UserRelationRole>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
@@ -351,12 +351,12 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of group shooters
         /// </summary>
-        public DbSet<GroupShooter> GroupShooters { get; set; }
+        public DbSet<GroupUser> GroupShooters { get; set; }
 
         /// <summary>
         /// List of team shooters
         /// </summary>
-        public DbSet<ShooterTeam> ShooterTeams { get; set; }
+        public DbSet<UserTeam> ShooterTeams { get; set; }
 
         /// <summary>
         /// List of match
@@ -381,12 +381,12 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of shooter
         /// </summary>
-        public DbSet<Shooter> Shooters { get; set; }
+        public DbSet<User> Shooters { get; set; }
 
         /// <summary>
         /// List of shooter
         /// </summary>
-        public DbSet<ShooterData> ShooterDatas { get; set; }
+        public DbSet<UserData> ShooterDatas { get; set; }
 
         /// <summary>
         /// List of stage
@@ -401,7 +401,7 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of shooter stage
         /// </summary>
-        public DbSet<ShooterStageString> ShooterStages { get; set; }
+        public DbSet<UserStageString> ShooterStages { get; set; }
 
         /// <summary>
         /// List of shooter team payment
@@ -417,12 +417,12 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of teams
         /// </summary>
-        public DbSet<ShooterAssociation> ShooterAssociations { get; set; }
+        public DbSet<UserAssociation> ShooterAssociations { get; set; }
 
         /// <summary>
         /// List of teams
         /// </summary>
-        public DbSet<ShooterAssociationInfo> ShooterAssociationInfos { get; set; }
+        public DbSet<UserAssociationInfo> ShooterAssociationInfos { get; set; }
 
         /// <summary>
         /// List of notification subscription
@@ -432,12 +432,12 @@ namespace SemperPrecisStageTracker.EF.Context
         /// <summary>
         /// List of shooter matches directors
         /// </summary>
-        public DbSet<ShooterMatch> ShooterMatches { get; set; }
+        public DbSet<UserMatch> ShooterMatches { get; set; }
 
         /// <summary>
         /// List of shooter PSO stages
         /// </summary>
-        public DbSet<ShooterSOStage> ShooterSOStages { get; set; }
+        public DbSet<UserSOStage> ShooterSOStages { get; set; }
 
         /// <summary>
         /// List of team holders

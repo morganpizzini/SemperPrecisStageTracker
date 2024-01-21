@@ -8,7 +8,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class SignInResponse
     {
-        public ShooterContract Shooter { get; set; }
+        public UserContract Shooter { get; set; }
         public UserPermissionContract Permissions { get; set; }
     }
 }

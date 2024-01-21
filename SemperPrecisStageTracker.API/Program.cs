@@ -36,7 +36,6 @@ using ZenProgramming.Chakra.Core.Mocks.Data;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace SemperPrecisStageTracker.API;
 
 public class Program
@@ -233,6 +232,7 @@ public class Program
         builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         var app = builder.Build();
+
         var enableDev = bool.Parse(builder.Configuration["enableDev"] ?? "false");
         if (app.Environment.IsDevelopment())
         {

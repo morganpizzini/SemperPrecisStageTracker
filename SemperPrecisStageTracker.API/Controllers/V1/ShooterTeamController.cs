@@ -22,7 +22,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterTeamByShooter")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchShooterTeamByShooter([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -40,16 +40,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterTeamByTeam")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchShooterTeamByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShootersFromTeamId(request.TeamId);
-            var shooterIds = entities.Select(x => x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
             var shooterData = BasicLayer.FetchShooterDataByShooterIds(shooterIds);
             //Return contract
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, null, shooters.FirstOrDefault(t => t.Id == x.ShooterId),shooterData.FirstOrDefault(s=>s.Id == x.ShooterId))).OrderBy(x=>x.Shooter.CompleteName).ToList());
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, null, shooters.FirstOrDefault(t => t.Id == x.UserId),shooterData.FirstOrDefault(s=>s.Id == x.UserId))).OrderBy(x=>x.User.CompleteName).ToList());
 
         }
 
@@ -68,16 +68,16 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             if (entity == null)
             {
-                entity = new ShooterTeam
+                entity = new UserTeam
                 {
-                    ShooterId = request.ShooterId,
+                    UserId = request.ShooterId,
                     TeamId = request.TeamId
                 };
             }
 
             if (request.FromShooter)
             {
-                entity.ShooterApprove = true;
+                entity.UserApprove = true;
             }
             else
             {
@@ -103,7 +103,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooterTeam")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> DeleteShooterTeam([FromBody]ShooterTeamDeleteRequest request)
         {
             //Recupero l'elemento dal business layer

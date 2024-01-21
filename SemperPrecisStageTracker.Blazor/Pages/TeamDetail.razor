@@ -12,7 +12,7 @@
     <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
 }
 
-@if (UserState.Value.User?.Teams.All(x => x.TeamId != team.TeamId) ?? false && teamShooters.All(x => x.Shooter.ShooterId != UserState.Value.User?.ShooterId))
+@if (UserState.Value.User?.Teams.All(x => x.TeamId != team.TeamId) ?? false && teamShooters.All(x => x.User.UserId != UserState.Value.User?.UserId))
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Button" Clicked="AskToJoin"><Icon Name="IconName.PlusSquare" /> @L["AskToJoin"]</Button>
 }
@@ -106,11 +106,11 @@ else
 
     private Modal modalRefEntityToDelete = default!;
 
-    IList<ShooterContract> shooters = new List<ShooterContract>();
+    IList<UserContract> shooters = new List<UserContract>();
     TeamContract team = new();
     private Modal modalRefAskToJoin = default!;
     private ShooterTeamCreateRequest shooterToJoin = new();
-    IList<ShooterTeamContract> teamShooters = new List<ShooterTeamContract>();
+    IList<UserTeamContract> teamShooters = new List<UserTeamContract>();
 
 
     bool canEditTeamShooters;
@@ -119,7 +119,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
-        shooters = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
+        shooters = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
 
         canEditTeamShooters = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
@@ -154,7 +154,7 @@ else
     {
         if (canSeeTeamShooters)
         {
-            teamShooters = await Post<List<ShooterTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
+            teamShooters = await Post<List<UserTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
         }
     }
 
@@ -162,7 +162,7 @@ else
     {
         shooterToJoin = new ShooterTeamCreateRequest
             {
-                ShooterId = UserState.Value.User?.ShooterId,
+                ShooterId = UserState.Value.User?.UserId,
                 TeamId = team.TeamId,
                 FromShooter = true,
                 RegistrationDate = DateTime.Now

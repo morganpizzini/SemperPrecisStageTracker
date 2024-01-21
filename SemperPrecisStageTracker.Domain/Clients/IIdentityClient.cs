@@ -15,14 +15,14 @@ namespace SemperPrecisStageTracker.Domain.Clients
         /// <param name="userName">User name</param>
         /// <param name="password">Password</param>
         /// <returns>Returns user contract if sign-in in completed</returns>
-        Task<HttpResponseMessage<Shooter>> SignIn(string userName, string password);
+        Task<HttpResponseMessage<User>> SignIn(string userName, string password);
 
         /// <summary>
         /// Executes sign-on on identity service
         /// </summary>
         /// <param name="user">User</param>
         /// <returns>Returns user contract if sign-on in completed</returns>
-        Task<HttpResponseMessage<Shooter>> ValidateSignUp(Shooter user);
+        Task<HttpResponseMessage<User>> ValidateSignUp(User user);
 
         /// <summary>
         /// Count valid users
@@ -35,7 +35,7 @@ namespace SemperPrecisStageTracker.Domain.Clients
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>Returns task with value</returns>
-        Task<HttpResponseMessage<Shooter>> GetUserByUserName(string userName);
+        Task<HttpResponseMessage<User>> GetUserByUserName(string userName);
 
         /// <summary>
         /// Encrypt password

@@ -91,7 +91,7 @@ else
                     <TableBody>
                         <Virtualize Items="@stats.Overall" Context="result">
                             <TableRow>
-                                <TableRowHeader>@result.Shooter.CompleteName</TableRowHeader>
+                                <TableRowHeader>@result.User.CompleteName</TableRowHeader>
                                 <TableRowCell>@result.Division</TableRowCell>
                                 <TableRowCell>@result.Classification</TableRowCell>
                                 <TableRowCell>@result.TeamName</TableRowCell>
@@ -124,9 +124,9 @@ else
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        <Virtualize Items="@classification.Shooters" Context="shooter">
+                                        <Virtualize Items="@classification.Users" Context="shooter">
                                             <TableRow>
-                                                <TableRowHeader>@shooter.Shooter.CompleteName</TableRowHeader>
+                                                <TableRowHeader>@shooter.User.CompleteName</TableRowHeader>
                                                 <TableRowCell>@shooter.TeamName</TableRowCell>
                                                     @foreach (var stageName in stats.StageNames)
                                                     {
@@ -175,10 +175,10 @@ else
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            <Virtualize Items="@division.Shooters" Context="shooter">
+                                            <Virtualize Items="@division.Users" Context="shooter">
 
                                                 <TableRow>
-                                                    <TableRowHeader>@shooter.Shooter.CompleteName</TableRowHeader>
+                                                    <TableRowHeader>@shooter.User.CompleteName</TableRowHeader>
                                                     <TableRowCell>@shooter.TeamName</TableRowCell>
                                                     <TableRowCell>@(shooter.Results.Count != stats.StageNames.Count ? L["DNF"] : shooter.Total < 0 ? @L["DQ"] : $"{shooter.Total:f2}")</TableRowCell>
                                                     <TableRowCell>@shooter.RawTime</TableRowCell>

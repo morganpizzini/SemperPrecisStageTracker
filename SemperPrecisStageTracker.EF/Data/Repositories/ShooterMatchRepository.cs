@@ -9,7 +9,7 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
     [Repository]
-    public class ShooterMatchRepository : EntityFrameworkRepositoryBase<ShooterMatch, SemperPrecisStageTrackerContext>, IShooterMatchRepository
+    public class ShooterMatchRepository : EntityFrameworkRepositoryBase<UserMatch, SemperPrecisStageTrackerContext>, IShooterMatchRepository
     {
         public ShooterMatchRepository(IDataSession dataSession)
             : base(dataSession, c => c.ShooterMatches)

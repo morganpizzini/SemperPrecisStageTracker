@@ -64,7 +64,7 @@ else
                     {
                         <Virtualize Items="@Model.UnGrouped" Context="groupShooter">
                             <TableRow>
-                                <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
+                                <TableRowHeader>@groupShooter.User.CompleteName</TableRowHeader>
                                 <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                 <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
                                 @if (Model.Match is { UnifyClassifications: false })
@@ -73,7 +73,7 @@ else
                                 }
                                 <TableRowCell>
                                     @if (!SettingState.Value.Offline && 
-                                         (canManageShooter || UserState.Value.User?.ShooterId == groupShooter.Shooter.ShooterId))
+                                         (canManageShooter || UserState.Value.User?.UserId == groupShooter.User.UserId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking"/></Button>
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete"/></Button>
@@ -112,7 +112,7 @@ else
                                 <CardTitle>@L["Day"]</CardTitle>
                                 <CardText>@group.GroupDay.ToString("d")</CardText>
                                 <CardTitle>@L["Spots"]</CardTitle>
-                                <CardText>@group.Shooters.Count / @group.MaxShooterNumber</CardText>
+                                <CardText>@group.Users.Count / @group.MaxUserNumber</CardText>
                             </Column>
                         </Row>
                         <CardTitle>@L["Shooters"]</CardTitle>
@@ -130,11 +130,11 @@ else
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @if (group.Shooters.Count > 0)
+                            @if (group.Users.Count > 0)
                             {
-                                <Virtualize Items="@group.Shooters" Context="groupShooter">
+                                <Virtualize Items="@group.Users" Context="groupShooter">
                                     <TableRow>
-                                        <TableRowHeader>@groupShooter.Shooter.CompleteName</TableRowHeader>
+                                        <TableRowHeader>@groupShooter.User.CompleteName</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Division</TableRowHeader>
                                         <TableRowHeader>@groupShooter.Team.Name</TableRowHeader>
                                         @if (Model.Match is { UnifyClassifications: false })
@@ -142,7 +142,7 @@ else
                                         <TableRowHeader>@groupShooter.Classification</TableRowHeader>
                                     }
                                     <TableRowCell>
-                                        @if (!SettingState.Value.Offline && (canManageShooter || UserState.Value.User?.ShooterId == groupShooter.Shooter.ShooterId))
+                                        @if (!SettingState.Value.Offline && (canManageShooter || UserState.Value.User?.UserId == groupShooter.User.UserId))
                                         {
                                             <Button Size="Size.Small" Color="Color.Info" Clicked="@(() => MoveShooter(groupShooter))"><Icon Name="IconName.Walking" /></Button>
                                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(groupShooter))"><Icon Name="IconName.Delete" /></Button>
@@ -183,11 +183,11 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -252,11 +252,11 @@ else
                 </Field>
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             </ModalBody>
             <ModalFooter>
@@ -275,7 +275,7 @@ else
     // reference to the modal component
     private Modal modalRef = default!;
     private Modal modalMoveRef = default!;
-    GroupShooterContract shooterToDelete = new();
+    GroupUserContract shooterToDelete = new();
 
     //MatchGroupResponse Groups = new();
 
@@ -297,22 +297,22 @@ else
     }
 
 
-    void MoveShooter(GroupShooterContract shooter)
+    void MoveShooter(GroupUserContract shooter)
     {
         if (shooter == null)
             return;
         shooterToMove = new ShooterGroupMoveRequest()
             {
-                GroupShooterId = shooter.GroupShooterId,
+                GroupShooterId = shooter.GroupUserId,
                 GroupId = model.GroupId,
-                ShooterName = shooter.Shooter.CompleteName,
+                ShooterName = shooter.User.CompleteName,
                 ResponseAsGroup = false
             };
         modalMoveRef.Show();
     }
 
 
-    void DeleteShooter(GroupShooterContract shooter)
+    void DeleteShooter(GroupUserContract shooter)
     {
         if (shooter == null)
             return;
@@ -322,12 +322,12 @@ else
 
     private async Task HideModal(bool choice)
     {
-        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupShooterId))
+        if (choice && !string.IsNullOrEmpty(shooterToDelete.GroupUserId))
         {
-            await Post<List<GroupShooterContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupShooterId }, false);
+            await Post<List<GroupUserContract>>("/api/GroupShooter/DeleteGroupShooter", new GroupShooterRequest { GroupShooterId = shooterToDelete.GroupUserId }, false);
             await LoadGroups();
         }
-        shooterToDelete = new GroupShooterContract();
+        shooterToDelete = new GroupUserContract();
         await modalRef.Hide();
     }
 

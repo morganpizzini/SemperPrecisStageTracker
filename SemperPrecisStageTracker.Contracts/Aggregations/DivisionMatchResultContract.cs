@@ -5,6 +5,6 @@ namespace SemperPrecisStageTracker.Contracts
     public class DivisionMatchResultContract
     {
         public string Name { get; set; }
-        public IList<ShooterClassificationResultContract> Classifications { get; set; } = new List<ShooterClassificationResultContract>();
+        public IList<UserClassificationResultContract> Classifications { get; set; } = new List<UserClassificationResultContract>();
     }
 }

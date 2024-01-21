@@ -24,7 +24,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("GetProfile")]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public IActionResult GetProfile()
         {
             var userId = PlatformUtils.GetIdentityUserId(User);
@@ -46,7 +46,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateProfile")]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public IActionResult UpdateProfile([FromBody]UserUpdateRequest request)
         {
             //User id corrente

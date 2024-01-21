@@ -75,9 +75,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 };
             // clean up datas
             await _matchServiceIndexDb.DeleteAll<MatchContract>();
-            await _matchServiceIndexDb.DeleteAll<ShooterStageAggregationResult>();
-            await _matchServiceIndexDb.DeleteAll<ShooterMatchContract>();
-            await _matchServiceIndexDb.DeleteAll<ShooterSOStageContract>();
+            await _matchServiceIndexDb.DeleteAll<UserStageAggregationResult>();
+            await _matchServiceIndexDb.DeleteAll<UserMatchContract>();
+            await _matchServiceIndexDb.DeleteAll<UserSOStageContract>();
 
             // download everything about model.MatchId
             var response = await _presentationalServiceLayer.Sample<MatchDataAssociationContract>("api/Aggregation/FetchDataForMatch", new MatchRequest { MatchId = model.MatchId });
@@ -100,11 +100,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
             };
         }
 
-        public async Task<(IList<ShooterStageStringContract>, IList<EditedEntityRequest>)> GetChanges()
+        public async Task<(IList<UserStageStringContract>, IList<EditedEntityRequest>)> GetChanges()
         {
             // get changes on shooterStage
             var changes = (await _matchServiceIndexDb.GetAll<EditedEntity>())
-                .Where(x => x.EntityName == nameof(ShooterStageAggregationResult))
+                .Where(x => x.EntityName == nameof(UserStageAggregationResult))
                 .GroupBy(x => x.EntityId).Select(x =>
                 {
                     return new EditedEntityRequest
@@ -115,21 +115,21 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 }).ToList();
 
             // filter shooter stages with changes
-            var entities = (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
+            var entities = (await _matchServiceIndexDb.GetAll<UserStageAggregationResult>())
                 .Where(x => changes.Any(y => y.EntityId == x.EditedEntityId))
-                .SelectMany(x => x.ShooterStage).ToList();
+                .SelectMany(x => x.UserStage).ToList();
             return (entities, changes);
         }
 
-        public async Task<IList<ShooterContract>> GetShooters()
+        public async Task<IList<UserContract>> GetShooters()
         {
-            return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>())
-                .Select(x => x.GroupShooter.Shooter)
-                .DistinctBy(x => x.ShooterId)
+            return (await _matchServiceIndexDb.GetAll<UserStageAggregationResult>())
+                .Select(x => x.GroupUser.User)
+                .DistinctBy(x => x.UserId)
                 .ToList();
         }
 
-        public async Task<OkResponse> UploadData(IList<ShooterStageStringContract>? listToUpload = null)
+        public async Task<OkResponse> UploadData(IList<UserStageStringContract>? listToUpload = null)
         {
             (OkResponse Result, string Error) response;
             if (listToUpload == null)
@@ -186,14 +186,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return !string.IsNullOrEmpty(response.Error) ? new MatchContract() : response.Result;
         }
 
-        public async Task<IList<ShooterMatchContract>> FetchAllMatchDirector(string id)
+        public async Task<IList<UserMatchContract>> FetchAllMatchDirector(string id)
         {
             if (Offline)
             {
-                return await _matchServiceIndexDb.GetAll<ShooterMatchContract>();
+                return await _matchServiceIndexDb.GetAll<UserMatchContract>();
             }
-            var response = await _presentationalServiceLayer.Sample<List<ShooterMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = id });
-            return !string.IsNullOrEmpty(response.Error) ? new List<ShooterMatchContract>() : response.Result;
+            var response = await _presentationalServiceLayer.Sample<List<UserMatchContract>>("api/Match/FetchAllMatchDirector", new MatchRequest() { MatchId = id });
+            return !string.IsNullOrEmpty(response.Error) ? new List<UserMatchContract>() : response.Result;
         }
 
         public async Task<GroupContract> GetGroup(string matchId, string groupId)
@@ -201,15 +201,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (Offline)
             {
                 var match = await _matchServiceIndexDb.GetByKey<string, MatchContract>(nameof(MatchContract), matchId);
-                var shooters = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
+                var shooters = await _matchServiceIndexDb.GetAll<UserStageAggregationResult>();
 
                 var group = match.Groups.FirstOrDefault(x => x.GroupId == groupId);
                 if (group == null)
                     return new GroupContract();
 
                 group.Match = match;
-                group.Shooters = shooters.Where(x => x.GroupId == groupId).Select(x => x.GroupShooter)
-                    .DistinctBy(x => x.Shooter.ShooterId)
+                group.Users = shooters.Where(x => x.GroupId == groupId).Select(x => x.GroupUser)
+                    .DistinctBy(x => x.User.UserId)
                     .ToList();
                 return group;
             }
@@ -233,37 +233,37 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return !string.IsNullOrEmpty(response.Error) ? new StageContract() : response.Result;
         }
 
-        public async Task<IList<ShooterSOStageContract>> FetchAllShooterSOStages(string stageId)
+        public async Task<IList<UserSOStageContract>> FetchAllShooterSOStages(string stageId)
         {
             if (Offline)
             {
-                return (await _matchServiceIndexDb.GetAll<ShooterSOStageContract>()).Where(x => x.Stage.StageId == stageId).ToList();
+                return (await _matchServiceIndexDb.GetAll<UserSOStageContract>()).Where(x => x.Stage.StageId == stageId).ToList();
             }
-            var response = await _presentationalServiceLayer.Sample<List<ShooterSOStageContract>>("api/Match/FetchAllShooterSOStages", new StageRequest() { StageId = stageId });
-            return !string.IsNullOrEmpty(response.Error) ? new List<ShooterSOStageContract>() : response.Result;
+            var response = await _presentationalServiceLayer.Sample<List<UserSOStageContract>>("api/Match/FetchAllShooterSOStages", new StageRequest() { StageId = stageId });
+            return !string.IsNullOrEmpty(response.Error) ? new List<UserSOStageContract>() : response.Result;
         }
 
-        public async Task<IList<ShooterStageAggregationResult>> FetchGroupShooterStage(string groupId, string stageId)
+        public async Task<IList<UserStageAggregationResult>> FetchGroupShooterStage(string groupId, string stageId)
         {
             if (Offline)
             {
-                return (await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>()).Where(x => x.GroupId == groupId && x.StageId == stageId).OrderBy(x => x.GroupShooter.Shooter.CompleteName).ToList();
+                return (await _matchServiceIndexDb.GetAll<UserStageAggregationResult>()).Where(x => x.GroupId == groupId && x.StageId == stageId).OrderBy(x => x.GroupUser.User.CompleteName).ToList();
             }
-            var response = await _presentationalServiceLayer.Sample<List<ShooterStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
-            return !string.IsNullOrEmpty(response.Error) ? new List<ShooterStageAggregationResult>() : response.Result;
+            var response = await _presentationalServiceLayer.Sample<List<UserStageAggregationResult>>("api/GroupShooter/FetchGroupShooterStage", new GroupStageRequest() { GroupId = groupId, StageId = stageId });
+            return !string.IsNullOrEmpty(response.Error) ? new List<UserStageAggregationResult>() : response.Result;
         }
 
         public async Task<OkResponse> UpsertShooterStage(ShooterStageRequest model)
         {
             if (Offline)
             {
-                var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
+                var entities = await _matchServiceIndexDb.GetAll<UserStageAggregationResult>();
 
-                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupUser.User.UserId == model.ShooterId);
                 if (shooterStage == null)
                     return new OkResponse() { Status = false };
 
-                var singleEntity = shooterStage.ShooterStage.FirstOrDefault(x => x.StageStringId == model.StageStringId);
+                var singleEntity = shooterStage.UserStage.FirstOrDefault(x => x.StageStringId == model.StageStringId);
 
                 if (singleEntity == null)
                     return new OkResponse() { Status = false };
@@ -283,10 +283,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 singleEntity.ThirdProceduralPointDown = model.ThirdProceduralPointDown;
                 singleEntity.HitOnNonThreatPointDown = model.HitOnNonThreatPointDown;
 
-                await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
+                await _matchServiceIndexDb.UpdateItems(new List<UserStageAggregationResult> { shooterStage });
 
                 var updates = await _matchServiceIndexDb.GetAll<EditedEntity>();
-                var entityName = nameof(ShooterStageAggregationResult);
+                var entityName = nameof(UserStageAggregationResult);
                 if (updates.All(x => x.EntityName != entityName || x.EntityId != shooterStage.EditedEntityId))
                 {
                     var editedEntity = new EditedEntity()
@@ -306,13 +306,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             if (Offline)
             {
-                var entities = await _matchServiceIndexDb.GetAll<ShooterStageAggregationResult>();
+                var entities = await _matchServiceIndexDb.GetAll<UserStageAggregationResult>();
 
-                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupShooter.Shooter.ShooterId == model.ShooterId);
+                var shooterStage = entities.FirstOrDefault(x => x.StageId == model.StageId && x.GroupUser.User.UserId == model.ShooterId);
                 if (shooterStage == null)
                     return new OkResponse() { Status = true };
 
-                var singleEntity = shooterStage.ShooterStage.FirstOrDefault(x => x.StageStringId == model.StageStringId);
+                var singleEntity = shooterStage.UserStage.FirstOrDefault(x => x.StageStringId == model.StageStringId);
                 if (singleEntity == null)
                     return new OkResponse() { Status = false };
 
@@ -332,10 +332,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 singleEntity.ThirdProceduralPointDown = 0;
                 singleEntity.HitOnNonThreatPointDown = 0;
 
-                await _matchServiceIndexDb.UpdateItems(new List<ShooterStageAggregationResult> { shooterStage });
+                await _matchServiceIndexDb.UpdateItems(new List<UserStageAggregationResult> { shooterStage });
 
                 var updates = await _matchServiceIndexDb.GetAll<EditedEntity>();
-                var entityName = nameof(ShooterStageAggregationResult);
+                var entityName = nameof(UserStageAggregationResult);
                 var updated = updates.First(x => x.EntityName == entityName && x.EntityId == shooterStage.EditedEntityId);
                 if (updated != null)
                 {

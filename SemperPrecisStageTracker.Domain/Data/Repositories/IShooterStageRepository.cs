@@ -6,7 +6,7 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     /// <summary>
     /// Repository interface for "ShooterStageString"
     /// </summary>
-    public interface IShooterStageRepository : IRepository<ShooterStageString>
+    public interface IShooterStageRepository : IRepository<UserStageString>
     {
 
     }

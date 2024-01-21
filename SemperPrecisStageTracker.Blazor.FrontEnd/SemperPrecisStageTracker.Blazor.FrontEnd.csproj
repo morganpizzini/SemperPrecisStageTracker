@@ -31,8 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SemperPrecisStageTracker.Blazor.Components\SemperPrecisStageTracker.Blazor.Components.csproj" />
-    <ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />
+	  <ProjectReference Include="..\SemperPrecisStageTracker.Blazor.Shared\SemperPrecisStageTracker.Blazor.Shared.csproj" />
+	  <ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

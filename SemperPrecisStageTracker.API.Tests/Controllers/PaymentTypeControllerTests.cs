@@ -15,7 +15,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class PaymentTypeControllerTests : ApiControllerTestsBase<PaymentTypeController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldCreatePaymentTypeBeOkHavingProvidedData()

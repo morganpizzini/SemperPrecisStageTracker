@@ -131,9 +131,9 @@ else
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @if (shooterTeams.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                            @if (shooterTeams.Count(x => x.UserApprove && !x.TeamApprove) > 0)
                             {
-                                <Virtualize Items="@shooterTeams.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                                <Virtualize Items="@shooterTeams.Where(x => x.UserApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
                                     <TableRow>
                                         <TableRowHeader>
                                             @shooterTeam.Team.Name
@@ -171,9 +171,9 @@ else
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @if (shooterTeams.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                            @if (shooterTeams.Count(x => !x.UserApprove && x.TeamApprove) > 0)
                             {
-                                <Virtualize Items="@shooterTeams.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                <Virtualize Items="@shooterTeams.Where(x => !x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                                     <TableRow>
                                         <TableRowHeader>
                                             @shooterTeam.Team.Name
@@ -213,9 +213,9 @@ else
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    @if (shooterTeams.Count(x=>x.ShooterApprove && x.TeamApprove) > 0)
+                    @if (shooterTeams.Count(x=>x.UserApprove && x.TeamApprove) > 0)
                     {
-                        <Virtualize Items="@shooterTeams.Where(x=>x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                        <Virtualize Items="@shooterTeams.Where(x=>x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                             <TableRow>
                                 <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
                                 <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
@@ -294,8 +294,8 @@ else
 @code {
     Validations validations = default!;
     UserUpdateRequest model = new();
-    IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
-    ShooterTeamContract teamToDelete = new();
+    IList<UserTeamContract> shooterTeams = new List<UserTeamContract>();
+    UserTeamContract teamToDelete = new();
     private Modal modalRefTeamToDelete = default!;
     private Modal modalRefTeamToApprove = default!;
     ShooterTeamCreateRequest teamToEdit = new();
@@ -309,14 +309,14 @@ else
     }
     async Task LoadShooterTeams()
     {
-        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User?.ShooterId });
+        shooterTeams = await Post<List<UserTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = UserState.Value.User?.UserId });
     }
 
     private void EditProfile()
     {
         model = new UserUpdateRequest()
         {
-            UserId = UserState.Value.User?.ShooterId,
+            UserId = UserState.Value.User?.UserId,
             FirstName = UserState.Value.User?.FirstName,
             LastName = UserState.Value.User?.LastName,
             BirthDate = UserState.Value.User?.BirthDate ?? DateTime.MinValue,
@@ -350,19 +350,19 @@ else
         if (! (await validations.ValidateAll()))
             return;
         await validations.ClearAll();
-        var response = await Post<ShooterContract>("/api/Profile/UpdateProfile", model);
+        var response = await Post<UserContract>("/api/Profile/UpdateProfile", model);
         if (response == null)
             return;
         authService.UpdateLogin(response);
         showEditModel = false;
     }
 
-    void ApproveTeam(ShooterTeamContract shooterTeam)
+    void ApproveTeam(UserTeamContract shooterTeam)
     {
 
         teamToEdit = new ShooterTeamCreateRequest
             {
-                ShooterId = UserState.Value.User?.ShooterId,
+                ShooterId = UserState.Value.User?.UserId,
                 TeamId = shooterTeam.Team.TeamId,
                 RegistrationDate = shooterTeam.RegistrationDate
             };
@@ -384,7 +384,7 @@ else
         teamToEdit = new ShooterTeamCreateRequest();
         await modalRefTeamToApprove.Hide();
     }
-    void DeleteTeam(ShooterTeamContract team)
+    void DeleteTeam(UserTeamContract team)
     {
         if (team == null)
             return;
@@ -398,7 +398,7 @@ else
             var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
                 {
                     TeamId = teamToDelete.Team.TeamId,
-                    ShooterId = UserState.Value.User?.ShooterId
+                    ShooterId = UserState.Value.User?.UserId
                 });
             if (response == null)
             {
@@ -406,7 +406,7 @@ else
             }
             await LoadShooterTeams();
         }
-        teamToDelete = new ShooterTeamContract();
+        teamToDelete = new UserTeamContract();
         await modalRefTeamToDelete.Hide();
     }
 }

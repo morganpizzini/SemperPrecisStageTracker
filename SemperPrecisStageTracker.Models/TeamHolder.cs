@@ -8,7 +8,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string TeamId { get; set; }
         [Required]
-        public string ShooterId { get; set; }
+        public string UserId { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 }

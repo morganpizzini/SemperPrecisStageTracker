@@ -41,7 +41,7 @@
                             <SelectItem Value="@("")"></SelectItem>
                             @foreach (var shooter in AvailableShooters)
                             {
-                                <SelectItem Value="@shooter.ShooterId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
+                                <SelectItem Value="@shooter.UserId">@shooter.LastName @shooter.FirstName (@shooter.BirthDate.ToString("d"))</SelectItem>
                             }
                         </ChildContent>
                         <Feedback>
@@ -124,21 +124,21 @@
 
     [Parameter]
 
-    public IList<ShooterContract> AvailableShooters { get; set; } = new List<ShooterContract>();
+    public IList<UserContract> AvailableShooters { get; set; } = new List<UserContract>();
 
     [Parameter]
 
     public IList<MatchContract> AvailableMatches { get; set; } = new List<MatchContract>();
 
-    private ShooterContract? shooter;
+    private UserContract? shooter;
     [Parameter]
-    public ShooterContract? Shooter
+    public UserContract? Shooter
     {
         get => shooter;
         set
         {
             shooter = value;
-            Model.ShooterId = shooter?.ShooterId;
+            Model.ShooterId = shooter?.UserId;
         } 
     }
 
@@ -160,7 +160,7 @@
         set
         {
             _model = value;
-            var shooter = Shooter ?? AvailableShooters.FirstOrDefault(x => x.ShooterId == Model.ShooterId);
+            var shooter = Shooter ?? AvailableShooters.FirstOrDefault(x => x.UserId == Model.ShooterId);
             if (shooter == null)
                 return;
             if (Shooter == null || Teams.Count == 0)
@@ -207,7 +207,7 @@
 
     void OnSelectedShooterChanged(string value)
     {
-        var shooter = AvailableShooters.FirstOrDefault(x => x.ShooterId == value);
+        var shooter = AvailableShooters.FirstOrDefault(x => x.UserId == value);
         if (shooter == null)
             return;
         Model.ShooterId = value;

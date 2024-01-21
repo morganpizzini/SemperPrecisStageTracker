@@ -282,7 +282,7 @@
         strings.Add("StageStringId,ShooterId,Stage,Shooter,Time,Down points,Procedurals,Hit on non threat, Flagrant penalties,Ftdr,Notes");
         foreach (var result in changes.Item1)
         {
-            strings.Add($"{result.StageStringId},{result.ShooterId},{match.Stages.FirstOrDefault(x => x.StageId == result.StageStringId)?.Name ?? result.StageStringId},{shooters.FirstOrDefault(x => x.ShooterId == result.ShooterId)?.CompleteName ?? result.ShooterId},{result.Time},{String.Join("/", result.DownPoints.Select(x => x.ToString()).ToArray())},{result.Procedurals},{result.HitOnNonThreat},{result.FlagrantPenalties},{result.Ftdr},{result.Notes}");
+            strings.Add($"{result.StageStringId},{result.UserId},{match.Stages.FirstOrDefault(x => x.StageId == result.StageStringId)?.Name ?? result.StageStringId},{shooters.FirstOrDefault(x => x.UserId == result.UserId)?.CompleteName ?? result.UserId},{result.Time},{String.Join("/", result.DownPoints.Select(x => x.ToString()).ToArray())},{result.Procedurals},{result.HitOnNonThreat},{result.FlagrantPenalties},{result.Ftdr},{result.Notes}");
         }
 
         var text = string.Join("\r\n", strings);

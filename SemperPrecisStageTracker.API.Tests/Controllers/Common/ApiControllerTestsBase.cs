@@ -46,7 +46,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// <summary>
         /// Used identity Shooter
         /// </summary>
-        protected Shooter CurrentIdentityUser { get; set; }
+        protected User CurrentIdentityUser { get; set; }
 
         /// <summary>
         /// Random seed
@@ -69,7 +69,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetAdminUser()
+        protected User GetAdminUser()
         {
             //Recupero l'utente amministratore
             return Scenario.Shooters
@@ -79,7 +79,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetAnotherUser(string userId = null)
+        protected User GetAnotherUser(string userId = null)
         {
             //Recupero l'utente amministratore
             return
@@ -95,7 +95,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get admin that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetUserNotIn(IList<string> userIds)
+        protected User GetUserNotIn(IList<string> userIds)
         {
             //Recupero l'utente amministratore
             return
@@ -103,7 +103,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 .FirstOrDefault(u => !userIds.Contains(u.Id));
         }
 
-        protected Shooter GetUserWithoutPermission(IPermissionInterface permissions)
+        protected User GetUserWithoutPermission(IPermissionInterface permissions)
             => GetUserWithPermission(permissions, false);
 
        
@@ -111,7 +111,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get User with Permission
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected Shooter GetUserWithPermission(IPermissionInterface permissions, bool inOrOut = true)
+        protected User GetUserWithPermission(IPermissionInterface permissions, bool inOrOut = true)
         {
             
             if (permissions == null || permissions.Count == 0)
@@ -196,7 +196,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Get Shooter that will be used for ASP.NET Identity
         /// </summary>
         /// <returns>Returns Shooter instance</returns>
-        protected abstract Shooter GetIdentityUser();
+        protected abstract User GetIdentityUser();
 
         /// <summary>
         /// On initialize
@@ -245,7 +245,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// Updates identity set on controller context
         /// </summary>
         /// <param name="Shooter">Shooter instance</param>
-        protected void UpdateIdentityUser(Shooter Shooter)
+        protected void UpdateIdentityUser(User Shooter)
         {
             //Validazione argomenti
             if (Shooter == null) throw new ArgumentNullException(nameof(Shooter));

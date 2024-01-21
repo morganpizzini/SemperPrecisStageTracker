@@ -13,8 +13,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string Description { get; set; }
         public DateTime GroupDay {get; set; }
         public int Index { get; set; }
-        public int MaxShooterNumber { get; set; }
+        public int MaxUserNumber { get; set; }
         public MatchContract Match { get; set; }
-        public IList<GroupShooterContract> Shooters { get; set; } = new List<GroupShooterContract>();
+        public IList<GroupUserContract> Users { get; set; } = new List<GroupUserContract>();
     }
 }

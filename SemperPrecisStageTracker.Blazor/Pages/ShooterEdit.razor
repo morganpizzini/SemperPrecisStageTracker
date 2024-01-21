@@ -31,7 +31,7 @@
 @code {
     [Parameter]
     public string Id { get; set; } = string.Empty;
-    ShooterContract model = new ();
+    UserContract model = new ();
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id))
@@ -39,7 +39,7 @@
             await base.OnInitializedAsync();
             return;
         }
-        model = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
+        model = await Post<UserContract>("api/Shooter/GetShooter", new ShooterRequest { ShooterId = Id });
         
         await base.OnInitializedAsync();
     }
@@ -50,7 +50,7 @@
     // create request
         var request = new ShooterUpdateRequest()
         {
-            ShooterId = model.ShooterId,
+            ShooterId = model.UserId,
             FirstName = model.FirstName,
             LastName = model.LastName,
             BirthDate = model.BirthDate,
@@ -69,8 +69,8 @@
             FiscalCode = model.FiscalCode
         };
         
-        var response = await Post<ShooterContract>("/api/Shooter/UpdateShooter", request);
+        var response = await Post<UserContract>("/api/Shooter/UpdateShooter", request);
         if (response != null)
-            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.ShooterId }));
+            UriHelper.NavigateTo(RouteHelper.GetUrl<ShooterDetail>(new { id = response.UserId }));
     }
 }

@@ -65,7 +65,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return true;
         }
 
-        public void UpdateLogin(ShooterContract user)
+        public void UpdateLogin(UserContract user)
         {
             // update username
             var userParams = _userState.Value.User?.AuthData.DecodeBase64().Split(":");

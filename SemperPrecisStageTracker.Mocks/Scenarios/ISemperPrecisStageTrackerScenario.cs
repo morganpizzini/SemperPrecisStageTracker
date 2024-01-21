@@ -27,12 +27,12 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of shooter
         /// </summary>
-        IList<Shooter> Shooters { get; set; }
+        IList<User> Shooters { get; set; }
 
         /// <summary>
         /// List of shooter
         /// </summary>
-        IList<ShooterData> ShooterDatas { get; set; }
+        IList<UserData> ShooterDatas { get; set; }
 
         /// <summary>
         /// List of Shooter Team Payment
@@ -58,27 +58,27 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of shooter stage
         /// </summary>
-        IList<ShooterStageString> ShooterStages { get; set; }
+        IList<UserStageString> ShooterStages { get; set; }
 
         /// <summary>
         /// List of group shooters
         /// </summary>
-        IList<GroupShooter> GroupShooters { get; set; }
+        IList<GroupUser> GroupShooters { get; set; }
 
         /// <summary>
         /// List of group shooters
         /// </summary>
-        IList<ShooterMatch> ShooterMatches { get; set; }
+        IList<UserMatch> ShooterMatches { get; set; }
 
         /// <summary>
         /// List of group shooters
         /// </summary>
-        IList<ShooterSOStage> ShooterSOStages { get; set; }
+        IList<UserSOStage> ShooterSOStages { get; set; }
 
         /// <summary>
         /// List of team shooters
         /// </summary>
-        IList<ShooterTeam> ShooterTeams { get; set; }
+        IList<UserTeam> ShooterTeams { get; set; }
 
         /// <summary>
         /// List of teams
@@ -88,12 +88,12 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of association shooters
         /// </summary>
-        IList<ShooterAssociation> ShooterAssociations { get; set; }
+        IList<UserAssociation> ShooterAssociations { get; set; }
 
         /// <summary>
         /// List of association shooters info
         /// </summary>
-        IList<ShooterAssociationInfo> ShooterAssociationInfos { get; set; }
+        IList<UserAssociationInfo> ShooterAssociationInfos { get; set; }
 
         /// <summary>
         /// List of notification subscription

@@ -6,7 +6,7 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     /// <summary>
     /// Repository interface for "ShooterRole"
     /// </summary>
-    public interface IShooterMatchRepository : IRepository<ShooterMatch>
+    public interface IShooterMatchRepository : IRepository<UserMatch>
     {
 
     }

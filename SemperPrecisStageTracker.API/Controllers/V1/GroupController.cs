@@ -58,8 +58,8 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooterWithNoGroup = BasicLayer.FetchGroupShootersWithoutGroupByMatchIds(match.Id);
             
-            var shooterIds = shooterGroup.Select(x => x.ShooterId)
-                .Concat(shooterWithNoGroup.Select(x => x.ShooterId).ToList()).ToList();
+            var shooterIds = shooterGroup.Select(x => x.UserId)
+                .Concat(shooterWithNoGroup.Select(x => x.UserId).ToList()).ToList();
 
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
@@ -74,11 +74,11 @@ namespace SemperPrecisStageTracker.API.Controllers
                     Groups = entities.As(x =>
                     {
                         var groupShooter = shooterGroup.Where(e => e.GroupId == x.Id).ToList();
-                        var sIds = groupShooter.Select(x => x.ShooterId).ToList();
+                        var sIds = groupShooter.Select(x => x.UserId).ToList();
                         return ContractUtils.GenerateContract(x, null, null, null,
                             groupShooter, shooters.Where(s => sIds.Contains(s.Id)).ToList(),null,null,teams);
                     }),
-                    UnGrouped = shooterWithNoGroup.As(x=>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=>s.Id == x.ShooterId),null,teams.FirstOrDefault(t=>t.Id == x.TeamId)))
+                    UnGrouped = shooterWithNoGroup.As(x=>ContractUtils.GenerateContract(x,shooters.FirstOrDefault(s=>s.Id == x.UserId),null,teams.FirstOrDefault(t=>t.Id == x.TeamId)))
                 });
         }
 
@@ -101,7 +101,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //var shooters = BasicLayer.FetchShootersByGroupId(entity.Id);
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(entity.Id);
 
-            var shooterIds = shooterGroup.Select(x => x.ShooterId).ToList();
+            var shooterIds = shooterGroup.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             var match = BasicLayer.GetMatch(entity.MatchId);
@@ -136,7 +136,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 MatchId = request.MatchId,
                 Description = request.Description,
                 GroupDay = request.GroupDay,
-                MaxShooterNumber = request.MaxShooterNumber,
+                MaxUserNumber = request.MaxShooterNumber,
                 Index = request.Index
             };
 
@@ -171,7 +171,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             entity.Name = request.Name;
             entity.Description = request.Description;
             entity.GroupDay = request.GroupDay;
-            entity.MaxShooterNumber = request.MaxShooterNumber;
+            entity.MaxUserNumber = request.MaxShooterNumber;
             entity.Index = request.Index;
 
             //Salvataggio

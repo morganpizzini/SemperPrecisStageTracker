@@ -6,9 +6,9 @@ namespace SemperPrecisStageTracker.Contracts
     {
         public MatchContract Match { get; set; }
         public IList<string> StageNames { get; set; } = new List<string>();
-        public IList<ShooterMatchResultContract> Overall { get; set; } = new List<ShooterMatchResultContract>();
+        public IList<UserMatchResultContract> Overall { get; set; } = new List<UserMatchResultContract>();
 
         public IList<DivisionMatchResultContract> DivisionMatchResults { get; set; } = new List<DivisionMatchResultContract>();
-        public IList<ShooterClassificationResultContract> CategoryResults { get; set; } = new List<ShooterClassificationResultContract>();
+        public IList<UserClassificationResultContract> CategoryResults { get; set; } = new List<UserClassificationResultContract>();
     }
 }

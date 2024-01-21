@@ -25,7 +25,7 @@ else
                     <CardTitle>@L["Group"]</CardTitle>
                     <CardText>@group.Name</CardText>
                     <CardTitle>@L["Shooters"]</CardTitle>
-                    <CardText>@group.Shooters.Count</CardText>
+                    <CardText>@group.Users.Count</CardText>
                 </CardBody>
             </Card>
         </Column>
@@ -60,17 +60,17 @@ else
                         @if (shooters.Count > 0)
                         {
                             <Virtualize Context="shooter" Items="@shooters">
-                                <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                <TableRow Class="@(shooter.UserStatus == UserStatusEnum.IsDisqualified ? "bg-danger" : shooter.UserStatus == UserStatusEnum.HasWarning ? "bg-warning" : "")">
                                     <TableRowHeader>
-                                        @shooter.GroupShooter.Shooter.CompleteName
+                                        @shooter.GroupUser.User.CompleteName
                                                 
                                         @if (canInsertScore)
                                         {
                                             @foreach (var stageString in stage.Strings)
                                             {
-                                                var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                                var current = shooter.UserStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
                                                         
-                                                if (shooter.ShooterStatus != ShooterStatusEnum.IsDisqualified || current is {Disqualified: true })
+                                                if (shooter.UserStatus != UserStatusEnum.IsDisqualified || current is {Disqualified: true })
                                                 {
                                                     <Button class="ms-2" Color="Color.Light" Clicked="@(() => FillShooter(shooter,stageString))">
                                                         @stageString.Name
@@ -85,11 +85,11 @@ else
                                         }
                                                 
                                     </TableRowHeader>
-                                    <TableRowCell>@shooter.GroupShooter.Division @(!match.UnifyClassifications ? $" / {@shooter.GroupShooter.Classification}" : string.Empty)</TableRowCell>
+                                    <TableRowCell>@shooter.GroupUser.Division @(!match.UnifyClassifications ? $" / {@shooter.GroupUser.Classification}" : string.Empty)</TableRowCell>
                                     <TableRowCell>
                                         @foreach (var stageString in stage.Strings)
                                         {
-                                            var current = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+                                            var current = shooter.UserStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
                                             if (current != null && current.Time > 0)
                                             {
                                                 <span class="me-2">@((current as IStageResult).TotalString)</span>
@@ -97,12 +97,12 @@ else
                                         }
                                     </TableRowCell>
                                 </TableRow>
-                                @if (shooter.ShooterStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
+                                @if (shooter.UserStage.Any(x=>!string.IsNullOrEmpty(x.Notes)))
                                 {
-                                    <TableRow Class="@(shooter.ShooterStatus == ShooterStatusEnum.IsDisqualified ? "bg-danger" : shooter.ShooterStatus == ShooterStatusEnum.HasWarning ? "bg-warning" : "")">
+                                    <TableRow Class="@(shooter.UserStatus == UserStatusEnum.IsDisqualified ? "bg-danger" : shooter.UserStatus == UserStatusEnum.HasWarning ? "bg-warning" : "")">
                                         <TableRowCell></TableRowCell>
                                         <TableRowCell ColumnSpan="2">
-                                            @(string.Join(", ",shooter.ShooterStage.Select(x=>x.Notes)))
+                                            @(string.Join(", ",shooter.UserStage.Select(x=>x.Notes)))
                                         </TableRowCell>
                                     </TableRow>
                                 }
@@ -463,7 +463,7 @@ else
         </ModalHeader>
         <ModalBody>
             @{
-                var current = shooters.FirstOrDefault(x=>x.GroupShooter.Shooter.ShooterId == deleteModel.ShooterId);
+                var current = shooters.FirstOrDefault(x=>x.GroupUser.User.UserId == deleteModel.ShooterId);
             }
             @if(current!=null){
             <Row>
@@ -471,7 +471,7 @@ else
                     <Field>
                         <FieldLabel>@L["Shooter"]</FieldLabel>
                         <FieldBody>
-                            @current.GroupShooter.Shooter.CompleteName
+                            @current.GroupUser.User.CompleteName
                         </FieldBody>
                     </Field>
                 </Column>
@@ -489,7 +489,7 @@ else
                         <FieldLabel>@L["String"]</FieldLabel>
                         <FieldBody>
                                 @{
-                                    var currentStringResult = current.ShooterStage.FirstOrDefault(x => x.StageStringId == deleteModel.StageStringId);
+                                    var currentStringResult = current.UserStage.FirstOrDefault(x => x.StageStringId == deleteModel.StageStringId);
                                 }
                                 @if(currentStringResult!=null){
                                     var currentString = stage.Strings.FirstOrDefault(x=>x.StageStringId == currentStringResult.StageStringId);
@@ -533,12 +533,12 @@ else
     private Modal modalConfirmDeleteRef = default!;
 
     private Modal modalRef = default!;
-    ShooterContract shooterToFill = new ();
+    UserContract shooterToFill = new ();
 
     StageContract stage = new ();
     MatchContract match = new();
     GroupContract group = new ();
-    IList<ShooterStageAggregationResult> shooters = new List<ShooterStageAggregationResult>();
+    IList<UserStageAggregationResult> shooters = new List<UserStageAggregationResult>();
 
     Validations validations = default!;
     Validations noteValidations = default!;
@@ -553,10 +553,10 @@ else
         {
             group = await MainServiceLayer.GetGroup(Id,GroupId);
             match = await MainServiceLayer.GetMatch(group.Match.MatchId);
-            var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x=>x.Shooter.ShooterId);
-            userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x=>x.Shooter.ShooterId).ToList());
+            var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x=>x.User.UserId);
+            userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x=>x.User.UserId).ToList());
             canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) || 
-                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.ShooterId));
+                             (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.UserId));
             return await MainServiceLayer.GetStage(Id, StageId);
         });
 
@@ -569,27 +569,27 @@ else
         shooters = await MainServiceLayer.FetchGroupShooterStage(GroupId, StageId);
     }
 
-    void FillShooter(ShooterStageAggregationResult shooter,StageStringContract stageString)
+    void FillShooter(UserStageAggregationResult shooter,StageStringContract stageString)
     {
         if (shooter == null || !canInsertScore)
             return;
 
-        shooterToFill = shooter.GroupShooter.Shooter;
+        shooterToFill = shooter.GroupUser.User;
         model.FirstProceduralPointDown = match.Association.FirstProceduralPointDown;
         model.SecondProceduralPointDown = match.Association.SecondProceduralPointDown;
         model.ThirdProceduralPointDown = match.Association.ThirdProceduralPointDown;
         model.HitOnNonThreatPointDown = match.Association.HitOnNonThreatPointDown;
-        model.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
+        model.ShooterId = shooter.GroupUser.User.UserId;
         model.StageStringId = stageString.StageStringId;
         model.StageId = stage.StageId;
         // add user results
-        var currentString = shooter.ShooterStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
+        var currentString = shooter.UserStage.FirstOrDefault(x => x.StageStringId == stageString.StageStringId);
         if( currentString == null){
-            currentString = new ShooterStageStringContract
+            currentString = new UserStageStringContract
             {
                 StageStringId = stageString.StageStringId
             };
-            shooter.ShooterStage.Add(currentString);
+            shooter.UserStage.Add(currentString);
         }
         model.Disqualified = currentString.Disqualified;
         model.DownPoints = currentString.DownPoints;
@@ -628,7 +628,7 @@ else
         }
         else
         {
-            shooterToFill = new ShooterContract();
+            shooterToFill = new UserContract();
             model.DownPoints.Clear();
             await modalRef.Hide();
         }
@@ -648,16 +648,16 @@ else
                 return;
             }
             await LoadShooters();
-            shooterToFill = new ShooterContract();
+            shooterToFill = new UserContract();
             model.DownPoints.Clear();
             await modalRef.Hide();
         }
         await modalConfirmRef.Hide();
     }
 
-    private async Task ShowConfirmDeleteModal(ShooterStageAggregationResult shooter,StageStringContract stageString)
+    private async Task ShowConfirmDeleteModal(UserStageAggregationResult shooter,StageStringContract stageString)
     {
-        deleteModel.ShooterId = shooter.GroupShooter.Shooter.ShooterId;
+        deleteModel.ShooterId = shooter.GroupUser.User.UserId;
         deleteModel.StageStringId = stageString.StageStringId;
         deleteModel.StageId = stage.StageId;
         await modalConfirmDeleteRef.Show();

@@ -25,17 +25,17 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllMatchDirector")]
-        [ProducesResponseType(typeof(IList<ShooterMatchContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserMatchContract>), 200)]
         public Task<IActionResult> FetchAllMatchDirector([FromBody]MatchRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchShooterMatchesByMatchId(request.MatchId);
 
-            var shooterIds = entities.Select(x => x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAvailableMatchDirector")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchAvailableMatchDirector([FromBody]MatchRequest request)
         {
             //Recupero la lista dal layer
@@ -60,7 +60,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAvailableMatchDirectorByAssociation")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchAvailableMatchDirectorByAssociation([FromBody]AssociationRequest request)
         {
             //Recupero la lista dal layer
@@ -102,10 +102,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (existingMatch == null)
                 return Task.FromResult<IActionResult>(NotFound());
 
-            var entities = request.ShooterIds.Select(x => new ShooterMatch
+            var entities = request.ShooterIds.Select(x => new UserMatch
             {
                 MatchId = existingMatch.Id,
-                ShooterId = x,
+                UserId = x,
                 Role = "MatchDirector"
             });
 
@@ -130,7 +130,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteMatchDirector")]
-        [ProducesResponseType(typeof(IList<ShooterMatchContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserMatchContract>), 200)]
         public Task<IActionResult> DeleteMatchDirector([FromBody]ShooterMatchRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -160,17 +160,17 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAllShooterSOStages")]
-        [ProducesResponseType(typeof(IList<ShooterSOStageContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserSOStageContract>), 200)]
         public Task<IActionResult> FetchAllShooterSOStages([FromBody]StageRequest request)
         {
             //Recupero la lista dal layer
             var entities = BasicLayer.FetchShooterSOStagesByStageId(request.StageId);
 
-            var shooterIds = entities.Select(x => x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Ritorno i contratti
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
         }
 
 
@@ -180,7 +180,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAvailableStageSO")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchAvailableStageSO([FromBody]StageRequest request)
         {
             //Recupero la lista dal layer
@@ -222,10 +222,10 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (existingStage == null)
                 return NotFound();
 
-            var entities = request.Shooters.Select(x => new ShooterSOStage
+            var entities = request.Shooters.Select(x => new UserSOStage
             {
                 StageId = existingStage.Id,
-                ShooterId = x.ShooterId,
+                UserId = x.ShooterId,
                 Role = x.Role
             });
 
@@ -236,11 +236,11 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(validations);
 
             var shooterSOStagees = BasicLayer.FetchShooterSOStagesByStageId(existingStage.Id);
-            var shooterIds = shooterSOStagees.Select(x => x.ShooterId).ToList();
+            var shooterIds = shooterSOStagees.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Return contract
-            return Ok(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
+            return Ok(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
         }
         /// <summary>
         /// Deletes existing match on platform
@@ -249,7 +249,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteStageSO")]
-        [ProducesResponseType(typeof(IList<ShooterSOStageContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserSOStageContract>), 200)]
         public Task<IActionResult> DeleteStageSO([FromBody]ShooterSOStageRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -265,10 +265,10 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
 
             var shooterSOStagees = BasicLayer.FetchShooterSOStagesByStageId(entity.StageId);
-            var shooterIds = shooterSOStagees.Select(x => x.ShooterId).ToList();
+            var shooterIds = shooterSOStagees.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
             //Return contract
-            return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.ShooterId))));
+            return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
         }
     }
 }

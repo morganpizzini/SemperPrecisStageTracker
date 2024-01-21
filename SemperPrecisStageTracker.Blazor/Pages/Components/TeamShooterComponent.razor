@@ -14,32 +14,32 @@
                 </TableRow>
             </TableHeader>
             <TableBody>
-                @if (TeamShooters.Count(x => x.ShooterApprove && x.TeamApprove) > 0)
+                @if (TeamShooters.Count(x => x.UserApprove && x.TeamApprove) > 0)
                 {
-                    <Virtualize Items="@TeamShooters.Where(x => x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                    <Virtualize Items="@TeamShooters.Where(x => x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                         <TableRow>
                             <TableRowHeader>
-                                @if (CanEditTeamShooters && shooterTeam.Shooter.HasWarning)
+                                @if (CanEditTeamShooters && shooterTeam.User.HasWarning)
                         {
                             <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2" />
                         }
-                        @shooterTeam.Shooter.CompleteName
+                        @shooterTeam.User.CompleteName
                     </TableRowHeader>
-                    <TableRowCell>@shooterTeam.Shooter.BirthDate.ToString("d")</TableRowCell>
+                    <TableRowCell>@shooterTeam.User.BirthDate.ToString("d")</TableRowCell>
                     <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                     <TableRowCell>
 
                         <Buttons Role="ButtonsRole.Toolbar">
                             <Buttons Margin="Margin.Is2.FromEnd">
-                                @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooterTeam.Shooter.ShooterId))
+                                @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooterTeam.User.UserId))
                                 {
-                                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.Shooter.ShooterId }))"><Icon Name="IconName.Search" /></Button>
+                                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.User.UserId }))"><Icon Name="IconName.Search" /></Button>
                                     <Button Size="Size.Small" Color="Color.Warning" Type="ButtonType.Button" Clicked="@(() => ResetPassword(shooterTeam))"><Icon Name="IconName.Key" /> </Button>
 
                                 }
                                 @if (CanEditTeamShooterPayment)
                                 {
-                                    <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.Shooter.ShooterId, teamId = Team.TeamId }))"><Icon Name="IconName.DollarSign" /></Button>
+                                    <Button Size="Size.Small" Color="Color.Info" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterTeamPayment>(new { id = shooterTeam.User.UserId, teamId = Team.TeamId }))"><Icon Name="IconName.DollarSign" /></Button>
                                 }
                             </Buttons>
                             <Buttons>
@@ -77,15 +77,15 @@
             <Field>
                 <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
             </Field>
-            @if (shooterToDelete.Shooter != null)
+            @if (shooterToDelete.User != null)
             {
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             }
             <Field>
@@ -113,15 +113,15 @@
             {
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToReset.Shooter.CompleteName</Text>
+                    <Text>@shooterToReset.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["Username"]</FieldLabel>
-                    <Text>@shooterToReset.Shooter.Username</Text>
+                    <Text>@shooterToReset.User.Username</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToReset.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToReset.User.BirthDate.ToString("d")</Text>
                 </Field>
             }
         </ModalBody>
@@ -143,7 +143,7 @@
     public virtual bool CanEditTeamShooters { get; set; }
     
     [Parameter, EditorRequired]
-    public virtual IList<ShooterTeamContract> TeamShooters { get; set; } = new List<ShooterTeamContract>();
+    public virtual IList<UserTeamContract> TeamShooters { get; set; } = new List<UserTeamContract>();
     
     [Parameter, EditorRequired]
     public EventCallback<ShooterRequest> ResetPasswordCallback { get; set; }
@@ -152,9 +152,9 @@
     public EventCallback<ShooterTeamDeleteRequest> DeleteShooterTeamCallback { get; set; }
 
     private Modal modalRefShooterToDelete = default!;
-    ShooterTeamContract shooterToDelete = new();
+    UserTeamContract shooterToDelete = new();
     private Modal modalRefResetPassword = default!;
-    ShooterTeamContract shooterToReset = new();
+    UserTeamContract shooterToReset = new();
 
     void ValidateDate(ValidatorEventArgs e)
     {
@@ -175,7 +175,7 @@
         }
     }
 
-    void ResetPassword(ShooterTeamContract shooter)
+    void ResetPassword(UserTeamContract shooter)
     {
         shooterToReset = shooter;
 
@@ -188,13 +188,13 @@
         {
             await ResetPasswordCallback.InvokeAsync(new ShooterRequest
                 {
-                    ShooterId = shooterToReset.Shooter.ShooterId
+                    ShooterId = shooterToReset.User.UserId
                 });
         }
         shooterToReset = new();
         await modalRefResetPassword.Hide();
     }
-    async Task DeleteShooter(ShooterTeamContract shooter)
+    async Task DeleteShooter(UserTeamContract shooter)
     {
         shooterToDelete = shooter;
         await modalRefShooterToDelete.Show();
@@ -206,11 +206,11 @@
         {
             await DeleteShooterTeamCallback.InvokeAsync(new ShooterTeamDeleteRequest
                 {
-                    ShooterId = shooterToDelete.Shooter.ShooterId,
+                    ShooterId = shooterToDelete.User.UserId,
                     TeamId = Team.TeamId
                 });
         }
-        shooterToDelete = new ShooterTeamContract();
+        shooterToDelete = new UserTeamContract();
         await modalRefShooterToDelete.Hide();
     }
 }

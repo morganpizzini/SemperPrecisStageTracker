@@ -28,14 +28,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Match not found");
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.ShooterId);
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.UserId);
 
             // not a match director
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooterIds = Scenario.Shooters.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id)).Select(x => x.Id).ToList();
@@ -53,10 +53,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAvailableStageSO(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserContract>>(response);
 
             Assert.IsTrue(parsed != null
-                          && shooterIds.All(s => parsed.Data.Any(x => x.ShooterId == s))
+                          && shooterIds.All(s => parsed.Data.Any(x => x.UserId == s))
             );
             Assert.AreEqual(shooterIds.Count, parsed.Data.Count);
         }
@@ -79,14 +79,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterSOStages.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.ShooterId);
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.UserId);
 
             // not a match director
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooters = Scenario.Shooters.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id)).ToList();
@@ -120,12 +120,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterSOStages.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterSOStageContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserSOStageContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + request.Shooters.Count
                           && request.Shooters.All(x =>
                           {
-                              var existing = parsed.Data.SingleOrDefault(d => d.Shooter.ShooterId == x.ShooterId);
+                              var existing = parsed.Data.SingleOrDefault(d => d.User.UserId == x.ShooterId);
                               return existing != null && existing.Role == x.Role;
                           })
             );
@@ -156,7 +156,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                     new()
                     {
                         Role = association.SoRoles.FirstOrDefault(),
-                        ShooterId = existingShooterSOStage.ShooterId
+                        ShooterId = existingShooterSOStage.UserId
                     }
                 }
             };
@@ -168,12 +168,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterSOStages.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterSOStageContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserSOStageContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore
                           && parsed.Data.Any(x =>
                           {
-                              if (x.Shooter.ShooterId != existingShooterSOStage.ShooterId)
+                              if (x.User.UserId != existingShooterSOStage.UserId)
                                   return false;
                               return x.Role == request.Shooters[0].Role;
                           }));
@@ -211,7 +211,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                     new()
                     {
                         Role = association.SoRoles[0],
-                        ShooterId = existingShooterSOStage.ShooterId
+                        ShooterId = existingShooterSOStage.UserId
                     }
                 }
             };
@@ -250,14 +250,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterSOStages.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.ShooterId);
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.UserId);
 
             // not a match director
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
@@ -314,14 +314,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterSOStages.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             var stagesInMatch = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.ShooterId);
+            var existingShooterSo = Scenario.ShooterSOStages.Where(x => stagesInMatch.Contains(x.StageId)).Select(x => x.UserId);
 
             // not a match director
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
@@ -330,7 +330,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter not found");
 
             //look for shooter not in association
-            var shooterAssociationId = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.ShooterId;
+            var shooterAssociationId = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.UserId;
 
             if (shooterAssociationId == null)
                 Assert.Inconclusive("Shooter not in association not found");
@@ -389,14 +389,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterSOStages.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             // not a match director
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var matchStageIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var shooterInStages = Scenario.ShooterSOStages.Where(x => matchStageIds.Contains(x.StageId)).Select(x => x.ShooterId).ToList();
+            var shooterInStages = Scenario.ShooterSOStages.Where(x => matchStageIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterInStages.Contains(x.Id));
@@ -423,7 +423,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                     new()
                     {
                         Role = association.SoRoles[1],
-                        ShooterId = existingShooterMatch.ShooterId
+                        ShooterId = existingShooterMatch.UserId
                     }
                 }
             };
@@ -468,10 +468,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterSOStages.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterSOStageContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserSOStageContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore - 1
-                          && parsed.Data.All(x => x.ShooterSOStageId != request.ShooterSOStageId));
+                          && parsed.Data.All(x => x.UserSOStageId != request.ShooterSOStageId));
         }
 
 
@@ -496,7 +496,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAllShooterSOStages(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterSOStageContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserSOStageContract>>(response);
             Assert.IsTrue(parsed != null
                           && parsed.Data.Count == countBefore
             );
@@ -505,7 +505,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
     public partial class MatchEntitiesControllerTests
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchAvailableMatchDirectorBeOkHavingProvidedData()
@@ -515,13 +515,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Match not found");
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var matchStagesIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.ShooterId).ToList();
+            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
             var shooterIds = Scenario.Shooters.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id)).Select(x => x.Id).ToList();
@@ -539,9 +539,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAvailableMatchDirector(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserContract>>(response);
             Assert.IsTrue(parsed != null
-                          && shooterIds.All(s => parsed.Data.Any(x => x.ShooterId == s))
+                          && shooterIds.All(s => parsed.Data.Any(x => x.UserId == s))
             );
             Assert.AreEqual(shooterIds.Count, parsed.Data.Count);
         }
@@ -554,7 +554,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Association not found");
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingAssociation.Id)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
             var shooterIds = Scenario.Shooters.Where(x =>
                 shooterAssociations.Contains(x.Id)).Select(x => x.Id).ToList();
@@ -572,9 +572,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAvailableMatchDirectorByAssociation(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserContract>>(response);
             Assert.IsTrue(parsed != null
-                          && shooterIds.All(s => parsed.Data.Any(x => x.ShooterId == s))
+                          && shooterIds.All(s => parsed.Data.Any(x => x.UserId == s))
             );
             Assert.AreEqual(shooterIds.Count, parsed.Data.Count);
         }
@@ -590,13 +590,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var matchStagesIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.ShooterId).ToList();
+            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
@@ -618,10 +618,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterMatches.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterMatchContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserMatchContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + request.ShooterIds.Count
-                          && parsed.Data.Any(x => x.Shooter.ShooterId == shooter.Id)
+                          && parsed.Data.Any(x => x.User.UserId == shooter.Id)
             );
         }
 
@@ -636,9 +636,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.AssociationId == existingMatch.AssociationId && x.SafetyOfficier)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && shooterMatches.Contains(x.Id));
@@ -660,10 +660,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterMatches.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterMatchContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserMatchContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore
-                          && parsed.Data.Any(x => x.Shooter.ShooterId == shooter.Id)
+                          && parsed.Data.Any(x => x.User.UserId == shooter.Id)
             );
         }
 
@@ -678,13 +678,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => !x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var matchStagesIds = Scenario.Stages.Where(x => x.MatchId == existingMatch.Id).Select(x => x.Id).ToList();
 
-            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.ShooterId).ToList();
+            var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
@@ -724,9 +724,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             //look for shooter not in association
-            var shooterAssociations = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.ShooterId;
+            var shooterAssociations = Scenario.ShooterAssociationInfos.FirstOrDefault(x => x.SafetyOfficier && x.AssociationId != existingMatch.AssociationId)?.UserId;
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id));
@@ -766,9 +766,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterMatches.Count;
 
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingMatch.AssociationId)
-                .Select(x => x.ShooterId).ToList();
+                .Select(x => x.UserId).ToList();
 
-            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.ShooterId).ToList();
+            var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
             var shooter = Scenario.Shooters.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && shooterMatches.Contains(x.Id));
@@ -787,7 +787,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new ShooterMatchesCreateRequest
             {
                 MatchId = existingMatch.Id,
-                ShooterIds = new List<string> { shooter.Id, shooterSO.ShooterId }
+                ShooterIds = new List<string> { shooter.Id, shooterSO.UserId }
             };
 
             //Invoke del metodo
@@ -826,10 +826,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterMatches.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterMatchContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserMatchContract>>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore - 1
-                          && parsed.Data.All(x => x.ShooterMatchId != request.ShooterMatchId)
+                          && parsed.Data.All(x => x.UserMatchId != request.ShooterMatchId)
             );
         }
 
@@ -854,7 +854,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAllMatchDirector(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterMatchContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserMatchContract>>(response);
             Assert.IsTrue(parsed != null
                           && parsed.Data.Count == countBefore);
         }

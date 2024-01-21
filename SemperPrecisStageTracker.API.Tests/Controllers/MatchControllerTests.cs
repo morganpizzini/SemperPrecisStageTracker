@@ -17,7 +17,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class MatchControllerTests : ApiControllerTestsBase<MatchController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchAllMatchesBeOkHavingElements()
@@ -63,7 +63,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
-            Assert.IsTrue(parsed.Data.Groups.SelectMany(x => x.Shooters).Any());
+            Assert.IsTrue(parsed.Data.Groups.SelectMany(x => x.Users).Any());
         }
 
         [TestMethod]

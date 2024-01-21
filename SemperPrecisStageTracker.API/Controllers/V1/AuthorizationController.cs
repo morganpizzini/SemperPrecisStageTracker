@@ -54,7 +54,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterTeams = BasicLayer.FetchTeamsFromShooterId(result.Id);
 
             var teamsIds = shooterTeams
-                .Where(x => x.ShooterApprove && x.TeamApprove)
+                .Where(x => x.UserApprove && x.TeamApprove)
                 .Select(x => x.TeamId)
                 .ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
@@ -90,7 +90,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequest(new List<ValidationResult> { new(captchaCheck) });
             }
             //Tento il signin ed ottengo l'utente se è completato
-            var validations = AuthorizationLayer.CreateUser(new Shooter
+            var validations = AuthorizationLayer.CreateUser(new User
             {
                 Username = request.Username,
                 Password = request.Password,
@@ -199,7 +199,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Ok(new OkResponse { Status = true });
         }
 
-        private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(Shooter user, string userId = null)
+        private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(User user, string userId = null)
         {
             var data = BasicLayer.GetShooterData(user.Id);
 
@@ -230,7 +230,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [AllowAnonymous]
         [Obsolete]
         [Route("GetUserFromRestorePasswordAlias")]
-        [ProducesResponseType(typeof(ShooterContract), 200)]
+        [ProducesResponseType(typeof(UserContract), 200)]
         public IActionResult GetUserFromRestorePasswordAlias([FromBody]ShooterRequest request)
         {
             var user = AuthorizationLayer.GetUserByRestorePasswordAlias(request.ShooterId);

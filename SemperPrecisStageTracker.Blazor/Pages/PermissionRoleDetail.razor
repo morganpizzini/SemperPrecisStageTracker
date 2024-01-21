@@ -33,14 +33,14 @@
 
     RoleContract role = new();
     IList<PermissionContract> permissions= new List<PermissionContract>();
-    IList<ShooterContract> users= new List<ShooterContract>();
+    IList<UserContract> users= new List<UserContract>();
 
 
     protected override async Task OnInitializedAsync()
     {
         role = await Post<RoleContract>("api/Permission/GetRole", new RoleRequest() { RoleId = Id });
         permissions = await Post<List<PermissionContract>>("api/Permission/FetchPermissions");
-        users = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
+        users = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
         await base.OnInitializedAsync();
     }
 

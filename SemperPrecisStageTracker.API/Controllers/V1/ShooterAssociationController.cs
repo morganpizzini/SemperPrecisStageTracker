@@ -26,7 +26,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterAssociation")]
-        [ProducesResponseType(typeof(IList<ShooterAssociationContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserAssociationContract>), 200)]
         public Task<IActionResult> FetchShooterAssociation([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -55,10 +55,10 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpsertShooterAssociation")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
-        public Task<IActionResult> UpsertShooterAssociation([FromBody]ShooterAssociationCreateRequest request)
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
+        public Task<IActionResult> UpsertShooterAssociation([FromBody]UserAssociationCreateRequest request)
         {
-            var availableAssociationIds = BasicLayer.FetchAllShooterAssociationInfos(request.ShooterId).Select(x=>x.AssociationId);
+            var availableAssociationIds = BasicLayer.FetchAllShooterAssociationInfos(request.UserId).Select(x=>x.AssociationId);
 
             IList<ValidationResult> validations = new List<ValidationResult>();
             if (!availableAssociationIds.Contains(request.AssociationId))
@@ -67,7 +67,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return BadRequestTask(validations);
             }
 
-            var entity = this.BasicLayer.GetActiveShooterAssociationByShooterAndAssociationAndDivision(request.ShooterId, request.AssociationId, request.Division);
+            var entity = this.BasicLayer.GetActiveShooterAssociationByShooterAndAssociationAndDivision(request.UserId, request.AssociationId, request.Division);
 
 
             if (entity != null)
@@ -79,8 +79,8 @@ namespace SemperPrecisStageTracker.API.Controllers
                     return BadRequestTask(validations);
             }
 
-            entity = new ShooterAssociation();
-            entity.ShooterId = request.ShooterId;
+            entity = new UserAssociation();
+            entity.UserId = request.UserId;
             entity.AssociationId = request.AssociationId;
             entity.Classification = request.Classification;
             entity.Division = request.Division;

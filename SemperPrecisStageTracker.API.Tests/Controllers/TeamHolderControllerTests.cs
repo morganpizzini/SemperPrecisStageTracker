@@ -15,12 +15,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class TeamHolderControllerTests : ApiControllerTestsBase<TeamHolderController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldCreateTeamHolderBeOkHavingProvidedData()
         {
-            var shooterIds = Scenario.TeamHolders.Select(x => x.ShooterId).ToList();
+            var shooterIds = Scenario.TeamHolders.Select(x => x.UserId).ToList();
             var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
@@ -53,7 +53,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
                           && updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && updatedEntity.Description == request.Description
             );
 
@@ -70,7 +70,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new TeamHolderCreateRequest
             {
                 TeamId = existing.TeamId,
-                ShooterId = existing.ShooterId,
+                ShooterId = existing.UserId,
                 Description = RandomizationUtils.GenerateRandomString(5)
             };
 
@@ -87,7 +87,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.IsNotNull(parsed);
             Assert.AreEqual(countAfter, countBefore);
             Assert.IsTrue(updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && updatedEntity.Description == request.Description
             );
 
@@ -103,7 +103,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Composizione della request
             var request = new TeamHolderDeleteRequest
             {
-                ShooterId = existing.ShooterId,
+                ShooterId = existing.UserId,
                 TeamId = existing.TeamId
             };
 

@@ -11,6 +11,7 @@ using ZenProgramming.Chakra.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
 using SemperPrecisStageTracker.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2;
 
@@ -31,7 +32,7 @@ public class UsersController : ApiControllerBase
     /// </summary>
     /// <returns>Returns action result</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+    [ProducesResponseType(typeof(IList<UserContract>), 200)]
     public Task<IActionResult> FetchUsers()
     {
         //Recupero la lista dal layer
@@ -41,7 +42,7 @@ public class UsersController : ApiControllerBase
         var shooterDatas = BasicLayer.FetchShooterDataByShooterIds(shooterIds);
 
         //Ritorno i contratti
-        return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooterDatas.FirstOrDefault(y => y.ShooterId == x.Id), null, null, false)));
+        return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooterDatas.FirstOrDefault(y => y.UserId == x.Id), null, null, false)));
     }
     /// <summary>
     /// Get user by id
@@ -49,7 +50,7 @@ public class UsersController : ApiControllerBase
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ShooterContract), 200)]
+    [ProducesResponseType(typeof(UserContract), 200)]
     public IActionResult GetUser(BaseRequestId request)
     {
         var entity = AuthorizationLayer.GetUserById(request.Id);
@@ -75,7 +76,7 @@ public class UsersController : ApiControllerBase
     public async Task<IActionResult> CreateShooter([AsParameters]ShooterCreateRequest request)
     {
         //Creazione modello richiesto da admin
-        var model = new Shooter
+        var model = new User
         {
             FirstName = request.FirstName,
             LastName = request.LastName,
@@ -83,7 +84,7 @@ public class UsersController : ApiControllerBase
             Email = request.Email,
             Username = request.Username
         };
-        var data = new ShooterData
+        var data = new UserData
         {
             FirearmsLicence = request.FirearmsLicence,
             FirearmsLicenceExpireDate = request.FirearmsLicenceExpireDate,
@@ -217,7 +218,7 @@ public class UsersController : ApiControllerBase
         return NoContent();
     }
 
-    private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(Shooter user, string userId = null)
+    private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(User user, string userId = null)
     {
         var data = BasicLayer.GetShooterData(user.Id);
 
@@ -246,7 +247,7 @@ public class UsersController : ApiControllerBase
     /// <response code="400">Bad request</response>
     [HttpGet("alias/{id}")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(ShooterContract), 200)]
+    [ProducesResponseType(typeof(UserContract), 200)]
     public IActionResult GetUserFromRestorePasswordAlias(BaseRequestId request)
     {
         var user = AuthorizationLayer.GetUserByRestorePasswordAlias(request.Id);
@@ -285,7 +286,7 @@ public class UsersController : ApiControllerBase
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpPost("{id}/profile")]
-    [ProducesResponseType(typeof(ShooterContract), 200)]
+    [ProducesResponseType(typeof(UserContract), 200)]
     public IActionResult UpdateProfile(BaseRequestId<UserUpdateRequestV2> request)
     {
         //Recupero l'elemento dal business layer

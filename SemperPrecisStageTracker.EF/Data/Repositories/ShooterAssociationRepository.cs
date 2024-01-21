@@ -8,7 +8,7 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
     [Repository]
-    public class ShooterAssociationRepository : EntityFrameworkRepositoryBase<ShooterAssociation, SemperPrecisStageTrackerContext>, IShooterAssociationRepository
+    public class ShooterAssociationRepository : EntityFrameworkRepositoryBase<UserAssociation, SemperPrecisStageTrackerContext>, IShooterAssociationRepository
     {
         public ShooterAssociationRepository(IDataSession dataSession)
             : base(dataSession, c => c.ShooterAssociations)
@@ -16,7 +16,7 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         }
     }
     [Repository]
-    public class ShooterAssociationInfoRepository : EntityFrameworkRepositoryBase<ShooterAssociationInfo, SemperPrecisStageTrackerContext>, IShooterAssociationInfoRepository
+    public class ShooterAssociationInfoRepository : EntityFrameworkRepositoryBase<UserAssociationInfo, SemperPrecisStageTrackerContext>, IShooterAssociationInfoRepository
     {
         public ShooterAssociationInfoRepository(IDataSession dataSession)
             : base(dataSession, c => c.ShooterAssociationInfos)

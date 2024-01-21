@@ -14,7 +14,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class PermissionControllerTests : ApiControllerTestsBase<PermissionController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchShooterPermissionBeOkHavingProvidedData()

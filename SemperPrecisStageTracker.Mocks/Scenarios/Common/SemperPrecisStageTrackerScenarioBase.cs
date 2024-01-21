@@ -16,12 +16,12 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// <summary>
         /// List of group shooters
         /// </summary>
-        public IList<GroupShooter> GroupShooters { get; set; } = new List<GroupShooter>();
+        public IList<GroupUser> GroupShooters { get; set; } = new List<GroupUser>();
 
         /// <summary>
         /// List of team shooters
         /// </summary>
-        public IList<ShooterTeam> ShooterTeams { get; set; } = new List<ShooterTeam>();
+        public IList<UserTeam> ShooterTeams { get; set; } = new List<UserTeam>();
 
         /// <summary>
         /// List of match
@@ -36,11 +36,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// <summary>
         /// List of shooter
         /// </summary>
-        public IList<Shooter> Shooters { get; set; } = new List<Shooter>();
+        public IList<User> Shooters { get; set; } = new List<User>();
         /// <summary>
         /// List of shooter
         /// </summary>
-        public IList<ShooterData> ShooterDatas { get; set; } = new List<ShooterData>();
+        public IList<UserData> ShooterDatas { get; set; } = new List<UserData>();
 
         /// <summary>
         /// List of stage
@@ -55,17 +55,17 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// <summary>
         /// List of shooter stage
         /// </summary>
-        public IList<ShooterStageString> ShooterStages { get; set; } = new List<ShooterStageString>();
+        public IList<UserStageString> ShooterStages { get; set; } = new List<UserStageString>();
 
         /// <summary>
         /// List of group shooters
         /// </summary>
-        public IList<ShooterMatch> ShooterMatches { get; set; } = new List<ShooterMatch>();
+        public IList<UserMatch> ShooterMatches { get; set; } = new List<UserMatch>();
 
         /// <summary>
         /// List of group shooters
         /// </summary>
-        public IList<ShooterSOStage> ShooterSOStages { get; set; } = new List<ShooterSOStage>();
+        public IList<UserSOStage> ShooterSOStages { get; set; } = new List<UserSOStage>();
 
         /// <summary>
         /// List of teams
@@ -75,12 +75,12 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// <summary>
         /// List of teams
         /// </summary>
-        public IList<ShooterAssociation> ShooterAssociations { get; set; } = new List<ShooterAssociation>();
+        public IList<UserAssociation> ShooterAssociations { get; set; } = new List<UserAssociation>();
 
         /// <summary>
         /// List of teams
         /// </summary>
-        public IList<ShooterAssociationInfo> ShooterAssociationInfos { get; set; } = new List<ShooterAssociationInfo>();
+        public IList<UserAssociationInfo> ShooterAssociationInfos { get; set; } = new List<UserAssociationInfo>();
 
 
         /// <summary>

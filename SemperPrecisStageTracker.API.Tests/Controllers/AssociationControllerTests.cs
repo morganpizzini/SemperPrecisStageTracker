@@ -17,7 +17,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class AssociationControllerTests : ApiControllerTestsBase<AssociationController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldCreateAssociationBeOkHavingProvidedData()
@@ -453,11 +453,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("No shooter association exists");
             }
 
-            var count = Scenario.ShooterAssociationInfos.Count(x => x.ShooterId == existing.ShooterId);
+            var count = Scenario.ShooterAssociationInfos.Count(x => x.UserId == existing.UserId);
 
             var request = new ShooterRequest
             {
-                ShooterId = existing.ShooterId
+                ShooterId = existing.UserId
             };
 
             //Invoke del metodo

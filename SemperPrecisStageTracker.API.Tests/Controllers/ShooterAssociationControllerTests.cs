@@ -17,14 +17,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class ShooterAssociationControllerTests : ApiControllerTestsBase<ShooterAssociationController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldCreateShooterAssociationBeOkHavingProvidedData()
         {
             // select a shooter with shooterassociationInfo but withtout any classification
-            var match = Scenario.ShooterAssociationInfos.Select(x => new { x.ShooterId, x.AssociationId })
-                        .GroupJoin(Scenario.ShooterAssociations,x=>x,x=> new { x.ShooterId, x.AssociationId },
+            var match = Scenario.ShooterAssociationInfos.Select(x => new { x.UserId, x.AssociationId })
+                        .GroupJoin(Scenario.ShooterAssociations,x=>x,x=> new { x.UserId, x.AssociationId },
                         (x,y)=>new
                         {
                             x,
@@ -41,10 +41,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existingAssociation = Scenario.Associations.FirstOrDefault(x=>x.Id == match.AssociationId);
 
             //Composizione della request
-            var request = new ShooterAssociationCreateRequest
+            var request = new UserAssociationCreateRequest
             {
                 AssociationId = existingAssociation.Id,
-                ShooterId = match.ShooterId,
+                UserId = match.UserId,
                 RegistrationDate = DateTime.Now,
                 Classification = existingAssociation.Classifications.FirstOrDefault(),
                 Division = existingAssociation.Divisions.FirstOrDefault()
@@ -59,13 +59,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<OkResponse>(response);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.ShooterId == request.ShooterId);
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.UserId == request.UserId);
 
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
                           && updatedEntity != null
                           && updatedEntity.AssociationId == request.AssociationId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.UserId
                           && updatedEntity.RegistrationDate == request.RegistrationDate
                           && updatedEntity.Classification == request.Classification
                           && updatedEntity.Division == request.Division
@@ -83,11 +83,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("No shooter association exists");
             }
 
-            var count = Scenario.ShooterAssociations.Count(x => x.ShooterId == existing.ShooterId);
+            var count = Scenario.ShooterAssociations.Count(x => x.UserId == existing.UserId);
 
             var request = new ShooterRequest
             {
-                ShooterId = existing.ShooterId
+                ShooterId = existing.UserId
             };
 
             //Invoke del metodo
@@ -95,7 +95,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterAssociationContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserAssociationContract>>(response);
 
             Assert.AreEqual(count, parsed.Data.Count);
             Assert.IsTrue(parsed.Data.All(x => !string.IsNullOrEmpty(x.Association.Name)));
@@ -111,10 +111,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterAssociations.Count;
 
             //Composizione della request
-            var request = new ShooterAssociationCreateRequest
+            var request = new UserAssociationCreateRequest
             {
                 AssociationId = existing.AssociationId,
-                ShooterId = existing.ShooterId,
+                UserId = existing.UserId,
                 RegistrationDate = DateTime.Now,
                 Classification = existing.Classification,
                 Division = existing.Division
@@ -131,14 +131,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var oldEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.Id == existing.Id);
 
-            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.ShooterId == request.ShooterId && !x.ExpireDate.HasValue);
+            var updatedEntity = Scenario.ShooterAssociations.FirstOrDefault(x => x.AssociationId == request.AssociationId && x.UserId == request.UserId && !x.ExpireDate.HasValue);
 
             Assert.AreEqual(countBefore + 1, countAfter);
             Assert.IsTrue(parsed != null
                           // the old one should be closed with end date
                           && oldEntity.ExpireDate != null
                           && updatedEntity.AssociationId == request.AssociationId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.UserId
                           && updatedEntity.RegistrationDate == request.RegistrationDate
                           && updatedEntity.Classification == request.Classification
                           && updatedEntity.Division == request.Division
@@ -154,10 +154,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.ShooterAssociations.Count;
 
             //Composizione della request
-            var request = new ShooterAssociationCreateRequest
+            var request = new UserAssociationCreateRequest
             {
                 AssociationId = RandomizationUtils.GenerateRandomString(5),
-                ShooterId = existing.Id,
+                UserId = existing.Id,
                 RegistrationDate = DateTime.Now,
                 Classification = RandomizationUtils.GenerateRandomString(5),
                 Division = RandomizationUtils.GenerateRandomString(5)

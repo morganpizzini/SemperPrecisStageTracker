@@ -24,7 +24,7 @@
 
 @code {
 
-    private readonly IList<ShooterStageStringContract> shooterStageContracts = new List<ShooterStageStringContract>();
+    private readonly IList<UserStageStringContract> shooterStageContracts = new List<UserStageStringContract>();
 
     async Task OnChanged(FileChangedEventArgs e)
     {
@@ -51,10 +51,10 @@
 
                     foreach (var line in csv)
                     {
-                        var tmp = new ShooterStageStringContract
+                        var tmp = new UserStageStringContract
                             {
                                 StageStringId = line[0],
-                                ShooterId = line[1]
+                                UserId = line[1]
                             };
 
                         var r = decimal.TryParse(line[4], out var decimalValue);

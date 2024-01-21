@@ -19,7 +19,7 @@
 </AuthorizeView>
 @code {
     
-    IList<ShooterContract> shooters = new List<ShooterContract>();
+    IList<UserContract> shooters = new List<UserContract>();
     
     protected override async Task OnInitializedAsync()
     {
@@ -29,7 +29,7 @@
 
     private async Task LoadEntities()
     {
-        var result = await Post<List<ShooterContract>>("api/Shooter/FetchAllShooters");
+        var result = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
         if (result != null)
         {
             shooters = result;
@@ -37,7 +37,7 @@
     }
     private async Task DeleteShooter(string id)
     {
-        await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
+        await Post<UserContract>("/api/Shooter/DeleteShooter", new ShooterRequest
         {
             ShooterId = id
         });

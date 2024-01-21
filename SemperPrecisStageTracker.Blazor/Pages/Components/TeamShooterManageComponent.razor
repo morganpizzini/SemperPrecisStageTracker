@@ -16,14 +16,14 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @if (TeamShooters.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                        @if (TeamShooters.Count(x => x.UserApprove && !x.TeamApprove) > 0)
                         {
-                            <Virtualize Items="@TeamShooters.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                            <Virtualize Items="@TeamShooters.Where(x => x.UserApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
                                 <TableRow>
                                     <TableRowHeader>
-                                        @shooterTeam.Shooter.CompleteName
+                                        @shooterTeam.User.CompleteName
                                         <br />
-                                        @shooterTeam.Shooter.BirthDate.ToString("d")
+                                        @shooterTeam.User.BirthDate.ToString("d")
                                     </TableRowHeader>
                                     <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                     <TableRowCell>
@@ -59,14 +59,14 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @if (TeamShooters.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                        @if (TeamShooters.Count(x => !x.UserApprove && x.TeamApprove) > 0)
                         {
-                            <Virtualize Items="@TeamShooters.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                            <Virtualize Items="@TeamShooters.Where(x => !x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                                 <TableRow>
                                     <TableRowHeader>
-                                        @shooterTeam.Shooter.CompleteName
+                                        @shooterTeam.User.CompleteName
                                         <br />
-                                        @shooterTeam.Shooter.BirthDate.ToString("d")
+                                        @shooterTeam.User.BirthDate.ToString("d")
                                     </TableRowHeader>
                                     <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                     <TableRowCell>
@@ -108,7 +108,7 @@
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var shooter in Shooters)
                                             {
-                                    <SelectItem Value="@shooter.ShooterId">@shooter.CompleteName @shooter.BirthDate.ToString("d")</SelectItem>
+                                    <SelectItem Value="@shooter.UserId">@shooter.CompleteName @shooter.BirthDate.ToString("d")</SelectItem>
                                             }
                                 </ChildContent>
                                 <Feedback>
@@ -148,13 +148,13 @@
         </ModalHeader>
         <ModalBody>
             @{
-                var shooter = TeamShooters.FirstOrDefault(x => x.Shooter.ShooterId == shooterToEdit.ShooterId);
+                var shooter = TeamShooters.FirstOrDefault(x => x.User.UserId == shooterToEdit.ShooterId);
             }
             @if (shooter != null)
             {
                 <Field>
                     <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
-                    <FieldBody>@shooter.Shooter.CompleteName - @shooter.Shooter.BirthDate.ToString("d")</FieldBody>
+                    <FieldBody>@shooter.User.CompleteName - @shooter.User.BirthDate.ToString("d")</FieldBody>
                 </Field>
             }
         </ModalBody>
@@ -175,15 +175,15 @@
             <Field>
                 <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
             </Field>
-            @if (shooterToDelete.Shooter != null)
+            @if (shooterToDelete.User != null)
             {
                 <Field>
                     <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.CompleteName</Text>
+                    <Text>@shooterToDelete.User.CompleteName</Text>
                 </Field>
                 <Field>
                     <FieldLabel>@L["BirthDate"]</FieldLabel>
-                    <Text>@shooterToDelete.Shooter.BirthDate.ToString("d")</Text>
+                    <Text>@shooterToDelete.User.BirthDate.ToString("d")</Text>
                 </Field>
             }
             <Field>
@@ -204,10 +204,10 @@
     public virtual TeamContract Team { get; set; } = new();
 
     [Parameter, EditorRequired]
-    public virtual IList<ShooterTeamContract> TeamShooters { get; set; } = new List<ShooterTeamContract>();
+    public virtual IList<UserTeamContract> TeamShooters { get; set; } = new List<UserTeamContract>();
     
     [Parameter, EditorRequired]
-    public virtual IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
+    public virtual IList<UserContract> Shooters { get; set; } = new List<UserContract>();
 
     [Parameter, EditorRequired]
     public EventCallback<ShooterTeamCreateRequest> UpsertShooterCallback { get; set; }
@@ -220,7 +220,7 @@
     private Modal modalRefShooterToDelete = default!;
     private Modal modalRefShooterToEdit = default!;
     private Modal modalRefShooterToApprove = default!;
-    ShooterTeamContract shooterToDelete = new();
+    UserTeamContract shooterToDelete = new();
     ShooterTeamCreateRequest shooterToEdit = new();
 
 
@@ -249,11 +249,11 @@
         modalRefShooterToEdit.Show();
     }
 
-    void EditShooter(ShooterTeamContract shooterTeam)
+    void EditShooter(UserTeamContract shooterTeam)
     {
         shooterToEdit = new ShooterTeamCreateRequest
             {
-                ShooterId = shooterTeam.Shooter.ShooterId,
+                ShooterId = shooterTeam.User.UserId,
                 TeamId = Team.TeamId,
                 FromShooter = false,
                 RegistrationDate = shooterTeam.RegistrationDate
@@ -276,7 +276,7 @@
         await modalRefShooterToEdit.Hide();
         await modalRefShooterToApprove.Hide();
     }
-    async Task DeleteShooter(ShooterTeamContract shooter)
+    async Task DeleteShooter(UserTeamContract shooter)
     {
         shooterToDelete = shooter;
         await modalRefShooterToDelete.Show();
@@ -288,11 +288,11 @@
         {
             await DeleteShooterTeamCallback.InvokeAsync(new ShooterTeamDeleteRequest
                 {
-                    ShooterId = shooterToDelete.Shooter.ShooterId,
+                    ShooterId = shooterToDelete.User.UserId,
                     TeamId = Team.TeamId
                 });
         }
-        shooterToDelete = new ShooterTeamContract();
+        shooterToDelete = new UserTeamContract();
         await modalRefShooterToDelete.Hide();
     }
 }

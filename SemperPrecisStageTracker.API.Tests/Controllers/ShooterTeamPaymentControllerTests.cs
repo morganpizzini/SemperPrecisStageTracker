@@ -15,12 +15,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class ShooterTeamPaymentControllerTests : ApiControllerTestsBase<ShooterTeamPaymentController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldCreateShooterTeamPaymentBeOkHavingProvidedData()
         {
-            var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.ShooterId).ToList();
+            var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.UserId).ToList();
             var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
@@ -59,15 +59,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfterReminder = Scenario.TeamReminders.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+            var parsed = ParseExpectedOk<UserTeamPaymentContract>(response);
 
-            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.UserTeamPaymentId);
 
             Assert.AreEqual(countBefore + 1,countAfter);
             Assert.AreEqual(countBeforeReminder + 1,countAfterReminder);
             Assert.IsTrue(parsed != null
                           && updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && parsed.Data.Amount == request.Amount
                           && parsed.Data.PaymentType == existingPaymentType.Name
                           && parsed.Data.Reason == request.Reason
@@ -105,14 +105,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterTeamPayments.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+            var parsed = ParseExpectedOk<UserTeamPaymentContract>(response);
 
-            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.UserTeamPaymentId);
 
             Assert.AreEqual(countBefore + 1,countAfter);
             Assert.IsTrue(parsed != null
                           && updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && parsed.Data.Amount == request.Amount
                           && parsed.Data.Reason == request.Reason
                           && parsed.Data.PaymentType == existingPaymentType.Name
@@ -123,7 +123,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
          [TestMethod]
         public async Task ShouldNotCreateReminderAddShooterTeamPaymentBeOkHavingProvidedData()
         {
-            var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.ShooterId).ToList();
+            var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.UserId).ToList();
             var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
@@ -159,15 +159,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfterReminder = Scenario.TeamReminders.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+            var parsed = ParseExpectedOk<UserTeamPaymentContract>(response);
 
-            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.UserTeamPaymentId);
 
             Assert.AreEqual(countBefore + 1,countAfter);
             Assert.AreEqual(countBeforeReminder,countAfterReminder);
             Assert.IsTrue(parsed != null
                           && updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && parsed.Data.Amount == request.Amount
                           && parsed.Data.Reason == request.Reason
                           && parsed.Data.PaymentType == existingPaymentType.Name
@@ -232,7 +232,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 ShooterTeamPaymentId = existing.Id,
                 TeamId = existing.TeamId,
-                ShooterId = existing.ShooterId,
+                ShooterId = existing.UserId,
                 PaymentTypeId = existingPaymentType.Id,
                 Reason = RandomizationUtils.GenerateRandomString(5),
                 Amount = 1,
@@ -246,14 +246,14 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.ShooterTeamPayments.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterTeamPaymentContract>(response);
+            var parsed = ParseExpectedOk<UserTeamPaymentContract>(response);
 
-            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.ShooterTeamPaymentId);
+            var updatedEntity = Scenario.ShooterTeamPayments.FirstOrDefault(x => x.Id == parsed.Data.UserTeamPaymentId);
 
             Assert.IsNotNull(parsed);
             Assert.AreEqual(countAfter, countBefore);
             Assert.IsTrue(updatedEntity.TeamId == request.TeamId
-                          && updatedEntity.ShooterId == request.ShooterId
+                          && updatedEntity.UserId == request.ShooterId
                           && parsed.Data.Reason == request.Reason
                           && parsed.Data.PaymentDateTime == request.PaymentDateTime
                           && parsed.Data.PaymentType == existingPaymentType.Name

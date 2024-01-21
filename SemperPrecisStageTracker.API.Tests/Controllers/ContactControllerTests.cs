@@ -13,7 +13,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class ContactControllerTests : ApiControllerTestsBase<ContactController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
         [TestMethod]
         public async Task ShouldCreateContactBeOkHavingProvidedData()
         {

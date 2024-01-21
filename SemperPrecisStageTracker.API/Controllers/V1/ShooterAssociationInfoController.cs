@@ -23,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterAssociationInfo")]
-        [ProducesResponseType(typeof(IList<ShooterAssociationInfoContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserAssociationInfoContract>), 200)]
         public Task<IActionResult> FetchShooterAssociationInfo([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -52,16 +52,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("CreateShooterAssociationInfo")]
-        [ProducesResponseType(typeof(ShooterAssociationInfoContract), 200)]
+        [ProducesResponseType(typeof(UserAssociationInfoContract), 200)]
         public async Task<IActionResult> CreateShooterAssociationInfo([FromBody]ShooterAssociationInfoCreateRequest request)
         {
             var (validations,shooter,association) = CheckRequest(request.ShooterId, request.AssociationId,request.Categories);
             if (validations.Count > 0)
                 return BadRequest(validations);
 
-            var entity = new ShooterAssociationInfo
+            var entity = new UserAssociationInfo
             {
-                ShooterId = request.ShooterId,
+                UserId = request.ShooterId,
                 AssociationId = request.AssociationId,
                 CardNumber = request.CardNumber,
                 SafetyOfficier = request.SafetyOfficier,
@@ -86,7 +86,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpdateShooterAssociationInfo")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public async Task<IActionResult> UpdateShooterAssociationInfo([FromBody]ShooterAssociationInfoUpdateRequest request)
         {
             var entity = this.BasicLayer.GetShooterAssociationInfo(request.ShooterAssociationInfoId);
@@ -100,7 +100,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (validations.Count > 0)
                 return BadRequest(validations);
             
-            entity.ShooterId = request.ShooterId;
+            entity.UserId = request.ShooterId;
             entity.AssociationId = request.AssociationId;
             entity.CardNumber = request.CardNumber;
             entity.SafetyOfficier = request.SafetyOfficier;
@@ -119,7 +119,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
 
-        private (IList<ValidationResult> validations, Shooter shooter,Association association) CheckRequest(string shooterId,string associationId,IList<string> categories)
+        private (IList<ValidationResult> validations, User shooter,Association association) CheckRequest(string shooterId,string associationId,IList<string> categories)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
@@ -148,7 +148,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteShooterAssociationInfo")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public async Task<IActionResult> DeleteShooterAssociationInfo([FromBody]ShooterAssociationInfoRequest request)
         {
             //Recupero l'elemento dal business layer

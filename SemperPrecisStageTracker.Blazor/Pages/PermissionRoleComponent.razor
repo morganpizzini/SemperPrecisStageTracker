@@ -115,7 +115,7 @@
                                                 <SelectItem Value="@("")" Disabled></SelectItem>
                                                 @foreach (var entity in Users)
                                                 {
-                                                    <SelectItem Value="@entity.ShooterId">@entity.CompleteName</SelectItem>
+                                                    <SelectItem Value="@entity.UserId">@entity.CompleteName</SelectItem>
                                                 }
                                             </ChildContent>
                                             <Feedback>
@@ -278,7 +278,7 @@
     public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
 
     [Parameter]
-    public IList<ShooterContract> Users { get; set; } = new List<ShooterContract>();
+    public IList<UserContract> Users { get; set; } = new List<UserContract>();
 
     [Parameter]
     public RoleContract Role {

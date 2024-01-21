@@ -6,14 +6,14 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     /// <summary>
     /// Repository interface for "Shooter"
     /// </summary>
-    public interface IShooterRepository : IRepository<Shooter>
+    public interface IShooterRepository : IRepository<User>
     {
 
     }
     /// <summary>
     /// Repository interface for "ShooterData"
     /// </summary>
-    public interface IShooterDataRepository : IRepository<ShooterData>
+    public interface IShooterDataRepository : IRepository<UserData>
     {
 
     }

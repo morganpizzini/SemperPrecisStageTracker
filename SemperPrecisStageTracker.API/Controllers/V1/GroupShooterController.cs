@@ -27,7 +27,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchAvailableGroupShooter")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchAvailableGroupShooter([FromBody]GroupRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -46,15 +46,15 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterTeams = BasicLayer.FetchTeamsFromShooterIds(shooterIds);
 
             var teamsIds = shooterTeams
-                .Where(x=>x.ShooterApprove && x.TeamApprove)
+                .Where(x=>x.UserApprove && x.TeamApprove)
                 .Select(x => x.TeamId)
                 .ToList();
 
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
 
             var result = shooters.As(x => ContractUtils.GenerateContract(x, null,
-                shooterAssociation.Where(s => s.ShooterId == x.Id).ToList(),
-                teams.Where(s => shooterTeams.Where(st => st.ShooterId == x.Id).Select(st => st.TeamId).Contains(s.Id))
+                shooterAssociation.Where(s => s.UserId == x.Id).ToList(),
+                teams.Where(s => shooterTeams.Where(st => st.UserId == x.Id).Select(st => st.TeamId).Contains(s.Id))
                     .ToList()));
             //Return contract
             return Reply(result);
@@ -67,12 +67,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchGroupShooterStage")]
-        [ProducesResponseType(typeof(IList<ShooterStageAggregationResult>), 200)]
+        [ProducesResponseType(typeof(IList<UserStageAggregationResult>), 200)]
         public Task<IActionResult> FetchGroupShooterStage([FromBody]GroupStageRequest request)
         {
             //Invocazione del service layer
             var groupShooter = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
-            var shooterIds = groupShooter.Select(x => x.ShooterId).ToList();
+            var shooterIds = groupShooter.Select(x => x.UserId).ToList();
 
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
@@ -82,10 +82,10 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Return contract
             return Reply(groupShooter.As(x => ContractUtils.GenerateContract(x,
-                shooters.FirstOrDefault(y => y.Id == x.ShooterId),
+                shooters.FirstOrDefault(y => y.Id == x.UserId),
                 request.StageId,
-                shooterStageStrings.Where(y => y.ShooterId == x.ShooterId).ToList(),
-                shooterWarning.FirstOrDefault(y => y.ShooterId == x.ShooterId))));
+                shooterStageStrings.Where(y => y.UserId == x.UserId).ToList(),
+                shooterWarning.FirstOrDefault(y => y.UserId == x.UserId))));
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("MoveGroupShooter")]
-        [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<GroupUserContract>), 200)]
         public Task<IActionResult> MoveGroupShooter([FromBody]ShooterGroupMoveRequest request)
         {
             var entity = this.BasicLayer.GetGroupShooterById(request.GroupShooterId);
@@ -115,7 +115,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(request.GroupId).Count;
 
-            if (shooterGroup >= group.MaxShooterNumber)
+            if (shooterGroup >= group.MaxUserNumber)
             {
                 return Task.FromResult(BadRequest(new List<ValidationResult>() { new($"Group {group.Name} is full") }));
             }
@@ -168,9 +168,9 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             }
 
-            var entity = new GroupShooter
+            var entity = new GroupUser
             {
-                ShooterId = request.ShooterId,
+                UserId = request.ShooterId,
                 TeamId = request.TeamId,
                 MatchId = request.MatchId
             };
@@ -199,7 +199,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("UpsertGroupShooter")]
-        [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<GroupUserContract>), 200)]
         public async Task<IActionResult> UpsertGroupShooter([FromBody]GroupShooterCreateRequest request)
         {
             //check user permission
@@ -218,9 +218,9 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             if (entity == null)
             {
-                entity = new GroupShooter
+                entity = new GroupUser
                 {
-                    ShooterId = request.ShooterId,
+                    UserId = request.ShooterId,
                     GroupId = request.GroupId,
                     MatchId = request.MatchId,
                     HasPay = request.HasPay
@@ -241,7 +241,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             // check if group is full
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
 
-            if (shooterGroup.All(x=> x.ShooterId != entity.ShooterId) && shooterGroup.Count >= group.MaxShooterNumber)
+            if (shooterGroup.All(x=> x.UserId != entity.UserId) && shooterGroup.Count >= group.MaxUserNumber)
             {
                 return BadRequest(new List<ValidationResult>() { new($"Group {group.Name} is full") });
             }
@@ -270,12 +270,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         }
 
 
-        private IList<ValidationResult> ValidateGroupShooter(GroupShooter entity, string matchId,string divisionId)
+        private IList<ValidationResult> ValidateGroupShooter(GroupUser entity, string matchId,string divisionId)
         {
             var match = BasicLayer.GetMatch(matchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);
 
-            var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.ShooterId, match.Id);
+            var shooterAssociations = BasicLayer.FetchShooterAssociationByShooterId(entity.UserId, match.Id);
             if (match.OpenMatch)
             {
                 var currentShooterAssociation = shooterAssociations.FirstOrDefault(x => x.AssociationId == match.AssociationId && x.Division == divisionId && x.ExpireDate == null);
@@ -378,7 +378,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("DeleteGroupShooter")]
-        [ProducesResponseType(typeof(IList<GroupShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<GroupUserContract>), 200)]
         public Task<IActionResult> DeleteGroupShooter([FromBody]GroupShooterRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -403,14 +403,14 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Reply(GetGroupShooterContractByGroupId(groupId));
         }
 
-        private IList<GroupShooterContract> GetGroupShooterContractByGroupId(string groupId, string matchId = null)
+        private IList<GroupUserContract> GetGroupShooterContractByGroupId(string groupId, string matchId = null)
         {
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(groupId);
 
             if (shooterGroup.Count == 0)
-                return new List<GroupShooterContract>();
+                return new List<GroupUserContract>();
 
-            var shooterIds = shooterGroup.Select(x => x.ShooterId).ToList();
+            var shooterIds = shooterGroup.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
 
@@ -418,7 +418,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 matchId = BasicLayer.GetGroup(groupId)?.MatchId;
 
             if (string.IsNullOrEmpty(matchId))
-                return new List<GroupShooterContract>();
+                return new List<GroupUserContract>();
 
             var shooterAssociation = BasicLayer.FetchShooterAssociationByShooterIds(shooterIds, matchId);
             
@@ -429,13 +429,13 @@ namespace SemperPrecisStageTracker.API.Controllers
             var teams = BasicLayer.FetchTeamsByIds(teamsIds);
 
             return shooterGroup.As(x => ContractUtils.GenerateContract(x,
-                    shooters.FirstOrDefault(s => s.Id == x.ShooterId),
+                    shooters.FirstOrDefault(s => s.Id == x.UserId),
                     null,
                     teams.FirstOrDefault(t => t.Id == x.TeamId),
-                    shooterAssociation?.Where(s => s.ShooterId == x.ShooterId).ToList(),
-                    teams.Where(s => shooterTeams.Where(st => st.ShooterId == x.ShooterId).Select(st => st.TeamId).Contains(s.Id)).ToList())
+                    shooterAssociation?.Where(s => s.UserId == x.UserId).ToList(),
+                    teams.Where(s => shooterTeams.Where(st => st.UserId == x.UserId).Select(st => st.TeamId).Contains(s.Id)).ToList())
                 )
-                .OrderBy(x => x.Shooter.LastName).ToList();
+                .OrderBy(x => x.User.LastName).ToList();
         }
     }
 }

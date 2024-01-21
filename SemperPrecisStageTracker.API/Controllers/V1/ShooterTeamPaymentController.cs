@@ -27,16 +27,16 @@ namespace SemperPrecisStageTracker.API.Controllers
         /// <returns>Returns action result</returns>
         [HttpPost]
         [Route("FetchShooterTeamPaymentByTeam")]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public Task<IActionResult> FetchShooterTeamPaymentByTeam([FromBody]TeamRequest request)
         {
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchShooterTeamPaymentsFromTeamId(request.TeamId);
-            var shooterIds = entities.Select(x => x.ShooterId).ToList();
+            var shooterIds = entities.Select(x => x.UserId).ToList();
             var shooters = BasicLayer.FetchShootersByIds(shooterIds);
 
             //Return contract
-            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(t => t.Id == x.ShooterId))));
+            return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(t => t.Id == x.UserId))));
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("FetchShooterTeamPaymentByShooterAndTeam")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
-        [ProducesResponseType(typeof(IList<ShooterContract>), 200)]
+        [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public IActionResult FetchShooterTeamPaymentByShooterAndTeam([FromBody]ShooterTeamRequest request)
         {
             var shooter = BasicLayer.GetShooter(request.ShooterId);
@@ -68,12 +68,12 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreateShooterTeamPayment")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
-        [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
+        [ProducesResponseType(typeof(UserTeamPaymentContract), 200)]
         public async Task<IActionResult> CreateShooterTeamPayment([FromBody]ShooterTeamPaymentCreateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            Shooter shooter = null;
+            User shooter = null;
             if (!string.IsNullOrEmpty(request.ShooterId))
             {
                 shooter = BasicLayer.GetShooter(request.ShooterId);
@@ -104,7 +104,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Creazione modello richiesto da admin
             var model = new TeamPayment
             {
-                ShooterId = request.ShooterId ?? "",
+                UserId = request.ShooterId ?? "",
                 TeamId = request.TeamId,
                 Amount = request.Amount,
                 Reason = request.Reason,
@@ -119,7 +119,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 {
                     Reason = shooter != null ? $"{shooter.LastName} {shooter.FirstName} - {request.Reason}" : request.Reason,
                     TeamId = request.TeamId,
-                    ShooterId=request.ShooterId,
+                    UserId=request.ShooterId,
                     ExpireDateTime = request.ExpireDateTime.Value,
                     NotifyExpiration = request.NotifyExpiration
                 };
@@ -143,7 +143,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateShooterTeamPayment")]
         [ApiAuthorizationFilter(Permissions.TeamEditPayment,Permissions.ManageTeams)]
-        [ProducesResponseType(typeof(ShooterTeamPaymentContract), 200)]
+        [ProducesResponseType(typeof(UserTeamPaymentContract), 200)]
         public async Task<IActionResult> UpdateShooterTeamPayment([FromBody]ShooterTeamPaymentUpdateRequest request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
@@ -180,7 +180,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             //Aggiornamento dell'entità
             entity.TeamId = request.TeamId;
-            entity.ShooterId = request.ShooterId;
+            entity.UserId = request.ShooterId;
             entity.Amount = request.Amount;
             entity.PaymentType = currentPaymentType.Name;
             entity.Reason = request.Reason;

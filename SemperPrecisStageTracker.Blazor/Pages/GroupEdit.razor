@@ -48,7 +48,7 @@ else
             Description = Model.Description,
             GroupId = Model.GroupId,
             GroupDay = Model.GroupDay,
-            MaxShooterNumber = Model.MaxShooterNumber,
+            MaxShooterNumber = Model.MaxUserNumber,
             Index = Model.Index
         };
         var response = await Post<GroupContract>("/api/Group/UpdateGroup", request);

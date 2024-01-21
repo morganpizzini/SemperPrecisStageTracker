@@ -71,7 +71,7 @@ else
                             {
                                 <Virtualize Items="@matchDirectors" Context="matchDirector">
                                     <TableRow>
-                                        <TableRowHeader>@matchDirector.Shooter.CompleteName</TableRowHeader>
+                                        <TableRowHeader>@matchDirector.User.CompleteName</TableRowHeader>
                                         <TableRowCell>
                                             @if (SettingState.Value.HasNetwork && canInsertScore)
                                     {
@@ -113,7 +113,7 @@ else
                             {
                                 <Virtualize Items="@stageSos" Context="stageSo">
                                     <TableRow>
-                                        <TableRowHeader>@stageSo.Shooter.CompleteName</TableRowHeader>
+                                        <TableRowHeader>@stageSo.User.CompleteName</TableRowHeader>
                                         <TableRowHeader>@stageSo.Role</TableRowHeader>
                                         <TableRowCell>
                                             @if (!SettingState.Value.Offline && canManageSO)
@@ -244,7 +244,7 @@ else
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var availableMatchDirector in availableStageSo)
                                     {
-                                        <SelectItem Value="@availableMatchDirector.ShooterId">@availableMatchDirector.CompleteName</SelectItem>
+                                        <SelectItem Value="@availableMatchDirector.UserId">@availableMatchDirector.CompleteName</SelectItem>
                                     }
                                 </ChildContent>
                                 <Feedback>
@@ -291,11 +291,11 @@ else
                 <Field>
                     <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
                 </Field>
-                @if (stageSoToDelete.Shooter != null)
+                @if (stageSoToDelete.User != null)
                 {
                     <Field>
                         <FieldLabel>@L["Name"]</FieldLabel>
-                        <Text>@stageSoToDelete.Shooter.CompleteName</Text>
+                        <Text>@stageSoToDelete.User.CompleteName</Text>
                     </Field>
                 }
             </ModalBody>
@@ -342,7 +342,7 @@ else
 
     MatchContract match = new();
 
-    IList<ShooterMatchContract> matchDirectors = new List<ShooterMatchContract>();
+    IList<UserMatchContract> matchDirectors = new List<UserMatchContract>();
     private bool matchDirectorCall;
     private bool callMatchDirectorSuccess;
     private string callMatchDirectorError = default!;
@@ -351,11 +351,11 @@ else
 
     Validations validations = default!;
     private Modal modalRefStageSoToDelete = default!;
-    ShooterSOStageContract stageSoToDelete = new();
+    UserSOStageContract stageSoToDelete = new();
     private Modal modalRefStageSoToEdit = default!;
     ShooterSOStageCreateRequest stageSoToEdit = new();
-    IList<ShooterSOStageContract> stageSos = new List<ShooterSOStageContract>();
-    IList<ShooterContract> availableStageSo = new List<ShooterContract>();
+    IList<UserSOStageContract> stageSos = new List<UserSOStageContract>();
+    IList<UserContract> availableStageSo = new List<UserContract>();
 
     bool canManageSO;
     bool canManageStages;
@@ -371,10 +371,10 @@ else
         canManageSO = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStageSO, Id);
         canManageStages = AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchManageStages, Id);
 
-        var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x => x.Shooter.ShooterId);
-        userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x => x.Shooter.ShooterId).ToList());
+        var userThatCanInsertScore = (await MainServiceLayer.FetchAllMatchDirector(Id)).Select(x => x.User.UserId);
+        userThatCanInsertScore = userThatCanInsertScore.Concat((await MainServiceLayer.FetchAllShooterSOStages(StageId)).Select(x => x.User.UserId).ToList());
         canInsertScore = AuthService.CheckPermissions(PermissionCtor.ManageMatches) ||
-                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.ShooterId));
+                         (AuthService.CheckPermissions(PermissionCtor.ManageMatches.MatchInsertScore, Id) && userThatCanInsertScore.Contains(UserState.Value.User?.UserId));
 
         await LoadSO();
 
@@ -387,7 +387,7 @@ else
         stageSos = await MainServiceLayer.FetchAllShooterSOStages(StageId);
         if (!SettingState.Value.Offline)
         {
-            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId },false);
+            availableStageSo = await Post<List<UserContract>>("api/Match/FetchAvailableStageSO", new StageRequest { StageId = StageId },false);
         }
     }
 
@@ -397,7 +397,7 @@ else
         modalRefStageSoToEdit.Show();
     }
 
-    void DeleteStageSo(ShooterSOStageContract matchDirector)
+    void DeleteStageSo(UserSOStageContract matchDirector)
     {
         if (matchDirector == null)
             return;
@@ -412,9 +412,9 @@ else
             if (!(await validations.ValidateAll()))
                 return;
             await validations.ClearAll();
-            stageSos = await Post<List<ShooterSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit,false);
+            stageSos = await Post<List<UserSOStageContract>>("/api/Match/CreateStageSO", stageSoToEdit,false);
             //update available match director
-            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
+            availableStageSo = await Post<List<UserContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
         }
         stageSoToEdit = new ShooterSOStageCreateRequest();
         await modalRefStageSoToEdit.Hide();
@@ -422,20 +422,20 @@ else
 
     private async Task HideModalMatchDirectorToDelete(bool choice)
     {
-        if (choice && stageSoToDelete.Shooter != null)
+        if (choice && stageSoToDelete.User != null)
         {
-            stageSos = await Post<List<ShooterSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
+            stageSos = await Post<List<UserSOStageContract>>("/api/Match/DeleteStageSO", new ShooterSOStageRequest
                 {
-                    ShooterSOStageId = stageSoToDelete.ShooterSOStageId
+                    ShooterSOStageId = stageSoToDelete.UserSOStageId
                 },false);
-            availableStageSo = await Post<List<ShooterContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
+            availableStageSo = await Post<List<UserContract>>("api/Match/FetchAvailableStageSO", new StageRequest() { StageId = StageId },false);
             //await LoadSO();
         }
-        stageSoToDelete = new ShooterSOStageContract();
+        stageSoToDelete = new UserSOStageContract();
         await modalRefStageSoToDelete.Hide();
     }
 
-    async Task CallMatchDirector(ShooterMatchContract matchDirector)
+    async Task CallMatchDirector(UserMatchContract matchDirector)
     {
         if (matchDirector == null)
             return;
@@ -443,7 +443,7 @@ else
         var result = await Post<OkResponse>("api/Notification/CallShooter", new CallShooterRequest()
             {
                 MatchId = Id,
-                ShooterId = matchDirector.Shooter.ShooterId,
+                ShooterId = matchDirector.User.UserId,
                 Context = CallShooterContextEnum.MatchDirector
             });
         matchDirectorCall = false;

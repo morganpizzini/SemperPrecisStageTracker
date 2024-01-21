@@ -95,9 +95,9 @@
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                @if (shooterTeams.Count(x => x.ShooterApprove && !x.TeamApprove) > 0)
+                                                @if (shooterTeams.Count(x => x.UserApprove && !x.TeamApprove) > 0)
                                                 {
-                                                    <Virtualize Items="@shooterTeams.Where(x => x.ShooterApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
+                                                    <Virtualize Items="@shooterTeams.Where(x => x.UserApprove && !x.TeamApprove).ToList()" Context="shooterTeam">
                                                         <TableRow>
                                                             <TableRowHeader>
                                                                 @shooterTeam.Team.Name
@@ -135,9 +135,9 @@
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
-                                                @if (shooterTeams.Count(x => !x.ShooterApprove && x.TeamApprove) > 0)
+                                                @if (shooterTeams.Count(x => !x.UserApprove && x.TeamApprove) > 0)
                                                 {
-                                                    <Virtualize Items="@shooterTeams.Where(x => !x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                                    <Virtualize Items="@shooterTeams.Where(x => !x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                                                         <TableRow>
                                                             <TableRowHeader>
                                                                 @shooterTeam.Team.Name
@@ -178,9 +178,9 @@
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    @if (shooterTeams.Count(x => x.ShooterApprove && x.TeamApprove) > 0)
+                                    @if (shooterTeams.Count(x => x.UserApprove && x.TeamApprove) > 0)
                                     {
-                                        <Virtualize Items="@shooterTeams.Where(x=>x.ShooterApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                                        <Virtualize Items="@shooterTeams.Where(x=>x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
                                             <TableRow>
                                                 <TableRowHeader>@shooterTeam.Team.Name</TableRowHeader>
                                                 <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
@@ -785,23 +785,23 @@
     private Modal modalRefEntityToDelete = default!;
     private Modal modalRefResetPassword = default!;
 
-    ShooterContract shooter = new();
+    UserContract shooter = new();
     Validations validations = default!;
     Validations validationInfos = default!;
     Validations teamValidations = default!;
     private Modal modalRefAssociationToDelete = default!;
     private Modal modalRefAssociationInfoToDelete = default!;
-    ShooterAssociationContract associationToDelete = new();
-    ShooterAssociationInfoContract associationInfoToDelete = new();
+    UserAssociationContract associationToDelete = new();
+    UserAssociationInfoContract associationInfoToDelete = new();
     private Modal modalRefAssociationToEdit = default!;
     private Modal modalRefAssociationInfoToEdit = default!;
     private IReadOnlyList<string> categoriesEdit = new List<string>();
-    ShooterAssociationCreateRequest associationToEdit = new();
+    UserAssociationCreateRequest associationToEdit = new();
     ShooterAssociationInfoUpdateRequest associationInfoToEdit = new();
-    IList<ShooterAssociationContract> shooterClassifications = new List<ShooterAssociationContract>();
-    IList<ShooterAssociationContract> activeShooterClassifications => shooterClassifications.Where(x => x.ExpireDate == null).ToList();
-    IList<ShooterAssociationContract> expiredShooterClassifications => shooterClassifications.Where(x => x.ExpireDate != null).ToList();
-    IList<ShooterAssociationInfoContract> shooterAssociationInfos = new List<ShooterAssociationInfoContract>();
+    IList<UserAssociationContract> shooterClassifications = new List<UserAssociationContract>();
+    IList<UserAssociationContract> activeShooterClassifications => shooterClassifications.Where(x => x.ExpireDate == null).ToList();
+    IList<UserAssociationContract> expiredShooterClassifications => shooterClassifications.Where(x => x.ExpireDate != null).ToList();
+    IList<UserAssociationInfoContract> shooterAssociationInfos = new List<UserAssociationInfoContract>();
     IList<AssociationContract> associationNotAssigned = new List<AssociationContract>();
     IList<AssociationContract> associations = new List<AssociationContract>();
     IList<string> classifications = new List<string>();
@@ -810,12 +810,12 @@
 
 
     private Modal modalRefTeamToEdit = default!;
-    ShooterTeamContract teamToDelete = new();
+    UserTeamContract teamToDelete = new();
     private Modal modalRefTeamToDelete = default!;
     private Modal modalRefTeamToApprove = default!;
     ShooterTeamCreateRequest teamToEdit = new();
     IList<TeamContract> teams = new List<TeamContract>();
-    IList<ShooterTeamContract> shooterTeams = new List<ShooterTeamContract>();
+    IList<UserTeamContract> shooterTeams = new List<UserTeamContract>();
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.CheckPermissions(PermissionCtor.ManageTeams.ShowShooters.EditShooter, Id))
@@ -824,7 +824,7 @@
             return;
         }
 
-        shooter = await Post<ShooterContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+        shooter = await Post<UserContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
         teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams");
         await LoadShooterAssociationInfo();
         await LoadShooterClassifications();
@@ -834,11 +834,11 @@
 
     async Task LoadShooterTeams()
     {
-        shooterTeams = await Post<List<ShooterTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
+        shooterTeams = await Post<List<UserTeamContract>>("api/ShooterTeam/FetchShooterTeamByShooter", new ShooterRequest() { ShooterId = Id });
     }
     async Task LoadShooterClassifications()
     {
-        shooterClassifications = await Post<List<ShooterAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
+        shooterClassifications = await Post<List<UserAssociationContract>>("api/ShooterAssociation/FetchShooterAssociation", new ShooterRequest() { ShooterId = Id });
     }
 
     async Task LoadShooterAssociationInfo()
@@ -847,7 +847,7 @@
         var request = new ShooterRequest() { ShooterId = Id };
         associationNotAssigned = await Post<List<AssociationContract>>("api/Association/FetchAssociationsNotAssignedForShooter", request);
         associations = await Post<List<AssociationContract>>("api/Association/FetchAvailableAssociationsForShooter", request);
-        shooterAssociationInfos = await Post<List<ShooterAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
+        shooterAssociationInfos = await Post<List<UserAssociationInfoContract>>("api/ShooterAssociationInfo/FetchShooterAssociationInfo", request);
 
     }
 
@@ -862,7 +862,7 @@
         {
             var response = await Post<OkResponse>("/api/Authorization/ResetUserPassword", new ShooterRequest
                 {
-                    ShooterId = shooter.ShooterId
+                    ShooterId = shooter.UserId
                 });
             if (response != null)
             {
@@ -886,9 +886,9 @@
     {
         if (choice && shooter != null)
         {
-            await Post<ShooterContract>("/api/Shooter/DeleteShooter", new ShooterRequest
+            await Post<UserContract>("/api/Shooter/DeleteShooter", new ShooterRequest
                 {
-                    ShooterId = shooter.ShooterId
+                    ShooterId = shooter.UserId
                 });
             UriHelper.NavigateTo(RouteHelper.GetUrl<Shooters>());
         }
@@ -937,22 +937,22 @@
     }
     void NewClassification()
     {
-        associationToEdit = new ShooterAssociationCreateRequest { ShooterId = shooter.ShooterId };
+        associationToEdit = new UserAssociationCreateRequest { UserId = shooter.UserId };
         modalRefAssociationToEdit.Show();
     }
 
     void NewAssociationInfo()
     {
-        associationInfoToEdit = new ShooterAssociationInfoUpdateRequest { ShooterId = shooter.ShooterId };
+        associationInfoToEdit = new ShooterAssociationInfoUpdateRequest { ShooterId = shooter.UserId };
         modalRefAssociationInfoToEdit.Show();
     }
 
-    void EditAssociationInfo(ShooterAssociationInfoContract shooterAssociation)
+    void EditAssociationInfo(UserAssociationInfoContract shooterAssociation)
     {
         associationInfoToEdit = new ShooterAssociationInfoUpdateRequest
             {
-                ShooterAssociationInfoId = shooterAssociation.ShooterAssociationInfoId,
-                ShooterId = shooter.ShooterId,
+                ShooterAssociationInfoId = shooterAssociation.UserAssociationInfoId,
+                ShooterId = shooter.UserId,
                 AssociationId = shooterAssociation.Association.AssociationId,
                 CardNumber = shooterAssociation.CardNumber,
                 Categories = shooterAssociation.Categories,
@@ -963,12 +963,12 @@
         modalRefAssociationInfoToEdit.Show();
     }
 
-    void EditClassification(ShooterAssociationContract shooterAssociation)
+    void EditClassification(UserAssociationContract shooterAssociation)
     {
         SelectClassificationBasedOnAssociationId(shooterAssociation.Association.AssociationId);
-        associationToEdit = new ShooterAssociationCreateRequest
+        associationToEdit = new UserAssociationCreateRequest
             {
-                ShooterId = shooter.ShooterId,
+                UserId = shooter.UserId,
                 AssociationId = shooterAssociation.Association.AssociationId,
                 Classification = shooterAssociation.Classification,
                 Division = shooterAssociation.Division,
@@ -986,7 +986,7 @@
                 return;
             await validationInfos.ClearAll();
             associationInfoToEdit.Categories = categoriesEdit.ToList();
-            var response = await Post<ShooterAssociationInfoContract>(string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId) ? "/api/ShooterAssociationInfo/CreateShooterAssociationInfo" : "/api/ShooterAssociationInfo/UpdateShooterAssociationInfo", associationInfoToEdit);
+            var response = await Post<UserAssociationInfoContract>(string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId) ? "/api/ShooterAssociationInfo/CreateShooterAssociationInfo" : "/api/ShooterAssociationInfo/UpdateShooterAssociationInfo", associationInfoToEdit);
             if (response == null)
             {
                 return;
@@ -1011,11 +1011,11 @@
             }
             await LoadShooterClassifications();
         }
-        associationToEdit = new ShooterAssociationCreateRequest();
+        associationToEdit = new UserAssociationCreateRequest();
         await modalRefAssociationToEdit.Hide();
     }
 
-    void DeleteAssociationInfo(ShooterAssociationInfoContract association)
+    void DeleteAssociationInfo(UserAssociationInfoContract association)
     {
         if (association == null)
             return;
@@ -1023,7 +1023,7 @@
         modalRefAssociationInfoToDelete.Show();
     }
 
-    void DeleteClassification(ShooterAssociationContract association)
+    void DeleteClassification(UserAssociationContract association)
     {
         if (association == null)
             return;
@@ -1036,7 +1036,7 @@
         {
             var response = await Post<OkResponse>("/api/ShooterAssociationInfo/DeleteShooterAssociationInfo", new ShooterAssociationInfoRequest
                 {
-                    ShooterAssociationInfoId = associationInfoToDelete.ShooterAssociationInfoId
+                    ShooterAssociationInfoId = associationInfoToDelete.UserAssociationInfoId
                 });
             if (response is not { Status: true })
             {
@@ -1044,7 +1044,7 @@
             }
             await LoadShooterAssociationInfo();
         }
-        associationInfoToDelete = new ShooterAssociationInfoContract();
+        associationInfoToDelete = new UserAssociationInfoContract();
         await modalRefAssociationInfoToDelete.Hide();
     }
     private async Task HideModalAssociationToDelete(bool choice)
@@ -1053,7 +1053,7 @@
         {
             var response = await Post<OkResponse>("/api/ShooterAssociation/DeleteShooterAssociation", new ShooterAssociationRequest
                 {
-                    ShooterAssociationId = associationToDelete.ShooterAssociationId
+                    ShooterAssociationId = associationToDelete.UserAssociationId
                 });
             if (response is not { Status: true })
             {
@@ -1061,32 +1061,32 @@
             }
             await LoadShooterClassifications();
         }
-        associationToDelete = new ShooterAssociationContract();
+        associationToDelete = new UserAssociationContract();
         await modalRefAssociationToDelete.Hide();
     }
 
     void NewTeam()
     {
-        teamToEdit = new ShooterTeamCreateRequest { ShooterId = shooter.ShooterId };
+        teamToEdit = new ShooterTeamCreateRequest { ShooterId = shooter.UserId };
         modalRefTeamToEdit.Show();
     }
-    void EditTeam(ShooterTeamContract shooterTeam)
+    void EditTeam(UserTeamContract shooterTeam)
     {
 
         teamToEdit = new ShooterTeamCreateRequest
             {
-                ShooterId = shooter.ShooterId,
+                ShooterId = shooter.UserId,
                 TeamId = shooterTeam.Team.TeamId,
                 RegistrationDate = shooterTeam.RegistrationDate
             };
         modalRefTeamToEdit.Show();
     }
-    void ApproveTeam(ShooterTeamContract shooterTeam)
+    void ApproveTeam(UserTeamContract shooterTeam)
     {
 
         teamToEdit = new ShooterTeamCreateRequest
             {
-                ShooterId = shooter.ShooterId,
+                ShooterId = shooter.UserId,
                 TeamId = shooterTeam.Team.TeamId,
                 RegistrationDate = shooterTeam.RegistrationDate
             };
@@ -1112,7 +1112,7 @@
         await modalRefTeamToEdit.Hide();
         await modalRefTeamToApprove.Hide();
     }
-    void DeleteTeam(ShooterTeamContract team)
+    void DeleteTeam(UserTeamContract team)
     {
         if (team == null)
             return;
@@ -1126,7 +1126,7 @@
             var response = await Post<GroupContract>("/api/ShooterTeam/DeleteShooterTeam", new ShooterTeamDeleteRequest
                 {
                     TeamId = teamToDelete.Team.TeamId,
-                    ShooterId = shooter.ShooterId
+                    ShooterId = shooter.UserId
                 });
             if (response == null)
             {
@@ -1134,7 +1134,7 @@
             }
             await LoadShooterTeams();
         }
-        teamToDelete = new ShooterTeamContract();
+        teamToDelete = new UserTeamContract();
         await modalRefTeamToDelete.Hide();
     }
 }

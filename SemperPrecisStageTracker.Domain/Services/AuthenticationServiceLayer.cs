@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="userName">User name</param>
         /// <param name="password">Password</param>
         /// <returns>Returns signed in user or null</returns>
-        public async Task<Shooter> LogIn(string userName, string password)
+        public async Task<User> LogIn(string userName, string password)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
@@ -89,7 +89,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="entity">user entity</param>
         /// <param name="userRoleKey">user role key</param>
         /// <returns>User Entity</returns>
-        public IList<ValidationResult> CreateUser(Shooter entity)
+        public IList<ValidationResult> CreateUser(User entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -143,7 +143,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="entity">user entity</param>
         /// <param name="userRoleKey">user role key</param>
         /// <returns>User Entity</returns>
-        public IList<ValidationResult> UpdateUser(Shooter entity)
+        public IList<ValidationResult> UpdateUser(User entity)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -196,7 +196,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">entity to check</param>
         /// <returns>List of validation results</returns>
-        private IList<ValidationResult> CheckUserValidation(Shooter entity)
+        private IList<ValidationResult> CheckUserValidation(User entity)
         {
             var validations = new List<ValidationResult>();
             // controllo esistenza customer con stesso nome
@@ -217,7 +217,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="user">User</param>
         /// <param name="newPassword">New password</param>
         /// <returns>Returns signed in user or null</returns>
-        public IList<ValidationResult> UpdateUserPassword(Shooter user, string newPassword)
+        public IList<ValidationResult> UpdateUserPassword(User user, string newPassword)
         {
             //Validazione argomenti
             if (user == null) throw new ArgumentNullException(nameof(user));
@@ -503,7 +503,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>Return user or null</returns>
-        public Shooter GetUserById(string id)
+        public User GetUserById(string id)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
@@ -519,7 +519,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>Return user or null</returns>
-        public Shooter GetUserByRestorePasswordAlias(string alias)
+        public User GetUserByRestorePasswordAlias(string alias)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(alias)) throw new ArgumentNullException(nameof(alias));
@@ -535,7 +535,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userName">User name</param>
         /// <returns>Return user or null</returns>
-        public Shooter GetUserByUserName(string userName)
+        public User GetUserByUserName(string userName)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));

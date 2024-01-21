@@ -44,10 +44,10 @@
                             {
                                 <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger" class="me-2"/>
                             }
-                            <NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId }))">@shooter.CompleteName</NavLink>
+                            <NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.UserId }))">@shooter.CompleteName</NavLink>
                         </TableRowHeader>
                         <TableRowCell>@shooter.Username</TableRowCell>
-                        @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooter.ShooterId))
+                        @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooter.UserId))
                 {
                     <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
                 }
@@ -58,17 +58,17 @@
                         <TableRowCell>
                             <Buttons Role="ButtonsRole.Toolbar">
                                 <Buttons Margin="Margin.Is2.FromEnd">
-                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, shooter.ShooterId))
+                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, shooter.UserId))
                                     {
-                                        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new { id = shooter.ShooterId }))"><Icon Name="IconName.Pen"/></Button>
+                                        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new { id = shooter.UserId }))"><Icon Name="IconName.Pen"/></Button>
                                     }
-                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooter.ShooterId))
+                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters.ShowShooters.EditShooter, shooter.UserId))
                                     {
-                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.ShooterId }))"><Icon Name="IconName.Search"/></Button>
+                                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.UserId }))"><Icon Name="IconName.Search"/></Button>
                                     }
                                 </Buttons>
                                 <Buttons>
-                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters, shooter.ShooterId))
+                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageShooters, shooter.UserId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(shooter))"><Icon Name="IconName.Delete"/></Button>
                                     }
@@ -117,7 +117,7 @@
     ElementReference searchInput;
     public string SearchText = string.Empty;
     [Parameter]
-    public IList<ShooterContract> Shooters { get; set; } = new List<ShooterContract>();
+    public IList<UserContract> Shooters { get; set; } = new List<UserContract>();
 
     [Parameter]
     public bool TeamDetailView { get; set; } = false;
@@ -128,7 +128,7 @@
     [Parameter]
     public EventCallback<string> DeleteShooterCallback { get; set; }
 
-    IList<ShooterContract> FilteredList
+    IList<UserContract> FilteredList
     {
         get
         {
@@ -140,7 +140,7 @@
     }
 
     private Modal modalRefEntityToDelete = default!;
-    ShooterContract entityToDelete = new();
+    UserContract entityToDelete = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -152,7 +152,7 @@
         }
     }
 
-    void DeleteEntity(ShooterContract entity)
+    void DeleteEntity(UserContract entity)
     {
         if (entity == null)
             return;
@@ -164,9 +164,9 @@
     {
         if (choice && entityToDelete != null)
         {
-            await DeleteShooterCallback.InvokeAsync(entityToDelete.ShooterId);
+            await DeleteShooterCallback.InvokeAsync(entityToDelete.UserId);
         }
-        entityToDelete = new ShooterContract();
+        entityToDelete = new UserContract();
         await modalRefEntityToDelete.Hide();
     }
 

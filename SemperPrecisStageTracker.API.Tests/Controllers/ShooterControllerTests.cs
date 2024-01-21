@@ -17,7 +17,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     [TestClass]
     public class ShooterControllerTests : ApiControllerTestsBase<ShooterController, SimpleScenario>
     {
-        protected override Shooter GetIdentityUser() => GetAdminUser();
+        protected override User GetIdentityUser() => GetAdminUser();
 
         [TestMethod]
         public async Task ShouldFetchAllShootersBeOkHavingElements()
@@ -29,7 +29,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.FetchAllShooters();
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<IList<ShooterContract>>(response);
+            var parsed = ParseExpectedOk<IList<UserContract>>(response);
             Assert.AreEqual(countBefore, parsed.Data.Count);
         }
 
@@ -68,7 +68,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.Shooters.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
                           && parsed.Data.Email == request.Email
@@ -115,7 +115,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
             Assert.IsTrue(parsed != null);
             Assert.AreEqual(countBefore, countAfter);
         }
@@ -178,7 +178,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countAfter = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
             Assert.IsTrue(parsed != null);
             Assert.AreEqual(countBefore + 2, countAfter);
         }
@@ -192,7 +192,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter does not exists");
 
 
-            var existingData = Scenario.ShooterDatas.FirstOrDefault(x=>x.ShooterId == existing.Id);
+            var existingData = Scenario.ShooterDatas.FirstOrDefault(x=>x.UserId == existing.Id);
             if (existingData == null)
                 Assert.Fail("Shooter data not found");
 
@@ -210,7 +210,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.GetShooter(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
             var countAfter = Scenario.Shooters.Count;
@@ -268,7 +268,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.UpdateShooter(request);
 
             //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
             var countAfter = Scenario.Shooters.Count;
@@ -310,7 +310,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter does not exists");
 
             //Recupero una Shooter esistente
-            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.ShooterId);
+            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.UserId);
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
@@ -396,13 +396,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.DeleteShooter(request);
 
             //Parsing della risposta
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
             var countAfter = Scenario.Shooters.Count;
 
             Assert.IsTrue(
-                parsed.Data.ShooterId == existing.Id);
+                parsed.Data.UserId == existing.Id);
             Assert.AreEqual(countBefore - 1, countAfter);
         }
 
@@ -430,7 +430,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.DeleteShooter(request);
 
             //Parsing della risposta
-            var parsed = ParseExpectedOk<ShooterContract>(response);
+            var parsed = ParseExpectedOk<UserContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
             var countPermissionAfter = Scenario.Permissions.Count(x =>
@@ -438,7 +438,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 x.Name == nameof(Permissions.EditShooter));
 
             Assert.IsTrue(
-                parsed.Data.ShooterId == existing.Id);
+                parsed.Data.UserId == existing.Id);
 
             //Assert.AreEqual(0, countPermissionAfter);
 

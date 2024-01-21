@@ -1,59 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-	  <Nullable>enable</Nullable>
-	  <ImplicitUsings>enable</ImplicitUsings>
-    <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
-    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+		<ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
-    <UserSecretsId>c9affa99-8b4b-4380-9c44-4d869955bc4b</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<BlazorLinkOnBuild Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
+		<UserSecretsId>c9affa99-8b4b-4380-9c44-4d869955bc4b</UserSecretsId>
+	</PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-      <RunAOTCompilation>true</RunAOTCompilation>
-	  <PublishTrimmed>true</PublishTrimmed>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Content Remove="compilerconfig.json" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<RunAOTCompilation>true</RunAOTCompilation>
+		<PublishTrimmed>true</PublishTrimmed>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Blazorise.Bootstrap5" Version="1.4.0" />
-    <PackageReference Include="Blazorise.Components" Version="1.4.0" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.0" />
-    <PackageReference Include="Blazorise.Snackbar" Version="1.4.0" />
-    <PackageReference Include="DnetIndexedDb" Version="2.4.1" />
-    <PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />    
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
-  </ItemGroup>
-	
+	<ItemGroup>
+		<Content Remove="compilerconfig.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blazorise.Bootstrap5" Version="1.4.0" />
+		<PackageReference Include="Blazorise.Components" Version="1.4.0" />
+		<PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.4.0" />
+		<PackageReference Include="Blazorise.Snackbar" Version="1.4.0" />
+		<PackageReference Include="DnetIndexedDb" Version="2.4.1" />
+		<PackageReference Include="Fluxor.Blazor.Web" Version="5.9.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.2.0" />
+		<PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
+	</ItemGroup>
+
 	<ItemGroup Condition="$(Configuration)=='Debug'">
-    <PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.1" />
-  </ItemGroup>
+		<PackageReference Include="Fluxor.Blazor.Web.ReduxDevTools" Version="5.9.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SemperPrecisStageTracker.Blazor.Components\SemperPrecisStageTracker.Blazor.Components.csproj" />
-    <ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />
-    <ProjectReference Include="..\SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />
+		<ProjectReference Include="..\SemperPrecisStageTracker.Shared\SemperPrecisStageTracker.Shared.csproj" />
+		<ProjectReference Include="..\SemperPrecisStageTracker.Blazor.Shared\SemperPrecisStageTracker.Blazor.Shared.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
-  </ItemGroup>
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="compilerconfig.json" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="compilerconfig.json" />
+	</ItemGroup>
 
 </Project>

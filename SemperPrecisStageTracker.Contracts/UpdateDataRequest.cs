@@ -4,6 +4,6 @@ namespace SemperPrecisStageTracker.Contracts;
 
 public class UpdateDataRequest
 {
-    public IList<ShooterStageStringContract> ShooterStages { get; set; } = new List<ShooterStageStringContract>();
+    public IList<UserStageStringContract> ShooterStages { get; set; } = new List<UserStageStringContract>();
     public IList<EditedEntityRequest> EditedEntities { get; set; } = new List<EditedEntityRequest>();
 }
