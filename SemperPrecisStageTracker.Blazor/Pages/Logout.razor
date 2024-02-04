@@ -1,10 +1,9 @@
 ﻿@page "/logout"
 @inject IAuthenticationService AuthenticationService
 
-
 @code {
     protected override void OnInitialized()
     {
-        AuthenticationService.Logout();
+        AuthenticationService.Logout(RouteHelper.GetUrl<Login>());
     }
 }

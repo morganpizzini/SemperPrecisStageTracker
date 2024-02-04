@@ -21,7 +21,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateTeamHolderBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.TeamHolders.Select(x => x.UserId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            var existing = Scenario.Users.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
                 Assert.Inconclusive("No shooter without association exists");

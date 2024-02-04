@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using SemperPrecisStageTracker.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2;
 
@@ -28,21 +29,36 @@ public class UsersController : ApiControllerBase
         _emailSender = emailSender;
     }
     /// <summary>
-    /// Fetch list of all shooters
+    /// Fetch list of all users
     /// </summary>
     /// <returns>Returns action result</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IList<UserContract>), 200)]
-    public Task<IActionResult> FetchUsers()
+    public Task<IActionResult> FetchUsers(UserFetchRequest request)
     {
         //Recupero la lista dal layer
-        var entities = BasicLayer.FetchAllShooters();
-        var shooterIds = entities.Select(x => x.Id).ToList();
+        var entities = BasicLayer.FetchAllUsers().AsQueryable();
+        var total = entities.Count();
 
-        var shooterDatas = BasicLayer.FetchShooterDataByShooterIds(shooterIds);
+        if(request.Skip.HasValue)
+            entities = entities.Skip(request.Skip.Value);
+
+        if(request.Take.HasValue)
+            entities = entities.Take(request.Take.Value);
+
+        var userIds = entities.Select(x => x.Id).ToList();
+
+        var userDatas = BasicLayer.FetchUserDataByUserIds(userIds);
 
         //Ritorno i contratti
-        return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooterDatas.FirstOrDefault(y => y.UserId == x.Id), null, null, false)));
+        return Reply(
+            new BaseResponse<IList<UserContract>>(
+                entities.As(x => ContractUtils.GenerateContract(x, userDatas.FirstOrDefault(y => y.UserId == x.Id), null, null, false)),
+                total,
+                request.Take.HasValue ? 
+                    Url.Action(action: nameof(FetchUsers), controller: "User", new { take = request.Take, skip = request.Take + (request?.Skip ?? 0)}) : 
+                    string.Empty
+            ));
     }
     /// <summary>
     /// Get user by id
@@ -59,7 +75,7 @@ public class UsersController : ApiControllerBase
         if (entity == null)
             return NotFound();
 
-        var data = BasicLayer.GetShooterData(entity.Id);
+        var data = BasicLayer.GetUserData(entity.Id);
 
         //Serializzazione e conferma
         return Ok(ContractUtils.GenerateContract(entity, data));
@@ -71,9 +87,9 @@ public class UsersController : ApiControllerBase
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpPost]
-    [ApiAuthorizationFilter(Permissions.ManageShooters, Permissions.CreateShooters)]
+    [ApiAuthorizationFilter(Permissions.ManageUsers, Permissions.CreateUser)]
     [ProducesResponseType(201)]
-    public async Task<IActionResult> CreateShooter([AsParameters]ShooterCreateRequest request)
+    public async Task<IActionResult> CreateUser([AsParameters]UserCreateRequest request)
     {
         //Creazione modello richiesto da admin
         var model = new User
@@ -101,7 +117,7 @@ public class UsersController : ApiControllerBase
         };
 
         //Invocazione del service layer
-        var validations = await BasicLayer.CreateShooter(model, data, PlatformUtils.GetIdentityUserId(User));
+        var validations = await BasicLayer.CreateUser(model, data, PlatformUtils.GetIdentityUserId(User));
 
         if (validations.Count > 0)
             return BadRequest(validations);
@@ -111,14 +127,14 @@ public class UsersController : ApiControllerBase
     }
 
     /// <summary>
-    /// Updates existing shooter
+    /// Updates existing user
     /// </summary>
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpPut("{id}")]
-    [ApiAuthorizationFilter(Permissions.EditShooter, Permissions.ManageShooters)]
+    [ApiAuthorizationFilter(Permissions.EditUser, Permissions.ManageUsers)]
     [ProducesResponseType(201)]
-    public async Task<IActionResult> UpdateShooter(BaseRequestId<ShooterUpdateRequest> request)
+    public async Task<IActionResult> UpdateUser(BaseRequestId<UserUpdateRequest> request)
     {
         //Recupero l'elemento dal business layer
         var entity = AuthorizationLayer.GetUserById(request.Id);
@@ -126,7 +142,7 @@ public class UsersController : ApiControllerBase
         if(entity == null)
             return NotFound();
 
-        var data = BasicLayer.GetShooterData(entity.Id);
+        var data = BasicLayer.GetUserData(entity.Id);
 
         //modifica solo se admin o se utente richiedente è lo stesso che ha creato
         if (entity == null || data == null)
@@ -152,7 +168,7 @@ public class UsersController : ApiControllerBase
         data.FiscalCode = request.Body.FiscalCode;
 
         //Salvataggio
-        var validations = await BasicLayer.UpdateShooter(entity, data, PlatformUtils.GetIdentityUserId(User));
+        var validations = await BasicLayer.UpdateUser(entity, data, PlatformUtils.GetIdentityUserId(User));
         if (validations.Count > 0)
             return BadRequest(validations);
 
@@ -161,14 +177,14 @@ public class UsersController : ApiControllerBase
     }
 
     /// <summary>
-    /// Deletes existing shooter on platform
+    /// Deletes existing user on platform
     /// </summary>
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpDelete("{id}")]
-    [ApiAuthorizationFilter(Permissions.ManageShooters, Permissions.ShooterDelete)]
+    [ApiAuthorizationFilter(Permissions.ManageUsers, Permissions.UserDelete)]
     [ProducesResponseType(201)]
-    public async Task<IActionResult> DeleteShooter(BaseRequestId request)
+    public async Task<IActionResult> DeleteUser(BaseRequestId request)
     {
         //Recupero l'elemento dal business layer
         var entity = AuthorizationLayer.GetUserById(request.Id);
@@ -180,7 +196,7 @@ public class UsersController : ApiControllerBase
         }
 
         //Invocazione del service layer
-        var validations = await BasicLayer.DeleteShooter(entity, PlatformUtils.GetIdentityUserId(User));
+        var validations = await BasicLayer.DeleteUser(entity, PlatformUtils.GetIdentityUserId(User));
         if (validations.Count > 0)
             return BadRequest(validations);
 
@@ -207,7 +223,7 @@ public class UsersController : ApiControllerBase
         {
             return NotFound();
         }
-        var validations = await SetPassworAliasOnShooter(user, userId);
+        var validations = await SetPassworAliasOnUser(user, userId);
 
         if (validations.Count > 0)
         {
@@ -218,13 +234,13 @@ public class UsersController : ApiControllerBase
         return NoContent();
     }
 
-    private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(User user, string userId = null)
+    private async Task<IList<ValidationResult>> SetPassworAliasOnUser(User user, string userId = null)
     {
-        var data = BasicLayer.GetShooterData(user.Id);
+        var data = BasicLayer.GetUserData(user.Id);
 
         user.RestorePasswordAlias = Guid.NewGuid().ToString();
 
-        var validations = await BasicLayer.UpdateShooter(user, data, userId, false);
+        var validations = await BasicLayer.UpdateUser(user, data, userId, false);
 
         if (validations.Count > 0)
         {
@@ -262,7 +278,7 @@ public class UsersController : ApiControllerBase
     /// <param name="request">Request</param>
     /// <returns>Returns action result</returns>
     [HttpPut("{id}/password")]
-    [ApiAuthorizationFilter(Permissions.ManageShooters)]
+    [ApiAuthorizationFilter(Permissions.ManageUsers)]
     [ProducesResponseType(201)]
     public IActionResult UpdateUserPassword(BaseRequestId<UserPasswordUpdateRequest> request)
     {
@@ -287,7 +303,7 @@ public class UsersController : ApiControllerBase
     /// <returns>Returns action result</returns>
     [HttpPost("{id}/profile")]
     [ProducesResponseType(typeof(UserContract), 200)]
-    public IActionResult UpdateProfile(BaseRequestId<UserUpdateRequestV2> request)
+    public IActionResult UpdateProfile(BaseRequestId<UserProfileUpdateRequestV2> request)
     {
         //Recupero l'elemento dal business layer
         var entity = AuthorizationLayer.GetUserById(request.Id);

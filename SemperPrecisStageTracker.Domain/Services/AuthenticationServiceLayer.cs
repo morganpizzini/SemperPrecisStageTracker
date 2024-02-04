@@ -27,7 +27,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public const string PlatformAdministratorUserName = "morgan";
 
         #region Private fields
-        private readonly IShooterRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IPermissionsRoleRepository _permissionRoleRepository;
         private readonly IRoleRepository _roleRepository;
@@ -48,7 +48,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             : base(dataSession)
         {
             //Inizializzazioni
-            _userRepository = dataSession.ResolveRepository<IShooterRepository>();
+            _userRepository = dataSession.ResolveRepository<IUserRepository>();
             _permissionRepository = dataSession.ResolveRepository<IPermissionRepository>();            
             _permissionRoleRepository = dataSession.ResolveRepository<IPermissionsRoleRepository>();
             _roleRepository = dataSession.ResolveRepository<IRoleRepository>();

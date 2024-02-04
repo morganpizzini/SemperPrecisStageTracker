@@ -27,7 +27,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of shooter
         /// </summary>
-        IList<User> Shooters { get; set; }
+        IList<User> Users { get; set; }
 
         /// <summary>
         /// List of shooter

@@ -45,7 +45,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
             //e si possono eseguire variazioni di situazione in maniera centalizzata
 
             //Estrazione dell'utente con username
-            var user = GetScenario().Shooters
+            var user = GetScenario().Users
                 .SingleOrDefault(u => u.Username.ToLower() == username.ToLower() || u.Email.ToLower() == username.ToLower());
 
             //Se non è stato trovato, ritorno unauthorized
@@ -72,7 +72,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             //Verifico univocità dello username
-            var result = GetScenario().Shooters
+            var result = GetScenario().Users
               .SingleOrDefault(u => u.Username.ToLower() == user.Username.ToLower());
 
             //Se è stato trovato, ritorno errore
@@ -80,7 +80,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
                 return Task.FromResult(HttpResponseMessage<User>.BadRequest($"Sign up not valid for username '{user.Username}'"));
 
             //Verifico univocità dello username
-            result = GetScenario().Shooters
+            result = GetScenario().Users
               .SingleOrDefault(u => u.Email.ToLower() == user.Email.ToLower());
 
             //Se è stato trovato, ritorno errore
@@ -110,7 +110,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
             //Creazione della response
             var response = new IntResponse
             {
-                Value = GetScenario().Shooters.Count
+                Value = GetScenario().Users.Count
             };
 
             //In tutti gli altri casi, confermo
@@ -129,7 +129,7 @@ namespace SemperPrecisStageTracker.Mocks.Clients
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
 
             //Recupero l'utente dato il nome
-            var response = GetScenario().Shooters
+            var response = GetScenario().Users
                 .SingleOrDefault(e => e.Username.ToLower() == userName.ToLower());
 
             //Se non è trovato, not found

@@ -11,3 +11,11 @@ public class UserRoleCreateRequestV2 : BaseRequestId
     [FromRoute]
     public string EntityId { get; set; } = string.Empty;
 }
+
+public class UserFetchRequest
+{
+    [FromQuery]
+    public int? Skip { get; set; }
+    [FromQuery]
+    public int? Take { get; set; }
+}

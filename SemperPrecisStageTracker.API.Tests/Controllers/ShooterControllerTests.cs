@@ -23,7 +23,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldFetchAllShootersBeOkHavingElements()
         {
             //conteggio esistenti generici o inseriti dall'utente
-            var countBefore = Scenario.Shooters.Count();
+            var countBefore = Scenario.Users.Count();
 
             //Invoke del metodo
             var response = await Controller.FetchAllShooters();
@@ -37,15 +37,16 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterBeOkHavingProvidedData()
         {
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
-            var request = new ShooterCreateRequest
+            var request = new UserCreateRequest
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
                 FirstName = RandomizationUtils.GenerateRandomString(10),
                 BirthDate = DateTime.Now,
+                Gender = "M",
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicence = RandomizationUtils.GenerateRandomString(10),
                 FirearmsLicenceExpireDate = DateTime.Now,
@@ -65,7 +66,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<UserContract>(response);
@@ -75,6 +76,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.LastName == request.LastName
                            && parsed.Data.FirstName == request.FirstName
                             && parsed.Data.BirthDate == request.BirthDate
+                            && parsed.Data.Gender == request.Gender
                             && parsed.Data.Username == request.Username
                             && parsed.Data.FirearmsLicence == request.FirearmsLicence
                             && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
@@ -99,7 +101,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.Permissions.Count;
 
             //Composizione della request
-            var request = new ShooterCreateRequest
+            var request = new UserCreateRequest
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
@@ -126,11 +128,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageShooters.CreateShooters));
 
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
             var countBeforePermission = Scenario.Permissions.Count;
 
             //Composizione della request
-            var request = new ShooterCreateRequest
+            var request = new UserCreateRequest
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
@@ -143,7 +145,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
             var countAfterPermission = Scenario.Permissions.Count;
 
             //Parsing della risposta e assert
@@ -162,7 +164,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var countBefore = Scenario.UserPermissions.Count;
 
             //Composizione della request
-            var request = new ShooterCreateRequest
+            var request = new UserCreateRequest
             {
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 LastName = RandomizationUtils.GenerateRandomString(10),
@@ -187,7 +189,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldGetShooterBeOkHavingProvidedData()
         {
             //Recupero una Shooter esistente
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
@@ -197,7 +199,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Fail("Shooter data not found");
 
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
 
             //Composizione della request
@@ -213,11 +215,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
             
             Assert.IsTrue(parsed != null
                           && parsed.Data.Email == existing.Email
                           && parsed.Data.LastName == existing.LastName
+                          && parsed.Data.Gender == existing.Gender
                           && parsed.Data.FirstName == existing.FirstName
                           && parsed.Data.BirthDate == existing.BirthDate
                           && parsed.Data.FirearmsLicence == existingData.FirearmsLicence
@@ -233,16 +236,16 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldUpdateShooterBeOkHavingProvidedData()
         {
             //Recupero una Shooter esistente
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
 
             //Composizione della request
-            var request = new ShooterUpdateRequest
+            var request = new UserUpdateRequest
             {
                 ShooterId = existing.Id,
                 Email = RandomizationUtils.GenerateRandomEmail(),
@@ -271,7 +274,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
 
             Assert.IsTrue(parsed != null
@@ -279,6 +282,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.LastName == request.LastName
                           && parsed.Data.FirstName == request.FirstName
                           && parsed.Data.BirthDate == request.BirthDate
+                          && parsed.Data.Gender == request.Gender
                           && parsed.Data.FirearmsLicence == request.FirearmsLicence
                           && parsed.Data.FirearmsLicenceExpireDate == request.FirearmsLicenceExpireDate
                           && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate
@@ -302,7 +306,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldUpdateShooterBeBadRequestHavingProvidedSameFirearmsLicence()
         {
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
             //Recupero una Shooter esistente
             var existing = Scenario.ShooterDatas.FirstOrDefault();
 
@@ -310,13 +314,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Assert.Inconclusive("Shooter does not exists");
 
             //Recupero una Shooter esistente
-            var existingToUpdate = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.UserId);
+            var existingToUpdate = Scenario.Users.FirstOrDefault(x => x.Id != existing.UserId);
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
             //Composizione della request
-            var request = new ShooterUpdateRequest
+            var request = new UserUpdateRequest
             {
                 ShooterId = existingToUpdate.Id,
                 FirearmsLicence = existing.FirearmsLicence,
@@ -334,7 +338,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedBadRequest(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             Assert.IsNotNull(parsed);
             Assert.IsTrue(parsed.Data.Any());
@@ -347,10 +351,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldUpdateShooterBeNotFoundHavingProvidedWrongId()
         {
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
-            var request = new ShooterUpdateRequest
+            var request = new UserUpdateRequest
             {
                 ShooterId = RandomizationUtils.GenerateRandomString(10),
                 Email = RandomizationUtils.GenerateRandomEmail(),
@@ -367,7 +371,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedNotFound(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
 
             Assert.IsTrue(parsed != null
@@ -381,13 +385,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldDeleteShooterBeOkHavingDeletedElement()
         {
             //Recupero una Shooter esistente non utilizzato
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
 
             if (existing == null)
                 Assert.Inconclusive("Shooter does not exists");
 
             //Conteggio gli elementi prima della cancellazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
             var request = new ShooterRequest { ShooterId = existing.Id };
@@ -399,7 +403,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             Assert.IsTrue(
                 parsed.Data.UserId == existing.Id);
@@ -410,13 +414,13 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldDeleteShooterBeOkAndDeletePermissions()
         {
             var permission =
-                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditShooter));
+                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditUser));
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
 
             //Recupero una Shooter esistente non utilizzato
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
             //var existing = Scenario.Shooters.FirstOrDefault(x => x.Id == permission.EntityId);
 
             if (existing == null)
@@ -435,7 +439,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi dopo la cancellazione
             var countPermissionAfter = Scenario.Permissions.Count(x =>
                 //x.EntityId == permission.EntityId &&
-                x.Name == nameof(Permissions.EditShooter));
+                x.Name == nameof(Permissions.EditUser));
 
             Assert.IsTrue(
                 parsed.Data.UserId == existing.Id);
@@ -449,7 +453,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         {
 
             //Conteggio gli elementi prima della cancellazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
             var request = new ShooterRequest { ShooterId = RandomizationUtils.GenerateRandomString(10) };
@@ -461,7 +465,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedNotFound(response);
 
             //Conteggio gli elementi dopo la cancellazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             Assert.IsTrue(parsed != null &&
                           parsed.Data == null);

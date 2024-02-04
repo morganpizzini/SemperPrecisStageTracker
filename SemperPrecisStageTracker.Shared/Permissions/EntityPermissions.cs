@@ -44,7 +44,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("ManageMatches")]
         ManageMatches = 901,
         [Description("ManageShooters")]
-        ManageShooters = 902,
+        ManageUsers = 902,
         [Description("ManageTeams")]
         ManageTeams = 903,
         [Description("ManageAssociations")]
@@ -56,7 +56,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("CreateMatches")]
         CreateMatches = 907,
         [Description("CreateShooters")]
-        CreateShooters = 908,
+        CreateUser = 908,
         [Description("CreateTeams")]
         CreateTeams = 909,
         [Description("CreateStages")]
@@ -72,9 +72,9 @@ namespace SemperPrecisStageTracker.Shared.Permissions
 
         // entity
         [Description("EditShooter")]
-        EditShooter = 1,
+        EditUser = 1,
         [Description("ShooterDelete")]
-        ShooterDelete = 2,
+        UserDelete = 2,
         [Description("EditTeam")]
         EditTeam = 5,
         [Description("AssociationDelete")]
@@ -171,21 +171,21 @@ namespace SemperPrecisStageTracker.Shared.Permissions
 
 
         public IPermissionInterface ManageMatches => AddPermission(Permissions.ManageMatches);
-        public IPermissionInterface ManageShooters => AddPermission(Permissions.ManageShooters);
+        public IPermissionInterface ManageShooters => AddPermission(Permissions.ManageUsers);
         public IPermissionInterface ManageTeams => AddPermission(Permissions.ManageTeams);
         public IPermissionInterface ManageAssociations => AddPermission(Permissions.ManageAssociations);
         public IPermissionInterface ManagePlaces => AddPermission(Permissions.ManagePlaces);
         public IPermissionInterface ManageStages => AddPermission(Permissions.ManageStages);
         public IPermissionInterface CreateMatches => AddPermission(Permissions.CreateMatches);
-        public IPermissionInterface CreateShooters => AddPermission(Permissions.CreateShooters);
+        public IPermissionInterface CreateShooters => AddPermission(Permissions.CreateUser);
         public IPermissionInterface CreateTeams => AddPermission(Permissions.CreateTeams);
         public IPermissionInterface CreateStages => AddPermission(Permissions.CreateStages);
         public IPermissionInterface CreateAssociations => AddPermission(Permissions.CreateAssociations);
         public IPermissionInterface CreatePlaces => AddPermission(Permissions.CreatePlaces);
         public IPermissionInterface ShowShooters => AddPermission(Permissions.ShowShooters);
         public IPermissionInterface ManagePermissions => AddPermission(Permissions.ManagePermissions);
-        public IPermissionInterface EditShooter => AddPermission(Permissions.EditShooter);
-        public IPermissionInterface ShooterDelete => AddPermission(Permissions.ShooterDelete);
+        public IPermissionInterface EditShooter => AddPermission(Permissions.EditUser);
+        public IPermissionInterface ShooterDelete => AddPermission(Permissions.UserDelete);
         public IPermissionInterface EditTeam => AddPermission(Permissions.EditTeam);
         public IPermissionInterface AssociationEdit => AddPermission(Permissions.AssociationEdit);
         public IPermissionInterface EditPlace => AddPermission(Permissions.EditPlace);

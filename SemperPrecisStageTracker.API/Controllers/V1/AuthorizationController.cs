@@ -95,6 +95,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Username = request.Username,
                 Password = request.Password,
                 BirthDate = request.BirthDate,
+                Gender = request.Gender,
                 Email = request.Email,
                 FirstName = request.FirstName,
                 LastName = request.LastName
@@ -201,11 +202,11 @@ namespace SemperPrecisStageTracker.API.Controllers
 
         private async Task<IList<ValidationResult>> SetPassworAliasOnShooter(User user, string userId = null)
         {
-            var data = BasicLayer.GetShooterData(user.Id);
+            var data = BasicLayer.GetUserData(user.Id);
 
             user.RestorePasswordAlias = Guid.NewGuid().ToString();
 
-            var validations = await BasicLayer.UpdateShooter(user, data, userId,false);
+            var validations = await BasicLayer.UpdateUser(user, data, userId,false);
 
             if (validations.Count > 0)
             {

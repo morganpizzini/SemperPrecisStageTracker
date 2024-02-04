@@ -305,6 +305,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
                 BirthDate = entity.BirthDate,
+                Gender = entity.Gender,
                 Email = entity.Email,
                 Username = entity.Username,
                 

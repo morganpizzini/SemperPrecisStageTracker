@@ -37,7 +37,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             // not a match director
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooterIds = Scenario.Shooters.Where(x =>
+            var shooterIds = Scenario.Users.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id)).Select(x => x.Id).ToList();
 
             if (shooterIds.Count < 0)
@@ -88,7 +88,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             // not a match director
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooters = Scenario.Shooters.Where(x =>
+            var shooters = Scenario.Users.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id)).ToList();
 
             if (shooters.Count < 2)
@@ -259,7 +259,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             // not a match director
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
 
             if (shooter == null)
@@ -323,7 +323,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             // not a match director
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
 
             if (shooter == null)
@@ -398,7 +398,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterInStages = Scenario.ShooterSOStages.Where(x => matchStageIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterInStages.Contains(x.Id));
 
             if (shooter == null)
@@ -523,7 +523,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
-            var shooterIds = Scenario.Shooters.Where(x =>
+            var shooterIds = Scenario.Users.Where(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id)).Select(x => x.Id).ToList();
 
             if (shooterIds.Count == 0)
@@ -556,7 +556,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var shooterAssociations = Scenario.ShooterAssociationInfos.Where(x => x.SafetyOfficier && x.AssociationId == existingAssociation.Id)
                 .Select(x => x.UserId).ToList();
 
-            var shooterIds = Scenario.Shooters.Where(x =>
+            var shooterIds = Scenario.Users.Where(x =>
                 shooterAssociations.Contains(x.Id)).Select(x => x.Id).ToList();
 
             if (shooterIds.Count == 0)
@@ -598,7 +598,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
 
             if (shooter == null)
@@ -640,7 +640,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && shooterMatches.Contains(x.Id));
 
             if (shooter == null)
@@ -686,7 +686,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterSO = Scenario.ShooterSOStages.Where(x => matchStagesIds.Contains(x.StageId)).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
 
             if (shooter == null)
@@ -728,7 +728,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id));
 
             if (shooter == null)
@@ -770,7 +770,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             var shooterMatches = Scenario.ShooterMatches.Where(x => x.MatchId == existingMatch.Id).Select(x => x.UserId).ToList();
 
-            var shooter = Scenario.Shooters.FirstOrDefault(x =>
+            var shooter = Scenario.Users.FirstOrDefault(x =>
                 shooterAssociations.Contains(x.Id) && shooterMatches.Contains(x.Id));
 
             if (shooter == null)

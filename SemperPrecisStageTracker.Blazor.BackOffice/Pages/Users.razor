@@ -1,0 +1,65 @@
+﻿@page "/users"
+@inherits SemperPrecisBaseComponent
+@inject NavigationManager UriHelper
+<PageTitle>Users</PageTitle>
+
+<h1>Users</h1>
+
+<DataGrid TItem="UserContract"
+          Data="data"
+          TotalItems="total"
+          ReadData="OnReadData"
+          Responsive
+          ShowPager
+          RowClicked="OnRowClick"
+          PageSize="pageSize"
+          ShowPageSizes>
+    <DataGridColumns>
+        <DataGridColumn TextAlignment="TextAlignment.Center" TItem="UserContract" Field="@nameof( UserContract.UserId )" Caption="#" Width="60px" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.FirstName )" Caption="First Name"/>
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.LastName )" Caption="Last Name" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.Email )" Caption="Email" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.City )" Caption="City" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.PostalCode )" Caption="Zip" />
+        <DataGridDateColumn TItem="UserContract" Field="@nameof( UserContract.BirthDate )" DisplayFormat="{0:dd.MM.yyyy}" Caption="Date Of Birth" Editable />
+         <DataGridSelectColumn TItem="UserContract" Field="@nameof( UserContract.Gender )" Caption="Gender" Editable Data="Gender.Genders" ValueField="(x) => ((Gender)x).Code" TextField="(x) => ((Gender)x).Description" />
+         <DataGridCheckColumn TItem="UserContract" Field="@nameof(UserContract.IsActive)" Caption="Active" Editable Filterable="false">
+             <DisplayTemplate>
+                 <Check TValue="bool" Checked="context.IsActive" Disabled ReadOnly />
+             </DisplayTemplate>
+         </DataGridCheckColumn>
+     </DataGridColumns>
+ </DataGrid>
+
+ @code {
+    private IEnumerable<UserContract> data;
+    int total;
+    int pageSize = 10;
+    
+    /// <summary>
+    /// Standard pattern for handling Datagrid data on demand according to pagination.
+    /// Filtering and Sorting are omitted for simplicity.
+    /// </summary>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private async Task OnReadData(DataGridReadDataEventArgs<UserContract> e)
+    {
+        if (!e.CancellationToken.IsCancellationRequested)
+        {
+            var response = await Call<List<UserContract>>(RequestType.Get, "api/Users", new Dictionary<string, string>
+                            {{ "take", e.PageSize.ToString() }, {"skip", ((e.Page - 1) * e.PageSize).ToString() } });
+            
+
+            if (!e.CancellationToken.IsCancellationRequested)
+            {
+                data = response.Data;
+                total = response.Total;
+            }
+        }
+    }
+
+    private void OnRowClick(DataGridRowMouseEventArgs<UserContract>  user)
+    {
+        UriHelper.NavigateTo(RouteHelper.GetUrl<User>(new { id = user.Item.UserId }));
+    }
+}

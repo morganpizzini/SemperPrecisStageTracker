@@ -95,10 +95,10 @@ namespace SemperPrecisStageTracker.EF.Clients
         /// Get Specific repository from database session for client
         /// </summary>
         /// <returns>user repository</returns>
-        private IShooterRepository GetUserReporitory()
+        private IUserRepository GetUserReporitory()
         {
             var dataSession = SessionFactory.OpenSession();
-            return dataSession.ResolveRepository<IShooterRepository>();
+            return dataSession.ResolveRepository<IUserRepository>();
         }
         /// <summary>
         /// Count valid users

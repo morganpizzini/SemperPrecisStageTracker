@@ -21,7 +21,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterTeamPaymentBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.UserId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            var existing = Scenario.Users.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
                 Assert.Inconclusive("No shooter team payment without association exists");
@@ -124,7 +124,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldNotCreateReminderAddShooterTeamPaymentBeOkHavingProvidedData()
         {
             var shooterIds = Scenario.ShooterTeamPayments.Select(x => x.UserId).ToList();
-            var existing = Scenario.Shooters.FirstOrDefault(x => !shooterIds.Contains(x.Id));
+            var existing = Scenario.Users.FirstOrDefault(x => !shooterIds.Contains(x.Id));
             if (existing == null)
             {
                 Assert.Inconclusive("No shooter team payment without association exists");

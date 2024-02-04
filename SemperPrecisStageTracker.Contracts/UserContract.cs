@@ -17,7 +17,9 @@ namespace SemperPrecisStageTracker.Contracts
             .Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
         public DateTime BirthDate { get; set; }
+        public string Gender { get; set; }
         public string AuthData { get; set; }
+        public bool IsActive { get;set;} = false;
         [IndexDbIndex]
         public string Username { get; set; }
         public string Email { get; set; }
@@ -37,8 +39,6 @@ namespace SemperPrecisStageTracker.Contracts
         // set when personal data is not provided
         public bool? Warning { get; set; }
         public bool HasWarning => Warning ?? (Warning = this.CalculateWarning(FirearmsLicenceExpireDate, MedicalExaminationExpireDate)).Value;
-
-
 
         public IList<UserAssociationContract> Classifications { get; set; } = new List<UserAssociationContract>();
         public IList<TeamContract> Teams { get; set; } = new List<TeamContract>();

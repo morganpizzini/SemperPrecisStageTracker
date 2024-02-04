@@ -293,7 +293,7 @@ else
 
 @code {
     Validations validations = default!;
-    UserUpdateRequest model = new();
+    UserProfileUpdateRequest model = new();
     IList<UserTeamContract> shooterTeams = new List<UserTeamContract>();
     UserTeamContract teamToDelete = new();
     private Modal modalRefTeamToDelete = default!;
@@ -314,7 +314,7 @@ else
 
     private void EditProfile()
     {
-        model = new UserUpdateRequest()
+        model = new UserProfileUpdateRequest()
         {
             UserId = UserState.Value.User?.UserId,
             FirstName = UserState.Value.User?.FirstName,

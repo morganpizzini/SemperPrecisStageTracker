@@ -6,6 +6,7 @@
 @inject INotificationService NotificationService;
 @inject IState<UserState> UserState 
 @inject IState<SettingsState> SettingState
+@using SemperPrecisStageTracker.Blazor.Helpers
 
 <Heading Size="HeadingSize.Is1">@L["Login"]</Heading>
 <Row>
@@ -55,7 +56,7 @@
 @code {
     Validations validations = default!;
     private LogInRequest model = new();
-    
+
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && UserState.Value.User != null)
@@ -78,7 +79,9 @@
             return;
         ApiLoading = true;
         await validations.ClearAll();
-        AuthService.Login(model.Username, model.Password); 
+        var url = NavigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>();
+        AuthService.Login(model.Username, model.Password,url); 
+
         ApiLoading = false;
 
     }

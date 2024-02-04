@@ -18,6 +18,8 @@ public class SignInRequest
     [Required]
     public DateTime BirthDate { get; set; } = DateTime.MinValue;
     [Required]
+    public string Gender { get; set; } = string.Empty;
+    [Required]
     public string Token { get; set; }
 }
 

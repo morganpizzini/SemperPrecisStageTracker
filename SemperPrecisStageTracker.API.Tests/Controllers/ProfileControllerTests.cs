@@ -41,18 +41,19 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var existing = GetIdentityUser();
 
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
 
             //Composizione della request
-            var request = new UserUpdateRequest
+            var request = new UserProfileUpdateRequest
             {
                 UserId = existing.Id,
                 Username = RandomizationUtils.GenerateRandomString(10),
                 FirstName = RandomizationUtils.GenerateRandomString(10),
                 LastName = RandomizationUtils.GenerateRandomString(10),
                 Email = RandomizationUtils.GenerateRandomEmail(),
-                BirthDate = DateTime.Now
+                BirthDate = DateTime.Now,
+                Gender = "M"
             };
 
             //Invoke del metodo
@@ -62,7 +63,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserContract>(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
 
             Assert.IsTrue(parsed != null
@@ -71,7 +72,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.LastName == request.LastName
                           && parsed.Data.Username == request.Username
                           && parsed.Data.Email == request.Email
-                          && parsed.Data.BirthDate == request.BirthDate);
+                          && parsed.Data.BirthDate == request.BirthDate
+                          && parsed.Data.Gender == request.Gender);
 
             //verifica contatori
             Assert.AreEqual(countBefore, countAfter);
@@ -82,10 +84,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public void ShouldUpdateUserBeUnauthorizedHavingProvidedWrongId()
         {
             //conteggio esistenti
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
-            var request = new UserUpdateRequest
+            var request = new UserProfileUpdateRequest
             {
                 UserId = RandomizationUtils.GenerateRandomString(10)
             };
@@ -97,7 +99,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedUnauthorized(response);
 
             //conteggio esistenti
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
 
             Assert.IsTrue(parsed != null
@@ -116,15 +118,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
 
             //Recupero un altro utente esistente
-            var anotherExisting = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.Id);
+            var anotherExisting = Scenario.Users.FirstOrDefault(x => x.Id != existing.Id);
             if (anotherExisting == null)
                 Assert.Inconclusive("User is invalid");
 
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
-            var request = new UserUpdateRequest
+            var request = new UserProfileUpdateRequest
             {
                 UserId = existing.Id,
                 Username = anotherExisting.Username,
@@ -135,7 +137,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = Controller.UpdateProfile(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -154,15 +156,15 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
 
             //Recupero altro utente esistente
-            var anotherExisting = Scenario.Shooters.FirstOrDefault(x => x.Id != existing.Id);
+            var anotherExisting = Scenario.Users.FirstOrDefault(x => x.Id != existing.Id);
             if (anotherExisting == null)
                 Assert.Inconclusive("Another user is invalid");
 
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Shooters.Count;
+            var countBefore = Scenario.Users.Count;
 
             //Composizione della request
-            var request = new UserUpdateRequest
+            var request = new UserProfileUpdateRequest
             {
                 UserId = existing.Id,
                 Username = existing.Username,
@@ -173,7 +175,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = Controller.UpdateProfile(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Shooters.Count;
+            var countAfter = Scenario.Users.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -189,7 +191,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public void ShouldUpdateUserPasswordBeOkHavingProvidedData()
         {
             //Recupero un user esistente
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
             if (existing == null)
                 Assert.Inconclusive("User does not exists");
 
@@ -205,7 +207,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Invoke del metodo
             var response = Controller.UpdateUserPassword(request);
 
-            var newPassword = Scenario.Shooters.FirstOrDefault(x => x.Id == existing.Id)?.Password;
+            var newPassword = Scenario.Users.FirstOrDefault(x => x.Id == existing.Id)?.Password;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<BooleanResponse>(response);

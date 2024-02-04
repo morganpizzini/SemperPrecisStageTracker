@@ -101,3 +101,13 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+a.no-style {
+    cursor: pointer !important;
+    text-decoration: none !important;
+    text-decoration-line: none !important;
+}
+
+.pointer {
+    cursor: pointer;
+}

@@ -72,7 +72,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         protected User GetAdminUser()
         {
             //Recupero l'utente amministratore
-            return Scenario.Shooters
+            return Scenario.Users
                 .SingleOrDefault(u => u.Username == SimpleScenario.AdminUser);
         }
         /// <summary>
@@ -84,10 +84,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             //Recupero l'utente amministratore
             return
                 string.IsNullOrEmpty(userId) ?
-                Scenario.Shooters
+                Scenario.Users
                 .SingleOrDefault(u => u.Username == SimpleScenario.AnotherUser)
                 :
-                Scenario.Shooters
+                Scenario.Users
                 .SingleOrDefault(u => u.Id == userId);
         }
 
@@ -99,7 +99,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         {
             //Recupero l'utente amministratore
             return
-                Scenario.Shooters
+                Scenario.Users
                 .FirstOrDefault(u => !userIds.Contains(u.Id));
         }
 

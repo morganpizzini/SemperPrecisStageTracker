@@ -148,7 +148,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterAssociationBeBadRequestHaavingProvidedWrongAssociation()
         {
-            var existing = Scenario.Shooters.FirstOrDefault();
+            var existing = Scenario.Users.FirstOrDefault();
             
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.ShooterAssociations.Count;

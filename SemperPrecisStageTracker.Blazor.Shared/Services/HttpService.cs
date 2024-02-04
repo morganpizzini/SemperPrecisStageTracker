@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
@@ -10,34 +6,29 @@ using System.Text.Json;
 using SemperPrecisStageTracker.Blazor.Services.Models;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using Fluxor;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
     public class HttpService : IHttpService
     {
         private readonly HttpClient _httpClient;
-        private readonly NavigationManager _navigationManager;
-        //private ILocalStorageService _localStorageService;
-        //private readonly StateService _stateService;
         private readonly IState<UserState> _userState;
         public HttpService(
             HttpClient httpClient,
-            NavigationManager navigationManager,
             IState<UserState> UserState
-        //StateService stateService
-        //ILocalStorageService localStorageService
         )
         {
             _userState = UserState;
             _httpClient = httpClient;
-            _navigationManager = navigationManager;
-            //_stateService = stateService;
-            //_localStorageService = localStorageService;
         }
 
-        public Task<ApiResponse<T>> Get<T>(string uri)
+        public Task<ApiResponse<T>> Get<T>(string uri, Dictionary<string, string>? queryParameters = null)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                queryParameters != null ?
+                new Uri(QueryHelpers.AddQueryString(uri, queryParameters)) :
+                new Uri(uri));
             return SendRequest<T>(request);
         }
 

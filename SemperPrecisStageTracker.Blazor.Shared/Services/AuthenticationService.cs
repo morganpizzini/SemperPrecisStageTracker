@@ -39,13 +39,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _userState = UserState;
         }
 
-        public void Login(string username, string password)
+        public void Login(string username, string password, string returnUrl)
         {
             _dispatcher.Dispatch(new TryLoginAction
             {
                 Username = username,
                 Password = password,
-                ReturnUrl = _navigationManager.QueryString("returnUrl") ?? RouteHelper.GetUrl<Home>()
+                ReturnUrl = returnUrl
             });
         }
 
@@ -80,12 +80,12 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _customAuthenticationStateProvider.LoginNotify(user);
         }
 
-        public void Logout()
+        public void Logout(string returnUrl)
         {
             _dispatcher.Dispatch(new SetUserAction(null));
             _dispatcher.Dispatch(new SetOfflineAction(false,string.Empty));
             _customAuthenticationStateProvider.LogoutNotify();
-            _navigationManager.NavigateTo(RouteHelper.GetUrl<Login>());
+            _navigationManager.NavigateTo(returnUrl);
         }
 
 

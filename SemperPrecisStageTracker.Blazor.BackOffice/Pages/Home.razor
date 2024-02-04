@@ -1,7 +1,27 @@
 ﻿@page "/"
 @inherits SemperPrecisBaseComponent
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Dashboard</h1>
 
-Welcome to your new app.
+<Row>
+    <Column ColumnSize="ColumnSize.Is4.OnTablet.Is3.OnWidescreen.Is12.OnMobile" Flex="Flex.AlignItems.Stretch">
+        <Card Margin="Margin.Is4.FromBottom">
+            <CardBody>
+                <Anchor To="users" Class="no-style" TextColor="TextColor.Body">
+                    <Media>
+                        <MediaLeft>
+                            <Icon Name="IconName.Dashboard" IconSize="IconSize.x3" Padding="Padding.Is3" />
+                        </MediaLeft>
+                        <MediaBody>
+                            <Heading Size="HeadingSize.Is5">Blazor DataGrid</Heading>
+                            <Paragraph>
+                                An incredibly quick and responsive grid component that allows users to display and manipulate data in a grid format within a Blazor application.
+                            </Paragraph>
+                        </MediaBody>
+                    </Media>
+                </Anchor>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>

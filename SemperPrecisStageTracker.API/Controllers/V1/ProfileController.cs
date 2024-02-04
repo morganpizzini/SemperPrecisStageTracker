@@ -47,7 +47,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("UpdateProfile")]
         [ProducesResponseType(typeof(UserContract), 200)]
-        public IActionResult UpdateProfile([FromBody]UserUpdateRequest request)
+        public IActionResult UpdateProfile([FromBody]UserProfileUpdateRequest request)
         {
             //User id corrente
             var userId = PlatformUtils.GetIdentityUserId(User);

@@ -20,7 +20,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IGroupRepository _groupRepository;
         private readonly IAssociationRepository _associationRepository;
         private readonly IMatchRepository _matchRepository;
-        private readonly IShooterRepository _shooterRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IShooterDataRepository _shooterDataRepository;
         private readonly IShooterStageRepository _shooterStageRepository;
         private readonly IStageRepository _stageRepository;
@@ -52,7 +52,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _groupShooterRepository = dataSession.ResolveRepository<IGroupShooterRepository>();
             _matchRepository = dataSession.ResolveRepository<IMatchRepository>();
             _associationRepository = dataSession.ResolveRepository<IAssociationRepository>();
-            _shooterRepository = dataSession.ResolveRepository<IShooterRepository>();
+            _userRepository = dataSession.ResolveRepository<IUserRepository>();
             _shooterDataRepository = dataSession.ResolveRepository<IShooterDataRepository>();
             _shooterStageRepository = dataSession.ResolveRepository<IShooterStageRepository>();
             _stageRepository = dataSession.ResolveRepository<IStageRepository>();
@@ -86,7 +86,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             using var t = DataSession.BeginTransaction();
 
             //looking for admin user
-            var user = _shooterRepository.GetSingle(x => x.Username == adminUser);
+            var user = _userRepository.GetSingle(x => x.Username == adminUser);
 
             if (user == null)
             {
@@ -99,13 +99,13 @@ namespace SemperPrecisStageTracker.Domain.Services
                     Password = adminUser,
                     Email = $"{adminUser}@email.com",
                 };
-                validations = ValidateEntity(user, _shooterRepository);
+                validations = ValidateEntity(user, _userRepository);
                 if (validations.Count > 0)
                 {
                     t.Rollback();
                     return validations;
                 }
-                _shooterRepository.Save(user);
+                _userRepository.Save(user);
             }
 
             // create permissions
@@ -141,12 +141,12 @@ namespace SemperPrecisStageTracker.Domain.Services
                 authenticationService.SavePermission(manageAssociationsPerm);
             }
 
-            var manageShootersPerm = authenticationService.GetPermissionByName(Permissions.ManageShooters);
+            var manageShootersPerm = authenticationService.GetPermissionByName(Permissions.ManageUsers);
             if (manageShootersPerm == null)
             {
                 manageShootersPerm = new Permission()
                 {
-                    Name = Permissions.ManageShooters.ToDescriptionString()
+                    Name = Permissions.ManageUsers.ToDescriptionString()
                 };
                 authenticationService.SavePermission(manageShootersPerm);
             }
@@ -1467,7 +1467,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             var shooterSO = this._shooterSOStageRepository.FetchWithProjection(x => x.UserId, x => matchStagesIds.Contains(x.StageId));
 
-            return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
+            return this._userRepository.Fetch(x => shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !shooterSO.Contains(x.Id));
 
         }
 
@@ -1480,7 +1480,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             var shooterAssociations = this._shooterAssociationInfoRepository.FetchWithProjection(x => x.UserId, x => x.SafetyOfficier && x.AssociationId == id);
 
-            return this._shooterRepository.Fetch(x => shooterAssociations.Contains(x.Id));
+            return this._userRepository.Fetch(x => shooterAssociations.Contains(x.Id));
 
         }
 
@@ -1676,7 +1676,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             // not a match director
             var shooterMatches = _shooterMatchRepository.FetchWithProjection(x => x.UserId, x => x.MatchId == existingMatch.Id);
 
-            return _shooterRepository.Fetch(x =>
+            return _userRepository.Fetch(x =>
                 shooterAssociations.Contains(x.Id) && !shooterMatches.Contains(x.Id) && !existingShooterSo.Contains(x.Id));
         }
 
@@ -2633,17 +2633,17 @@ namespace SemperPrecisStageTracker.Domain.Services
         public int CountShooters()
         {
             //Utilizzo il metodo base
-            return _shooterRepository.Count();
+            return _userRepository.Count();
         }
         /// <summary>
         /// Fetch list of all shooters
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of shooters</returns>
-        public IList<User> FetchAllShooters()
+        public IList<User> FetchAllUsers()
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, x => x.LastName, false, _shooterRepository);
+            return FetchEntities(null, null, null, x => x.LastName, false, _userRepository);
         }
 
         /// <summary>
@@ -2654,7 +2654,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         public IList<User> FetchShootersByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, x => x.LastName, true, _shooterRepository);
+            return FetchEntities(s => ids.Contains(s.Id), null, null, x => x.LastName, true, _userRepository);
         }
 
         /// <summary>
@@ -2670,7 +2670,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
 
             //Utilizzo il metodo base
-            return GetSingleEntity(c => c.Id == id, _shooterRepository);
+            return GetSingleEntity(c => c.Id == id, _userRepository);
         }
 
         /// <summary>
@@ -2686,7 +2686,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             name = name.ToLower().Trim();
             //Utilizzo il metodo base
-            return GetSingleEntity(c => c.Username.ToLower() == name || c.Email.ToLower() == name, _shooterRepository);
+            return GetSingleEntity(c => c.Username.ToLower() == name || c.Email.ToLower() == name, _userRepository);
         }
 
         /// <summary>
@@ -2695,7 +2695,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns shooter or null</returns>
-        public IList<UserData> FetchShooterDataByShooterIds(IList<string> ids, string userId = null)
+        public IList<UserData> FetchUserDataByUserIds(IList<string> ids, string userId = null)
         {
             //Validazione argomenti
             if (ids == null) throw new ArgumentNullException(nameof(ids));
@@ -2710,7 +2710,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="id">Identifier</param>
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns shooter or null</returns>
-        public UserData GetShooterData(string id, string userId = null)
+        public UserData GetUserData(string id, string userId = null)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
@@ -2725,7 +2725,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> CreateShooter(User entity, UserData data, string userId)
+        public async Task<IList<ValidationResult>> CreateUser(User entity, UserData data, string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -2740,7 +2740,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateShooters.ManageShooters))
             {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(CreateShooter)}");
+                validations.AddMessage($"User {userId} has no permissions on {nameof(CreateUser)}");
                 return validations;
             }
 
@@ -2758,7 +2758,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
             //Validazione argomenti
-            validations = _shooterRepository.Validate(entity);
+            validations = _userRepository.Validate(entity);
 
             //Se ho validazioni fallite, esco
             if (validations.Count > 0)
@@ -2769,7 +2769,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             //Salvataggio
-            _shooterRepository.Save(entity);
+            _userRepository.Save(entity);
 
 
             data.UserId = entity.Id;
@@ -2805,7 +2805,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpdateShooter(User entity, UserData data, string userId, bool authorizedMethod = true)
+        public async Task<IList<ValidationResult>> UpdateUser(User entity, UserData data, string userId, bool authorizedMethod = true)
         {
             //TODO: sistemare permessi
             //Validazione argomenti
@@ -2821,7 +2821,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (authorizedMethod && !await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateShooter)} with Id: {entity.Id}");
+                validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateUser)} with Id: {entity.Id}");
                 return validations;
             }
 
@@ -2843,7 +2843,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Esecuzione in transazione
             using var t = DataSession.BeginTransaction();
             //Validazione argomenti
-            validations = _shooterRepository.Validate(entity);
+            validations = _userRepository.Validate(entity);
 
             //Se ho validazioni fallite, esco
             if (validations.Count > 0)
@@ -2854,7 +2854,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             }
 
             //Salvataggio
-            _shooterRepository.Save(entity);
+            _userRepository.Save(entity);
 
             //Validazione argomenti
             validations = _shooterDataRepository.Validate(data);
@@ -2884,7 +2884,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var validations = new List<ValidationResult>();
 
             // controllo esistenza shooter con stesso email o licenza
-            var count = _shooterRepository.Count(x => x.Id != entity.Id
+            var count = _userRepository.Count(x => x.Id != entity.Id
                                                               &&
                                                               x.Email == entity.Email);
 
@@ -2911,7 +2911,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="entity">Shooter</param>
         /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> DeleteShooter(User entity, string userId)
+        public async Task<IList<ValidationResult>> DeleteUser(User entity, string userId)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -2925,7 +2925,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Check permissions
             if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageShooters.EditShooter))
             {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteShooter)} with Id: {entity.Id}");
+                validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteUser)} with Id: {entity.Id}");
                 return validations;
             }
 
@@ -2963,7 +2963,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _shooterDataRepository.Delete(shooterData);
 
             //Eliminazione
-            _shooterRepository.Delete(entity);
+            _userRepository.Delete(entity);
 
             validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditShooter);
             if (validations.Count > 1)
@@ -3182,7 +3182,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             if (duplicate != null)
             {
-                var shooter = _shooterRepository.GetSingle(x => x.Id == duplicate.UserId);
+                var shooter = _userRepository.GetSingle(x => x.Id == duplicate.UserId);
                 if (shooter != null)
                 {
                     validations.Add(new ValidationResult($"Card number {entity.CardNumber} already assigned to {shooter.FirstName} {shooter.LastName}"));
@@ -3298,7 +3298,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var shooterIds = shooterGroup.Select(group => group.Id).ToList();
 
             // recupero gli shooter
-            var shooters = FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _shooterRepository);
+            var shooters = FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _userRepository);
 
             return groups.Select(g =>
             {
@@ -4129,7 +4129,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         {
             var shooterIds = this._groupShooterRepository.FetchWithProjection(x => x.UserId, x => x.GroupId == id);
             //Utilizzo il metodo base
-            return FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _shooterRepository);
+            return FetchEntities(s => shooterIds.Contains(s.Id), null, null, x => x.LastName, false, _userRepository);
         }
         /// <summary>
         /// Fetch list of shooters by provided ids
@@ -4193,7 +4193,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var shooterInTeamAssociation = this._shooterAssociationRepository.FetchWithProjection(x => x.UserId, x => x.AssociationId == match.AssociationId);
 
             // retrieve shooter not from available user and in association
-            return this._shooterRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)), null, null, x => x.LastName, false);
+            return this._userRepository.Fetch(x => !unAvailableUsers.Contains(x.Id) && (match.OpenMatch || shooterInTeamAssociation.Contains(x.Id)), null, null, x => x.LastName, false);
         }
 
         /// <summary>
@@ -5068,8 +5068,8 @@ namespace SemperPrecisStageTracker.Domain.Services
                         });
                         break;
 
-                    case Permissions.EditShooter:
-                        if (userPermissions.GenericPermissions.Contains(Permissions.ManageShooters))
+                    case Permissions.EditUser:
+                        if (userPermissions.GenericPermissions.Contains(Permissions.ManageUsers))
                             break;
                         newPermissions.Add(new UserPermission
                         {
@@ -5079,7 +5079,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                         });
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = Permissions.ShooterDelete.ToDescriptionString(),
+                            PermissionId = Permissions.UserDelete.ToDescriptionString(),
                             UserId = userId,
                             EntityId = entityId
                         });
@@ -5147,7 +5147,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _groupShooterRepository.Dispose();
                 _matchRepository.Dispose();
                 _associationRepository.Dispose();
-                _shooterRepository.Dispose();
+                _userRepository.Dispose();
                 _shooterStageRepository.Dispose();
                 _stageRepository.Dispose();
                 _teamRepository.Dispose();

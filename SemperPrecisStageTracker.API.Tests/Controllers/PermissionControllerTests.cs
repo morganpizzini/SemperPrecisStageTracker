@@ -26,8 +26,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserPermissionContract>(response);
             Assert.IsTrue(parsed != null &&
                           parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageMatches) &&
-                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageShooters) &&
-                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageShooters) &&
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageUsers) &&
+                          parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageUsers) &&
                           parsed.Data.GenericPermissions.Any(x => x == Permissions.ManageTeams)
             );
         }
