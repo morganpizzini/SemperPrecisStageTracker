@@ -5,7 +5,6 @@
 
 <h1><Icon class="me-2 pointer" Name="IconName.ArrowLeft" IconSize="IconSize.ExtraSmall" @onclick="GoBackClick" />User detail</h1>
 
- 
 <Card Margin="Margin.Is4.OnY">
     <CardHeader>
         <CardTitle>Personal data</CardTitle>
@@ -20,19 +19,19 @@
             <Column>
                 <Field>
                     <FieldLabel>First Name</FieldLabel>
-                    <TextEdit @bind-Text="@Model.FirstName" Disabled />
+                    <TextEdit @bind-Text="@Model.FirstName" Disabled="_disableEdit" />
                 </Field>
                 <Field>
                     <FieldLabel>Last Name</FieldLabel>
-                    <TextEdit @bind-Text="@Model.LastName" Disabled />
+                     <TextEdit @bind-Text="@Model.LastName" Disabled="_disableEdit" />
                 </Field>
                  <Field>
                      <FieldLabel>Birth date</FieldLabel>
-                    <DatePicker TValue="DateTime" @bind-Date="@Model.BirthDate" />
+                    <DatePicker TValue="DateTime" @bind-Date="@Model.BirthDate" Disabled="_disableEdit" />
                  </Field>
                  <Field>
                      <FieldLabel>Birth date</FieldLabel>
-                     <Select TValue="string" @bind-SelectedValue="@Model.Gender">
+                    <Select TValue="string" @bind-SelectedValue="@Model.Gender" Disabled="_disableEdit">
                          @foreach (var gen in Gender.Genders){
                              <SelectItem Value="@gen.Code">@gen.Description</SelectItem>
                          }
@@ -40,21 +39,21 @@
                  </Field>
                 <Field>
                     <FieldLabel>Is active</FieldLabel>
-                    <Check TValue="bool" Checked="Model.IsActive" Disabled/>
+                    <Check TValue="bool" Checked="Model.IsActive" Disabled="_disableEdit" />
                 </Field>
             </Column>
             <Column>
                  <Field>
                      <FieldLabel>Username</FieldLabel>
-                     <TextEdit @bind-Text="@Model.Username" Disabled />
+                     <TextEdit @bind-Text="@Model.Username" Disabled="_disableEdit" />
                  </Field>
                  <Field>
                      <FieldLabel>Email</FieldLabel>
-                     <TextEdit @bind-Text="@Model.Email" Disabled />
+                     <TextEdit @bind-Text="@Model.Email" Disabled="_disableEdit" />
                  </Field>
                  <Field>
                      <FieldLabel>Address</FieldLabel>
-                     <TextEdit Text="@Model.CompleteAddress" Disabled/>
+                     <TextEdit Text="@Model.CompleteAddress" Disabled="_disableEdit" />
                  </Field>
                  <Collapse>
                      <CollapseHeader href="javascript:void(0)">
@@ -63,41 +62,58 @@
                      <CollapseBody>
                         <Field>
                             <FieldLabel>Address</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Address" Disabled />
+                             <TextEdit @bind-Text="@Model.Address" Disabled="_disableEdit" />
                         </Field>
                         <Field>
                             <FieldLabel>City</FieldLabel>
-                            <TextEdit @bind-Text="@Model.City" Disabled />
+                             <TextEdit @bind-Text="@Model.City" Disabled="_disableEdit" />
                         </Field>
                         <Field>
                             <FieldLabel>Province</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Province" Disabled />
+                             <TextEdit @bind-Text="@Model.Province" Disabled="_disableEdit" />
                         </Field>
                          
                         <Field>
                             <FieldLabel>Postal code</FieldLabel>
-                            <TextEdit @bind-Text="@Model.PostalCode" Disabled />
+                             <TextEdit @bind-Text="@Model.PostalCode" Disabled="_disableEdit" />
                         </Field>
                         <Field>
                             <FieldLabel>Country</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Country" Disabled />
+                             <TextEdit @bind-Text="@Model.Country" Disabled="_disableEdit" />
                         </Field>
                      </CollapseBody>
                  </Collapse>
                  <Field>
                      <FieldLabel>Phone</FieldLabel>
-                     <TextEdit Text="@Model.Phone" Disabled />
+                     <TextEdit Text="@Model.Phone" Disabled="_disableEdit" />
                  </Field>
                  <Field>
                      <FieldLabel>Fiscal code</FieldLabel>
-                     <TextEdit Text="@Model.FiscalCode" Disabled />
+                     <TextEdit Text="@Model.FiscalCode" Disabled="_disableEdit" />
                  </Field>
                  <Field>
                      <FieldLabel>Firearms Licence</FieldLabel>
-                     <TextEdit @bind-Text="@Model.FirearmsLicence" Disabled />
+                     <TextEdit @bind-Text="@Model.FirearmsLicence" Disabled="_disableEdit" />
                  </Field>
             </Column>
         </Row>
+        <Div Class="text-end">
+            @if (_disableEdit) {
+                <Button Color="Color.Primary" Clicked="()=>{
+                        CloneModel = Model.Clone();
+                        _disableEdit = !_disableEdit;
+                    }">Edit</Button>
+            } else {
+                <Button Color="Color.Default" Clicked="()=>{
+                        Model = CloneModel;
+                        _disableEdit = !_disableEdit;
+                    }">Abort</Button>
+                <Button Color="Color.Success" Clicked="()=>{
+                        Model = CloneModel;
+                        _disableEdit = !_disableEdit;
+                    }">Edit</Button>
+            }
+        </Div>
     </CardBody>
 </Card>
 
@@ -105,6 +121,10 @@
  @code {
     [Parameter]
     public string Id { get; set; } = string.Empty;
+
+    protected UserContract CloneModel = new();
+
+    private bool _disableEdit = true;
 
     private void GoBackClick()
     {
