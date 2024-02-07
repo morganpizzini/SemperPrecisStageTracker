@@ -53,37 +53,33 @@
                      <TextEdit @bind-Text="@Model.Email" Disabled />
                  </Field>
                  <Field>
-                     <FieldLabel>Address</FieldLabel>
+                     <FieldLabel>Full address</FieldLabel>
                      <TextEdit Text="@Model.CompleteAddress" Disabled/>
                  </Field>
-                 <Collapse>
-                     <CollapseHeader href="javascript:void(0)">
-                        More
-                     </CollapseHeader>
-                     <CollapseBody>
-                        <Field>
-                            <FieldLabel>Address</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Address" Disabled />
-                        </Field>
-                        <Field>
-                            <FieldLabel>City</FieldLabel>
-                            <TextEdit @bind-Text="@Model.City" Disabled />
-                        </Field>
-                        <Field>
-                            <FieldLabel>Province</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Province" Disabled />
-                        </Field>
-                         
-                        <Field>
-                            <FieldLabel>Postal code</FieldLabel>
-                            <TextEdit @bind-Text="@Model.PostalCode" Disabled />
-                        </Field>
-                        <Field>
-                            <FieldLabel>Country</FieldLabel>
-                            <TextEdit @bind-Text="@Model.Country" Disabled />
-                        </Field>
-                     </CollapseBody>
-                 </Collapse>
+                 <CollapseComponent>
+                     <ChildContent>
+                         <Field>
+                             <FieldLabel>Address</FieldLabel>
+                             <TextEdit @bind-Text="@Model.Address" Disabled />
+                         </Field>
+                         <Field>
+                             <FieldLabel>City</FieldLabel>
+                             <TextEdit @bind-Text="@Model.City" Disabled />
+                         </Field>
+                         <Field>
+                             <FieldLabel>Province</FieldLabel>
+                             <TextEdit @bind-Text="@Model.Province" Disabled />
+                         </Field>
+                         <Field>
+                             <FieldLabel>Postal code</FieldLabel>
+                             <TextEdit @bind-Text="@Model.PostalCode" Disabled />
+                         </Field>
+                         <Field>
+                             <FieldLabel>Country</FieldLabel>
+                             <TextEdit @bind-Text="@Model.Country" Disabled />
+                         </Field>
+                     </ChildContent>
+                 </CollapseComponent>
                  <Field>
                      <FieldLabel>Phone</FieldLabel>
                      <TextEdit Text="@Model.Phone" Disabled />

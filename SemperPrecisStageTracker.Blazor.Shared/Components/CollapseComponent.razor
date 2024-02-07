@@ -1,0 +1,28 @@
+﻿@using Blazorise
+<Paragraph TextSize="TextSize.ExtraSmall" @onclick="ShowContent" class="text-end pointer">
+    @if (isHidden)
+    {
+        @ShowMessage
+    }
+    else
+    {
+        @HideMessage
+    }
+</Paragraph>
+<div class="@divClass">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public string ShowMessage { get; set; } = "Show more..";
+    [Parameter] public string HideMessage { get; set; } = "Hide";
+
+    string divClass = "d-none";
+
+    bool isHidden  => (divClass == "d-none");
+    private void ShowContent()
+    {
+        divClass = isHidden ? "" : "d-none";
+    }
+}
