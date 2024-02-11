@@ -38,6 +38,24 @@ namespace SemperPrecisStageTracker.Blazor.Services
             request.Content = new StringContent(value != null ? JsonSerializer.Serialize(value) : "", Encoding.UTF8, "application/json");
             return SendRequest<T>(request);
         }
+        public Task<ApiResponse<T>> Put<T>(string uri, object? value = null)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            request.Content = new StringContent(value != null ? JsonSerializer.Serialize(value) : "", Encoding.UTF8, "application/json");
+            return SendRequest<T>(request);
+        }
+        public Task<ApiResponse<T>> Patch<T>(string uri, object? value = null)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            request.Content = new StringContent(value != null ? JsonSerializer.Serialize(value) : "", Encoding.UTF8, "application/json");
+            return SendRequest<T>(request);
+        }
+
+        public Task<ApiResponse<T>> Delete<T>(string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, new Uri(uri));
+            return SendRequest<T>(request);
+        }
 
         // helper methods
 

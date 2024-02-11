@@ -1,0 +1,43 @@
+﻿@page "/roles/{id}"
+@inherits SemperPrecisBaseComponent<RoleContract>
+@inject NavigationManager UriHelper
+<PageTitle>Roles</PageTitle>
+
+<h1><Icon class="me-2 pointer" Name="IconName.ArrowLeft" IconSize="IconSize.ExtraSmall" @onclick="GoBackClick" />Role detail</h1>
+
+<Card Margin="Margin.Is4.OnY">
+    <CardHeader>
+        <CardTitle>Details</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Paragraph>
+            This is the detail for the role
+        </Paragraph>
+    </CardBody>
+    <CardBody>
+        <Field>
+            <FieldLabel>Name</FieldLabel>
+            <TextEdit @bind-Text="@Model.Name" Disabled />
+         </Field>
+    </CardBody>
+</Card>
+
+
+@code {
+    override protected async Task LoadModel()
+    {
+        Model = (await Call<RoleContract>(RequestType.Get, $"api/Roles/{Id}")).Data;
+    }
+
+    private void GoBackClick()
+    {
+        UriHelper.NavigateTo("/roles");
+    }
+
+    private async Task SaveClick(MouseEventArgs _)
+    {
+        await Call(RequestType.Post, $"api/Roles", null, new UserCreateRequest
+            {
+            }, "User update correctly");
+    }
+} 

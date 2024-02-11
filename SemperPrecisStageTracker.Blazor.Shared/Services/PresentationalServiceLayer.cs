@@ -15,11 +15,10 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _notificationService = notificationService;
         }
 
-        public async Task<BaseResponse<T>> CallRestfull<T>(RequestType requestType, string uri, Dictionary<string, string>? queryParameters, object? body = null)
+        public async Task<BaseResponse<T>> CallRestfull<T>(RequestType requestType, string uri, Dictionary<string, string>? queryParameters, object? body = null,string positiveMessage = "")
         {
-            ApiResponse<BaseResponse<T>> response = new();
+            ApiResponse<BaseResponse<T>> response;
             BaseResponse<T> result = new();
-            
             switch (requestType)
             {
                 case RequestType.Get:
@@ -28,6 +27,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 case RequestType.Post:
                     response = await _httpService.Post<BaseResponse<T>>(uri, body);
                     break;
+                case RequestType.Put:
+                    response = await _httpService.Put<BaseResponse<T>>(uri, body);
+                    break;
+                case RequestType.Patch:
+                    response = await _httpService.Patch<BaseResponse<T>>(uri, body);
+                    break;
+                case RequestType.Delete:
+                    response = await _httpService.Delete<BaseResponse<T>>(uri);
+                    break;
                 default:
                     return new BaseResponse<T>();
             };
@@ -35,9 +43,14 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (!response.WentWell)
             {
                 await ShowNotification(response.Error, "Error in API request", NotificationType.Error);
+                result.Errors.Add(response.Error, new[] { "Error in API request" });
             }
             else
             {
+                if(!string.IsNullOrEmpty(positiveMessage))
+                {
+                    await ShowNotification(positiveMessage, "Success", NotificationType.Success);
+                }
                 result = response.Result;
             }
             return result;

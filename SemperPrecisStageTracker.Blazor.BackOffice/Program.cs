@@ -12,6 +12,7 @@ using SemperPrecisStageTracker.Blazor.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Utils;
+using System.Text.RegularExpressions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -42,7 +43,7 @@ builder.Services.AddFluxor(options => {
 #endif
 });
 
-if(builder.HostEnvironment.IsDevelopment())
+if (builder.HostEnvironment.IsDevelopment())
 {
     builder.Services.AddScoped<IHttpService, MockHttpService>();
 }

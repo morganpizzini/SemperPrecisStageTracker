@@ -1,4 +1,6 @@
 ﻿@using Blazorise
+@using Blazorise.Utilities
+
 <Paragraph TextSize="TextSize.ExtraSmall" @onclick="ShowContent" class="text-end pointer">
     @if (isHidden)
     {
@@ -9,20 +11,43 @@
         @HideMessage
     }
 </Paragraph>
+@* <div @attributes=_additionalAttributes> *@
 <div class="@divClass">
     @ChildContent
 </div>
 
 @code {
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object> AdditionalAttributes { get; set; }
+    = new Dictionary<string, object>();
+
+    //private IReadOnlyDictionary<string, object>? _additionalAttributes;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        var parentClasses = AdditionalAttributes.GetValueOrDefault("class", "");
+        divClass = $"d-none {parentClasses}".Trim();
+        // var classes = $"foo {parentClasses}".Trim();
+
+        // _additionalAttributes =
+        //   AdditionalAttributes.Where(x => x.Key != "class")
+        //   .Append(KeyValuePair.Create("class", (object)classes))
+        //   .ToDictionary(x => x.Key, x => x.Value);
+    }
+
     [Parameter] public RenderFragment ChildContent { get; set; }
     [Parameter] public string ShowMessage { get; set; } = "Show more..";
     [Parameter] public string HideMessage { get; set; } = "Hide";
 
-    string divClass = "d-none";
+    string divClass = string.Empty;// = "d-none";
 
-    bool isHidden  => (divClass == "d-none");
+    bool isHidden = true;
     private void ShowContent()
     {
-        divClass = isHidden ? "" : "d-none";
+        divClass = isHidden ? divClass.Replace("d-none","") : $"{divClass} d-none";
+        isHidden = !isHidden;
     }
 }

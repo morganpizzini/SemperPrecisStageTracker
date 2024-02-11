@@ -6,5 +6,6 @@ namespace SemperPrecisStageTracker.Blazor.Components.Utils
         public static string UserKey => "User";//nameof(_userState.Value.User);
         public static string PermissionKey => "Permissions";// nameof(_userState.Value.Permissions);
         public static string AuthCode => nameof(AuthCode);
+        public static string NewUrlEndpoint => "new";
     }
 }

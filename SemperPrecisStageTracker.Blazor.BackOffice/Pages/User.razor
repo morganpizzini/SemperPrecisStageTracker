@@ -55,27 +55,27 @@
                      <FieldLabel>Full address</FieldLabel>
                      <TextEdit Text="@Model.CompleteAddress" Disabled/>
                  </Field>
-                 <CollapseComponent>
+                 <CollapseComponent class="ps-3">
                      <ChildContent>
                          <Field>
                              <FieldLabel>Address</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Address" Disabled />
+                             <TextEdit @bind-Text="@Model.Address" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>City</FieldLabel>
-                             <TextEdit @bind-Text="@Model.City" Disabled />
+                             <TextEdit @bind-Text="@Model.City" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>Province</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Province" Disabled />
+                             <TextEdit @bind-Text="@Model.Province" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>Postal code</FieldLabel>
-                             <TextEdit @bind-Text="@Model.PostalCode" Disabled />
+                             <TextEdit @bind-Text="@Model.PostalCode" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>Country</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Country" Disabled />
+                             <TextEdit @bind-Text="@Model.Country" Disabled="_disableEdit" />
                          </Field>
                      </ChildContent>
                  </CollapseComponent>
@@ -100,40 +100,93 @@
                         _disableEdit = !_disableEdit;
                     }">Edit</Button>
             } else {
-                <Button Color="Color.Default" Clicked="()=>{
+                if (IsNewElement)
+                {
+                    <Button Color="Color.Default" Clicked="()=>{
                         Model = CloneModel;
                         _disableEdit = !_disableEdit;
-                    }">Abort</Button>
-                <Button Color="Color.Success" Clicked="()=>{
-                        Model = CloneModel;
-                        _disableEdit = !_disableEdit;
-                    }">Edit</Button>
+                    }">
+                        Abort
+                    </Button>
+                }
+                <Button Color="Color.Success" Clicked="SaveClick">Save</Button>
             }
         </Div>
     </CardBody>
 </Card>
 
 
- @code {
-    [Parameter]
-    public string Id { get; set; } = string.Empty;
+@code {
 
-    protected UserContract CloneModel = new();
 
-    private bool _disableEdit = true;
+    override protected async Task LoadModel()
+    {
+        if (IsNewElement)
+        {
+            Model = new UserContract();
+            _disableEdit = false;
+            return;
+        }
+        var response = await Call<UserContract>(RequestType.Get, $"api/Users/{Id}");
+        Model = response.Data;
+    }
 
     private void GoBackClick()
     {
         UriHelper.NavigateTo("/users");
     }
-    override protected async Task OnInitializedAsync()
+
+    private async Task SaveClick(MouseEventArgs _)
     {
-        await base.OnInitializedAsync();
-        if (string.IsNullOrEmpty(Id))
+        if (IsNewElement)
         {
-            return;
+            await Call(RequestType.Post, $"api/Users", null, new UserCreateRequest
+                {
+                    FirstName = Model.FirstName,
+                    LastName = Model.LastName,
+                    BirthDate = Model.BirthDate,
+                    Email = Model.Email,
+                    Username = Model.Username,
+                    FirearmsLicenceExpireDate = Model.FirearmsLicenceExpireDate,
+                    FirearmsLicenceReleaseDate = Model.FirearmsLicenceReleaseDate,
+                    FirearmsLicence = Model.FirearmsLicence,
+                    MedicalExaminationExpireDate = Model.MedicalExaminationExpireDate,
+                    BirthLocation = Model.BirthLocation,
+                    Address = Model.Address,
+                    City = Model.City,
+                    PostalCode = Model.PostalCode,
+                    Province = Model.Province,
+                    Country = Model.Country,
+                    Phone = Model.Phone,
+                    FiscalCode = Model.FiscalCode
+                }, "User update correctly");
+            GoBackClick();
         }
-        var response = await Call<UserContract>(RequestType.Get, $"api/Users/{Id}");
-        Model = response.Data;
+        else
+        {
+            await Call(RequestType.Put, $"api/Users/{Id}", null, new UserUpdateRequest
+                {
+                    FirstName = Model.FirstName,
+                    LastName = Model.LastName,
+                    BirthDate = Model.BirthDate,
+                    Email = Model.Email,
+                    Username = Model.Username,
+                    FirearmsLicenceExpireDate = Model.FirearmsLicenceExpireDate,
+                    FirearmsLicenceReleaseDate = Model.FirearmsLicenceReleaseDate,
+                    FirearmsLicence = Model.FirearmsLicence,
+                    MedicalExaminationExpireDate = Model.MedicalExaminationExpireDate,
+                    BirthLocation = Model.BirthLocation,
+                    Address = Model.Address,
+                    City = Model.City,
+                    PostalCode = Model.PostalCode,
+                    Province = Model.Province,
+                    Country = Model.Country,
+                    Phone = Model.Phone,
+                    FiscalCode = Model.FiscalCode
+                }, "User update correctly");
+            CloneModel = new();
+            _disableEdit = true;
+            await LoadModel();
+        }
     }
 } 

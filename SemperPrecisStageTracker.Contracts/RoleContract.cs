@@ -7,6 +7,9 @@ public class RoleContract
     public string RoleId { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string PermissionsString => Permissions.Count > 0 ? string.Join(", ", Permissions) : string.Empty;
+    public string UserString => Permissions.Count > 0 ? string.Join(", ", Permissions) : string.Empty;
+
     public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
     public IList<UserRoleContract> UserRoles { get; set; } = new List<UserRoleContract>();
 }
