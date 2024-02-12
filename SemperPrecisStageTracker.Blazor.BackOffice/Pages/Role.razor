@@ -15,15 +15,74 @@
         </Paragraph>
     </CardBody>
     <CardBody>
-        <Field>
-            <FieldLabel>Name</FieldLabel>
-            <TextEdit @bind-Text="@Model.Name" Disabled />
-         </Field>
+        <Row>
+            <Column>
+                <Field>
+                    <FieldLabel>Name</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Name" Disabled />
+                 </Field>
+                 <Field>
+                     <FieldLabel>Description</FieldLabel>
+                     <TextEdit @bind-Text="@Model.Description" Disabled />
+                 </Field>
+            </Column>
+            <Column>
+                <DataGrid TItem="PermissionContract"
+                          Data="Model.Permissions"
+                          Sortable="false"
+                          Responsive
+                          Editable
+                            EditMode="DataGridEditMode.Form"
+                            CommandMode="DataGridCommandMode.ButtonRow"
+                           RowInserting="@OnRowInsertingAsync"
+                          ShowCaptions="false">
+                    <DataGridColumns>
+                         <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
+                            <SaveCommandTemplate>
+                                <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                            </SaveCommandTemplate>
+                            <CancelCommandTemplate>
+                                <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                            </CancelCommandTemplate>
+                        </DataGridCommandColumn>
+                        <DataGridColumn TItem="PermissionContract" Field="@nameof(PermissionContract.Name)" Caption="Name">
+                            <EditTemplate>
+                                <Select TValue="string"
+                                    @* ValueChanged="@( v => {
+                                        context.CellValue = v;
+                                        })" *@>
+                                    <ChildContent>
+                                        <SelectItem Value="@("")"></SelectItem>
+                                            @foreach (var permission in availablePermissions)
+                                    {
+                                        <SelectItem Value="@permission.PermissionId">@permission.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>Select a permission</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </EditTemplate>
+                        </DataGridColumn>
+                    </DataGridColumns>
+                     <ButtonRowTemplate>
+                         <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+                         <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="modalRef.Show">Delete</Button>
+                     </ButtonRowTemplate>
+                </DataGrid>
+            </Column>
+        </Row>
     </CardBody>
 </Card>
 
 
 @code {
+    private IList<PermissionContract> availablePermissions;
+    private PermissionContract selectedEntity;
+    private Modal modalRef;
+
+
+
     override protected async Task LoadModel()
     {
         Model = (await Call<RoleContract>(RequestType.Get, $"api/Roles/{Id}")).Data;
@@ -39,5 +98,19 @@
         await Call(RequestType.Post, $"api/Roles", null, new UserCreateRequest
             {
             }, "User update correctly");
+    }
+
+    protected async Task OnRowInsertingAsync(CancellableRowChange<PermissionContract, Dictionary<string, object>> e)
+    {
+        // FIX API CALL
+        var request = await Call<object>(RequestType.Put, $"api/Roles/{e.OldItem.PermissionId}", null, new RoleUpdateRequestV2
+            {
+                Name = e.NewItem.Name,
+            }, "Role update correctly");
+
+        if (request.Errors.Any())
+        {
+            e.Cancel = true;
+        }
     }
 } 
