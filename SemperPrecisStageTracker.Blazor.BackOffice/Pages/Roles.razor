@@ -28,9 +28,9 @@
                 <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
             </CancelCommandTemplate>
         </DataGridCommandColumn>
-        <DataGridColumn TextAlignment="TextAlignment.Center" TItem="RoleContract" Field="@nameof( RoleContract.RoleId)" Caption="#" Width="60px" />
-        <DataGridColumn TItem="RoleContract" Field="@nameof( RoleContract.Name)" Caption="Name" Editable/>
-        <DataGridColumn TItem="RoleContract" Field="@nameof(RoleContract.Description)" Caption="Description" Editable />
+        <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof( RoleContract.RoleId)" Caption="#" Width="60px" />
+        <DataGridColumn Field="@nameof( RoleContract.Name)" Caption="Name" Editable/>
+        <DataGridColumn Field="@nameof(RoleContract.Description)" Caption="Description" Editable />
          <DataGridNumericColumn Field="@nameof(RoleContract.Permissions)" Caption="Permission">
             <DisplayTemplate>
                 @((context as RoleContract)?.Permissions?.Count ?? 0)
