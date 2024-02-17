@@ -377,7 +377,7 @@ public class UsersController : ApiControllerBase
             return BadRequest(validations);
 
         //Return contract
-        return CreatedAtAction(nameof(GetUser), new { id = entity.UserId},new { });
+        return CreatedAtAction(nameof(GetUser), new { id = entity.UserId});
     }
 
     /// <summary>

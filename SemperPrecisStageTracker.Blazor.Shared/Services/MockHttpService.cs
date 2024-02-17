@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using SemperPrecisStageTracker.Blazor.Services.Models;
+﻿using SemperPrecisStageTracker.Blazor.Services.Models;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using System.Text.RegularExpressions;
+using SemperPrecisStageTracker.Shared.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -136,6 +135,19 @@ namespace SemperPrecisStageTracker.Blazor.Services
                                 Gender = "M"
                             }
                         };
+        private static IList<PermissionContract> permissions = new List<PermissionContract>
+        {
+            new PermissionContract
+            {
+                PermissionId = "1",
+                Name = "SamplePermisison"
+            },
+            new PermissionContract
+            {
+                PermissionId = "2",
+                Name = "AnotherSamplePermission"
+            },
+        };
         #endregion
         public Task<ApiResponse<T>> Get<T>(string uri, Dictionary<string, string>? queryParameters = null)
             =>
@@ -146,6 +158,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     {
                         Result = (T)(object)new BaseResponse<UserContract>(users.First())
                     }),
+                "api/Permissions" => Task.FromResult(new ApiResponse<T>
+                {
+                    Result = (T)(object)new BaseResponse<List<PermissionContract>>(
+                            permissions.ToList(),
+                            permissions.Count,
+                            string.Empty)
+                }),
                 "api/Users" => Task.FromResult(new ApiResponse<T>
                 {
                     Result = (T)(object)new BaseResponse<List<UserContract>>(
@@ -178,6 +197,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
         =>
             uri switch
             {
+                string s when s.MatchesRegexPattern("api/permissions/.+/role/.+") =>
+                    Task.FromResult(new ApiResponse<T>
+                    {
+                        Result = (T)(object)new BaseResponse<PermissionContract>(permissions.First())
+                    }),
                 _ => Task.FromResult(new ApiResponse<T>())
             };
 

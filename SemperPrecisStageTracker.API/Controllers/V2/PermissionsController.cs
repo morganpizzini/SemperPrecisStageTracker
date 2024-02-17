@@ -60,7 +60,7 @@ public class PermissionsController : ApiControllerBase
             return BadRequest(validations);
 
         //Return contract
-        return CreatedAtAction("GetRole", nameof(RolesController), new {id = entity.RoleId }, entity);
+        return CreatedAtAction("GetRole", nameof(RolesController), new {id = entity.RoleId }, ContractUtils.GenerateContract(permission));
     }
 
     /// <summary>

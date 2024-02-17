@@ -51,7 +51,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 {
                     await ShowNotification(positiveMessage, "Success", NotificationType.Success);
                 }
-                result = response.Result;
+                if(response.Result != null)
+                    result = response.Result;
             }
             return result;
         }

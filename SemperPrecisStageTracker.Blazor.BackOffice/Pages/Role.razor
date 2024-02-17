@@ -49,9 +49,13 @@
                                     <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
                                 </CancelCommandTemplate>
                             </DataGridCommandColumn>
+                            <DataGridColumn Field="@nameof(PermissionContract.PermissionId)" Displayable="false"/>
                             <DataGridColumn Field="@nameof(PermissionContract.Name)" Caption="Name" Editable>
                             <EditTemplate>
-                                <Select TValue="string">
+                                <Select TValue="string" SelectedValueChanged="@(v => {
+                                        context.CellValue = availablePermissions.FirstOrDefault(x=>x.PermissionId == v)?.Name ?? string.Empty;
+                                        context.UpdateCell( nameof( PermissionContract.PermissionId ), v);
+                                    })">
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var permission in availablePermissions)
@@ -68,55 +72,22 @@
                     </DataGridColumns>
                     <ButtonRowTemplate>
                         <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-                        <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="modalRef.Show">Delete</Button>
+                        <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeleteEntity(context)">Delete</Button>
                     </ButtonRowTemplate>
                 </DataGrid>
             </Column>
         </Row>
     </CardBody>
 </Card>
-<Modal @ref="modalRef">
-    <ModalContent Centered>
-        <ModalHeader>
-            <ModalTitle>Delete permission</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        @if (selectedEntity is not null)
-        {
-            <ModalBody>
-                <Field>
-                    <FieldLabel>Name</FieldLabel>
-                    <TextEdit Text="@selectedEntity.Name" Disabled />
-                 </Field>
-             </ModalBody>
-            <ModalFooter>
-                <Button Color="Color.Secondary" Clicked="@modalRef.Hide">Close</Button>
-                <Button Color="Color.Primary" Clicked="(_)=>DeleteEntity(selectedEntity.PermissionId)">Delete</Button>
-            </ModalFooter>
-        }
-    </ModalContent>
-</Modal>
+
 @code {
     private IList<PermissionContract> availablePermissions;
     private PermissionContract selectedEntity;
-    private Modal modalRef;
 
     override protected async Task LoadModel()
     {
         Model = (await Call<RoleContract>(RequestType.Get, $"api/Roles/{Id}")).Data;
-        availablePermissions = new List<PermissionContract>
-        {
-            new PermissionContract
-            {
-                Name = "sample",
-                PermissionId = "1"
-            },
-            new PermissionContract
-            {
-                Name = "sample2",
-                PermissionId = "2"
-            }
-        };
+        availablePermissions = (await Call<List<PermissionContract>>(RequestType.Get, $"api/Permissions")).Data;
     }
 
     private void GoBackClick()
@@ -124,33 +95,27 @@
         UriHelper.NavigateTo("/roles");
     }
 
-    private async Task SaveClick(MouseEventArgs _)
-    {
-        await Call(RequestType.Post, $"api/Roles", null, new UserCreateRequest
-        {
-        }, "User update correctly");
-    }
-
     protected async Task OnRowInsertingAsync(CancellableRowChange<PermissionContract, Dictionary<string, object>> e)
     {
-        // FIX API CALL
-        var request = await Call<object>(RequestType.Put, $"api/Roles/{e.OldItem.PermissionId}", null, new RoleUpdateRequestV2
-            {
-                Name = e.NewItem.Name,
-            }, "Role update correctly");
+        var selectedPermission = availablePermissions.FirstOrDefault(x => x.Name == e.NewItem.Name);
+        if(selectedPermission is null)
+        {
+            e.Cancel = true;
+            return;
+        }
 
-        if (request.Errors.Any())
+        if ((await Call<PermissionContract>(RequestType.Post, $"api/permissions/{selectedPermission.PermissionId}/role/{Model.RoleId}", null, null, "Permission added correctly")).Errors.Any())
         {
             e.Cancel = true;
         }
     }
 
-    private async Task DeleteEntity(string id)
+    private async Task DeleteEntity(ButtonRowContext<PermissionContract> context)
     {
-        await Call(RequestType.Delete, $"api/Roles/{id}", "Role delete succesfully");
-        await modalRef.Hide();
-        // var response = await LoadData();
-        // data = response.Data.Take(1);
-        // total = response.Total;
+        var request = await Call<object>(RequestType.Delete, $"api/permissions/{selectedEntity.PermissionId}/role/{Model.RoleId}", null, null, "Permission deleted correctly");
+        if (!request.Errors.Any())
+        {
+            await context.DeleteCommand.Clicked.InvokeAsync();
+        }
     }
 } 
