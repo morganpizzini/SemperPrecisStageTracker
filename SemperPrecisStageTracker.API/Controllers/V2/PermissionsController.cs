@@ -18,9 +18,14 @@ namespace SemperPrecisStageTracker.API.Controllers.V2;
 public class PermissionsController : ApiControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
-    public IActionResult FetchPermissions() =>
-           Ok(AuthorizationLayer.FetchPermission().As(ContractUtils.GenerateContract));
+    [ProducesResponseType(typeof(BaseResponse<IList<PermissionContract>>), 200)]
+    public IActionResult FetchPermissions()
+    {
+        var entities = AuthorizationLayer.FetchPermission().As(x => ContractUtils.GenerateContract(x));
+        return Ok(new BaseResponse<IList<PermissionContract>>(
+            entities,
+            entities.Count));
+    }
 
     /// <summary>
     /// Link permission to role
@@ -60,7 +65,7 @@ public class PermissionsController : ApiControllerBase
             return BadRequest(validations);
 
         //Return contract
-        return CreatedAtAction("GetRole", nameof(RolesController), new {id = entity.RoleId }, ContractUtils.GenerateContract(permission));
+        return CreatedAtAction("GetRole", nameof(RolesController), new { id = entity.RoleId }, ContractUtils.GenerateContract(permission));
     }
 
     /// <summary>

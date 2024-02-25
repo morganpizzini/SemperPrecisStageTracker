@@ -252,13 +252,19 @@ namespace SemperPrecisStageTracker.Domain.Services
             return validations;
         }
 
-        
+        public IList<Role> GetUserRolesByUserId(string userId)
+        {
+            var rolesIds = _userRoleRepository.Fetch(x=>x.UserId == userId)
+                                                .Select(x=>x.RoleId)
+                                                .ToList();
+            return _roleRepository.Fetch(x => rolesIds.Contains(x.Id));
+        }
 
-        /// <summary>
-        /// Get user permissions
-        /// </summary>
-        /// <param name="userId">User identifier</param>
-        /// <returns>Return user permissions list</returns>
+            /// <summary>
+            /// Get user permissions
+            /// </summary>
+            /// <param name="userId">User identifier</param>
+            /// <returns>Return user permissions list</returns>
         public Task<UserPermissionDto> GetUserPermissionById(string userId)
         {
             //Validazione argomenti

@@ -2640,10 +2640,10 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="userId"> user identifier </param>
         /// <returns>Returns list of shooters</returns>
-        public IList<User> FetchAllUsers()
+        public IList<User> FetchAllUsers(int? skip=null, int? take=null)
         {
             //Utilizzo il metodo base
-            return FetchEntities(null, null, null, x => x.LastName, false, _userRepository);
+            return FetchEntities(null, skip, take, x => x.LastName, false, _userRepository);
         }
 
         /// <summary>
@@ -2664,7 +2664,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <param name="userId">filter by userId</param>
         /// <returns>Returns shooter or null</returns>
         [Obsolete]
-        public User GetShooter(string id, string userId = null)
+        public User GetUser(string id, string userId = null)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));

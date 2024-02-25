@@ -146,7 +146,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //user identifier
             var userId = PlatformUtils.GetIdentityUserId(User);
 
-            var user = BasicLayer.GetShooter(request.ShooterId, userId);
+            var user = BasicLayer.GetUser(request.ShooterId, userId);
             if (user == null)
             {
                 return NotFound();

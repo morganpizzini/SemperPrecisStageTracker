@@ -50,7 +50,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(UserContract), 200)]
         public Task<IActionResult> GetShooter([FromBody]ShooterRequest request)
         {
-            var entity = BasicLayer.GetShooter(request.ShooterId);
+            var entity = BasicLayer.GetUser(request.ShooterId);
 
             //verifico validità dell'entità
             if (entity == null)
@@ -120,7 +120,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> UpdateShooter([FromBody]UserUpdateRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetShooter(request.ShooterId);
+            var entity = BasicLayer.GetUser(request.ShooterId);
             var data = BasicLayer.GetUserData(request.ShooterId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
@@ -167,7 +167,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> DeleteShooter([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetShooter(request.ShooterId);
+            var entity = BasicLayer.GetUser(request.ShooterId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)

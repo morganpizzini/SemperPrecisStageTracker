@@ -153,7 +153,15 @@ namespace SemperPrecisStageTracker.Blazor.Services
             =>
             uri switch
             {
-                string s when s.StartsWith("api/Users/") =>
+                string s when s.MatchesRegexPattern("api/Users/.+/Roles") =>
+                    Task.FromResult(new ApiResponse<T>
+                    {
+                        Result = (T)(object)new BaseResponse<List<RoleContract>>(
+                            roles.Take(3).ToList(),
+                            3,
+                            string.Empty)
+                    }),
+                string s when s.MatchesRegexPattern("api/Users/.+") =>
                     Task.FromResult(new ApiResponse<T>
                     {
                         Result = (T)(object)new BaseResponse<UserContract>(users.First())
@@ -169,8 +177,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 {
                     Result = (T)(object)new BaseResponse<List<UserContract>>(
                             users
-                            .Skip(int.Parse(queryParameters?["skip"] ?? "10"))
-                            .Take(int.Parse(queryParameters?["take"] ?? "0"))
+                            .Skip(int.Parse(queryParameters?["skip"] ?? "0"))
+                            .Take(int.Parse(queryParameters?["take"] ?? "10"))
                             .ToList(),
                             users.Count,
                             string.Empty)
@@ -179,12 +187,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 {
                     Result = (T)(object)new BaseResponse<List<RoleContract>>(
                             roles
-                            .Skip(int.Parse(queryParameters?["skip"] ?? "10"))
-                            .Take(int.Parse(queryParameters?["take"] ?? "0"))
+                            .Skip(int.Parse(queryParameters?["skip"] ?? "0"))
+                            .Take(int.Parse(queryParameters?["take"] ?? "10"))
                             .ToList(),
                             roles.Count,
                             string.Empty)
                 }),
+                
                 string s when s.StartsWith("api/Roles/") =>
                     Task.FromResult(new ApiResponse<T>
                     {

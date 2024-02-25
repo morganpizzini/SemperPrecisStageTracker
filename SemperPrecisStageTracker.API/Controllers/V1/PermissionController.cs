@@ -226,7 +226,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public async Task<IActionResult> CreateUserRole([FromBody]UserRoleCreateRequest request)
         {
             //Recupero l'elemento dal business layer
-            var user = BasicLayer.GetShooter(request.UserId);
+            var user = BasicLayer.GetUser(request.UserId);
 
             if (user== null)
             {

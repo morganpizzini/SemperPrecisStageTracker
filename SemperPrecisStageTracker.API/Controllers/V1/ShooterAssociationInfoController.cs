@@ -27,7 +27,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         public Task<IActionResult> FetchShooterAssociationInfo([FromBody]ShooterRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetShooter(request.ShooterId);
+            var entity = BasicLayer.GetUser(request.ShooterId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
@@ -124,7 +124,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             // check shooter
-            var shooter = BasicLayer.GetShooter(shooterId);
+            var shooter = BasicLayer.GetUser(shooterId);
             if (shooter == null)
                 validations.Add(new ValidationResult("Shooter not found"));
             // check association

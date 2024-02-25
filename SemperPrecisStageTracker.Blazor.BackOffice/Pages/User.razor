@@ -114,10 +114,86 @@
         </Div>
     </CardBody>
 </Card>
-
+<Card Margin="Margin.Is4.OnY">
+    <CardHeader>
+        <CardTitle>Actions</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Paragraph>
+            User settings action
+        </Paragraph>
+    </CardBody>
+    <CardBody>
+        <Button Color="Color.Warning" Clicked="dialogRef.Show">Reset password</Button>
+    </CardBody>
+</Card>
+<Card Margin="Margin.Is4.OnY">
+    <CardHeader>
+        <CardTitle>User roles</CardTitle>
+    </CardHeader>
+    <CardBody>
+        <Paragraph>
+            Roles assigned to user
+        </Paragraph>
+    </CardBody>
+    <CardBody>
+        <DataGrid TItem="RoleContract"
+                  Data="userRoles"
+                  Sortable="false"
+                  Responsive
+                  Editable
+                  ShowPager
+                   ShowPageSizes="false"
+                   EditMode="DataGridEditMode.Form"
+                   CommandMode="DataGridCommandMode.ButtonRow"
+                   @bind-SelectedRow="@selectedEntity"
+                   RowInserting="@OnRowInsertingAsync"
+                   ShowCaptions="false">
+             <DataGridColumns>
+                 <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
+                    <SaveCommandTemplate>
+                        <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                        </SaveCommandTemplate>
+                        <CancelCommandTemplate>
+                            <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                        </CancelCommandTemplate>
+                    </DataGridCommandColumn>
+                    <DataGridColumn Field="@nameof(RoleContract.RoleId)" Displayable="false" />
+                    <DataGridColumn Field="@nameof(RoleContract.Name)" Caption="Name" Editable>
+                    <EditTemplate>
+                        <Select TValue="string" SelectedValueChanged="@(v => {
+                                        context.CellValue = availableRoles.FirstOrDefault(x=>x.RoleId == v)?.Name ?? string.Empty;
+                                        context.UpdateCell( nameof( RoleContract.RoleId ), v);
+                                    })">
+                            <ChildContent>
+                                <SelectItem Value="@("")"></SelectItem>
+                                @foreach (var role in availableRoles)
+                                {
+                                    <SelectItem Value="@role.RoleId">@role.Name</SelectItem>
+                                }
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>Select a role</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </EditTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+            <ButtonRowTemplate>
+                <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+                <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Edit</Button>
+                <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeleteEntity(context)">Delete</Button>
+            </ButtonRowTemplate>
+        </DataGrid>
+    </CardBody>
+</Card>
+<DialogComponent @ref="dialogRef" OnCallBack="CallBackResetPassword" Message="If approve, the password will be reset" Title="Reset user password"></DialogComponent>
 
 @code {
-
+    private DialogComponent dialogRef;
+    private IList<RoleContract> userRoles = new List<RoleContract>();
+    private IList<RoleContract> availableRoles = new List<RoleContract>();
+    private RoleContract selectedEntity;
 
     override protected async Task LoadModel()
     {
@@ -127,14 +203,19 @@
             _disableEdit = false;
             return;
         }
-        var response = await Call<UserContract>(RequestType.Get, $"api/Users/{Id}");
-        Model = response.Data;
+        var baseAddress = $"api/Users/{Id}";
+        Model = (await Call<UserContract>(RequestType.Get, baseAddress)).Data;
+        userRoles = (await Call<List<RoleContract>>(RequestType.Get, $"{baseAddress}/Roles")).Data;
+        availableRoles = (await Call<List<RoleContract>>(RequestType.Get, $"api/Roles")).Data;
     }
 
     private void GoBackClick()
     {
         UriHelper.NavigateTo("/users");
     }
+
+    private void GoToDetail(string id) =>
+        UriHelper.NavigateTo(RouteHelper.GetUrl<Role>(new { id = string.IsNullOrEmpty(id) ? CommonVariables.NewUrlEndpoint : id }));
 
     private async Task SaveClick(MouseEventArgs _)
     {
@@ -188,5 +269,31 @@
             _disableEdit = true;
             await LoadModel();
         }
+    }
+    private async Task OnRowInsertingAsync(CancellableRowChange<RoleContract, Dictionary<string, object>> e)
+    {
+        var currentEntity = availableRoles.FirstOrDefault(x => x.Name == e.NewItem.Name);
+        if (currentEntity is null)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        if ((await Call<RoleContract>(RequestType.Post, $"api/users/{Model.UserId}/roles/{currentEntity.RoleId}", null, null, "Role assigned correctly")).Errors.Any())
+        {
+            e.Cancel = true;
+        }
+    }
+    private async Task DeleteEntity(ButtonRowContext<RoleContract> context)
+    {
+        if (!(await Call<object>(RequestType.Delete, $"api/users/{Model.UserId}/roles/{selectedEntity.RoleId}", null, null, "Role deleted correctly")).Errors.Any())
+        {
+            await context.DeleteCommand.Clicked.InvokeAsync();
+        }
+    }
+    private async Task CallBackResetPassword()
+    {
+        await Call(RequestType.Post, $"api/Users/{Model.UserId}/reset-password", "User password reset");
+        dialogRef.Hide();
     }
 } 

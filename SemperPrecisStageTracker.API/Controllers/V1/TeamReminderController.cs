@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            var shooter = BasicLayer.GetShooter(request.ShooterId);
+            var shooter = BasicLayer.GetUser(request.ShooterId);
 
             if(shooter == null)
             {
@@ -118,7 +118,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            var shooter = BasicLayer.GetShooter(request.ShooterId);
+            var shooter = BasicLayer.GetUser(request.ShooterId);
 
             if(shooter == null)
             {

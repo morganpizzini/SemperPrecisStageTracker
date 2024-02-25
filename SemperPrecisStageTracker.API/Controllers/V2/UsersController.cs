@@ -34,7 +34,7 @@ public class UsersController : ApiControllerBase
     /// <returns>Returns action result</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IList<UserContract>), 200)]
-    public Task<IActionResult> FetchUsers(UserFetchRequest request)
+    public Task<IActionResult> FetchUsers(TakeSkipRequest request)
     {
         //Recupero la lista dal layer
         var entities = BasicLayer.FetchAllUsers().AsQueryable();
@@ -89,7 +89,7 @@ public class UsersController : ApiControllerBase
     [HttpPost]
     [ApiAuthorizationFilter(Permissions.ManageUsers, Permissions.CreateUser)]
     [ProducesResponseType(201)]
-    public async Task<IActionResult> CreateUser([AsParameters]UserCreateRequest request)
+    public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest request)
     {
         //Creazione modello richiesto da admin
         var model = new User
@@ -327,8 +327,6 @@ public class UsersController : ApiControllerBase
         return CreatedAtAction(nameof(GetUser),entity.GetRouteIdentifier(), ContractUtils.GenerateContract(entity));
     }
 
-    
-
     /// <summary>
     /// Fetch all permissions on user
     /// </summary>
@@ -337,6 +335,20 @@ public class UsersController : ApiControllerBase
     [ProducesResponseType(typeof(UserPermissionContract), 200)]
     public async Task<IActionResult> FetchAllPermissionsOnUser(BaseRequestId request) =>
         Ok(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(request.Id)));
+
+    /// <summary>
+    /// Fetch all roles on user
+    /// </summary>
+    /// <returns>Returns action result</returns>
+    [HttpGet("{id}/roles")]
+    [ProducesResponseType(typeof(UserPermissionContract), 200)]
+    public IActionResult FetchUserRoles(BaseRequestId request)
+    {
+        var entities = AuthorizationLayer.GetUserRolesByUserId(request.Id).As(x => ContractUtils.GenerateContract(x));
+        return Ok(new BaseResponse<IList<RoleContract>>(
+            entities,
+            entities.Count));
+    }
 
     /// <summary>
     /// Link user to role
@@ -349,7 +361,7 @@ public class UsersController : ApiControllerBase
     public async Task<IActionResult> CreateUserRole(UserRoleCreateRequestV2 request)
     {
         //Recupero l'elemento dal business layer
-        var user = BasicLayer.GetShooter(request.Id);
+        var user = AuthorizationLayer.GetUserById(request.Id);
 
         if (user == null)
         {

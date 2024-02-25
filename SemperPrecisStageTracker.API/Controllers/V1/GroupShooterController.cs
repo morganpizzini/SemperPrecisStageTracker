@@ -156,7 +156,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             if (existingMatch == null)
                 return BadRequest(new ValidationResult("Match not found").AsList());
 
-            var existingShooter = this.BasicLayer.GetShooter(request.ShooterId);
+            var existingShooter = this.BasicLayer.GetUser(request.ShooterId);
             if (existingShooter == null)
                 return BadRequest(new ValidationResult("Shooter not found").AsList());
 

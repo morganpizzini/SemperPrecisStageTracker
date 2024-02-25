@@ -1,0 +1,31 @@
+﻿@using Blazorise
+@using Blazorise.Utilities
+
+<Modal @ref="modalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@Title</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+
+        <ModalBody>
+            <Paragraph>@Message</Paragraph>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@modalRef.Hide">Close</Button>
+            <Button Color="Color.Primary" Clicked="(_)=>OnCallBack?.Invoke()">Approve</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+    @code {
+    private Modal modalRef;
+
+    [Parameter]
+    public Func<Task> OnCallBack { get; set; }
+    [Parameter] public string Title { get; set; } = "This is a title";
+    [Parameter] public string Message { get; set; } = "This is a message";
+
+    public void Show() => modalRef.Show();
+    public void Hide() => modalRef.Hide();
+}

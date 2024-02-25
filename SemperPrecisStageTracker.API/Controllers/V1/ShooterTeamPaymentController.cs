@@ -50,7 +50,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [ProducesResponseType(typeof(IList<UserContract>), 200)]
         public IActionResult FetchShooterTeamPaymentByShooterAndTeam([FromBody]ShooterTeamRequest request)
         {
-            var shooter = BasicLayer.GetShooter(request.ShooterId);
+            var shooter = BasicLayer.GetUser(request.ShooterId);
             if(shooter == null)
                 return NotFound();
             //Recupero l'elemento dal business layer
@@ -76,7 +76,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             User shooter = null;
             if (!string.IsNullOrEmpty(request.ShooterId))
             {
-                shooter = BasicLayer.GetShooter(request.ShooterId);
+                shooter = BasicLayer.GetUser(request.ShooterId);
                 if(shooter == null)
                 {
                     validations.Add(new ValidationResult("Not found",nameof(request.ShooterId).AsList()));
@@ -148,7 +148,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
 
-            var shooter = BasicLayer.GetShooter(request.ShooterId);
+            var shooter = BasicLayer.GetUser(request.ShooterId);
             if(shooter == null)
             {
                 validations.Add(new ValidationResult("Not found",nameof(request.ShooterId).AsList()));

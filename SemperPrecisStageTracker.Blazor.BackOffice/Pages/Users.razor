@@ -62,6 +62,7 @@
     </ModalContent>
 </Modal>
 
+
 @code {
     private Modal modalRef;
     private IEnumerable<UserContract> data;
@@ -74,8 +75,8 @@
     private Task<BaseResponse<List<UserContract>>> LoadData() => 
                     Call<List<UserContract>>(RequestType.Get, "api/Users", new Dictionary<string, string>
                                 {{ "take", pageSize.ToString() }, {"skip", ((pagePosition - 1) * pageSize).ToString() } });
-    
-                                /// <summary>
+
+    /// <summary>
     /// Standard pattern for handling Datagrid data on demand according to pagination.
     /// Filtering and Sorting are omitted for simplicity.
     /// </summary>
@@ -103,10 +104,12 @@
     {
         await Call(RequestType.Delete, $"api/Users/{id}", "User delete succesfully");
         await modalRef.Hide();
-        
+
         // reload data
         var response = await LoadData();
         data = response.Data;
         total = response.Total;
     }
+
+ 
 }

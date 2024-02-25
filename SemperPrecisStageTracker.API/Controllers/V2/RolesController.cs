@@ -24,8 +24,14 @@ public class RolesController : ApiControllerBase
     [HttpGet]
     [ApiAuthorizationFilter(Permissions.ManagePermissions)]
     [ProducesResponseType(typeof(IList<RoleContract>), 200)]
-    public IActionResult FetchAllRoles() =>
-        Ok(AuthorizationLayer.FetchRoles().As(x => ContractUtils.GenerateContract(x)));
+    public IActionResult FetchAllRoles()
+    {
+        var entities = AuthorizationLayer.FetchRoles().As(x => ContractUtils.GenerateContract(x));
+        return Ok(new BaseResponse<IList<RoleContract>>(
+            entities,
+            entities.Count));
+    }
+
 
     /// <summary>
     /// Get specific placet ype using provided identifier
@@ -77,7 +83,7 @@ public class RolesController : ApiControllerBase
         if (validations.Count > 0)
             return BadRequest(validations);
 
-        return CreatedAtAction(nameof(GetRole),model.GetRouteIdentifier(), ContractUtils.GenerateContract(model));
+        return CreatedAtAction(nameof(GetRole), model.GetRouteIdentifier(), ContractUtils.GenerateContract(model));
     }
 
     /// <summary>
