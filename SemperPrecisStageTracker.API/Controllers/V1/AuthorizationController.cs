@@ -63,7 +63,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             return Ok(
                 new SignInResponse
                 {
-                    Shooter = ContractUtils.GenerateContract(result, null, shooterAssociation, teams),
+                    User = ContractUtils.GenerateContract(result, null, shooterAssociation, teams),
                     Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(result.Id))
                 });
         }

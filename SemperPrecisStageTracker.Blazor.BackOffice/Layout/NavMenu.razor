@@ -1,32 +1,33 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">SemperPrecisStageTracker.Blazor.BackOffice</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</div>
+﻿@using SemperPrecisStageTracker.Blazor.BackOffice.Pages
+@inject IStringLocalizer<NavMenu> L
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
+<div class="top-row pl-4 navbar navbar-dark">
+    <NavLink class="navbar-brand px-3" href="@(RouteHelper.GetUrl<Home>())">
+        SemperPrecis Tracker
+    </NavLink>
+    <AuthorizeView>
+        <Authorized>
+            <button class="navbar-toggler" @onclick="ToggleNavMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </Authorized>
+    </AuthorizeView>
 </div>
+<AuthorizeView>
+    <Authorized>
+        <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Home>())" Match="NavLinkMatch.All">
+                        <Icon Name="FontAwesomeIcons.Book" /> @L["Home"]
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+    </Authorized>
 
+</AuthorizeView>
 @code {
     private bool collapseNavMenu = true;
 
@@ -35,5 +36,9 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    protected override void Dispose(bool disposed)
+    {
+        base.Dispose(disposed);
     }
 }

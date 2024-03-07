@@ -44,10 +44,9 @@ public partial class AppUseCaseEffects
         
         dispatcher.Dispatch(new ChangeIsDeviceAction(_jsRuntime.Invoke<bool>("customFunctions.isDevice")));
 
-        
-
         // load user
         var loggedUser = _localStorage.GetItem<UserContract>(CommonVariables.UserKey);
+        
         if (loggedUser == null)
         {
             dispatcher.Dispatch(new SettingsSetReadyAction());
@@ -55,7 +54,6 @@ public partial class AppUseCaseEffects
         }
 
         var (username, password) = await GetLoggedUserInfo(loggedUser.Username);
-
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             dispatcher.Dispatch(new SettingsSetReadyAction());
@@ -74,7 +72,7 @@ public partial class AppUseCaseEffects
             SetUser(new SignInResponse
             {
                 Permissions = userPermissions,
-                Shooter = loggedUser
+                User = loggedUser
             }, password, dispatcher);
         }
         
@@ -133,11 +131,11 @@ public partial class AppUseCaseEffects
     private void SetUser(SignInResponse response, string password, IDispatcher dispatcher)
     {
         // set auth data
-        response.Shooter.AuthData = $"{response.Shooter.Username}:{password}".EncodeBase64();
+        response.User.AuthData = $"{response.User.Username}:{password}".EncodeBase64();
 
-        dispatcher.Dispatch(new SetUserAndPermissionAction(response.Shooter, response.Permissions));
+        dispatcher.Dispatch(new SetUserAndPermissionAction(response.User, response.Permissions));
 
-        _customAuthenticationStateProvider.LoginNotify(response.Shooter);
+        _customAuthenticationStateProvider.LoginNotify(response.User);
     }
 
     [EffectMethod]

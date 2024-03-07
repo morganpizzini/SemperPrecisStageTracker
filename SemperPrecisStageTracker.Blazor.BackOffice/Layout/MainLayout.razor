@@ -1,16 +1,183 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
+﻿@using Fluxor.Blazor.Web.Components
+@using Fluxor;
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using SemperPrecisStageTracker.Blazor.BackOffice.Pages
+@using SemperPrecisStageTracker.Blazor.Services
+@using SemperPrecisStageTracker.Blazor.Store.AppUseCase
+@using SemperPrecisStageTracker.Blazor.Store
+@inject IState<SettingsState> SettingState
+@inherits FluxorLayout
+@implements IDisposable
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<MainLayout> L
+@inject ILocalStorageService localStorage
+@inject IHttpService httpService
+
+<div class="page @SettingState.Value.Theme">
+
     <div class="sidebar">
         <NavMenu />
     </div>
+    <div class="main">
+        <div class="top-row px-4 auth">
+            @if (ShowNotificationAlertStatus)
+            {
+                <Button Class="me-2" Size="Size.Small" Color="Color.Warning" Clicked="@SubscribeToNotification">@L["SubscribeToNotification"]</Button>
+            }
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <span>@L["Hello"]&nbsp;<NavLink Class="ms-0" href="@(RouteHelper.GetUrl<Profile>())">@(context.User?.Identity?.Name ?? L["NoName"])</NavLink>!</span>
+                    @if (!SettingState.Value.Offline)
+                    {
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Logout>())">@L["Logout"]</NavLink>
+                    }
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Login>())">@L["Login"]</NavLink>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+            @if (ShowPwaInstallationProgress)
+        {
+            <div class="bg-warning text-dark p-2">
+                <Icon class="me-2" Name="FontAwesomeIcons.AnimationSpinner" />@L["InstallingUpdates"]
+            </div>
+        }
+        <div class="content px-4">
             @Body
-        </article>
-    </main>
+            @*@if (NetworkService.IsOnline)
+            {
+            }
+            else
+            {
+            <span style="color: red">@L["Offline"]</span>
+            }*@
+        </div>
+    </div>
 </div>
+<Modal @ref="modalInstallRef">
+    <ModalContent Size="ModalSize.Default" Centered="true">
+        <ModalHeader>
+            <ModalTitle>
+                @L["InstallPWA"]
+            </ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Text>@L["InstallPWAInfo"]</Text>
+            </ModalBody>
+            <ModalFooter>
+                <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideInstallModal(false))">@L["Close"]</Button>
+                <Button Size="Size.Small" Color="Color.Success" Clicked="@(() => HideInstallModal(true))">@L["Approve"]</Button>
+            </ModalFooter>
+        </ModalContent>
+    </Modal>
+    @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; } = default!;
+
+    private static Action action = default!;
+    private Modal modalInstallRef = default!;
+    private static Action actionNotification = default!;
+    private bool ShowNotificationAlertStatus;
+    private static Action<bool> actionPwaInstallation = default!;
+    private bool ShowPwaInstallationProgress;
+
+    protected override async Task OnInitializedAsync()
+    {
+        action = ShowIntallModal;
+        actionNotification = ShowNotificationAlert;
+        actionPwaInstallation = ShowPwaInstallation;
+
+        // In the background, ask if they want to be notified about order updates
+        await RequestNotificationSubscriptionAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected override void Dispose(bool disposed)
+    {
+        base.Dispose(disposed);
+    }
+    public void UpdateInterface(object _, EventArgs __) => StateHasChanged();
+
+    async Task RequestNotificationSubscriptionAsync()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (!(authState.User?.Identity?.IsAuthenticated ?? false))
+            return;
+        ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.requestSubscription");
+    }
+
+    [JSInvokable]
+    public static Task PromptNotificationAlert()
+    {
+        actionNotification.Invoke();
+
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public static Task PromptPwaInstallation()
+    {
+        actionPwaInstallation.Invoke(true);
+        return Task.CompletedTask;
+    }
+    [JSInvokable]
+    public static Task DismissPwaInstallation()
+    {
+        actionPwaInstallation.Invoke(false);
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public static Task BlazorInstallHandler()
+    {
+        action.Invoke();
+        return Task.CompletedTask;
+    }
+
+    public void ShowIntallModal()
+    {
+        modalInstallRef.Show();
+    }
+
+    public void ShowNotificationAlert()
+    {
+        ShowNotificationAlertStatus = true;
+        this.StateHasChanged();
+    }
+
+    public void ShowPwaInstallation(bool status)
+    {
+        ShowPwaInstallationProgress = status;
+        this.StateHasChanged();
+
+    }
+
+    public async Task SubscribeToNotification()
+    {
+        var subscription = ((IJSInProcessRuntime)JSRuntime).Invoke<NotificationSubscriptionCreateRequest>("BlazorPWA.createSubscription");
+
+        if (subscription == null)
+            return;
+        try
+        {
+            var response = await httpService.Post<OkResponse>("api/notification/CreateNotificationSubscription", subscription);
+            if (response is { WentWell: true } && response.Result.Status)
+                ShowNotificationAlertStatus = false;
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+        }
+    }
+    private async Task HideInstallModal(bool choice)
+    {
+        ((IJSInProcessRuntime)JSRuntime).InvokeVoid(choice ? "BlazorPWA.installPWA" : "BlazorPWA.dismissInstallPWA");
+        await modalInstallRef.Hide();
+    }
+}

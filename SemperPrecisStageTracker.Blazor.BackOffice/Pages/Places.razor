@@ -1,0 +1,115 @@
+﻿@page "/places"
+@inherits SemperPrecisBaseComponent
+@inject NavigationManager UriHelper
+<PageTitle>Users</PageTitle>
+
+<h1>Users</h1>
+<DataGrid TItem="UserContract"
+          Data="data"
+          TotalItems="total"
+          ReadData="OnReadData"
+          Responsive
+          CommandMode="DataGridCommandMode.ButtonRow"
+          @bind-SelectedRow="@selectedEntity"
+          @bind-PageSize="@pageSize"
+          ShowPager
+          ShowPageSizes>
+    <DataGridColumns>
+        <DataGridColumn TextAlignment="TextAlignment.Center" TItem="UserContract" Field="@nameof( UserContract.UserId )" Caption="#" Width="60px" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.FirstName )" Caption="First Name" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.LastName )" Caption="Last Name" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.Email )" Caption="Email" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.City )" Caption="City" />
+        <DataGridColumn TItem="UserContract" Field="@nameof( UserContract.PostalCode )" Caption="Zip" />
+        <DataGridDateColumn TItem="UserContract" Field="@nameof( UserContract.BirthDate )" DisplayFormat="{0:dd.MM.yyyy}" Caption="Date Of Birth" Editable />
+         <DataGridSelectColumn TItem="UserContract" Field="@nameof( UserContract.Gender )" Caption="Gender" Editable Data="Gender.Genders" ValueField="(x) => ((Gender)x).Code" TextField="(x) => ((Gender)x).Description" />
+         <DataGridCheckColumn TItem="UserContract" Field="@nameof(UserContract.IsActive)" Caption="Active" Editable Filterable="false">
+             <DisplayTemplate>
+                 <Check TValue="bool" Checked="context.IsActive" Disabled ReadOnly />
+             </DisplayTemplate>
+         </DataGridCheckColumn>
+         <DataGridCommandColumn />
+     </DataGridColumns>
+     <ButtonRowTemplate>
+         <Button Color="Color.Success" Clicked="(_) => GoToDetail(string.Empty)">New</Button>
+         <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.UserId)">Edit</Button>
+         <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="modalRef.Show">Delete</Button>
+     </ButtonRowTemplate>
+ </DataGrid>
+ <Modal @ref="modalRef">
+     <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>Delete user</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        @if(selectedEntity is not null)
+        {
+            <ModalBody>
+                    <Field>
+                        <FieldLabel>Name</FieldLabel>
+                        <TextEdit Text="@selectedEntity.CompleteName" Disabled />
+                     </Field>
+                    <Field>
+                        <FieldLabel>Username</FieldLabel>
+                        <TextEdit Text="@selectedEntity.Username" Disabled />
+                     </Field>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@modalRef.Hide">Close</Button>
+                <Button Color="Color.Primary" Clicked="(_)=>DeleteEntity(selectedEntity.UserId)">Delete</Button>
+            </ModalFooter>
+        }
+    </ModalContent>
+</Modal>
+
+
+@code {
+    private Modal modalRef;
+    private IEnumerable<UserContract> data;
+    int total;
+    int pageSize = 10;
+    int pagePosition = 1;
+
+    private UserContract selectedEntity;
+
+    private Task<BaseResponse<List<UserContract>>> LoadData() => 
+                    Call<List<UserContract>>(RequestType.Get, "api/Users", new Dictionary<string, string>
+                                {{ "take", pageSize.ToString() }, {"skip", ((pagePosition - 1) * pageSize).ToString() } });
+
+    /// <summary>
+    /// Standard pattern for handling Datagrid data on demand according to pagination.
+    /// Filtering and Sorting are omitted for simplicity.
+    /// </summary>
+    /// <param name="e"></param>
+    /// <returns></returns>
+    private async Task OnReadData(DataGridReadDataEventArgs<UserContract> e)
+    {
+        if (!e.CancellationToken.IsCancellationRequested)
+        {
+            pagePosition = e.Page;
+            var response = await LoadData();
+
+            if (!e.CancellationToken.IsCancellationRequested)
+            {
+                data = response.Data;
+                total = response.Total;
+            }
+        }
+    }
+
+    private void GoToDetail(string id) =>
+        UriHelper.NavigateTo(RouteHelper.GetUrl<User>(new { id = string.IsNullOrEmpty(id) ? CommonVariables.NewUrlEndpoint : id }));
+
+    private async Task DeleteEntity(string id)
+    {
+        await Call(RequestType.Delete, $"api/Users/{id}", "User delete succesfully");
+        await modalRef.Hide();
+
+        // reload data
+        var response = await LoadData();
+        data = response.Data;
+        total = response.Total;
+    }
+
+ 
+}

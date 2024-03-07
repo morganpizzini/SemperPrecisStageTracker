@@ -19,6 +19,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             ApiResponse<BaseResponse<T>> response;
             BaseResponse<T> result = new();
+            Console.WriteLine(uri);
             switch (requestType)
             {
                 case RequestType.Get:

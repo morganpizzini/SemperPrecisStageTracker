@@ -110,3 +110,41 @@
 //        }
 //    }
 //}
+
+using Fluxor;
+using SemperPrecisStageTracker.Blazor.Components.Utils;
+using SemperPrecisStageTracker.Blazor.Models;
+using SemperPrecisStageTracker.Blazor.Services;
+using SemperPrecisStageTracker.Blazor.Store;
+using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
+
+namespace SemperPrecisStageTracker.Blazor.BackOffice.Services
+{
+    public class MainServiceLayer
+    {
+        private readonly ILocalStorageService _localStorage;
+        private readonly IDispatcher _dispatcher;
+        IState<SettingsState> _settingsState;
+
+        private bool Offline => _settingsState.Value.Offline;
+
+        public MainServiceLayer(ILocalStorageService localStorage, IState<SettingsState> settingsState, IDispatcher dispatcher)
+        {
+            _localStorage = localStorage;
+            _dispatcher = dispatcher;
+            _settingsState = settingsState;
+        }
+
+        public Task Init()
+        {
+            var model = _localStorage.GetItem<ClientSetting>(CommonVariables.ClientSettingsKey);
+            if (model != null)
+                _dispatcher.Dispatch(new SetOfflineAction(model.OfflineMode, model.MatchId));
+            else
+                _dispatcher.Dispatch(new SettingsSetInitializedAction());
+            return Task.CompletedTask;
+        }
+
+
+    }
+}

@@ -8,15 +8,17 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using SemperPrecisStageTracker.Blazor;
 using SemperPrecisStageTracker.Blazor.BackOffice;
+using SemperPrecisStageTracker.Blazor.BackOffice.Services;
 using SemperPrecisStageTracker.Blazor.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Utils;
-using System.Text.RegularExpressions;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services
     .AddBlazorise(options =>
@@ -55,6 +57,7 @@ else
 builder.Services
     .AddScoped<IAuthenticationService, AuthenticationService>()
     .AddScoped<ILocalStorageService, LocalStorageService>()
+    .AddScoped<MainServiceLayer>()
     .AddScoped<NetworkService>()
     .AddScoped<PresentationalServiceLayer>();
 
@@ -62,9 +65,14 @@ var baseAddress = builder.Configuration["baseAddress"];
 if (string.IsNullOrEmpty(baseAddress))
     throw new NullReferenceException("baseAddress configuration is not specified");
 
-var apiUrl = new Uri(baseAddress);
+//var apiUrl = new Uri(baseAddress);
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = apiUrl });
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = apiUrl });
 
+var host = builder.Build();
 
-await builder.Build().RunAsync();
+// init Main service
+var main = host.Services.GetRequiredService<MainServiceLayer>();
+await main.Init();
+
+await host.RunAsync();

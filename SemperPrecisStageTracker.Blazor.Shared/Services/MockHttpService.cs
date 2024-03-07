@@ -67,6 +67,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="1",
+                                Username= "JohnDoe",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -79,6 +80,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="6",
+                                Username= "JohnDoe1",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -91,6 +93,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="4",
+                                Username= "JohnDoe2",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -103,6 +106,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="5",
+                                Username= "JohnDoe3",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -115,6 +119,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="2",
+                                Username= "JohnDoe4",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -126,6 +131,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             new UserContract
                             {
                                 UserId="3",
+                                Username= "JohnDoe5",
                                 FirstName="John",
                                 LastName="Doe",
                                 Email="test@email.com",
@@ -206,6 +212,12 @@ namespace SemperPrecisStageTracker.Blazor.Services
         =>
             uri switch
             {
+                "/api/Authorization/LogIn" => Task.FromResult(new ApiResponse<T>
+                {
+                    Result = (T)(object)new SignInResponse { 
+                        User = users.FirstOrDefault(),
+                    }
+                }),
                 string s when s.MatchesRegexPattern("api/permissions/.+/role/.+") =>
                     Task.FromResult(new ApiResponse<T>
                     {

@@ -51,7 +51,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 
 
 var currentAssembly = typeof(UserState).Assembly;
-//var currentAssembly = typeof(Program).Assembly;
 builder.Services.AddFluxor(options =>{ 
     options.ScanAssemblies(currentAssembly);
 

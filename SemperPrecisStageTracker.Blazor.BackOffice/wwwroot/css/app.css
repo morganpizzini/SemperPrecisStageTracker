@@ -111,3 +111,7 @@ a.no-style {
 .pointer {
     cursor: pointer;
 }
+
+div.main{
+    width: 100%;
+}

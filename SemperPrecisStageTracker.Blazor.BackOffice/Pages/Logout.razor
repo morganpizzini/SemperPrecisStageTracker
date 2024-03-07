@@ -1,0 +1,10 @@
+﻿@page "/logout"
+@using SemperPrecisStageTracker.Blazor.Services
+@inject IAuthenticationService AuthenticationService
+
+@code {
+    protected override void OnInitialized()
+    {
+        AuthenticationService.Logout(RouteHelper.GetUrl<Login>());
+    }
+}

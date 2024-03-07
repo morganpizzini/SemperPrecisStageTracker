@@ -27,7 +27,6 @@ public class SemperPrecisBasePresentationalValidationComponent<T> : SemperPrecis
         await SubmitCallback.InvokeAsync();
     }
 }
-
 public class SemperPrecisBasePresentationalComponent : FluxorComponent
 {
     [Inject]

@@ -1,13 +1,47 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
-<NotificationProvider />
+﻿@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+@inject NavigationManager NavigationManager
+@inject IState<UserState> UserState
+@inject IState<SettingsState> SettingsState
+<Fluxor.Blazor.Web.StoreInitializer />
+@if (SettingsState.Value.Ready)
+{
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(App).Assembly" PreferExactMatches="@true">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData"
+                                    DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        @if (context.User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <p>
+                                You are not authorized to access
+                                this resource.
+                            </p>
+                        }
+                        else
+                        {
+                            <RedirectToLogin />
+                        }
+                    </NotAuthorized>
+                    <Authorizing>
+                        <h1>Authorization in progress</h1>
+                        <p>Only visible while authorization is in progress.</p>
+                    </Authorizing>
+                </AuthorizeRouteView>
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">Sorry, there's nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+    <NotificationProvider />
+}
+@code {
+    protected override void Dispose(bool disposed)
+    {
+        base.Dispose(disposed);
+    }
+}
