@@ -431,7 +431,7 @@
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
   ],
-  "shooters": [
+  "users": [
     {
       "id": "1",
       "firstName": "Shooter",
@@ -1158,7 +1158,7 @@
     },
     {
       "id": "5",
-      "name": "ManageShooters"
+      "name": "ManageUsers"
     },
     {
       "id": "6",

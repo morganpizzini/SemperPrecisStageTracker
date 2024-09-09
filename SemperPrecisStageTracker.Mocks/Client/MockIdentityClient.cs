@@ -97,7 +97,8 @@ namespace SemperPrecisStageTracker.Mocks.Clients
         /// <returns></returns>
         private ISemperPrecisStageTrackerScenario GetScenario()
         {
-            var ds = SessionFactory.OpenSession();
+            using var ds = SessionFactory.OpenSession();
+            //var scenario = ds.GetScenario<ISemperPrecisStageTrackerScenario>();
             return ds.GetScenario<ISemperPrecisStageTrackerScenario>();
 
         }

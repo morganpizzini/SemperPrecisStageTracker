@@ -125,7 +125,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageShooters.CreateShooters));
+            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageUsers.CreateShooters));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Users.Count;
