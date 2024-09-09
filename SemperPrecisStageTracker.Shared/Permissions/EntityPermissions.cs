@@ -43,7 +43,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         // admin
         [Description("ManageMatches")]
         ManageMatches = 901,
-        [Description("ManageShooters")]
+        [Description("ManageUsers")]
         ManageUsers = 902,
         [Description("ManageTeams")]
         ManageTeams = 903,
@@ -111,7 +111,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
     public interface IPermissionInterface
     {
         IPermissionInterface ManageMatches {get;}
-        IPermissionInterface ManageShooters {get;}
+        IPermissionInterface ManageUsers {get;}
         IPermissionInterface ManageTeams {get;}
         IPermissionInterface ManageAssociations {get;}
         IPermissionInterface ManagePlaces {get;}
@@ -171,7 +171,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
 
 
         public IPermissionInterface ManageMatches => AddPermission(Permissions.ManageMatches);
-        public IPermissionInterface ManageShooters => AddPermission(Permissions.ManageUsers);
+        public IPermissionInterface ManageUsers => AddPermission(Permissions.ManageUsers);
         public IPermissionInterface ManageTeams => AddPermission(Permissions.ManageTeams);
         public IPermissionInterface ManageAssociations => AddPermission(Permissions.ManageAssociations);
         public IPermissionInterface ManagePlaces => AddPermission(Permissions.ManagePlaces);
@@ -210,7 +210,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
     {
         public static IPermissionInterface Compose(IList<Permissions> perms) => new PermissionHandler().Compose(perms);
         public static IPermissionInterface ManageMatches => new PermissionHandler().ManageMatches;
-        public static IPermissionInterface ManageShooters => new PermissionHandler().ManageShooters;
+        public static IPermissionInterface ManageUsers => new PermissionHandler().ManageUsers;
         public static IPermissionInterface ManageTeams => new PermissionHandler().ManageTeams;
         public static IPermissionInterface ManageAssociations => new PermissionHandler().ManageAssociations;
         public static IPermissionInterface ManagePlaces => new PermissionHandler().ManagePlaces;

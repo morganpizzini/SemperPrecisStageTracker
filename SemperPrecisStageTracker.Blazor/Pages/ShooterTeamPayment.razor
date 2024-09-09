@@ -7,7 +7,7 @@
 <NavLink href="@(RouteHelper.GetUrl<TeamDetail>(new {id = TeamId}))">@L["BackToTeam"]</NavLink>
 
 <Divider />
-<AuthorizeView Roles="@(PermissionCtor.ManageShooters.ShowShooters.EditShooter.ToString())" Resource="@Id">
+<AuthorizeView Roles="@(PermissionCtor.ManageUsers.ShowShooters.EditShooter.ToString())" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -302,7 +302,7 @@
 
     private bool? pageCondition = null;
 
-    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
+    private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditShooter, Id)
                                                  && AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, TeamId);
 
     UserContract shooter = new();
@@ -320,7 +320,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (!(AuthService.CheckPermissions(PermissionCtor.ManageShooters.EditShooter, Id)
+        if (!(AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditShooter, Id)
                                                  && AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, TeamId)))
         {
             await base.OnInitializedAsync();
