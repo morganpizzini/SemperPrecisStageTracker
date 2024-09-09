@@ -12,7 +12,6 @@ using System.ComponentModel.DataAnnotations;
 using SemperPrecisStageTracker.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2;
 
@@ -98,7 +97,8 @@ public class UsersController : ApiControllerBase
             LastName = request.LastName,
             BirthDate = request.BirthDate,
             Email = request.Email,
-            Username = request.Username
+            Username = request.Username,
+            IsActive = request.IsActive
         };
         var data = new UserData
         {
@@ -154,6 +154,7 @@ public class UsersController : ApiControllerBase
         entity.BirthDate = request.Body.BirthDate;
         entity.Email = request.Body.Email;
         entity.Username = request.Body.Username;
+        entity.IsActive = request.Body.IsActive;
         data.FirearmsLicenceExpireDate = request.Body.FirearmsLicenceExpireDate;
         data.FirearmsLicenceReleaseDate = request.Body.FirearmsLicenceReleaseDate;
         data.FirearmsLicence = request.Body.FirearmsLicence;

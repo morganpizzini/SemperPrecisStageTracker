@@ -67,7 +67,7 @@
                          </Field>
                          <Field>
                              <FieldLabel>Province</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Province" Disabled="_disableEdit" />
+                             <TextEdit @bind-Text="@Model.Region" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>Postal code</FieldLabel>
@@ -236,10 +236,12 @@
                     Address = Model.Address,
                     City = Model.City,
                     PostalCode = Model.PostalCode,
-                    Province = Model.Province,
+                    Province = Model.Region,
                     Country = Model.Country,
                     Phone = Model.Phone,
-                    FiscalCode = Model.FiscalCode
+                    FiscalCode = Model.FiscalCode,
+                    Gender = Model.Gender,
+                    IsActive = Model.IsActive
                 }, "User update correctly");
             GoBackClick();
         }
@@ -260,10 +262,12 @@
                     Address = Model.Address,
                     City = Model.City,
                     PostalCode = Model.PostalCode,
-                    Province = Model.Province,
+                    Province = Model.Region,
                     Country = Model.Country,
                     Phone = Model.Phone,
-                    FiscalCode = Model.FiscalCode
+                    FiscalCode = Model.FiscalCode,
+                    IsActive = Model.IsActive,
+                    Gender = Model.Gender
                 }, "User update correctly");
             CloneModel = new();
             _disableEdit = true;

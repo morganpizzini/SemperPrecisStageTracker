@@ -149,7 +149,7 @@ var host = builder.Build();
 // init network service
 var network = host.Services.GetRequiredService<NetworkService>();
 network.Init();
-
+network.Dispose();
 // init Main service
 var main = host.Services.GetRequiredService<MainServiceLayer>();
 await main.Init().ConfigureAwait(false);

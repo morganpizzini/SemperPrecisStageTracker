@@ -48,7 +48,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Address = RandomizationUtils.GenerateRandomString(15),
                 City = RandomizationUtils.GenerateRandomString(15),
                 Region = RandomizationUtils.GenerateRandomString(15),
-                PostalZipCode = RandomizationUtils.GenerateRandomString(15),
+                PostalCode = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15),
             };
 
@@ -69,7 +69,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.Address == request.Address
                           && parsed.Data.City == request.City
                           && parsed.Data.Region == request.Region
-                          && parsed.Data.PostalZipCode == request.PostalZipCode
+                          && parsed.Data.PostalCode == request.PostalCode
                           && parsed.Data.Country == request.Country);
         }
 
@@ -100,7 +100,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 Region = RandomizationUtils.GenerateRandomString(15),
-                PostalZipCode = RandomizationUtils.GenerateRandomString(15),
+                PostalCode = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15)
             };
 
@@ -141,7 +141,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var request = new PlaceCreateRequest
             {
                 Name = existing.Name,
-                PostalZipCode = existingData.PostalZipCode,
+                PostalCode = existingData.PostalCode,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 City = RandomizationUtils.GenerateRandomString(15),
@@ -187,7 +187,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Address = RandomizationUtils.GenerateRandomString(15),
                 City = RandomizationUtils.GenerateRandomString(15),
                 Region = RandomizationUtils.GenerateRandomString(15),
-                PostalZipCode = RandomizationUtils.GenerateRandomString(15),
+                PostalCode = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15)
             };
 
@@ -209,7 +209,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                           && parsed.Data.Address == request.Address
                           && parsed.Data.City == request.City
                           && parsed.Data.Region == request.Region
-                          && parsed.Data.PostalZipCode == request.PostalZipCode
+                          && parsed.Data.PostalCode == request.PostalCode
                           && parsed.Data.Country == request.Country);
 
             //verifica contatori
@@ -233,7 +233,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 City = RandomizationUtils.GenerateRandomString(15),
                 Region = RandomizationUtils.GenerateRandomString(15),
-                PostalZipCode = RandomizationUtils.GenerateRandomString(15),
+                PostalCode = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15)
             };
 
@@ -288,7 +288,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 Region = RandomizationUtils.GenerateRandomString(15),
-                PostalZipCode = RandomizationUtils.GenerateRandomString(15),
+                PostalCode = RandomizationUtils.GenerateRandomString(15),
                 Country = RandomizationUtils.GenerateRandomString(15)
             };
 
@@ -337,7 +337,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             {
                 PlaceId = existing.Id,
                 Name = anotherExisting.Name,
-                PostalZipCode = anotherExistingData.PostalZipCode,
+                PostalCode = anotherExistingData.PostalCode,
                 Holder = RandomizationUtils.GenerateRandomString(15),
                 Email = RandomizationUtils.GenerateRandomEmail(),
                 City = RandomizationUtils.GenerateRandomString(15),

@@ -18,9 +18,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Region { get; set; }
         [Required]
-        public string PostalZipCode { get; set; }
+        public string PostalCode { get; set; }
         [Required]
         public string Country { get; set; }
+        public bool IsActive { get; set; }
     }
 
     public class TeamReminderCreateRequest : EntityFilterValidation

@@ -2129,7 +2129,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             var existingIds = existing.Select(x => x.Id).ToList();
 
             var singlePlace = _placeDataRepository.Fetch(x =>
-                existingIds.Contains(x.PlaceId) && (x.City == data.City || x.PostalZipCode == data.PostalZipCode));
+                existingIds.Contains(x.PlaceId) && (x.City == data.City || x.PostalCode == data.PostalCode));
 
             if (singlePlace.Count > 0)
             {

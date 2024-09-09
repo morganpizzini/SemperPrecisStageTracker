@@ -18,6 +18,7 @@ namespace SemperPrecisStageTracker.Models
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string RestorePasswordAlias{get;set;} = string.Empty;
+        public bool IsActive { get; set; }
     }
 
     public class UserData : SemperPrecisEntity

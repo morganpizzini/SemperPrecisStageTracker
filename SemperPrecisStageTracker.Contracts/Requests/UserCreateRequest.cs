@@ -30,6 +30,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public DateTime FirearmsLicenceExpireDate { get; set; } = DateTime.Now.AddYears(1);
         public DateTime FirearmsLicenceReleaseDate { get; set; } = DateTime.Now;
         public DateTime? MedicalExaminationExpireDate { get; set; }
+        public bool IsActive { get; set; }
 
     }
 }

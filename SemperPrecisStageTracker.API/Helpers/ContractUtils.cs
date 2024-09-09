@@ -308,8 +308,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Gender = entity.Gender,
                 Email = entity.Email,
                 Username = entity.Username,
-                
-
+                IsActive = entity.IsActive,
                 Classifications = userClassifications != null ? userClassifications.As(s => GenerateContract(s)) : new List<UserAssociationContract>(),
                 Teams = userTeams != null ? userTeams.As(GenerateContract) : new List<TeamContract>()
             };
@@ -325,7 +324,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                     result.Address = data.Address;
                     result.City = data.City;
                     result.PostalCode = data.PostalCode;
-                    result.Province = data.Province;
+                    result.Region = data.Province;
                     result.Country = data.Country;
                     result.Phone = data.Phone;
                     result.FiscalCode = data.FiscalCode;
@@ -545,8 +544,9 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Address = data?.Address,
                 City = data?.City,
                 Region = data?.Region,
-                PostalZipCode = data?.PostalZipCode,
-                Country = data?.Country
+                PostalCode = data?.PostalCode,
+                Country = data?.Country,
+                IsActive = entity.IsActive
             };
         }
 

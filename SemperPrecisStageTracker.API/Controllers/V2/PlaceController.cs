@@ -87,7 +87,8 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Creazione modello richiesto da admin
             var model = new Place
             {
-                Name = request.Name
+                Name = request.Name,
+                IsActive = request.IsActive
             };
 
             var data = new PlaceData
@@ -98,7 +99,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
                 Address = request.Address,
                 City = request.City,
                 Region = request.Region,
-                PostalZipCode = request.PostalZipCode,
+                PostalCode = request.PostalCode,
                 Country = request.Country
             };
 
@@ -138,6 +139,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
 
             //Aggiornamento dell'entità
             entity.Name = request.Body.Name;
+            entity.IsActive = request.Body.IsActive;
 
             data.Holder = request.Body.Holder;
             data.Phone = request.Body.Phone;
@@ -145,7 +147,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             data.Address = request.Body.Address;
             data.City = request.Body.City;
             data.Region = request.Body.Region;
-            data.PostalZipCode = request.Body.PostalZipCode;
+            data.PostalCode = request.Body.PostalCode;
             data.Country = request.Body.Country;
 
             //Salvataggio

@@ -111,7 +111,7 @@
                     <Field Horizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["PostalZipCode"]</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                            <TextEdit Placeholder="@L["PostalZipCode"]" @bind-Text="@model.PostalZipCode">
+                            <TextEdit Placeholder="@L["PostalZipCode"]" @bind-Text="@model.PostalCode">
                                 <Feedback>
                                     <ValidationError>@L["WrongPostalZipCode"]</ValidationError>
                                 </Feedback>
@@ -165,7 +165,7 @@
         model.Address = existing.Address;
         model.City = existing.City;
         model.Region = existing.Region;
-        model.PostalZipCode = existing.PostalZipCode;
+        model.PostalCode = existing.PostalCode;
         model.Country = existing.Country;
 
         await base.OnInitializedAsync();

@@ -31,9 +31,9 @@ namespace SemperPrecisStageTracker.Contracts
         public string Address { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string PostalCode { get; set; } = string.Empty;
-        public string Province { get; set; } = string.Empty;
+        public string Region { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
-        public string CompleteAddress => $"{Address}, {City} ({PostalCode}), {Province} - {Country}";
+        public string CompleteAddress => $"{Address}, {City} ({PostalCode}), {Region} - {Country}";
         public string Phone { get; set; } = string.Empty;
         public string FiscalCode { get; set; } = string.Empty;
         // set when personal data is not provided

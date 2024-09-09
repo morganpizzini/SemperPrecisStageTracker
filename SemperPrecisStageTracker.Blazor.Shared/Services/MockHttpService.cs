@@ -63,84 +63,138 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 Description = "Contributor"
             }
         };
+        private static IList<PlaceContract> places = new List<PlaceContract> {
+            new PlaceContract
+            {
+                PlaceId="1",
+                Name="Place 1",
+                Holder="John Doe",
+                Phone="1234567890",
+                Email="sample@mail.com",
+                Address="123 Main St",
+                City="New York",
+                Region="NY",
+                PostalCode="10001",
+                Country="USA"
+            },
+            new PlaceContract
+            {
+                PlaceId="2",
+                Name="Place 2",
+                Holder="John Doe",
+                Phone="1234567890",
+                Email="sample@mail.com",
+                Address="123 Main St",
+                City="New York",
+                Region="NY",
+                PostalCode="10001",
+                Country="USA"
+            },
+            new PlaceContract
+            {
+                PlaceId="3",
+                Name="Place 3",
+                Holder="John Doe",
+                Phone="1234567890",
+                Email="sample@mail.com",
+                Address="123 Main St",
+                City="New York",
+                Region="NY",
+                PostalCode="10001",
+                Country="USA"
+            },
+            new PlaceContract
+            {
+                PlaceId="4",
+                Name="Place 4",
+                Holder="John Doe",
+                Phone="1234567890",
+                Email="sample@mail.com",
+                Address="123 Main St",
+                City="New York",
+                Region="NY",
+                PostalCode="10001",
+                Country="USA"
+            }
+        };
         private static IList<UserContract> users = new List<UserContract> {
-                            new UserContract
-                            {
-                                UserId="1",
-                                Username= "JohnDoe",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M",
-                                IsActive = true
-                            },
-                            new UserContract
-                            {
-                                UserId="6",
-                                Username= "JohnDoe1",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M",
-                                IsActive = true
-                            },
-                            new UserContract
-                            {
-                                UserId="4",
-                                Username= "JohnDoe2",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M",
-                                IsActive = true
-                            },
-                            new UserContract
-                            {
-                                UserId="5",
-                                Username= "JohnDoe3",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M",
-                                IsActive = true
-                            },
-                            new UserContract
-                            {
-                                UserId="2",
-                                Username= "JohnDoe4",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M"
-                            },
-                            new UserContract
-                            {
-                                UserId="3",
-                                Username= "JohnDoe5",
-                                FirstName="John",
-                                LastName="Doe",
-                                Email="test@email.com",
-                                City="New York",
-                                PostalCode="10001",
-                                BirthDate=DateTime.Now,
-                                Gender = "M"
-                            }
-                        };
+            new UserContract
+            {
+                UserId="1",
+                Username= "JohnDoe",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M",
+                IsActive = true
+            },
+            new UserContract
+            {
+                UserId="6",
+                Username= "JohnDoe1",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M",
+                IsActive = true
+            },
+            new UserContract
+            {
+                UserId="4",
+                Username= "JohnDoe2",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M",
+                IsActive = true
+            },
+            new UserContract
+            {
+                UserId="5",
+                Username= "JohnDoe3",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M",
+                IsActive = true
+            },
+            new UserContract
+            {
+                UserId="2",
+                Username= "JohnDoe4",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M"
+            },
+            new UserContract
+            {
+                UserId="3",
+                Username= "JohnDoe5",
+                FirstName="John",
+                LastName="Doe",
+                Email="test@email.com",
+                City="New York",
+                PostalCode="10001",
+                BirthDate=DateTime.Now,
+                Gender = "M"
+            }
+        };
         private static IList<PermissionContract> permissions = new List<PermissionContract>
         {
             new PermissionContract
@@ -172,6 +226,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     {
                         Result = (T)(object)new BaseResponse<UserContract>(users.First())
                     }),
+                string s when s.MatchesRegexPattern("api/Places/.+") =>
+                    Task.FromResult(new ApiResponse<T>
+                    {
+                        Result = (T)(object)new BaseResponse<PlaceContract>(places.First())
+                    }),
                 "api/Permissions" => Task.FromResult(new ApiResponse<T>
                 {
                     Result = (T)(object)new BaseResponse<List<PermissionContract>>(
@@ -189,6 +248,16 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             users.Count,
                             string.Empty)
                 }),
+                "api/Places" => Task.FromResult(new ApiResponse<T>
+                {
+                    Result = (T)(object)new BaseResponse<List<PlaceContract>>(
+                            places
+                            .Skip(int.Parse(queryParameters?["skip"] ?? "0"))
+                            .Take(int.Parse(queryParameters?["take"] ?? "10"))
+                            .ToList(),
+                            users.Count,
+                            string.Empty)
+                }),
                 "api/Roles" => Task.FromResult(new ApiResponse<T>
                 {
                     Result = (T)(object)new BaseResponse<List<RoleContract>>(
@@ -199,7 +268,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             roles.Count,
                             string.Empty)
                 }),
-                
+
                 string s when s.StartsWith("api/Roles/") =>
                     Task.FromResult(new ApiResponse<T>
                     {
@@ -214,7 +283,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             {
                 "/api/Authorization/LogIn" => Task.FromResult(new ApiResponse<T>
                 {
-                    Result = (T)(object)new SignInResponse { 
+                    Result = (T)(object)new SignInResponse
+                    {
                         User = users.FirstOrDefault(),
                     }
                 }),

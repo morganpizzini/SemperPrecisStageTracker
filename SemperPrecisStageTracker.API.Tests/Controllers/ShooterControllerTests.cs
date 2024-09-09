@@ -89,7 +89,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                             && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate 
                             && parsed.Data.Phone == request.Phone 
                             && parsed.Data.PostalCode == request.PostalCode 
-                            && parsed.Data.Province == request.Province 
+                            && parsed.Data.Region == request.Province 
                           );
         }
 
@@ -296,7 +296,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                             && parsed.Data.MedicalExaminationExpireDate == request.MedicalExaminationExpireDate 
                             && parsed.Data.Phone == request.Phone 
                             && parsed.Data.PostalCode == request.PostalCode 
-                            && parsed.Data.Province == request.Province );
+                            && parsed.Data.Region == request.Province );
 
             //verifica contatori
             Assert.AreEqual(countBefore, countAfter);

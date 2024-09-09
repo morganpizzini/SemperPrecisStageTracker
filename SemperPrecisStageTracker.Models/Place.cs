@@ -7,6 +7,7 @@ namespace SemperPrecisStageTracker.Models
     {
         [Required]
         public string Name { get; set; }
+        public bool IsActive { get; set; }
     }
 
     public class PlaceData : SemperPrecisEntity
@@ -24,7 +25,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string Region { get; set; }
         [Required]
-        public string PostalZipCode { get; set; }
+        public string PostalCode { get; set; }
         [Required]
         public string Country { get; set; }
 

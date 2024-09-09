@@ -81,7 +81,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 Address = request.Address,
                 City = request.City,
                 Region = request.Region,
-                PostalZipCode = request.PostalZipCode,
+                PostalCode = request.PostalCode,
                 Country = request.Country
             };
 
@@ -129,7 +129,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             data.Address = request.Address;
             data.City = request.City;
             data.Region = request.Region;
-            data.PostalZipCode = request.PostalZipCode;
+            data.PostalCode = request.PostalCode;
             data.Country = request.Country;
 
             //Salvataggio

@@ -1,52 +1,40 @@
 ﻿@page "/place/{id}"
-@inherits SemperPrecisBaseComponent<UserContract>
+@inherits SemperPrecisBaseComponent<PlaceContract>
 @inject NavigationManager UriHelper
 <PageTitle>Users</PageTitle>
 
-<h1><Icon class="me-2 pointer" Name="IconName.ArrowLeft" IconSize="IconSize.ExtraSmall" @onclick="GoBackClick" />User detail</h1>
+<h1><Icon class="me-2 pointer" Name="IconName.ArrowLeft" IconSize="IconSize.ExtraSmall" @onclick="GoBackClick"/>Place detail</h1>
 
 <Card Margin="Margin.Is4.OnY">
     <CardHeader>
-        <CardTitle>Personal data</CardTitle>
+        <CardTitle>General data</CardTitle>
     </CardHeader>
     <CardBody>
         <Paragraph>
-            This is the personal data of the user.
+            This is the data for place.
         </Paragraph>
     </CardBody>
     <CardBody>
         <Row>
             <Column>
                 <Field>
-                    <FieldLabel>First Name</FieldLabel>
-                    <TextEdit @bind-Text="@Model.FirstName" Disabled="_disableEdit" />
+                    <FieldLabel>Name</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Name" Disabled="_disableEdit" />
                 </Field>
                 <Field>
-                    <FieldLabel>Last Name</FieldLabel>
-                     <TextEdit @bind-Text="@Model.LastName" Disabled="_disableEdit" />
+                    <FieldLabel>Holder</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Holder" Disabled="_disableEdit" />
                 </Field>
-                 <Field>
-                     <FieldLabel>Birth date</FieldLabel>
-                    <DatePicker TValue="DateTime" @bind-Date="@Model.BirthDate" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Birth date</FieldLabel>
-                    <Select TValue="string" @bind-SelectedValue="@Model.Gender" Disabled="_disableEdit">
-                         @foreach (var gen in Gender.Genders){
-                             <SelectItem Value="@gen.Code">@gen.Description</SelectItem>
-                         }
-                     </Select>
-                 </Field>
+                <Field>
+                    <FieldLabel>Phone</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Phone" Disabled="_disableEdit" />
+                </Field>
                 <Field>
                     <FieldLabel>Is active</FieldLabel>
                     <Check TValue="bool" Checked="Model.IsActive" Disabled="_disableEdit" />
                 </Field>
             </Column>
             <Column>
-                 <Field>
-                     <FieldLabel>Username</FieldLabel>
-                     <TextEdit @bind-Text="@Model.Username" Disabled="_disableEdit" />
-                 </Field>
                  <Field>
                      <FieldLabel>Email</FieldLabel>
                      <TextEdit @bind-Text="@Model.Email" Disabled="_disableEdit" />
@@ -67,7 +55,7 @@
                          </Field>
                          <Field>
                              <FieldLabel>Province</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Province" Disabled="_disableEdit" />
+                             <TextEdit @bind-Text="@Model.Region" Disabled="_disableEdit" />
                          </Field>
                          <Field>
                              <FieldLabel>Postal code</FieldLabel>
@@ -79,18 +67,6 @@
                          </Field>
                      </ChildContent>
                  </CollapseComponent>
-                 <Field>
-                     <FieldLabel>Phone</FieldLabel>
-                     <TextEdit Text="@Model.Phone" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Fiscal code</FieldLabel>
-                     <TextEdit Text="@Model.FiscalCode" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Firearms Licence</FieldLabel>
-                     <TextEdit @bind-Text="@Model.FirearmsLicence" Disabled="_disableEdit" />
-                 </Field>
             </Column>
         </Row>
         <Div Class="text-end">
@@ -114,186 +90,65 @@
         </Div>
     </CardBody>
 </Card>
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>Actions</CardTitle>
-    </CardHeader>
-    <CardBody>
-        <Paragraph>
-            User settings action
-        </Paragraph>
-    </CardBody>
-    <CardBody>
-        <Button Color="Color.Warning" Clicked="dialogRef.Show">Reset password</Button>
-    </CardBody>
-</Card>
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>User roles</CardTitle>
-    </CardHeader>
-    <CardBody>
-        <Paragraph>
-            Roles assigned to user
-        </Paragraph>
-    </CardBody>
-    <CardBody>
-        <DataGrid TItem="RoleContract"
-                  Data="userRoles"
-                  Sortable="false"
-                  Responsive
-                  Editable
-                  ShowPager
-                   ShowPageSizes="false"
-                   EditMode="DataGridEditMode.Form"
-                   CommandMode="DataGridCommandMode.ButtonRow"
-                   @bind-SelectedRow="@selectedEntity"
-                   RowInserting="@OnRowInsertingAsync"
-                   ShowCaptions="false">
-             <DataGridColumns>
-                 <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
-                    <SaveCommandTemplate>
-                        <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                        </SaveCommandTemplate>
-                        <CancelCommandTemplate>
-                            <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                        </CancelCommandTemplate>
-                    </DataGridCommandColumn>
-                    <DataGridColumn Field="@nameof(RoleContract.RoleId)" Displayable="false" />
-                    <DataGridColumn Field="@nameof(RoleContract.Name)" Caption="Name" Editable>
-                    <EditTemplate>
-                        <Select TValue="string" SelectedValueChanged="@(v => {
-                                        context.CellValue = availableRoles.FirstOrDefault(x=>x.RoleId == v)?.Name ?? string.Empty;
-                                        context.UpdateCell( nameof( RoleContract.RoleId ), v);
-                                    })">
-                            <ChildContent>
-                                <SelectItem Value="@("")"></SelectItem>
-                                @foreach (var role in availableRoles)
-                                {
-                                    <SelectItem Value="@role.RoleId">@role.Name</SelectItem>
-                                }
-                            </ChildContent>
-                            <Feedback>
-                                <ValidationError>Select a role</ValidationError>
-                            </Feedback>
-                        </Select>
-                    </EditTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-            <ButtonRowTemplate>
-                <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-                <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Edit</Button>
-                <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeleteEntity(context)">Delete</Button>
-            </ButtonRowTemplate>
-        </DataGrid>
-    </CardBody>
-</Card>
-<DialogComponent @ref="dialogRef" OnCallBack="CallBackResetPassword" Message="If approve, the password will be reset" Title="Reset user password"></DialogComponent>
 
 @code {
     private DialogComponent dialogRef;
-    private IList<RoleContract> userRoles = new List<RoleContract>();
-    private IList<RoleContract> availableRoles = new List<RoleContract>();
     private RoleContract selectedEntity;
 
     override protected async Task LoadModel()
     {
         if (IsNewElement)
         {
-            Model = new UserContract();
+            Model = new PlaceContract();
             _disableEdit = false;
             return;
         }
-        var baseAddress = $"api/Users/{Id}";
-        Model = (await Call<UserContract>(RequestType.Get, baseAddress)).Data;
-        userRoles = (await Call<List<RoleContract>>(RequestType.Get, $"{baseAddress}/Roles")).Data;
-        availableRoles = (await Call<List<RoleContract>>(RequestType.Get, $"api/Roles")).Data;
+        var baseAddress = $"api/Places/{Id}";
+        Model = (await Call<PlaceContract>(RequestType.Get, baseAddress)).Data;
     }
 
     private void GoBackClick()
     {
-        UriHelper.NavigateTo("/users");
+        UriHelper.NavigateTo("/places");
     }
-
-    private void GoToDetail(string id) =>
-        UriHelper.NavigateTo(RouteHelper.GetUrl<Role>(new { id = string.IsNullOrEmpty(id) ? CommonVariables.NewUrlEndpoint : id }));
 
     private async Task SaveClick(MouseEventArgs _)
     {
         if (IsNewElement)
         {
-            await Call(RequestType.Post, $"api/Users", null, new UserCreateRequest
+            await Call(RequestType.Post, $"api/Places", null, new PlaceCreateRequest
                 {
-                    FirstName = Model.FirstName,
-                    LastName = Model.LastName,
-                    BirthDate = Model.BirthDate,
+                    Name = Model.Name,
+                    Holder = Model.Holder,
                     Email = Model.Email,
-                    Username = Model.Username,
-                    FirearmsLicenceExpireDate = Model.FirearmsLicenceExpireDate,
-                    FirearmsLicenceReleaseDate = Model.FirearmsLicenceReleaseDate,
-                    FirearmsLicence = Model.FirearmsLicence,
-                    MedicalExaminationExpireDate = Model.MedicalExaminationExpireDate,
-                    BirthLocation = Model.BirthLocation,
                     Address = Model.Address,
                     City = Model.City,
                     PostalCode = Model.PostalCode,
-                    Province = Model.Province,
+                    Region = Model.Region,
                     Country = Model.Country,
                     Phone = Model.Phone,
-                    FiscalCode = Model.FiscalCode
-                }, "User update correctly");
+                    IsActive = Model.IsActive
+                }, "Place update correctly");
             GoBackClick();
         }
         else
         {
-            await Call(RequestType.Put, $"api/Users/{Id}", null, new UserUpdateRequest
+            await Call(RequestType.Put, $"api/Places/{Id}", null, new PlaceUpdateRequest
                 {
-                    FirstName = Model.FirstName,
-                    LastName = Model.LastName,
-                    BirthDate = Model.BirthDate,
+                    Name = Model.Name,
+                    Holder = Model.Holder,
                     Email = Model.Email,
-                    Username = Model.Username,
-                    FirearmsLicenceExpireDate = Model.FirearmsLicenceExpireDate,
-                    FirearmsLicenceReleaseDate = Model.FirearmsLicenceReleaseDate,
-                    FirearmsLicence = Model.FirearmsLicence,
-                    MedicalExaminationExpireDate = Model.MedicalExaminationExpireDate,
-                    BirthLocation = Model.BirthLocation,
                     Address = Model.Address,
                     City = Model.City,
                     PostalCode = Model.PostalCode,
-                    Province = Model.Province,
+                    Region = Model.Region,
                     Country = Model.Country,
                     Phone = Model.Phone,
-                    FiscalCode = Model.FiscalCode
-                }, "User update correctly");
+                    IsActive = Model.IsActive
+                }, "Place update correctly");
             CloneModel = new();
             _disableEdit = true;
             await LoadModel();
         }
-    }
-    private async Task OnRowInsertingAsync(CancellableRowChange<RoleContract, Dictionary<string, object>> e)
-    {
-        var currentEntity = availableRoles.FirstOrDefault(x => x.Name == e.NewItem.Name);
-        if (currentEntity is null)
-        {
-            e.Cancel = true;
-            return;
-        }
-
-        if ((await Call<RoleContract>(RequestType.Post, $"api/users/{Model.UserId}/roles/{currentEntity.RoleId}", null, null, "Role assigned correctly")).Errors.Any())
-        {
-            e.Cancel = true;
-        }
-    }
-    private async Task DeleteEntity(ButtonRowContext<RoleContract> context)
-    {
-        if (!(await Call<object>(RequestType.Delete, $"api/users/{Model.UserId}/roles/{selectedEntity.RoleId}", null, null, "Role deleted correctly")).Errors.Any())
-        {
-            await context.DeleteCommand.Clicked.InvokeAsync();
-        }
-    }
-    private async Task CallBackResetPassword()
-    {
-        await Call(RequestType.Post, $"api/Users/{Model.UserId}/reset-password", "User password reset");
-        dialogRef.Hide();
     }
 } 
