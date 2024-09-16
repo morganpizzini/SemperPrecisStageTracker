@@ -92,10 +92,13 @@
 
         await base.OnInitializedAsync();
     }
-
-    protected override void Dispose(bool disposed)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
-        base.Dispose(disposed);
+        return base.DisposeAsyncCore(disposing);
+    }
+    public void Dispose()
+    {
+        
     }
     public void UpdateInterface(object _, EventArgs __) => StateHasChanged();
 
@@ -120,13 +123,13 @@
     [JSInvokable]
     public static Task PromptPwaInstallation()
     {
-        actionPwaInstallation.Invoke(true);
+        actionPwaInstallation?.Invoke(true);
         return Task.CompletedTask;
     }
     [JSInvokable]
     public static Task DismissPwaInstallation()
     {
-        actionPwaInstallation.Invoke(false);
+        actionPwaInstallation?.Invoke(false);
         return Task.CompletedTask;
     }
 

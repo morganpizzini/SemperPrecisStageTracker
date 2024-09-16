@@ -22,8 +22,8 @@
             Dispatcher.Dispatch(new ChangeThemeAction(value));
         }
     }
-    protected override void Dispose(bool disposed)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
-      base.Dispose(disposed);
+        return base.DisposeAsyncCore(disposing);
     }
 }

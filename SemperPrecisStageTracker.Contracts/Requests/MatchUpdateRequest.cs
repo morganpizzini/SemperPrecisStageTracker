@@ -8,7 +8,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string MatchId { get; set; }
 
-        public override string EntityId => MatchId;
+        public string EntityId => MatchId;
 
         [Required]
         public string Name { get; set; }

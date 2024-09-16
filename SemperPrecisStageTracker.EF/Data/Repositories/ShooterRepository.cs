@@ -24,4 +24,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class BayScheduleRepository : EntityFrameworkRepositoryBase<BaySchedule, SemperPrecisStageTrackerContext>, IBayScheduleRepository
+    {
+        public BayScheduleRepository(IDataSession dataSession)
+            : base(dataSession, c => c.BaySchedules)
+        {
+        }
+    }
 }

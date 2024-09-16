@@ -8,7 +8,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class AssociationRequest : EntityFilterValidation
     {
-        public override string EntityId => AssociationId;
+        public string EntityId => AssociationId;
         /// <summary>
         /// Identifier
         /// </summary>

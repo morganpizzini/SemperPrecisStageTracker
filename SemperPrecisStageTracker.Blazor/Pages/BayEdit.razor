@@ -1,0 +1,71 @@
+﻿@page "/places/{id}/manage/bay/{bayId}"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<BayEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditBay"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToList"]</NavLink>
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            @if (model!= null){
+                <BayComponent Model="model" SubmitCallback="Submit"></BayComponent>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+    [Parameter]
+    public string BayId { get; set; } = string.Empty;
+
+    BayContract model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
+
+        var result = await Call<BayContract>(Models.RequestType.Get, $"/api/v2/Bays/{BayId}", new Dictionary<string, string> { { "RefId", Id } });
+        
+        if (result != null)
+        {
+            model = result.Data;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task Submit()
+    {
+    // create request
+        var request = new BayUpdateRequest()
+        {
+            PlaceId = Id,
+            Name = model.Name,
+            Description = model.Description
+        };
+        await Call(Models.RequestType.Put,$"/api/v2/Bays/{BayId}", null, request);
+        // if (response != null)
+            UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceManage>(new { id = Id }));
+    }
+}

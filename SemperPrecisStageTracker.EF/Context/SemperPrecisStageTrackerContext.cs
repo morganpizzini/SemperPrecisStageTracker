@@ -76,6 +76,18 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<BaySchedule>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<BaySchedule>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Schedule>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Schedule>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<GroupUser>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<GroupUser>()
@@ -97,6 +109,12 @@ namespace SemperPrecisStageTracker.EF.Context
             modelBuilder.Entity<Match>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Match>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Bay>()
+                .HasKey(f => f.Id);
+            modelBuilder.Entity<Bay>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
@@ -498,6 +516,10 @@ namespace SemperPrecisStageTracker.EF.Context
         /// List of payment type
         /// </summary>
         public DbSet<PaymentType> PaymentTypes { get; set; }
-        
+        public DbSet<Bay> Bays { get; set; }
+        public DbSet<Schedule> Schedules { get; set; }
+        public DbSet<BaySchedule> BaySchedules { get; set; }
+        public DbSet<Reservation> Reservations { get; set; }
+
     }
 }

@@ -15,7 +15,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string TeamId { get; set; }
 
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
 
     }
 }

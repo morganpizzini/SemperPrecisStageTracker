@@ -31,7 +31,7 @@
 
                         <Buttons Role="ButtonsRole.Toolbar">
                             <Buttons Margin="Margin.Is2.FromEnd">
-                                @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditShooter, shooterTeam.User.UserId))
+                                @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditUser, shooterTeam.User.UserId))
                                 {
                                     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooterTeam.User.UserId }))"><Icon Name="IconName.Search" /></Button>
                                     <Button Size="Size.Small" Color="Color.Warning" Type="ButtonType.Button" Clicked="@(() => ResetPassword(shooterTeam))"><Icon Name="IconName.Key" /> </Button>

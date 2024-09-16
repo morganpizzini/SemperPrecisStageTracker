@@ -5,7 +5,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 {
     public class ShooterTeamPaymentUpdateRequest : EntityFilterValidation
     {
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
         [Required]
         public string ShooterTeamPaymentId { get; set; }
         [Required]
@@ -25,7 +25,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 
         public class PaymentTypeUpdateRequest : EntityFilterValidation
     {
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
         [Required]
         public string PaymentTypeId { get; set; }
         [Required]

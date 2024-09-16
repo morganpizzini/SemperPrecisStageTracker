@@ -19,7 +19,12 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
-    
+
+    public interface IBayRepository : IRepository<Bay>
+    {
+
+    }
+
     /// <summary>
     /// Repository interface for "TeamReminder"
     /// </summary>

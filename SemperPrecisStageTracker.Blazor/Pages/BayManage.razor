@@ -1,0 +1,98 @@
+﻿@page "/places/{id}/manage/bay/{bayId}/manage"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<BayManage> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["BayDetail"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToList"]</NavLink>
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            @if (model != null)
+            {
+                <Card Margin="Margin.Is2.OnY">
+                    <CardBody>
+                        <CardTitle>@L["name"]</CardTitle>
+                        <CardText>@model.Name</CardText>
+                        <CardTitle>@L["description"]</CardTitle>
+                        <CardText>@model.Description</CardText>
+                    </CardBody>
+                </Card>
+                <BaySchedulesComponent BaySchedules=@baySchedules Schedules=@schedules AddCallback="AddSchedule" DeleteCallback="DeleteSchedule"></BaySchedulesComponent>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+    [Parameter]
+    public string BayId { get; set; } = string.Empty;
+
+    BayContract model = new();
+    IList<ScheduleContract> schedules = new List<ScheduleContract>();
+    IList<ScheduleContract> baySchedules = new List<ScheduleContract>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
+
+        var resultRequest = Call<BayContract>(Models.RequestType.Get, $"/api/v2/Bays/{BayId}", new Dictionary<string, string> { { "RefId", Id } });
+
+        var scheduleRequest = LoadSchedules();
+        var bayScheduleRequest = LoadBaySchedules();
+
+        await Task.WhenAll(resultRequest, scheduleRequest, bayScheduleRequest);
+
+        schedules = scheduleRequest.Result.Data;
+        baySchedules = bayScheduleRequest.Result.Data;
+
+        if (resultRequest != null)
+        {
+            model = resultRequest.Result.Data;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, "api/v2/Schedules", new Dictionary<string, string> { { "RefId", Id } });
+    Task<BaseResponse<List<ScheduleContract>>> LoadBaySchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"/api/v2/Bays/{BayId}/Schedules");
+
+
+    private async Task AddSchedule(string scheduleId)
+    {
+        await Call(Models.RequestType.Post, $"/api/v2/Bays/{BayId}/Schedules", null, new ScheduleBayCreateRequest
+        {
+                BayId = BayId,
+                PlaceId = Id,
+                ScheduleId = scheduleId
+        });
+        baySchedules = (await LoadBaySchedules()).Data;
+    }
+
+    private async Task DeleteSchedule(string scheduleId)
+    {
+        await Call(Models.RequestType.Delete, $"/api/v2/Bays/{BayId}/Schedules/{scheduleId}", L["ScheduleDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+        baySchedules = (await LoadBaySchedules()).Data;
+    }
+}

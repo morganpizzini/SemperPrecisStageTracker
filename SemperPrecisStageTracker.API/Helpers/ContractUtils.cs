@@ -70,6 +70,43 @@ namespace SemperPrecisStageTracker.API.Helpers
             };
         }
 
+        public static ScheduleContract GenerateContract(Schedule entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new ScheduleContract()
+            {
+                PlaceId = entity.PlaceId,
+                ScheduleId = entity.Id,
+                Name = entity.Name,
+                Description = entity.Description,
+                From = entity.From,
+                To = entity.To,
+                Day = entity.Day
+            };
+        }
+
+        public static ReservationContract GenerateContract(Reservation entity, Bay bay = null, User user = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new ReservationContract()
+            {
+                ReservationId = entity.Id,
+                Bay = bay != null ? GenerateContract(bay) : new BayContract(),
+                User = user != null ? GenerateContract(user) : new UserContract(),
+                From = entity.From,
+                To = entity.To,
+                Day = entity.Day,
+                IsAccepted = entity.IsAccepted,
+                IsBayBlocked = entity.IsBayBlocked
+            };
+        }
+
         /// <summary>
         /// Generate contract using entity
         /// </summary>
@@ -179,6 +216,25 @@ namespace SemperPrecisStageTracker.API.Helpers
                 TeamHolderId = entity.Id,
                 Team = team != null ? GenerateContract(team) : new TeamContract(),
                 User = user != null ? GenerateContract(user) : new UserContract(),
+                Description = entity.Description
+            };
+        }
+
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static BayContract GenerateContract(Bay entity)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+
+            //Ritorno il contratto
+            return new BayContract()
+            {
+                BayId = entity.Id,
+                Name = entity.Name,
                 Description = entity.Description
             };
         }

@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class PlaceRequest : EntityFilterValidation
     {
-        public override string EntityId => PlaceId;
+        public string EntityId => PlaceId;
         /// <summary>
         /// Identifier
         /// </summary>
@@ -28,7 +28,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string TeamReminderId { get; set; }
         [Required]
         public string TeamId { get; set; }
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
 
     }
 }

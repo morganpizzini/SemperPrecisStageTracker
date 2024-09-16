@@ -42,7 +42,7 @@
                 </li>
                 @if (!SettingState.Value.Offline)
                 {
-                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateShooters.EditShooter))
+                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateUser.EditUser))
                     {
                         <li class="nav-item px-3">
                             <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Shooters>())">
@@ -85,10 +85,9 @@
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : string.Empty;
-
-    protected override void Dispose(bool disposed)
+    protected override ValueTask DisposeAsyncCore(bool disposing)
     {
-      base.Dispose(disposed);
+        return base.DisposeAsyncCore(disposing);
     }
 
     private void ToggleNavMenu()

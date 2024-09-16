@@ -7,7 +7,7 @@
 <Heading Size="HeadingSize.Is1">@L["EditShooter"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
 <Divider />
-<AuthorizeView Roles="@(PermissionCtor.ManageUsers.EditShooter.ToString())" Resource="@Id">
+<AuthorizeView Roles="@(PermissionCtor.ManageUsers.EditUser.ToString())" Resource="@Id">
     <Authorizing>
         <h3 class="mt-5">@L["Loading"]</h3>
     </Authorizing>
@@ -34,7 +34,7 @@
     UserContract model = new ();
     protected override async Task OnInitializedAsync()
     {
-        if (!AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditShooter, Id))
+        if (!AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditUser, Id))
         {
             await base.OnInitializedAsync();
             return;

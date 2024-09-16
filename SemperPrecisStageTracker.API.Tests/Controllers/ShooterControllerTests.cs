@@ -125,7 +125,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeBadRequestWithoutPermission()
         {
-            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageUsers.CreateShooters));
+            UpdateIdentityUser(GetUserWithoutPermission(PermissionCtor.ManageUsers.CreateUser));
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Users.Count;
@@ -159,7 +159,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         [TestMethod]
         public async Task ShouldCreateShooterBeOkAndCreatePermissions()
         {
-            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.CreateShooters));
+            UpdateIdentityUser(GetUserWithPermission(PermissionCtor.CreateUser));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.UserPermissions.Count;
 

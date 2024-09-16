@@ -1,0 +1,75 @@
+﻿@page "/places/{id}/manage/schedule/{scheduleId}"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<ScheduleEdit> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["EditSchedule"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToList"]</NavLink>
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        @if (ApiLoading)
+        {
+            <p class="text-center">
+                <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+            </p>
+        }
+        else
+        {
+            @if (model!= null){
+                <ScheduleComponent Model="model" SubmitCallback="Submit"></ScheduleComponent>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+    [Parameter]
+    public string ScheduleId { get; set; } = string.Empty;
+
+    ScheduleContract model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, Id))
+        {
+            await base.OnInitializedAsync();
+            return;
+        }
+
+        var result = await Call<ScheduleContract>(Models.RequestType.Get, $"/api/v2/Schedules/{ScheduleId}", new Dictionary<string, string> { { "RefId", Id } });
+        
+        if (result != null)
+        {
+            model = result.Data;
+            Console.WriteLine(model.Name);
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task Submit()
+    {
+    // create request
+        var request = new ScheduleUpdateRequest()
+        {
+            PlaceId = Id,
+            Name = model.Name,
+            Description = model.Description,
+            From = model.From,
+            To = model.To,
+            Day = model.Day
+        };
+        await Call(Models.RequestType.Put,$"/api/v2/Schedules/{ScheduleId}", null, request);
+        // if (response != null)
+            UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceManage>(new { id = Id }));
+    }
+}

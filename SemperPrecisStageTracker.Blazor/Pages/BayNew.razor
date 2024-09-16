@@ -1,0 +1,41 @@
+﻿@page "/places/{id}/manage/bay/new"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<BayNew> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["NewBay"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToManage"]</NavLink>
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <BayComponent Model="model" SubmitCallback="Submit"></BayComponent>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    BayContract model = new();
+
+    async Task Submit()
+    {
+        // create request
+        var request = new BayCreateRequest()
+        {
+            Name = model.Name,
+            Description = model.Description,
+            PlaceId = Id
+        };
+
+        var response = await Post<AssociationContract>("/api/v2/Bays", request);
+        if (response != null)
+            UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceManage>(new { id = Id }));
+    }
+}

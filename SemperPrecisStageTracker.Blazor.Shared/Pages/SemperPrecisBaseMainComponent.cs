@@ -13,8 +13,8 @@ public class SemperPrecisComponent : SemperPrecisBasePresentationalComponent
 
     //[Inject]
     //protected IHttpService Service { get; set; } = default!;
-    protected Task Call(RequestType requestType, string uri, string positiveMessage = "")
-        => Call<object>(requestType, uri, null, null, positiveMessage);
+    protected Task Call(RequestType requestType, string uri, string positiveMessage = "", Dictionary<string, string>? queryParameters = null)
+        => Call<object>(requestType, uri, queryParameters, null, positiveMessage);
 
     protected Task Call(RequestType requestType, string uri, Dictionary<string, string>? queryParameters = null, object? body = null, string positiveMessage = "")
         => Call<object>(requestType, uri, queryParameters, body, positiveMessage); 

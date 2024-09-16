@@ -27,6 +27,15 @@ namespace SemperPrecisStageTracker.Models
         public string Name { get; set; } = string.Empty;
     }
 
+    public class Bay : SemperPrecisEntity
+    {
+        [Required]
+        public string PlaceId { get; set; }
+        [Required]
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+
     public class TeamReminder : SemperPrecisEntity
     {
         [Required]

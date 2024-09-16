@@ -17,4 +17,8 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
+    public interface IBayScheduleRepository : IRepository<BaySchedule>
+    {
+
+    }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;
@@ -14,7 +15,8 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
     /// Base controller for MVC pattern
     /// </summary>
     [Authorize]
-    [Route("api/[Controller]")]
+    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     //[TraceOnErrorFile]
     [ApiController]
     public abstract class ApiControllerBase : ControllerBase, IDisposable
@@ -49,6 +51,13 @@ namespace SemperPrecisStageTracker.API.Controllers.Common
             AuthorizationLayer = new AuthenticationServiceLayer(DataSession);
         }
 
+        protected IActionResult OkBaseResponse<T>(T data, int total = 0, string nextUrl = "")
+            => Ok(new BaseResponse<T>(data, total, nextUrl));
+
+        protected Task<IActionResult> ReplyBaseResponse<T>(T data, int total = 0, string nextUrl = "")
+        {
+            return Reply(new BaseResponse<T>(data, total, nextUrl));
+        }
         protected Task<IActionResult> Reply(object obj)
         {
             return Task.FromResult<IActionResult>(Ok(obj));

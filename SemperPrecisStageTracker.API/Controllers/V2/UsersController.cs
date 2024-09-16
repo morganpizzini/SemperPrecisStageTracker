@@ -21,11 +21,13 @@ namespace SemperPrecisStageTracker.API.Controllers.V2;
 [ApiVersion("2.0")]
 public class UsersController : ApiControllerBase
 {
-    private readonly IEmailSender _emailSender;
+    //spostare in un servizio
+    //private readonly IEmailSender _emailSender;
 
-    public UsersController(IEmailSender emailSender)
+    //public UsersController(IEmailSender emailSender)
+    public UsersController()
     {
-        _emailSender = emailSender;
+        //_emailSender = emailSender;
     }
     /// <summary>
     /// Fetch list of all users
@@ -77,7 +79,7 @@ public class UsersController : ApiControllerBase
         var data = BasicLayer.GetUserData(entity.Id);
 
         //Serializzazione e conferma
-        return Ok(ContractUtils.GenerateContract(entity, data));
+        return OkBaseResponse(ContractUtils.GenerateContract(entity, data));
     }
 
     /// <summary>
@@ -250,7 +252,7 @@ public class UsersController : ApiControllerBase
 
         //sendEmail
         var message = new Message(new string[] { user.Email }, "Reset assword", $"Reset password from <a href=\"https://asdsemperprecis.it/app/reset-password?data={user.RestorePasswordAlias}\">here</a>", null, true);
-        _emailSender.SendEmail(message);
+        //_emailSender.SendEmail(message);
         //Se è tutto ok, serializzo e restituisco
         return validations;
     }
@@ -270,7 +272,7 @@ public class UsersController : ApiControllerBase
         var user = AuthorizationLayer.GetUserByRestorePasswordAlias(request.Id);
         if (user == null)
             return NotFound();
-        return Ok(ContractUtils.GenerateContract(user));
+        return OkBaseResponse(ContractUtils.GenerateContract(user));
     }
 
     /// <summary>
@@ -335,7 +337,7 @@ public class UsersController : ApiControllerBase
     [HttpGet("{id}/permissions")]
     [ProducesResponseType(typeof(UserPermissionContract), 200)]
     public async Task<IActionResult> FetchAllPermissionsOnUser(BaseRequestId request) =>
-        Ok(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(request.Id)));
+        OkBaseResponse(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(request.Id)));
 
     /// <summary>
     /// Fetch all roles on user
@@ -348,6 +350,16 @@ public class UsersController : ApiControllerBase
         var entities = AuthorizationLayer.GetUserRolesByUserId(request.Id).As(x => ContractUtils.GenerateContract(x));
         return Ok(new BaseResponse<IList<RoleContract>>(
             entities,
+            entities.Count));
+    }
+
+    [HttpGet("{id}/places-managed")]
+    [ProducesResponseType(typeof(UserPermissionContract), 200)]
+    public async Task<IActionResult> FetchUserManagedPlaces(BaseRequestId request)
+    {
+        var entities = await BasicLayer.FetchUserPlaces(request.Id);
+        return Ok(new BaseResponse<IList<PlaceContract>>(
+            entities.As(x => ContractUtils.GenerateContract(x)),
             entities.Count));
     }
 

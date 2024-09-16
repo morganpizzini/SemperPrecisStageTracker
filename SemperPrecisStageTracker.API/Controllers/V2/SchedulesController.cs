@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
@@ -18,18 +17,18 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
     /// Controller for place
     /// </summary>
     [ApiVersion("2.0")]
-    public class PlaceController : ApiControllerBase
+    public class SchedulesController : ApiControllerBase
     {
         /// <summary>
-        /// Fetch list of all places
+        /// Fetch list
         /// </summary>
         /// <returns>Returns action result</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IList<PlaceContract>), 200)]
-        public Task<IActionResult> FetchPlaces(TakeSkipRequest request)
+        [ProducesResponseType(typeof(IList<ScheduleContract>), 200)]
+        public Task<IActionResult> Fetch(EntityTakeSkipRequest request)
         {
             //Recupero la lista dal layer
-            var entities = BasicLayer.FetchAllPlaces().AsQueryable();
+            var entities = BasicLayer.FetchAllSchedules(request.RefId).AsQueryable();
             var total = entities.Count();
 
             if (request.Skip.HasValue)
@@ -38,19 +37,13 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             if (request.Take.HasValue)
                 entities = entities.Take(request.Take.Value);
 
-            var userIds = entities.Select(x => x.Id).ToList();
-
-            var userDatas = BasicLayer.FetchUserDataByUserIds(userIds);
-
-            var datas = BasicLayer.FetchAllMinimunPlacesData();
-
             //Ritorno i contratti
             return Reply(
-                new BaseResponse<IList<PlaceContract>>(
-                    entities.As(x => ContractUtils.GenerateContract(x, datas.FirstOrDefault(d => d.PlaceId == x.Id))),
+                new BaseResponse<IList<ScheduleContract>>(
+                    entities.As(ContractUtils.GenerateContract),
                     total,
                     request.Take.HasValue ?
-                        Url.Action(action: nameof(FetchPlaces), controller: "Place", new { take = request.Take, skip = request.Take + (request?.Skip ?? 0) }) :
+                        Url.Action(action: nameof(Fetch), controller: "Schedules", new { take = request.Take, refId= request.RefId, skip = request.Take + (request?.Skip ?? 0) }) :
                         string.Empty
                 ));
         }
@@ -60,18 +53,18 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(PlaceContract), 200)]
-        public IActionResult GetPlace(BaseRequestId request)
+        [ProducesResponseType(typeof(ScheduleContract), 200)]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.EditPlace)]
+        public IActionResult Get(GetScheduleRequest request)
         {
-            var entity = BasicLayer.GetPlace(request.Id);
-            var data = BasicLayer.GetPlaceData(request.Id);
+            var entity = BasicLayer.GetSchedule(request.Id);
 
             //verifico validità dell'entità
             if (entity == null)
                 return NotFound();
 
             //Serializzazione e conferma
-            return Ok(ContractUtils.GenerateContract(entity, data));
+            return Ok(new BaseResponse<ScheduleContract>(ContractUtils.GenerateContract(entity)));
         }
 
         /// <summary>
@@ -80,37 +73,33 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpPost]
-        [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.CreatePlaces)]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.EditPlace)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> CreatePlace([FromBody] PlaceCreateRequest request)
+        public async Task<IActionResult> Create([FromBody] ScheduleCreateRequest request)
         {
+            var existingPlace = BasicLayer.GetPlace(request.PlaceId);
+            if (existingPlace == null)
+                return BadRequest(new List<ValidationResult> { new ValidationResult($"Place {request.PlaceId} not found") });
+
             //Creazione modello richiesto da admin
-            var model = new Place
+            var model = new Schedule
             {
                 Name = request.Name,
-                IsActive = request.IsActive
-            };
-
-            var data = new PlaceData
-            {
-                Holder = request.Holder,
-                Phone = request.Phone,
-                Email = request.Email,
-                Address = request.Address,
-                City = request.City,
-                Region = request.Region,
-                PostalCode = request.PostalCode,
-                Country = request.Country
+                PlaceId = request.PlaceId,
+                Description = request.Description,
+                From = request.From,
+                To = request.To,
+                Day = request.Day
             };
 
             //Invocazione del service layer
-            var validations = await BasicLayer.CreatePlace(model, data, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.CreateSchedule(model, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
 
             //Return contract
-            return CreatedAtAction(nameof(GetPlace), model.GetRouteIdentifier(), ContractUtils.GenerateContract(model, data));
+            return CreatedAtAction(nameof(Get), model.GetRouteIdentifier(), ContractUtils.GenerateContract(model));
         }
 
         /// <summary>
@@ -118,40 +107,27 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpPut("UpdatePlace")]
+        [HttpPut("{id}")]
         [ApiAuthorizationFilter(Permissions.EditPlace, Permissions.ManagePlaces)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> UpdatePlace(BaseRequestId<PlaceUpdateRequest> request)
+        public async Task<IActionResult> Update(BaseRequestId<ScheduleUpdateRequest> request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetPlace(request.Id);
-            var data = BasicLayer.GetPlaceData(request.Id);
+            var entity = BasicLayer.GetSchedule(request.Id);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
             if (entity == null)
                 return NotFound();
 
-            if (data == null) { }
-            data = new PlaceData
-            {
-                PlaceId = entity.Id
-            };
-
             //Aggiornamento dell'entità
             entity.Name = request.Body.Name;
-            entity.IsActive = request.Body.IsActive;
-
-            data.Holder = request.Body.Holder;
-            data.Phone = request.Body.Phone;
-            data.Email = request.Body.Email;
-            data.Address = request.Body.Address;
-            data.City = request.Body.City;
-            data.Region = request.Body.Region;
-            data.PostalCode = request.Body.PostalCode;
-            data.Country = request.Body.Country;
+            entity.Description = request.Body.Description;
+            entity.From = request.Body.From;
+            entity.To = request.Body.To;
+            entity.Day = request.Body.Day;
 
             //Salvataggio
-            var validations = await BasicLayer.UpdatePlace(entity, data, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.UpdateSchedule(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 
@@ -165,19 +141,19 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpDelete("{id}")]
-        [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.PlaceDelete)]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.EditPlace)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> DeletePlace(BaseRequestId request)
+        public async Task<IActionResult> Delete(DeleteEntityRefRequest request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetPlace(request.Id);
+            var entity = BasicLayer.GetSchedule(request.Id);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
             if (entity == null)
                 return NotFound();
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeletePlace(entity, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.DeleteSchedule(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)
                 return BadRequest(validations);
 

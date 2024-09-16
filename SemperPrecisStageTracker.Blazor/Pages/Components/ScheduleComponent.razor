@@ -1,0 +1,70 @@
+﻿@inherits SemperPrecisBasePresentationalValidationComponent<ScheduleContract>
+@inject IStringLocalizer<ScheduleComponent> L
+
+<Validations @ref="validations" Mode="ValidationMode.Manual" Model="@Model">
+    <Validation Validator="@ValidationRule.IsNotEmpty">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Name"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["Name"]" @bind-Text="@Model.Name">
+                    <Feedback>
+                        <ValidationError>@L["WrongName"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Description"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <TextEdit Placeholder="@L["Description"]" @bind-Text="@Model.Description">
+                    <Feedback>
+                        <ValidationError>@L["Description"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Day"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <Select TValue="DayOfWeek" @bind-SelectedValue="@Model.Day">
+                    <ChildContent>
+                        <SelectItem Value="@DayOfWeek.Sunday">@L["Sunday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Monday">@L["Monday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Tuesday">@L["Tuesday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Wednesday">@L["Wednesday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Thursday">@L["Thursday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Friday">@L["Friday"]</SelectItem>
+                        <SelectItem Value="@DayOfWeek.Saturday">@L["Saturday"]</SelectItem>
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError>@L["WrongGroupDay"]</ValidationError>
+                    </Feedback>
+                </Select>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Field Horizontal="true">
+        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["From"]</FieldLabel>
+        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+            <input name="from" class="form-control" type="time" @bind-value="@Model.From" />
+        </FieldBody>
+    </Field>
+    <Field Horizontal="true">
+        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["To"]</FieldLabel>
+        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+            <input class="form-control" type="time" @bind-value=Model.To />
+        </FieldBody>
+    </Field>
+    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+        <FieldBody ColumnSize="ColumnSize.Is10.Is2.WithOffset">
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="Submit" Loading="ApiLoading" Disabled="ApiLoading">
+                <LoadingTemplate><Icon Name="FontAwesomeIcons.AnimationSpinner" />&nbsp;@L["Submit"]</LoadingTemplate>
+                <ChildContent>@L["Submit"]</ChildContent>
+            </Button>
+        </FieldBody>
+    </Field>
+</Validations>

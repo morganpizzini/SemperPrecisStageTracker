@@ -3,6 +3,102 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Requests
 {
+    
+   
+    public class BayUpdateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string PlaceId { get; set; }
+
+        public string Description { get; set; }
+    }
+    public class ReservationUpdateDataRequest
+    {
+        [Required]
+        public TimeOnly From { get; set; }
+        [Required]
+        public TimeOnly To { get; set; }
+        [Required]
+        public DateOnly Day { get; set; }
+    }
+
+    public class ScheduleUpdateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string PlaceId { get; set; }
+
+        public string Description { get; set; }
+        public TimeOnly From { get; set; }
+        public TimeOnly To { get; set; }
+        public DayOfWeek Day { get; set; }
+
+    }
+    public class BayCreateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string PlaceId { get; set; }
+
+        public string Description { get; set; }
+    }
+
+    public class ScheduleBayCreateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string PlaceId { get; set; }
+        [Required]
+        public string BayId { get; set; }
+        [Required]
+        public string ScheduleId { get; set; }
+    }
+    public class ScheduleCreateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string PlaceId { get; set; }
+
+        public string Description { get; set; }
+        public TimeOnly From { get; set; }
+        public TimeOnly To { get; set; }
+        public DayOfWeek Day { get; set; }
+    }
+
+    public class ReservationCreateRequest
+    {
+        public string UserId { get; set; } = string.Empty;
+        [Required]
+        public string BayId { get; set; } = string.Empty;
+        [Required]
+        public TimeOnly From { get; set; }
+        [Required]
+        public TimeOnly To { get; set; }
+        [Required]
+        public DateOnly Day { get; set; }
+    }
+
+    public class ReservationBlockRequest
+    {
+        [Required]
+        public string BayId { get; set; } = string.Empty;
+        [Required]
+        public TimeOnly From { get; set; }
+        [Required]
+        public TimeOnly To { get; set; }
+        [Required]
+        public DateOnly Day { get; set; }
+    }
+
     public class PlaceCreateRequest
     {
         [Required]
@@ -35,11 +131,11 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public DateTime ExpireDateTime { get; set; }
         public bool NotifyExpiration { get; set; }
 
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
     }
     public class TeamReminderUpdateRequest : EntityFilterValidation
     {
-        public string TeamReminderId {get; set;}
+        public string TeamReminderId { get; set; }
         [Required]
         public string TeamId { get; set; }
         public string ShooterId { get; set; }
@@ -49,6 +145,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public DateTime ExpireDateTime { get; set; }
         public bool NotifyExpiration { get; set; }
 
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
     }
 }

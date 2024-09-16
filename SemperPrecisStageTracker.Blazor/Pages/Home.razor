@@ -82,20 +82,54 @@
         </Card>
     </Column>
 </Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+        <Card Margin="Margin.Is4.OnY">
+            <CardBody>
+                <CardTitle>
+                    @L["Places"]
+                </CardTitle>
+                <Table Striped="true" Hoverable="true">
+                <TableHeader ThemeContrast="ThemeContrast.Dark">
+                    <TableRow>
+                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                        <TableHeaderCell></TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <Virtualize Items="@UserPlaces" Context="place">
+                        <TableRow>
+                            <TableRowHeader>@place.Name</TableRowHeader>
+                            <TableRowCell>
+                                <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new { id = place.PlaceId }))"><Icon Name="IconName.Search" /></Button>
+                            </TableRowCell>
+                        </TableRow>
+                    </Virtualize>
+                </TableBody>
+                </Table>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
 }
 
 @code
 {
     IList<MatchContract> AvailableMatches = new List<MatchContract>();
+    IList<PlaceContract> UserPlaces = new List<PlaceContract>();
     BaseShooterInMatchCreateRequest model = new();
     protected override async Task OnInitializedAsync()
     {
         if (!SettingState.Value.Offline)
         {
-            var result = await Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
+            var matchAvailable = Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
 
-            if (result != null)
-                AvailableMatches = result;
+            var userPlaces = Call<List<PlaceContract>>(Models.RequestType.Get,$"api/v2/users/{UserState.Value.User?.UserId}/places-managed");
+
+            await Task.WhenAll(matchAvailable, userPlaces);
+
+            AvailableMatches = matchAvailable.Result;
+            UserPlaces = userPlaces.Result.Data;
         }
         await base.OnInitializedAsync();
     }

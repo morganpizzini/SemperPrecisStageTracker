@@ -17,6 +17,7 @@ using SemperPrecisStageTracker.Blazor;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Components;
+using Fluxor.Blazor.Web.ReduxDevTools;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

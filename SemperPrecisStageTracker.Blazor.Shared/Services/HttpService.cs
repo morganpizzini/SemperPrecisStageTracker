@@ -27,8 +27,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
         {
             var request = new HttpRequestMessage(HttpMethod.Get,
                 queryParameters != null ?
-                new Uri(QueryHelpers.AddQueryString(uri, queryParameters)) :
-                new Uri(uri));
+                QueryHelpers.AddQueryString(uri, queryParameters) :
+                uri);
             return SendRequest<T>(request);
         }
 
@@ -51,9 +51,11 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return SendRequest<T>(request);
         }
 
-        public Task<ApiResponse<T>> Delete<T>(string uri)
+        public Task<ApiResponse<T>> Delete<T>(string uri, Dictionary<string, string>? queryParameters = null)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, new Uri(uri));
+            var request = new HttpRequestMessage(HttpMethod.Delete, queryParameters != null ?
+                QueryHelpers.AddQueryString(uri, queryParameters) :
+                uri);
             return SendRequest<T>(request);
         }
 
@@ -119,10 +121,13 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     Error = string.Join(", ", error?.SelectMany(x => x.Value) ?? new List<string> { "Generic error" })
                 };
             }
-            return new ApiResponse<T>()
-            {
-                Result = await response.Content.ReadFromJsonAsync<T>()
-            };
+           
+            return 
+                new ApiResponse<T>()
+                {
+                    Result = response.StatusCode != HttpStatusCode.NoContent ? (await response.Content.ReadFromJsonAsync<T>())
+                                                                             : default(T)
+                };
         }
     }
 }

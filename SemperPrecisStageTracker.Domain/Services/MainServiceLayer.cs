@@ -15,7 +15,7 @@ using SemperPrecisStageTracker.Shared.StageResults;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
-    public class MainServiceLayer : DataServiceLayerBase
+    public partial class MainServiceLayer : DataServiceLayerBase
     {
         private readonly IGroupRepository _groupRepository;
         private readonly IAssociationRepository _associationRepository;
@@ -39,8 +39,12 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly ITeamHolderRepository _teamHolderRepository;
         private readonly IShooterTeamPaymentRepository _shooterTeamPaymentRepository;
         private readonly ITeamReminderRepository _teamReminderRepository;
+        private readonly IBayRepository _bayRepository;
         private readonly IPaymentTypeRepository _paymentTypeRepository;
-        
+        private readonly IScheduleRepository _scheduleRepository;
+        private readonly IBayScheduleRepository _bayScheduleRepository;
+        private readonly IReservationRepository _reservationRepository;
+
         private readonly ISemperPrecisMemoryCache _cache;
         private readonly AuthenticationServiceLayer authenticationService;
 
@@ -70,6 +74,10 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterTeamPaymentRepository = dataSession.ResolveRepository<IShooterTeamPaymentRepository>();
             _teamReminderRepository = dataSession.ResolveRepository<ITeamReminderRepository>();
             _paymentTypeRepository = dataSession.ResolveRepository<IPaymentTypeRepository>();
+            _bayRepository = dataSession.ResolveRepository<IBayRepository>();
+            _scheduleRepository = dataSession.ResolveRepository<IScheduleRepository>();
+            _bayScheduleRepository = dataSession.ResolveRepository<IBayScheduleRepository>();
+            _reservationRepository = dataSession.ResolveRepository<IReservationRepository>();
 
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
 
@@ -1877,318 +1885,6 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #endregion
 
-        #region Place
-
-        /// <summary>
-        /// Count list of all places
-        /// </summary>
-        /// <param name="userId"> user identifier </param>
-        /// <returns>Returns number of places</returns>
-        public int CountPlaces()
-        {
-            //Utilizzo il metodo base
-            return _placeRepository.Count();
-        }
-
-        /// <summary>
-        /// Fetch list of all places
-        /// </summary>
-        /// <param name="userId"> user identifier </param>
-        /// <returns>Returns list of places</returns>
-        public IList<Place> FetchAllPlaces()
-        {
-            //Utilizzo il metodo base
-            return FetchEntities(null, null, null, s => s.Name, false, _placeRepository);
-        }
-
-        /// <summary>
-        /// Fetch list of all places
-        /// </summary>
-        /// <param name="userId"> user identifier </param>
-        /// <returns>Returns list of places</returns>
-        public IList<PlaceData> FetchAllMinimunPlacesData()
-        {
-            //Utilizzo il metodo base
-            return _placeDataRepository.FetchWithProjection(x => new PlaceData { Address = x.Address, PlaceId = x.PlaceId, Holder = x.Holder });
-
-        }
-
-        /// <summary>
-        /// Fetch list of places by provided ids
-        /// </summary>
-        /// <param name="ids"> places identifier </param>
-        /// <returns>Returns list of places</returns>
-        public IList<Place> FetchPlacesByIds(IList<string> ids)
-        {
-            //Utilizzo il metodo base
-            return FetchEntities(s => ids.Contains(s.Id), null, null, s => s.Name, false, _placeRepository);
-        }
-
-        /// <summary>
-        /// Get place by commissionDrawingId
-        /// </summary>
-        /// <param name="id">Identifier</param>
-        /// <param name="userId">filter by userId</param>
-        /// <returns>Returns place or null</returns>
-        public Place GetPlace(string id, string userId = null)
-        {
-            //Validazione argomenti
-            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
-
-            //Utilizzo il metodo base
-            return GetSingleEntity(c => c.Id == id, _placeRepository);
-        }
-
-        /// <summary>
-        /// Get place by commissionDrawingId
-        /// </summary>
-        /// <param name="id">Identifier</param>
-        /// <param name="userId">filter by userId</param>
-        /// <returns>Returns place or null</returns>
-        public PlaceData GetPlaceData(string id, string userId = null)
-        {
-            //Validazione argomenti
-            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException(nameof(id));
-
-            //Utilizzo il metodo base
-            return GetSingleEntity(c => c.PlaceId == id, _placeDataRepository);
-        }
-
-        /// <summary>
-        /// Create provided place
-        /// </summary>
-        /// <param name="entity">Place</param>
-        /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> CreatePlace(Place entity, PlaceData data, string userId)
-        {
-            //Validazione argomenti
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-            if (data == null) throw new ArgumentNullException(nameof(data));
-
-            //Se l'oggetto � esistente, eccezione
-            if (!string.IsNullOrEmpty(entity.Id))
-                throw new InvalidProgramException("Provided Place seems to already existing");
-
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
-
-            //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreatePlaces.ManagePlaces))
-            {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(CreatePlace)}");
-                return validations;
-            }
-
-            // controllo singolatità emplyee
-            validations = CheckPlaceValidation(entity, data);
-            if (validations.Count > 0)
-            {
-                return validations;
-            }
-
-            // Settaggio data di creazione
-            entity.CreationDateTime = DateTime.UtcNow;
-            data.CreationDateTime = DateTime.UtcNow;
-
-            //Esecuzione in transazione
-            using var t = DataSession.BeginTransaction();
-            //Validazione argomenti
-            validations = _placeRepository.Validate(entity);
-
-            //Se ho validazioni fallite, esco
-            if (validations.Count > 0)
-            {
-                //Rollback ed uscita
-                t.Rollback();
-                return validations;
-            }
-
-            //Salvataggio
-            _placeRepository.Save(entity);
-
-            data.PlaceId = entity.Id;
-
-            //Validazione argomenti
-            validations = _placeDataRepository.Validate(data);
-
-            //Se ho validazioni fallite, esco
-            if (validations.Count > 0)
-            {
-                //Rollback ed uscita
-                t.Rollback();
-                return validations;
-            }
-
-            //Salvataggio
-            _placeDataRepository.Save(data);
-
-            //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, PermissionCtor.EditPlace, userId);
-
-            if (validations.Count > 0)
-            {
-                //Rollback ed uscita
-                t.Rollback();
-                return validations;
-            }
-
-            t.Commit();
-            return validations;
-        }
-
-        /// <summary>
-        /// Updates provided place
-        /// </summary>
-        /// <param name="entity">Place</param>
-        /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> UpdatePlace(Place entity, PlaceData data, string userId)
-        {
-            //TODO: sistemare permessi
-            //Validazione argomenti
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            //Se l'oggetto � nuovo, eccezione
-            if (string.IsNullOrEmpty(entity.Id))
-                throw new InvalidProgramException("Provided user is new. Use 'CreateUser'");
-
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
-
-            //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManagePlaces.EditPlace))
-            {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(UpdatePlace)} with Id: {entity.Id}");
-                return validations;
-            }
-
-            // controllo singolatità emplyee
-            validations = CheckPlaceValidation(entity, data);
-            if (validations.Count > 0)
-            {
-                return validations;
-            }
-
-            //Compensazione: se non ho la data di creazione, metto una data fittizia
-            if (entity.CreationDateTime < new DateTime(2000, 1, 1))
-                entity.CreationDateTime = new DateTime(2000, 1, 1);
-
-            if (data.CreationDateTime < new DateTime(2000, 1, 1))
-                data.CreationDateTime = new DateTime(2000, 1, 1);
-
-            //Esecuzione in transazione
-            using var t = DataSession.BeginTransaction();
-            //Validazione argomenti
-            validations = _placeRepository.Validate(entity);
-
-            //Se ho validazioni fallite, esco
-            if (validations.Count > 0)
-            {
-                //Rollback ed uscita
-                t.Rollback();
-                return validations;
-            }
-
-            //Salvataggio
-            _placeRepository.Save(entity);
-
-            //Validazione argomenti
-            validations = _placeDataRepository.Validate(data);
-
-            //Se ho validazioni fallite, esco
-            if (validations.Count > 0)
-            {
-                //Rollback ed uscita
-                t.Rollback();
-                return validations;
-            }
-
-            //Salvataggio
-            _placeDataRepository.Save(data);
-            t.Commit();
-
-            return validations;
-        }
-
-
-        /// <summary>
-        /// Check place validations
-        /// </summary>
-        /// <param name="entity">entity to check</param>
-        /// <returns>List of validation results</returns>
-        private IList<ValidationResult> CheckPlaceValidation(Place entity, PlaceData data)
-        {
-            var validations = new List<ValidationResult>();
-
-            // controllo esistenza place con stesso nome / PEC / SDI
-            var existing = _placeRepository.Fetch(x => x.Id != entity.Id
-                                                              && x.Name == entity.Name);
-
-            if (existing.Count == 0)
-                return validations;
-
-            var existingIds = existing.Select(x => x.Id).ToList();
-
-            var singlePlace = _placeDataRepository.Fetch(x =>
-                existingIds.Contains(x.PlaceId) && (x.City == data.City || x.PostalCode == data.PostalCode));
-
-            if (singlePlace.Count > 0)
-            {
-                validations.Add(new ValidationResult($"Entity with name {entity.Name} and same city/postal code already exists"));
-            }
-
-            return validations;
-        }
-
-        /// <summary>
-        /// Delete provided place
-        /// </summary>
-        /// <param name="entity">Place</param>
-        /// <returns>Returns list of validations</returns>
-        public async Task<IList<ValidationResult>> DeletePlace(Place entity, string userId)
-        {
-            //Validazione argomenti
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            //Se l'oggetto � esistente, eccezione
-            if (string.IsNullOrEmpty(entity.Id))
-                throw new InvalidProgramException("Provided place doesn't have valid Id");
-
-            //Predisposizione al fallimento
-            IList<ValidationResult> validations = new List<ValidationResult>();
-
-            //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManagePlaces))
-            {
-                validations.AddMessage($"User {userId} has no permissions on {nameof(DeletePlace)} with Id: {entity.Id}");
-                return validations;
-            }
-
-            //Esecuzione in transazione
-            using var t = DataSession.BeginTransaction();
-
-            // remove shooterData
-            var placeData = _placeDataRepository.GetSingle(x => x.PlaceId == entity.Id);
-
-            if (placeData != null)
-                _placeDataRepository.Delete(placeData);
-
-            //Eliminazione
-            _placeRepository.Delete(entity);
-
-            validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditPlace);
-            if (validations.Count > 1)
-            {
-                t.Rollback();
-                return validations;
-            }
-
-            t.Commit();
-            return new List<ValidationResult>();
-
-        }
-
-        #endregion
-
         #region TeamReminder
 
         /// <summary>
@@ -2738,7 +2434,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateShooters.ManageUsers))
+            if (!await authenticationService.ValidateUserPermissions(userId, PermissionCtor.CreateUser.ManageUsers))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(CreateUser)}");
                 return validations;
@@ -2787,7 +2483,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterDataRepository.Save(data);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, PermissionCtor.EditShooter, userId);
+            validations = await AddUserPermissions(entity.Id, PermissionCtor.EditUser, userId);
 
             if (validations.Count > 0)
             {
@@ -2819,7 +2515,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (authorizedMethod && !await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditShooter))
+            if (authorizedMethod && !await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditUser))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateUser)} with Id: {entity.Id}");
                 return validations;
@@ -2923,7 +2619,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditShooter))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditUser))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteUser)} with Id: {entity.Id}");
                 return validations;
@@ -2965,7 +2661,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _userRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditShooter);
+            validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditUser);
             if (validations.Count > 1)
             {
                 t.Rollback();
@@ -3096,7 +2792,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             _shooterAssociationInfoRepository.Save(entity);
 
             //Add user permission on match
-            validations = await AddUserPermissions(entity.Id, PermissionCtor.EditShooter, userId);
+            validations = await AddUserPermissions(entity.Id, PermissionCtor.EditUser, userId);
 
             if (validations.Count > 0)
             {
@@ -3128,7 +2824,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditShooter))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditUser))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(UpdateShooterAssociationInfo)} with Id: {entity.Id}");
                 return validations;
@@ -3222,7 +2918,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             IList<ValidationResult> validations = new List<ValidationResult>();
 
             //Check permissions
-            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditShooter))
+            if (!await authenticationService.ValidateUserPermissions(userId, entity.Id, PermissionCtor.ManageUsers.EditUser))
             {
                 validations.AddMessage($"User {userId} has no permissions on {nameof(DeleteShooterAssociationInfo)} with Id: {entity.Id}");
                 return validations;
@@ -3245,7 +2941,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Eliminazione
             _shooterAssociationInfoRepository.Delete(entity);
 
-            validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditShooter);
+            validations = await RemoveUserValidation(entity.Id, PermissionCtor.EditUser);
             if (validations.Count > 1)
             {
                 t.Rollback();

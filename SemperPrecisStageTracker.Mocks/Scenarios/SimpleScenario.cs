@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using SemperPrecisStageTracker.Mocks.Scenarios.Common;
+using SemperPrecisStageTracker.Models;
 
 namespace SemperPrecisStageTracker.Mocks.Scenarios
 {
@@ -52,6 +53,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
                 //PropertyNameCaseInsensitive = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
+
             if (scenarioClone == null)
                 throw new ArgumentNullException($"Scenario parsed is null");
 
@@ -87,6 +89,9 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             ShooterTeamPayments = scenarioClone.ShooterTeamPayments;
             TeamReminders = scenarioClone.TeamReminders;
             PaymentTypes = scenarioClone.PaymentTypes;
+            Bays = scenarioClone.Bays;
+            Schedules = scenarioClone.Schedules;
+            BaySchedules = scenarioClone.BaySchedules;
         }
     }
 }

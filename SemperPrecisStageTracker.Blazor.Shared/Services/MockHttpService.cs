@@ -75,7 +75,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 City="New York",
                 Region="NY",
                 PostalCode="10001",
-                Country="USA"
+                Country="USA",
+                IsActive = true
             },
             new PlaceContract
             {
@@ -310,7 +311,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                 _ => Task.FromResult(new ApiResponse<T>())
             };
 
-        public Task<ApiResponse<T>> Delete<T>(string uri)
+        public Task<ApiResponse<T>> Delete<T>(string uri, Dictionary<string, string>? queryParameters = null)
         =>
             uri switch
             {

@@ -4,7 +4,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 {
     public class PlaceUpdateRequest : EntityFilterValidation
     {
-        public override string EntityId => PlaceId;
+        public string EntityId => PlaceId;
         [Required]
         public string PlaceId { get; set; }
         [Required]

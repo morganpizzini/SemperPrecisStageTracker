@@ -15,4 +15,13 @@ namespace SemperPrecisStageTracker.EF.Data.Repositories
         {
         }
     }
+
+    [Repository]
+    public class ReservationRepository : EntityFrameworkRepositoryBase<Reservation, SemperPrecisStageTrackerContext>, IReservationRepository
+    {
+        public ReservationRepository(IDataSession dataSession)
+            : base(dataSession, c => c.Reservations)
+        {
+        }
+    }
 }

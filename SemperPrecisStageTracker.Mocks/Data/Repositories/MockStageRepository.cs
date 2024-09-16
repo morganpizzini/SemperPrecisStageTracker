@@ -14,5 +14,14 @@ namespace SemperPrecisStageTracker.Mocks.Data.Repositories
             : base(dataSession, c => c.Stages)
         {
         }
-}
+    }
+
+    [Repository]
+    public class MockReservationRepository : MockRepositoryBase<Reservation, ISemperPrecisStageTrackerScenario>, IReservationRepository
+    {
+        public MockReservationRepository(IDataSession dataSession)
+            : base(dataSession, c => c.Reservations)
+        {
+        }
+    }
 }

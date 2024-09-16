@@ -35,7 +35,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
                     response = await _httpService.Patch<BaseResponse<T>>(uri, body);
                     break;
                 case RequestType.Delete:
-                    response = await _httpService.Delete<BaseResponse<T>>(uri);
+                    response = await _httpService.Delete<BaseResponse<T>>(uri, queryParameters);
                     break;
                 default:
                     return new BaseResponse<T>();

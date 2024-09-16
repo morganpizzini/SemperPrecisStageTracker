@@ -135,7 +135,11 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         /// List of Payment type
         /// </summary>
         public IList<PaymentType> PaymentTypes { get; set; } = new List<PaymentType>();
-        
+        public IList<Bay> Bays { get; set; } = new List<Bay>();
+        public IList<Schedule> Schedules { get; set; } = new List<Schedule>();
+        public IList<BaySchedule> BaySchedules { get; set; } = new List<BaySchedule>();
+        public IList<Reservation> Reservations { get; set; } = new List<Reservation>();
+
         /// <summary>
         /// Executes initialization of entities
         /// </summary>

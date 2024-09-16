@@ -9,6 +9,6 @@ namespace SemperPrecisStageTracker.Blazor.Services
         Task<ApiResponse<T>> Post<T>(string uri, object? value = null);
         Task<ApiResponse<T>> Put<T>(string uri, object? value = null);
         Task<ApiResponse<T>> Patch<T>(string uri, object? value = null);
-        Task<ApiResponse<T>> Delete<T>(string uri);
+        Task<ApiResponse<T>> Delete<T>(string uri, Dictionary<string, string>? queryParameters = null);
     }
 }

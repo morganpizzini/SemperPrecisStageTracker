@@ -1,0 +1,215 @@
+﻿@page "/places/{id}/manage"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<PlaceDetail> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Manage"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+@if (ApiLoading)
+{
+    <p class="text-center">
+        <Icon Name="FontAwesomeIcons.AnimationSpinner2x" />
+    </p>
+}
+else
+{
+    <Row>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>
+                        @L["Schedules"]
+                    </CardTitle>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ScheduleNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Day"]</TableHeaderCell>
+                                <TableHeaderCell>@L["From/To"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <Virtualize Items="@schedules" Context="entity">
+                                <TableRow>
+                                    <TableRowHeader>@entity.Name</TableRowHeader>
+                                    <TableRowHeader>@entity.Day.ToString()</TableRowHeader>
+                                    <TableRowHeader>@entity.From.ToString("HH:mm") ~ @entity.To.ToString("HH:mm")</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ScheduleEdit>(new { id = Id,ScheduleId = entity.ScheduleId }))"><Icon Name="IconName.Search" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(entity))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            </Virtualize>
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.IsHalf">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>
+                        @L["Bays"]
+                    </CardTitle>
+                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<BayNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewBay"]</Button>
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                            <TableRow>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Description"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <Virtualize Items="@bays" Context="entity">
+                                <TableRow>
+                                    <TableRowHeader>@entity.Name</TableRowHeader>
+                                    <TableRowHeader>@entity.Description</TableRowHeader>
+                                    <TableRowCell>
+                                        <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<BayManage>(new { id = Id,BayId = entity.BayId }))"><Icon Name="IconName.Adjust" /></Button>
+                                        <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<BayEdit>(new { id = Id,BayId = entity.BayId }))"><Icon Name="IconName.Search" /></Button>
+                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteBayEntity(entity))"><Icon Name="IconName.Delete" /></Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            </Virtualize>
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+}
+<Modal @ref="modalRefEntityToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteSchedule"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityToDelete.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Day"]</FieldLabel>
+                    <Text>@entityToDelete.Day</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["From/To"]</FieldLabel>
+                    <Text>@entityToDelete.From.ToString("HH:mm") ~ @entityToDelete.To.ToString("HH:mm")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefEntityBayToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteBay"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityBayToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityBayToDelete.Name</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Description"]</FieldLabel>
+                    <Text>@entityBayToDelete.Description</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityBayToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityBayToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code {
+
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    IList<ScheduleContract> schedules = new List<ScheduleContract>();
+    IList<BayContract> bays = new List<BayContract>();
+
+    private Modal modalRefEntityToDelete = default!;
+    private Modal modalRefEntityBayToDelete = default!;
+    PlaceContract place = new();
+    ScheduleContract entityToDelete = new();
+    BayContract entityBayToDelete = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var placeRequest = Post<PlaceContract>("api/Place/GetPlace", new PlaceRequest() { PlaceId = Id });
+        var schedulesRequest = LoadSchedules();
+        var baysRequest = LoadBays();
+
+        await Task.WhenAll(placeRequest, schedulesRequest, baysRequest);
+
+        place = placeRequest.Result;
+        schedules = schedulesRequest.Result.Data;
+        bays = baysRequest.Result.Data;
+
+        await base.OnInitializedAsync();
+    }
+
+    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, "api/v2/Schedules", new Dictionary<string, string> { { "RefId", Id } });
+    Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, "api/v2/Bays", new Dictionary<string, string> { { "RefId", Id } });
+
+    void DeleteEntity(ScheduleContract entity)
+    {
+        if (entity == null)
+            return;
+        entityToDelete = entity;
+        modalRefEntityToDelete.Show();
+    }
+
+    private async Task HideModalEntityToDelete(bool choice)
+    {
+        if (choice && place != null)
+        {
+            await Call(Models.RequestType.Delete, $"/api/V2/Schedules/{entityToDelete.ScheduleId}", L["PlaceDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+            schedules = (await LoadSchedules()).Data;
+            entityToDelete = new();
+        }
+        await modalRefEntityToDelete.Hide();
+    }
+
+    void DeleteBayEntity(BayContract entity)
+    {
+        if (entity == null)
+            return;
+        entityBayToDelete = entity;
+        modalRefEntityBayToDelete.Show();
+    }
+
+    private async Task HideModalEntityBayToDelete(bool choice)
+    {
+        if (choice && place != null)
+        {
+            await Call(Models.RequestType.Delete, $"/api/V2/bays/{entityBayToDelete.BayId}", L["bayDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+            bays = (await LoadBays()).Data;
+            entityBayToDelete = new();
+        }
+        await modalRefEntityBayToDelete.Hide();
+    }
+}

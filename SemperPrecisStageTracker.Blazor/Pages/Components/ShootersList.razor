@@ -6,7 +6,7 @@
     <input @ref="searchInput" class="form-control" @bind-value="SearchText"
            @bind-value:event="oninput" placeholder="@L["Search"]" />
 </div>
-@if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateShooters))
+@if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateUser))
 {
     <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ShooterNew>())"><Icon Name="IconName.PlusSquare" /> @L["NewShooter"]</Button>
 }
@@ -47,7 +47,7 @@
                             <NavLink href="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.UserId }))">@shooter.CompleteName</NavLink>
                         </TableRowHeader>
                         <TableRowCell>@shooter.Username</TableRowCell>
-                        @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditShooter, shooter.UserId))
+                        @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditUser, shooter.UserId))
                 {
                     <TableRowCell>@shooter.BirthDate.ToString("d")</TableRowCell>
                 }
@@ -58,11 +58,11 @@
                         <TableRowCell>
                             <Buttons Role="ButtonsRole.Toolbar">
                                 <Buttons Margin="Margin.Is2.FromEnd">
-                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditShooter, shooter.UserId))
+                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.EditUser, shooter.UserId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterEdit>(new { id = shooter.UserId }))"><Icon Name="IconName.Pen"/></Button>
                                     }
-                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditShooter, shooter.UserId))
+                                    @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.ShowShooters.EditUser, shooter.UserId))
                                     {
                                         <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ShooterDetail>(new { id = shooter.UserId }))"><Icon Name="IconName.Search"/></Button>
                                     }

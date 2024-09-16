@@ -165,6 +165,10 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// List of team reminder
         /// </summary>
         IList<PaymentType> PaymentTypes { get; set; }
-        
+        IList<Bay> Bays { get; set; }
+        IList<Schedule> Schedules { get; set; }
+        IList<BaySchedule> BaySchedules { get; set; }
+        IList<Reservation> Reservations { get; set; }
+
     }
 }

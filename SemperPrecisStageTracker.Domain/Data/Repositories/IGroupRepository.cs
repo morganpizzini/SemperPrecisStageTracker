@@ -10,4 +10,8 @@ namespace SemperPrecisStageTracker.Domain.Data.Repositories
     {
 
     }
+    public interface IScheduleRepository : IRepository<Schedule>
+    {
+
+    }
 }

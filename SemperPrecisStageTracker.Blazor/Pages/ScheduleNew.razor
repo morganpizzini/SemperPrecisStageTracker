@@ -1,0 +1,44 @@
+﻿@page "/places/{id}/manage/schedule/new"
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<ScheduleNew> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["NewSchedule"]</Heading>
+<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToManage"]</NavLink>
+<Divider />
+<AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+    <Authorizing>
+        <h3 class="mt-5">@L["Loading"]</h3>
+    </Authorizing>
+    <NotAuthorized>
+        <h3 class="mt-5">@L["NoAuth"]</h3>
+    </NotAuthorized>
+    <Authorized>
+        <ScheduleComponent Model="model" SubmitCallback="Submit"></ScheduleComponent>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    ScheduleContract model = new();
+
+    async Task Submit()
+    {
+        // create request
+        var request = new ScheduleCreateRequest()
+        {
+            Name = model.Name,
+            Description = model.Description,
+            Day = model.Day,
+            From = model.From,
+            To = model.To,
+            PlaceId = Id
+        };
+
+        var response = await Post<AssociationContract>("/api/v2/Schedules", request);
+        if (response != null)
+            UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceManage>(new { id = Id }));
+    }
+}

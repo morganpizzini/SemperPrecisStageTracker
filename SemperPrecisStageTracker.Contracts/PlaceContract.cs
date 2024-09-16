@@ -1,4 +1,7 @@
-﻿namespace SemperPrecisStageTracker.Contracts
+﻿using System.ComponentModel.DataAnnotations;
+using System;
+
+namespace SemperPrecisStageTracker.Contracts
 {
     public class PlaceContract
     {
@@ -12,8 +15,21 @@
         public string Region { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
-        public string CompleteAddress => $"{Address}, {City} ({PostalCode}), {Region} - {Country}";
+        public string CompleteAddress => !string.IsNullOrEmpty(Address) && !string.IsNullOrEmpty(City) ? $"{Address}, {City} ({PostalCode}), {Region} - {Country}" : "";
         public bool IsActive { get; set; }
 
+    }
+
+    public class ReservationContract
+    {
+        public string ReservationId { get; set; } = string.Empty;
+        public UserContract User { get; set; } = new UserContract();
+        public BayContract Bay { get; set; } = new BayContract();
+        public TimeOnly From { get; set; }
+        public TimeOnly To { get; set; }
+        public DateOnly Day { get; set; }
+        public bool IsAccepted { get; set; } = false;
+        // whenever is true, the bay is blocked for the time of the reservation, and cannot be reserved by anyone else
+        public bool IsBayBlocked { get; set; } = false;
     }
 }

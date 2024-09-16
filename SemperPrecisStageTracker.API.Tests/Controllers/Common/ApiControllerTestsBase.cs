@@ -19,7 +19,6 @@ using ZenProgramming.Chakra.Core.Mocks.Data;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Extensions;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Options;
 using Microsoft.Extensions.Configuration;
-using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 {
@@ -222,9 +221,6 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             ServiceResolver.Register<IIdentityClient, MockIdentityClient>();
             ServiceResolver.Register<ICaptchaValidatorService, MockCaptchaValidatorService>();
 
-
-
-
             ServiceResolver.Register<ISemperPrecisMemoryCache, SemperPrecisMemoryCache>();
 
             //Creazione del controller dichiarato
@@ -266,6 +262,30 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 }
             };
         }
+        /// <summary>
+        /// Parses provided response as "Ok - 202" and returns contained data
+        /// </summary>
+        /// <typeparam name="TData">Type of data</typeparam>
+        /// <param name="response">Response to parse</param>
+        /// <returns>Returns parsed response</returns>
+        protected ActionResultStructure<CreatedAtActionResult, TData> ParseExpectedCreated<TData>(IActionResult response)
+            => ParseExpected<TData, CreatedAtActionResult>(response);
+
+        private ActionResultStructure<TResponseType, TData> ParseExpected<TData, TResponseType>(IActionResult response) where TResponseType : ObjectResult
+        {
+            if (response is not TResponseType castedResponse)
+                throw new InvalidProgramException($"Response should be of type {typeof(TResponseType).Name}");
+
+            if (castedResponse.Value is not TData castedResult)
+                throw new InvalidProgramException($"Response data should be of type {typeof(TData).FullName}");
+
+            // Return the structure if cast is ok
+            return new ActionResultStructure<TResponseType, TData>
+            {
+                Response = castedResponse,
+                Data = castedResult
+            };
+        }
 
         /// <summary>
         /// Parses provided response as "Ok - 200" and returns contained data
@@ -274,32 +294,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
         /// <param name="response">Response to parse</param>
         /// <returns>Returns parsed response</returns>
         protected ActionResultStructure<OkObjectResult, TData> ParseExpectedOk<TData>(IActionResult response)
-        {
-            //Validazione argomenti
-            if (response == null) throw new ArgumentNullException(nameof(response));
-
-            //Mi attendo un 200
-            if (!(response is OkObjectResult castedResponse))
-            {
-                if(response is BadRequestObjectResult badResponse && badResponse.Value is SerializableError validations)
-                {
-                    throw new InvalidProgramException($"Errors: {string.Join(", ",validations.SelectMany(x=>(IList<string>)x.Value))}");
-                }
-                throw new InvalidProgramException($"Response should be of type {nameof(OkObjectResult)}");
-
-            }
-
-            //Attendo che il risultato del tipo atteso
-            if (!(castedResponse.Value is TData castedResult))
-                throw new InvalidProgramException($"Response data should be of type {typeof(TData).FullName}");
-
-            //Se i cast sono avvenuti con successo, ritorno la struttura
-            return new ActionResultStructure<OkObjectResult, TData>
-            {
-                Response = castedResponse,
-                Data = castedResult
-            };
-        }
+                => ParseExpected<TData, OkObjectResult>(response);
 
         /// <summary>
         /// Parses provided response as "NotFound - 404"
@@ -366,7 +361,22 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 Data = null
             };
         }
+        /// <summary>
+        /// Parses provided response as "NotFound - 404"
+        /// </summary>
+        /// <param name="response">Response to parse</param>
+        /// <returns>Returns parsed response</returns>
+        protected ActionResultStructure<NoContentResult, object> ParseExpectedNoContent(IActionResult response)
+        {
+            if (response is not NoContentResult castedResponse)
+                throw new InvalidProgramException($"Response should be of type {typeof(NotFoundResult).Name}");
 
+            return new ActionResultStructure<NoContentResult, object>
+            {
+                Response = castedResponse,
+                Data = null
+            };
+        }
         /// <summary>
         /// Parses provided response as "BadRequest - 400"
         /// </summary>

@@ -1,8 +1,4 @@
 ﻿using SemperPrecisStageTracker.Models.Commons;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using ZenProgramming.Chakra.Core.Entities;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {

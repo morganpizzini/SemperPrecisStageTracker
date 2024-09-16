@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IState<UserState> UserState
 @inject IState<SettingsState> SettingsState
+
 <Fluxor.Blazor.Web.StoreInitializer />
 @if (SettingsState.Value.Ready)
 {
@@ -39,8 +40,8 @@
     </CascadingAuthenticationState>
 }
 @code {
-    protected override void Dispose(bool disposed)
+    override protected async Task OnInitializedAsync()
     {
-        base.Dispose(disposed);
+        await base.OnInitializedAsync();
     }
 }

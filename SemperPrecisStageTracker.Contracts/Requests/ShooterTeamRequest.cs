@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class ShooterTeamRequest : EntityFilterValidation
     {
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
         /// <summary>
         /// Shooter identifier
         /// </summary>

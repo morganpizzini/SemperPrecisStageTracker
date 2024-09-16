@@ -7,7 +7,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class MatchRequest : EntityFilterValidation
     {
-        public override string EntityId => MatchId;
+        public string EntityId => MatchId;
         /// <summary>
         /// Identifier
         /// </summary>
@@ -20,7 +20,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     /// </summary>
     public class MatchCompetitionReadyRequest : EntityFilterValidation
     {
-        public override string EntityId => MatchId;
+        public string EntityId => MatchId;
         /// <summary>
         /// Identifier
         /// </summary>

@@ -4,7 +4,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 {
     public class TeamUpdateRequest : EntityFilterValidation
     {
-        public override string EntityId => TeamId;
+        public string EntityId => TeamId;
         [Required]
         public string TeamId { get; set; }
         [Required]

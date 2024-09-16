@@ -15,6 +15,6 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string ShooterId { get; set; }
 
 
-        public override string EntityId => ShooterId;
+        public string EntityId => ShooterId;
     }
 }
