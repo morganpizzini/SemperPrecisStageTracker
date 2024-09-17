@@ -71,7 +71,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var userIds = userRoles.Select(x => x.UserId).ToList();
 
-            var users = BasicLayer.FetchShootersByIds(userIds);
+            var users = BasicLayer.FetchUsersByIds(userIds);
 
             //Serializzazione e conferma
             return Reply(ContractUtils.GenerateContract(entity,permissions,userRoles,users));
@@ -257,7 +257,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var userIds = userRoles.Select(x => x.UserId).ToList();
 
-            var users = BasicLayer.FetchShootersByIds(userIds);
+            var users = BasicLayer.FetchUsersByIds(userIds);
 
             //Return contract
             return Ok(userRoles.As(x => ContractUtils.GenerateContract(x, users?.FirstOrDefault(s => s.Id == x.UserId))));
@@ -291,7 +291,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var userIds = userRoles.Select(x => x.UserId).ToList();
 
-            var users = BasicLayer.FetchShootersByIds(userIds);
+            var users = BasicLayer.FetchUsersByIds(userIds);
 
             //Return contract
             return Ok(userRoles.As(x => ContractUtils.GenerateContract(x, users?.FirstOrDefault(s => s.Id == x.UserId))));

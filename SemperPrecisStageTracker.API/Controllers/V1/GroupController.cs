@@ -61,7 +61,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterIds = shooterGroup.Select(x => x.UserId)
                 .Concat(shooterWithNoGroup.Select(x => x.UserId).ToList()).ToList();
 
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             var teamIds = shooterGroup.Select(x => x.TeamId).Concat(shooterWithNoGroup.Select(x=>x.TeamId)).ToList();
             var teams = BasicLayer.FetchTeamsByIds(teamIds);
@@ -102,7 +102,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var shooterGroup = BasicLayer.FetchGroupShootersByGroupId(entity.Id);
 
             var shooterIds = shooterGroup.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             var match = BasicLayer.GetMatch(entity.MatchId);
             var association = BasicLayer.GetAssociation(match.AssociationId);

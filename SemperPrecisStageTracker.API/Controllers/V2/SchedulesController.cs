@@ -14,7 +14,7 @@ using ZenProgramming.Chakra.Core.Extensions;
 namespace SemperPrecisStageTracker.API.Controllers.V2
 {
     /// <summary>
-    /// Controller for place
+    /// Muovere tutto sotto controller place
     /// </summary>
     [ApiVersion("2.0")]
     public class SchedulesController : ApiControllerBase
@@ -23,30 +23,30 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// Fetch list
         /// </summary>
         /// <returns>Returns action result</returns>
-        [HttpGet]
-        [ProducesResponseType(typeof(IList<ScheduleContract>), 200)]
-        public Task<IActionResult> Fetch(EntityTakeSkipRequest request)
-        {
-            //Recupero la lista dal layer
-            var entities = BasicLayer.FetchAllSchedules(request.RefId).AsQueryable();
-            var total = entities.Count();
+        //[HttpGet]
+        //[ProducesResponseType(typeof(IList<ScheduleContract>), 200)]
+        //public Task<IActionResult> Fetch(EntityTakeSkipRequest request)
+        //{
+        //    //Recupero la lista dal layer
+        //    var entities = BasicLayer.FetchAllSchedules(request.RefId).AsQueryable();
+        //    var total = entities.Count();
 
-            if (request.Skip.HasValue)
-                entities = entities.Skip(request.Skip.Value);
+        //    if (request.Skip.HasValue)
+        //        entities = entities.Skip(request.Skip.Value);
 
-            if (request.Take.HasValue)
-                entities = entities.Take(request.Take.Value);
+        //    if (request.Take.HasValue)
+        //        entities = entities.Take(request.Take.Value);
 
-            //Ritorno i contratti
-            return Reply(
-                new BaseResponse<IList<ScheduleContract>>(
-                    entities.As(ContractUtils.GenerateContract),
-                    total,
-                    request.Take.HasValue ?
-                        Url.Action(action: nameof(Fetch), controller: "Schedules", new { take = request.Take, refId= request.RefId, skip = request.Take + (request?.Skip ?? 0) }) :
-                        string.Empty
-                ));
-        }
+        //    //Ritorno i contratti
+        //    return Reply(
+        //        new BaseResponse<IList<ScheduleContract>>(
+        //            entities.As(ContractUtils.GenerateContract),
+        //            total,
+        //            request.Take.HasValue ?
+        //                Url.Action(action: nameof(Fetch), controller: "Schedules", new { take = request.Take, refId= request.RefId, skip = request.Take + (request?.Skip ?? 0) }) :
+        //                string.Empty
+        //        ));
+        //}
         /// <summary>
         /// Get specific placet ype using provided identifier
         /// </summary>

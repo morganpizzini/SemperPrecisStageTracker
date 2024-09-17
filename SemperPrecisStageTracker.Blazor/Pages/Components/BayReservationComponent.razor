@@ -1,0 +1,134 @@
+﻿@inject IStringLocalizer<BayReservationComponent> L
+@using Microsoft.AspNetCore.Components
+
+<Card Margin="Margin.Is4.OnY">
+    <CardBody>
+        <CardTitle>
+            @L["Reservations"]
+        </CardTitle>
+        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => modalRefAddSchedule.Show())"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+        <Table Striped="true" Hoverable="true">
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                    <TableHeaderCell>@L["Day"]</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                <Virtualize Items="@BayReservations" Context="entity">
+                    <TableRow>
+                        <TableRowHeader>@entity.User.CompleteName</TableRowHeader>
+                        <TableRowHeader>@entity.Day.ToString() - @entity.From.ToString("HH:mm") ~ @entity.To.ToString("HH:mm")</TableRowHeader>
+                        <TableRowCell>
+                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteScheduleEntity(entity))"><Icon Name="IconName.Delete" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            </TableBody>
+        </Table>
+    </CardBody>
+</Card>
+<Modal @ref="modalRefAddSchedule">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AddReservation"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["AddReservationDescription"]</FieldLabel>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Schedule"]</FieldLabel>
+                <select class="form-control" @bind="addScheduleId">
+                    <option disabled value="">@L["SelectSchedule"]</option>
+                    @foreach (var schedule in BaySchedules)
+                    {
+                        <option value="@schedule.ScheduleId">@schedule.Name [@schedule.Day.ToString() @schedule.From.ToString("HH:mm") ~ @schedule.To.ToString("HH:mm")]</option>
+                    })
+                </select>
+            </Field>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalModalRefAddReservation(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalModalRefAddReservation(true))">@L["Save"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefEntityReservationToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteReservation"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityReservationToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityReservationToDelete.User.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Day"]</FieldLabel>
+                    <Text>@entityReservationToDelete.Day</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["From/To"]</FieldLabel>
+                    <Text>@entityReservationToDelete.From.ToString("HH:mm") ~ @entityReservationToDelete.To.ToString("HH:mm")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityReservationToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityReservationToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code{
+    private Modal modalRefEntityReservationToDelete = default!;
+    private Modal modalRefAddSchedule = default!;
+    ReservationContract entityReservationToDelete = new();
+
+    string addScheduleId = string.Empty;
+    [Parameter, EditorRequired]
+    public IList<ReservationContract> BayReservations { get; set; } = new List<ReservationContract>();
+    [Parameter, EditorRequired]
+    public IList<ScheduleContract> BaySchedules { get; set; } = new List<ScheduleContract>();
+
+    [Parameter, EditorRequired]
+    public EventCallback<string> AddCallback { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<string> DeleteCallback { get; set; }
+
+    void DeleteScheduleEntity(ReservationContract entity)
+    {
+        if (entity == null)
+            return;
+        entityReservationToDelete = entity;
+        modalRefEntityReservationToDelete.Show();
+    }
+
+    private async Task HideModalEntityReservationToDelete(bool choice)
+    {
+        if (choice && entityReservationToDelete != null)
+        {
+            await DeleteCallback.InvokeAsync(entityReservationToDelete.ReservationId);
+            entityReservationToDelete = new();
+        }
+        await modalRefEntityReservationToDelete.Hide();
+    }
+
+    private async Task HideModalModalRefAddReservation(bool choice)
+    {
+        if (choice && !string.IsNullOrEmpty(addScheduleId))
+        {
+            await AddCallback.InvokeAsync(addScheduleId);
+            addScheduleId = string.Empty;
+        }
+        await modalRefAddSchedule.Hide();
+    }
+}

@@ -25,11 +25,13 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
 
             var entities = BasicLayer.FetchAllReservations(request.Id);
 
+            var userIds = entities.Select(x => x.UserId).ToList();
+            var users = BasicLayer.FetchUsersByIds(userIds);
             //Serializzazione e conferma
             //Ritorno i contratti
             return Ok(
                 new BaseResponse<IList<ReservationContract>>(
-                    entities.As(x=>ContractUtils.GenerateContract(x,null,null)),
+                    entities.As(x=>ContractUtils.GenerateContract(x,null,users.FirstOrDefault(u=>u.Id == x.UserId))),
                     entities.Count,
                     string.Empty
                 ));

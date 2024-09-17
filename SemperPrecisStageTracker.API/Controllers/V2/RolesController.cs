@@ -54,7 +54,7 @@ public class RolesController : ApiControllerBase
 
         var userIds = userRoles.Select(x => x.UserId).ToList();
 
-        var users = BasicLayer.FetchShootersByIds(userIds);
+        var users = BasicLayer.FetchUsersByIds(userIds);
 
         //Serializzazione e conferma
         return ReplyBaseResponse(ContractUtils.GenerateContract(entity, permissions, userRoles, users));

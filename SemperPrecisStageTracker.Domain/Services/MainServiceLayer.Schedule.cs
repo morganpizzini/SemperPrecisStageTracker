@@ -26,7 +26,7 @@ public partial class MainServiceLayer
     /// </summary>
     /// <param name="userId"> user identifier </param>
     /// <returns>Returns list of places</returns>
-    public IList<Schedule> FetchAllSchedules(string placeId) => FetchAllSchedules(new List<string> { placeId});
+    public IList<Schedule> FetchAllSchedulesByPlace(string placeId) => FetchAllSchedules(new List<string> { placeId});
 
     public IList<Schedule> FetchAllSchedules(IList<string> placeIds)
     {

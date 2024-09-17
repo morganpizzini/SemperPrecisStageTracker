@@ -78,7 +78,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             // load MDs and SOs
 
-            var shooters = BasicLayer.FetchShootersByIds(shooterIdsSum);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIdsSum);
 
             var shooterMatches = shooters.Where(x => shooterIds.Contains(x.Id)).ToList();
             var stageSoShooters = shooters.Where(x => stageShooterIds.Contains(x.Id)).ToList();
@@ -107,7 +107,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
                 groupAggregate.Add((groupId,
                     groupShooter,
-                    BasicLayer.FetchShootersByIds(shootersIds)
+                    BasicLayer.FetchUsersByIds(shootersIds)
                     ));
             }
 

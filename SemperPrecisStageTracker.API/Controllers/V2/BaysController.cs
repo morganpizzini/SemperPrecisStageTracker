@@ -13,19 +13,18 @@ using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2
 {
+    /// <summary>
+    /// muovere bays sotto place
+    /// </summary>
     [ApiVersion("2.0")]
     public partial class BaysController : ApiControllerBase
     {
-        /// <summary>
-        /// Fetch list
-        /// </summary>
-        /// <returns>Returns action result</returns>
-        [HttpGet]
+        [HttpGet("{id}/bays")]
         [ProducesResponseType(typeof(IList<BayContract>), 200)]
-        public Task<IActionResult> Fetch(EntityTakeSkipRequest request)
+        public Task<IActionResult> Fetch(TakeSkipBaseRequestId request)
         {
             //Recupero la lista dal layer
-            var entities = BasicLayer.FetchAllBays(request.RefId).AsQueryable();
+            var entities = BasicLayer.FetchAllBays(request.Id).AsQueryable();
             var total = entities.Count();
 
             if (request.Skip.HasValue)
@@ -55,14 +54,14 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{placeId}/bays/{id}")]
         [ProducesResponseType(typeof(BayContract), 200)]
         public IActionResult Get(BaseRequestId request)
         {
             var entity = BasicLayer.GetBay(request.Id);
 
             //verifico validità dell'entità
-            if (entity == null)
+            if (entity == null || entity.PlaceId != request.Id)
                 return NotFound();
 
             //Serializzazione e conferma
@@ -74,21 +73,21 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpPost]
+        [HttpPost("{id}/bays")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.EditPlace)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody] BayCreateRequest request)
+        public async Task<IActionResult> Create(EntityBaseRequestId<BayCreateRequest> request)
         {
-            var existingPlace = BasicLayer.GetPlace(request.PlaceId);
+            var existingPlace = BasicLayer.GetPlace(request.Id);
             if (existingPlace == null)
-                return BadRequest(new List<ValidationResult> { new ValidationResult($"Place {request.PlaceId} not found") });
+                return BadRequest(new List<ValidationResult> { new ValidationResult($"Place {request.Id} not found") });
 
             //Creazione modello richiesto da admin
             var model = new Bay
             {
-                Name = request.Name,
-                PlaceId = request.PlaceId,
-                Description = request.Description
+                Name = request.Body.Name,
+                PlaceId = request.Body.PlaceId,
+                Description = request.Body.Description
             };
 
             //Invocazione del service layer
@@ -106,16 +105,16 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpPut("{id}")]
+        [HttpPost("{id}/bays/{bayId}")]
         [ApiAuthorizationFilter(Permissions.EditPlace, Permissions.ManagePlaces)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Update(BaseRequestId<BayUpdateRequest> request)
+        public async Task<IActionResult> Update(BayEntityBaseRequestId<BayUpdateRequest> request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetBay(request.Id);
+            var entity = BasicLayer.GetBay(request.BayId);
 
             //modifica solo se admin o se utente richiedente è lo stesso che ha creato
-            if (entity == null)
+            if (entity == null || entity.PlaceId != request.Id)
                 return NotFound();
 
             //Aggiornamento dell'entità
@@ -136,16 +135,16 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/bays/{bayId}")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.EditPlace)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Delete(DeleteEntityRefRequest request)
+        public async Task<IActionResult> Delete(BayEntityBaseRequestId request)
         {
             //Recupero l'elemento dal business layer
-            var entity = BasicLayer.GetBay(request.Id);
+            var entity = BasicLayer.GetBay(request.BayId);
 
             //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
-            if (entity == null)
+            if (entity == null || entity.PlaceId != request.Id)
                 return NotFound();
 
             //Invocazione del service layer

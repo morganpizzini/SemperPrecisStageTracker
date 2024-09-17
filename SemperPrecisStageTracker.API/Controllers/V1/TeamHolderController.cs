@@ -31,7 +31,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             //Recupero l'elemento dal business layer
             var entities = BasicLayer.FetchTeamHoldersFromTeamId(request.TeamId);
             var shooterIds = entities.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             //Return contract
             return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(t => t.Id == x.UserId))));

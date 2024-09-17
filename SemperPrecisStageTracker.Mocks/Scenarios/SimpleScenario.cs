@@ -92,6 +92,7 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Bays = scenarioClone.Bays;
             Schedules = scenarioClone.Schedules;
             BaySchedules = scenarioClone.BaySchedules;
+            Reservations = scenarioClone.Reservations;
         }
     }
 }

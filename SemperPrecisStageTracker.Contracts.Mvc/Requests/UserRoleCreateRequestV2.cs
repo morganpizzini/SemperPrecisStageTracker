@@ -31,6 +31,38 @@ public class DeleteEntityRefRequest : BaseRequestId, EntityFilterValidation
     [FromQuery]
     public string RefId { get; set; } = string.Empty;
 }
+public class EntityBaseRequestId<T> : BaseRequest<T>, EntityFilterValidation where T : class, new()
+{
+    public string EntityId => Id;
+
+    [FromRoute]
+    [Required]
+    public string Id { get; set; } = string.Empty;
+}
+public class EntityBaseRequestId : BaseRequestId, EntityFilterValidation
+{
+    public string EntityId => Id;
+}
+public class BayEntityBaseRequestId : EntityBaseRequestId
+{
+    [FromRoute]
+    [Required]
+    public string BayId { get; set; } = string.Empty;
+}
+public class BayEntityBaseRequestId<T> : EntityBaseRequestId<T> where T : class, new()
+{
+    [FromRoute]
+    [Required]
+    public string BayId { get; set; } = string.Empty;
+}
+public class TakeSkipBaseRequestId : BaseRequestId, EntityFilterValidation
+{
+    public string EntityId => Id;
+    [FromQuery]
+    public int? Skip { get; set; }
+    [FromQuery]
+    public int? Take { get; set; }
+}
 public class TakeSkipRequest
 {
     [FromQuery]

@@ -33,6 +33,7 @@
                     </CardBody>
                 </Card>
                 <BaySchedulesComponent BaySchedules=@baySchedules Schedules=@schedules AddCallback="AddSchedule" DeleteCallback="DeleteSchedule"></BaySchedulesComponent>
+                <BayReservationComponent BayReservations=@bayReservations BaySchedules=@baySchedules AddCallback="AddSchedule" DeleteCallback="DeleteReservation"></BayReservationComponent>
             }
         }
     </Authorized>
@@ -48,7 +49,8 @@
     BayContract model = new();
     IList<ScheduleContract> schedules = new List<ScheduleContract>();
     IList<ScheduleContract> baySchedules = new List<ScheduleContract>();
-
+    IList<ReservationContract> bayReservations = new List<ReservationContract>();
+    
     protected override async Task OnInitializedAsync()
     {
         if (!AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, Id))
@@ -61,11 +63,13 @@
 
         var scheduleRequest = LoadSchedules();
         var bayScheduleRequest = LoadBaySchedules();
+        var bayReservationRequest = LoadBayReservations();
 
-        await Task.WhenAll(resultRequest, scheduleRequest, bayScheduleRequest);
+        await Task.WhenAll(resultRequest, scheduleRequest, bayScheduleRequest, bayReservationRequest);
 
         schedules = scheduleRequest.Result.Data;
         baySchedules = bayScheduleRequest.Result.Data;
+        bayReservations = bayReservationRequest.Result.Data;
 
         if (resultRequest != null)
         {
@@ -75,8 +79,9 @@
         await base.OnInitializedAsync();
     }
 
-    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, "api/v2/Schedules", new Dictionary<string, string> { { "RefId", Id } });
+    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"api/v2/Places/{Id}/Schedules");
     Task<BaseResponse<List<ScheduleContract>>> LoadBaySchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"/api/v2/Bays/{BayId}/Schedules");
+    Task<BaseResponse<List<ReservationContract>>> LoadBayReservations() => Call<List<ReservationContract>>(Models.RequestType.Get, $"/api/v2/Bays/{BayId}/Reservations");
 
 
     private async Task AddSchedule(string scheduleId)
@@ -94,5 +99,11 @@
     {
         await Call(Models.RequestType.Delete, $"/api/v2/Bays/{BayId}/Schedules/{scheduleId}", L["ScheduleDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
         baySchedules = (await LoadBaySchedules()).Data;
+    }
+
+    private async Task DeleteReservation(string reservationId)
+    {
+        await Call(Models.RequestType.Delete, $"/api/v2/Bays/{BayId}/Reservations/{reservationId}", L["ReservationDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+        bayReservations = (await LoadBayReservations()).Data;
     }
 }

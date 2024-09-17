@@ -172,7 +172,7 @@ else
         await base.OnInitializedAsync();
     }
 
-    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, "api/v2/Schedules", new Dictionary<string, string> { { "RefId", Id } });
+    Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"api/v2/Places/{Id}/Schedules");
     Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, "api/v2/Bays", new Dictionary<string, string> { { "RefId", Id } });
 
     void DeleteEntity(ScheduleContract entity)

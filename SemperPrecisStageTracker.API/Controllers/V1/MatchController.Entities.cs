@@ -32,7 +32,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchShooterMatchesByMatchId(request.MatchId);
 
             var shooterIds = entities.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             //Ritorno i contratti
             return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
@@ -167,7 +167,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchShooterSOStagesByStageId(request.StageId);
 
             var shooterIds = entities.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             //Ritorno i contratti
             return Reply(entities.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
@@ -237,7 +237,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooterSOStagees = BasicLayer.FetchShooterSOStagesByStageId(existingStage.Id);
             var shooterIds = shooterSOStagees.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             //Return contract
             return Ok(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
@@ -266,7 +266,7 @@ namespace SemperPrecisStageTracker.API.Controllers
 
             var shooterSOStagees = BasicLayer.FetchShooterSOStagesByStageId(entity.StageId);
             var shooterIds = shooterSOStagees.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
             //Return contract
             return Reply(shooterSOStagees.As(x => ContractUtils.GenerateContract(x, shooters.FirstOrDefault(s => s.Id == x.UserId))));
         }

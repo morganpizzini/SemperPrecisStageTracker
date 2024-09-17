@@ -837,7 +837,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 .Where(x => !string.IsNullOrEmpty(x.UserId))
                 .OrderBy(y => y.StageName).ToList());
 
-            var existingShooters = this.FetchShootersByIds(shooterIds);
+            var existingShooters = this.FetchUsersByIds(shooterIds);
 
             var existingTeamsIds = existingShooterGroups.Select(x => x.TeamId).ToList();
             var existingTeams = _teamRepository.Fetch(x => existingTeamsIds.Contains(x.Id));
@@ -2347,7 +2347,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="ids"> shooters identifier </param>
         /// <returns>Returns list of shooters</returns>
-        public IList<User> FetchShootersByIds(IList<string> ids)
+        public IList<User> FetchUsersByIds(IList<string> ids)
         {
             //Utilizzo il metodo base
             return FetchEntities(s => ids.Contains(s.Id), null, null, x => x.LastName, true, _userRepository);

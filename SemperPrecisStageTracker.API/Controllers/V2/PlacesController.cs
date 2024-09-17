@@ -18,7 +18,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
     /// Controller for place
     /// </summary>
     [ApiVersion("2.0")]
-    public class PlacesController : ApiControllerBase
+    public partial class PlacesController : ApiControllerBase
     {
         /// <summary>
         /// Fetch list of all places

@@ -74,7 +74,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var groupShooter = BasicLayer.FetchGroupShootersByGroupId(request.GroupId);
             var shooterIds = groupShooter.Select(x => x.UserId).ToList();
 
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
             var shooterStageStrings = BasicLayer.FetchShootersResultsOnStage(request.StageId, shooterIds);
 
@@ -411,7 +411,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 return new List<GroupUserContract>();
 
             var shooterIds = shooterGroup.Select(x => x.UserId).ToList();
-            var shooters = BasicLayer.FetchShootersByIds(shooterIds);
+            var shooters = BasicLayer.FetchUsersByIds(shooterIds);
 
 
             if (string.IsNullOrEmpty(matchId))
