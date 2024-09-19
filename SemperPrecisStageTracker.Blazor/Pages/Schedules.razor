@@ -1,0 +1,201 @@
+﻿@page "/places/{id}/schedules"
+@using SemperPrecisStageTracker.Blazor.Models
+@inherits SemperPrecisBaseMainComponent
+@inject IStringLocalizer<Schedules> L
+@inject NavigationManager UriHelper
+
+<Heading Size="HeadingSize.Is1">@L["Schedule"]</Heading>
+<Divider />
+<div class="row">
+    <div class="col">
+        <Dropdown>
+            <DropdownToggle Color="Color.Primary">
+                @L["Bays"]
+            </DropdownToggle>
+            <DropdownMenu>
+                @foreach (var bay in bays)
+                {
+                    <DropdownItem ShowCheckbox Checked="bay.Selected" CheckedChanged="(e)=>{
+                    bay.Selected = e;
+                }">
+                        @bay.Item.Name
+                    </DropdownItem>
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+    <div class="col">
+        <DateEdit TValue="DateTime" Date="@dateRange" DateChanged="async(e)=>{
+            dateRange = e;
+            await ReloadReservation();
+        }" />
+    </div>
+</div>
+
+<Divider />
+
+<div class="row text-center fw-bold">
+    <div class="col-2">
+        @L["Dates"]
+    </div>
+    @foreach (var bay in bays.Items)
+    {
+        <div class="col">
+            @bay.Name
+        </div>
+    }
+</div>
+<Divider />
+<div class="test">
+    @foreach (var date in dates)
+    {
+        <div class="row text-center py-2">
+            <div class="col-2">
+                <p class="fw-bold">
+                    @date.ToString("ddd dd/MM")
+                </p>
+            </div>
+            @foreach (var bay in bays.Items)
+            {
+                <div class="col">
+                    @foreach (var split in splits.Where(x=>x.BayId == bay.BayId && x.Date == date.Date))
+                    {
+                        <div class="border border-primary rounded p-1">
+                            @split.From.ToString("HH:mm")
+                        </div>
+                        var dayReservation = reservations.Where(x => x.Day.ToDateTime(TimeOnly.Parse("00:00 PM")).Date == split.Date && x.From == split.From && x.Bay.BayId == split.BayId);
+                        foreach (var r in dayReservation)
+                        {
+                            <p>
+                                @r.User.CompleteName
+                            </p>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+@code {
+    DateTime dateRange = DateTime.Now;
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+    List<DateTime> dates = new List<DateTime>();
+    List<ReservationContract> reservations = new List<ReservationContract>();
+    List<ScheduleContract> baySchedules = new List<ScheduleContract>();
+    MultiSelectItemList<BayContract> bays = new MultiSelectItemList<BayContract>();
+    IList<ScheduleTimeGroup> splits = new List<ScheduleTimeGroup>();
+
+
+    override protected async Task OnInitializedAsync()
+    {
+        await ReloadReservation();
+
+        baySchedules = (await LoadBaySchedules()).Data;
+
+        bays = new MultiSelectItemList<BayContract>((await LoadBays()).Data
+                    .Select(x =>
+                        new MultiSelectItem<BayContract>()
+                            {
+                                Item = x,
+                                Selected = true
+                            }));
+
+
+        await base.OnInitializedAsync();
+        // await LoadData();
+    }
+
+    async Task ReloadReservation()
+    {
+        dates = GetWeekRange(dateRange);
+        Console.WriteLine(dates.FirstOrDefault());
+        reservations = (await LoadBayReservations()).Data;
+
+        reservations = new List<ReservationContract>
+        {
+            new ReservationContract
+            {
+                Bay= new BayContract
+                {
+                    BayId = "1"
+                },
+                Day = DateOnly.FromDateTime(DateTime.Now),
+                From = new TimeOnly(8, 0),
+                To = new TimeOnly(12, 0),
+                User = new UserContract
+                {
+                    Username = "User 1",
+                    FirstName = "Tizio"
+                }
+            },
+            new ReservationContract
+            {
+                Bay= new BayContract
+                {
+                    BayId = "1"
+                },
+                Day = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+                From = new TimeOnly(8, 0),
+                To = new TimeOnly(12, 0),
+                User = new UserContract
+                {
+                    Username = "User 1",
+                    FirstName = "Caio"
+                }
+            },
+            new ReservationContract
+            {
+                Bay= new BayContract
+                {
+                    BayId = "2"
+                },
+                Day = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
+                From = new TimeOnly(14, 0),
+                To = new TimeOnly(18, 0),
+                User = new UserContract
+                {
+                    Username = "User 1",
+                    FirstName = "Sempronio"
+                }
+            }
+        };
+        splits = reservations
+                    .GroupBy(x => new { d = x.Day, f = x.From, b = x.Bay.BayId })
+                    .Select(x => new ScheduleTimeGroup
+                        {
+                            BayId = x.Key.b,
+                            Date = x.Key.d.ToDateTime(TimeOnly.Parse("00:00 PM")).Date,
+                            From = x.Key.f,
+                        })
+                    .ToList();
+    }
+    Task<BaseResponse<List<ReservationContract>>> LoadBayReservations() => Call<List<ReservationContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/Reservations", 
+                                                                            new Dictionary<string, string> { { "fromDate", dates.FirstOrDefault().ToString("u") }, { "toDate", dates.LastOrDefault().ToString("u") } });
+    Task<BaseResponse<List<ScheduleContract>>> LoadBaySchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/bays-schedules");
+    Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, $"api/v2/places/{Id}/Bays");
+
+
+
+    public List<DateTime> GetWeekRange(DateTime day)
+    {
+        // Calculate the previous Monday
+        int daysToMonday = (int)day.DayOfWeek - (int)DayOfWeek.Monday;
+        if (daysToMonday < 0) daysToMonday += 7;  // Handle Sunday case
+        DateTime startOfWeek = day.AddDays(-daysToMonday);
+
+        // Calculate the next Sunday
+        int daysToSunday = (int)DayOfWeek.Sunday - (int)day.DayOfWeek;
+        if (daysToSunday < 0) daysToSunday += 7;  // Handle Sunday case
+        DateTime endOfWeek = day.AddDays(daysToSunday);
+
+        // Create a list of days from Monday to Sunday
+        List<DateTime> weekDays = new List<DateTime>();
+        for (DateTime dt = startOfWeek; dt <= endOfWeek; dt = dt.AddDays(1))
+        {
+            weekDays.Add(dt);
+        }
+
+        return weekDays;
+    }
+}

@@ -23,7 +23,6 @@ namespace SemperPrecisStageTracker.Blazor.Utils
 
             foreach (var key in values.Keys)
             {
-                Console.WriteLine(key);
                 url = Regex.Replace(url, $"{{{key}(:.+?)?}}", values[key].ToString(), RegexOptions.IgnoreCase);
             }
 

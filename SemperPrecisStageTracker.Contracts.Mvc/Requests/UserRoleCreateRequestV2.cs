@@ -39,6 +39,16 @@ public class EntityBaseRequestId<T> : BaseRequest<T>, EntityFilterValidation whe
     [Required]
     public string Id { get; set; } = string.Empty;
 }
+public class PlaceScheduleRequest : EntityBaseRequestId
+{
+    [FromQuery]
+    [Required]
+    public DateTime FromDate { get; set; }
+    [FromQuery]
+    [Required]
+    public DateTime ToDate { get; set; }
+}
+
 public class EntityBaseRequestId : BaseRequestId, EntityFilterValidation
 {
     public string EntityId => Id;
@@ -72,13 +82,13 @@ public class TakeSkipRequest
 }
 public class BayScheduleDeleteRequest : BaseRequestId, EntityFilterValidation
 {
-    public string EntityId => RefId;
+    public string EntityId => PlaceId;
     [FromRoute]
     [Required]
     public string ScheduleId { get; set; } = string.Empty;
     [Required]
-    [FromQuery]
-    public string RefId { get; set; } = string.Empty;
+    [FromRoute]
+    public string PlaceId { get; set; } = string.Empty;
 }
 
 public class ReservationUpdateRequest : BaseRequestId<ReservationUpdateDataRequest>

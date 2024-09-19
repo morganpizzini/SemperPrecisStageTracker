@@ -3,9 +3,13 @@
 @inject IStringLocalizer<PlaceDetail> L
 @inject NavigationManager UriHelper
 
-<Heading Size="HeadingSize.Is1">@L["Manage"]</Heading>
-<NavLink href="@(RouteHelper.GetUrl<Places>())">@L["BackToList"]</NavLink>
+<Heading Size="HeadingSize.Is1">
+    <Button Class="me-1" Color="Color.Primary" Size="Size.Small" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<Places>())"><Icon Name="IconName.ArrowLeft" /></Button>
+    @L["Manage"] @(place!= null ? place.Name : "")
+</Heading>
+
 <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditPlace"]</Button>
+<Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<Schedules>(new{ id = Id}))"><Icon Name="IconName.Calendar" /> @L["Schedule"]</Button>
 @if (ApiLoading)
 {
     <p class="text-center">
@@ -15,13 +19,19 @@
 else
 {
     <Row>
-        <Column ColumnSize="ColumnSize.IsHalf">
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.IsHalf.OnDesktop">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>
-                        @L["Schedules"]
-                    </CardTitle>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ScheduleNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+                    <Row Class="mb-1">
+                        <Column ColumnSize="ColumnSize.Is8">
+                            <CardTitle>
+                                @L["Schedules"]
+                            </CardTitle>
+                        </Column>
+                        <Column Class="text-end">
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<ScheduleNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+                        </Column>
+                    </Row>
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -37,7 +47,7 @@ else
                                     <TableRowHeader>@entity.Name</TableRowHeader>
                                     <TableRowHeader>@entity.Day.ToString()</TableRowHeader>
                                     <TableRowHeader>@entity.From.ToString("HH:mm") ~ @entity.To.ToString("HH:mm")</TableRowHeader>
-                                    <TableRowCell>
+                                    <TableRowCell class="text-end">
                                         <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<ScheduleEdit>(new { id = Id,ScheduleId = entity.ScheduleId }))"><Icon Name="IconName.Search" /></Button>
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(entity))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
@@ -48,13 +58,19 @@ else
                 </CardBody>
             </Card>
         </Column>
-        <Column ColumnSize="ColumnSize.IsHalf">
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.IsHalf.OnDesktop">
             <Card Margin="Margin.Is4.OnY">
                 <CardBody>
-                    <CardTitle>
-                        @L["Bays"]
-                    </CardTitle>
-                    <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<BayNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewBay"]</Button>
+                    <Row Class="mb-1">
+                        <Column ColumnSize="ColumnSize.Is8">
+                            <CardTitle>
+                                @L["Bays"]
+                            </CardTitle>
+                        </Column>
+                        <Column Class="text-end">
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<BayNew>(new{ id = Id}))"><Icon Name="IconName.PlusSquare" /> @L["NewBay"]</Button>
+                        </Column>
+                    </Row>
                     <Table Striped="true" Hoverable="true">
                         <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
@@ -68,8 +84,8 @@ else
                                 <TableRow>
                                     <TableRowHeader>@entity.Name</TableRowHeader>
                                     <TableRowHeader>@entity.Description</TableRowHeader>
-                                    <TableRowCell>
-                                        <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<BayManage>(new { id = Id,BayId = entity.BayId }))"><Icon Name="IconName.Adjust" /></Button>
+                                    <TableRowCell class="text-end">
+                                        <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<BayManage>(new { id = Id,BayId = entity.BayId }))"><Icon Name="IconName.Wrench" /></Button>
                                         <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<BayEdit>(new { id = Id,BayId = entity.BayId }))"><Icon Name="IconName.Search" /></Button>
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteBayEntity(entity))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
@@ -158,7 +174,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
         var placeRequest = Post<PlaceContract>("api/Place/GetPlace", new PlaceRequest() { PlaceId = Id });
         var schedulesRequest = LoadSchedules();
         var baysRequest = LoadBays();
@@ -173,7 +188,7 @@ else
     }
 
     Task<BaseResponse<List<ScheduleContract>>> LoadSchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"api/v2/Places/{Id}/Schedules");
-    Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, "api/v2/Bays", new Dictionary<string, string> { { "RefId", Id } });
+    Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, $"api/v2/places/{Id}/Bays");
 
     void DeleteEntity(ScheduleContract entity)
     {
@@ -187,7 +202,7 @@ else
     {
         if (choice && place != null)
         {
-            await Call(Models.RequestType.Delete, $"/api/V2/Schedules/{entityToDelete.ScheduleId}", L["PlaceDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+            await Call(Models.RequestType.Delete, $"/api/V2/places/{Id}/Schedules/{entityToDelete.ScheduleId}", L["PlaceDeleteSuccess"]);
             schedules = (await LoadSchedules()).Data;
             entityToDelete = new();
         }
@@ -206,7 +221,7 @@ else
     {
         if (choice && place != null)
         {
-            await Call(Models.RequestType.Delete, $"/api/V2/bays/{entityBayToDelete.BayId}", L["bayDeleteSuccess"], new Dictionary<string, string> { { "RefId", Id } });
+            await Call(Models.RequestType.Delete, $"/api/V2/places/{Id}/bays/{entityBayToDelete.BayId}", L["bayDeleteSuccess"]);
             bays = (await LoadBays()).Data;
             entityBayToDelete = new();
         }

@@ -5,6 +5,7 @@
 @inject IAuthenticationService AuthService
 @inject MainServiceLayer mainServiceLayer
 @inject IState<SettingsState> SettingState
+@inject IFeatureManager _featureManager
 
 <div class="top-row pl-4 navbar navbar-dark">
     <NavLink class="navbar-brand px-3" href="@(RouteHelper.GetUrl<Home>())">
@@ -35,11 +36,13 @@
                         </NavLink>
                     </li>
                 }
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Matches>())">
-                        <Icon Name="FontAwesomeIcons.Book"/> @L["Matches"]
-                    </NavLink>
-                </li>
+                <FeatureFlag FlagName="@MyFeatureFlags.MatchHandling">
+                    <li class="nav-item px-3">
+                        <NavLink class="nav-link" href="@(RouteHelper.GetUrl<Matches>())">
+                            <Icon Name="FontAwesomeIcons.Book"/> @L["Matches"]
+                        </NavLink>
+                    </li>
+                </FeatureFlag>
                 @if (!SettingState.Value.Offline)
                 {
                     @if (AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateUser.EditUser))

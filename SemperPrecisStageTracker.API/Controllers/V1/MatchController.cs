@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Asp.Versioning;
 using Microsoft.Extensions.Azure;
 using SemperPrecisStageTracker.Shared.Permissions;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -20,6 +21,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for match
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public partial class MatchController : ApiControllerBase
     {
         /// <summary>

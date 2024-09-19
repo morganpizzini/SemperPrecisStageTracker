@@ -11,6 +11,7 @@ using Asp.Versioning;
 using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -18,6 +19,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for groupshooter
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public class GroupShooterController : ApiControllerBase
     {
         /// <summary>

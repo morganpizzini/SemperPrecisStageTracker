@@ -26,9 +26,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.0" />
 	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.1" />
-	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\SemperPrecisStageTracker.Contracts\SemperPrecisStageTracker.Contracts.csproj" />

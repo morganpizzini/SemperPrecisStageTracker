@@ -9,6 +9,7 @@ using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using Asp.Versioning;
 using System.Threading.Tasks;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -16,6 +17,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for group
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public class GroupController : ApiControllerBase
     {
         /// <summary>

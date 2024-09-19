@@ -3,10 +3,16 @@
 
 <Card Margin="Margin.Is4.OnY">
     <CardBody>
-        <CardTitle>
-            @L["Schedules"]
-        </CardTitle>
-        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => modalRefAddSchedule.Show())"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+        <Row Class="mb-1">
+            <Column ColumnSize="ColumnSize.Is8">
+                <CardTitle>
+                    @L["Schedules"]
+                </CardTitle>
+            </Column>
+            <Column Class="text-end">
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => modalRefAddSchedule.Show())"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+            </Column>
+        </Row>
         <Table Striped="true" Hoverable="true">
             <TableHeader ThemeContrast="ThemeContrast.Dark">
                 <TableRow>
@@ -39,13 +45,10 @@
         </ModalHeader>
         <ModalBody>
             <Field>
-                <FieldLabel>@L["AddScheduleDescription"]</FieldLabel>
-            </Field>
-            <Field>
                 <FieldLabel>@L["Schedule"]</FieldLabel>
                 <select class="form-control" @bind="addScheduleId">
                     <option disabled value="">@L["SelectSchedule"]</option>
-                    @foreach (var schedule in Schedules)
+                    @foreach (var schedule in Schedules.Where(x=> BaySchedules.All(b=>b.ScheduleId!=x.ScheduleId)))
                     {
                         <option value="@schedule.ScheduleId">@schedule.Name [@schedule.Day.ToString() @schedule.From.ToString("HH:mm") ~ @schedule.To.ToString("HH:mm")]</option>
                     })

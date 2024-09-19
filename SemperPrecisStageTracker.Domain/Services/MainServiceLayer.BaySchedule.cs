@@ -11,9 +11,9 @@ namespace SemperPrecisStageTracker.Domain.Services;
 
 public partial class MainServiceLayer
 {
-    public IList<Schedule> FetchAllBaySchedules(string bayId) => FetchAllBaySchedules(new List<string> { bayId });
+    public IList<Schedule> FetchAllSchedulesAssignedToBay(string bayId) => FetchAllSchedulesAssignedToBay(new List<string> { bayId });
 
-    public IList<Schedule> FetchAllBaySchedules(IList<string> bayIds)
+    public IList<Schedule> FetchAllSchedulesAssignedToBay(IList<string> bayIds)
     {
         var scheduleIds = FetchEntities(x => bayIds.Contains(x.BayId), null, null, null, false, _bayScheduleRepository)
             .Select(x=>x.ScheduleId)

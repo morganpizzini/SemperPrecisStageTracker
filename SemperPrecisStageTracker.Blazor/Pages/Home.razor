@@ -6,82 +6,84 @@
 @inject IState<UserState> UserState 
 @inject IState<SettingsState> SettingState 
 @inject IDispatcher Dispatcher
+@inject IFeatureManager _featureManager
 
 @if (!SettingState.Value.Offline)
 {
-    
-<Row>
-    <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>
-                    @L["MatchRegistration"]
-                </CardTitle>
-                <ShooterInGroup SubmitCallback="Submit" Model="model" Shooter="UserState.Value.User" AvailableMatches="AvailableMatches"></ShooterInGroup>
-            </CardBody>
-        </Card>
-    </Column>
-    <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
-        <Card Margin="Margin.Is4.OnY">
-            <CardBody>
-                <CardTitle>
-                    @L["NextMatches"]
-                </CardTitle>
-                <Table Striped="true" Hoverable="true">
-                    <TableHeader ThemeContrast="ThemeContrast.Dark">
-                        <TableRow>
-                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                            <TableHeaderCell>@L["Association"]</TableHeaderCell>
-                            <TableHeaderCell>@L["Date"] / @L["Location"]</TableHeaderCell>
-                            <TableHeaderCell>@L["Group"]</TableHeaderCell>
-                            <TableHeaderCell></TableHeaderCell>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        @if (ApiLoading)
-                        {
+<FeatureFlag FlagName="@MyFeatureFlags.MatchHandling">
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>
+                        @L["MatchRegistration"]
+                    </CardTitle>
+                    <ShooterInGroup SubmitCallback="Submit" Model="model" Shooter="UserState.Value.User" AvailableMatches="AvailableMatches"></ShooterInGroup>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>
+                        @L["NextMatches"]
+                    </CardTitle>
+                    <Table Striped="true" Hoverable="true">
+                        <TableHeader ThemeContrast="ThemeContrast.Dark">
                             <TableRow>
-                                <TableRowCell ColumnSpan="5" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x"/></TableRowCell>
+                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Association"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Date"] / @L["Location"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Group"]</TableHeaderCell>
+                                <TableHeaderCell></TableHeaderCell>
                             </TableRow>
-                        }
-                        else
-                        {
-                            @if (UserState.Value.Info.ShooterMatchInfos.Count == 0)
+                        </TableHeader>
+                        <TableBody>
+                            @if (ApiLoading)
                             {
                                 <TableRow>
-                                    <TableRowCell ColumnSpan="5" TextAlignment="@TextAlignment.Center">@L["NoMatches"]</TableRowCell>
+                                    <TableRowCell ColumnSpan="5" TextAlignment="@TextAlignment.Center"><Icon Name="FontAwesomeIcons.AnimationSpinner2x"/></TableRowCell>
                                 </TableRow>
                             }
                             else
                             {
-                                <Virtualize Items="@UserState.Value.Info.ShooterMatchInfos" Context="match">
+                                @if (UserState.Value.Info.ShooterMatchInfos.Count == 0)
+                                {
                                     <TableRow>
-                                        <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new { id = match.MatchId }))">@match.Name</NavLink></TableRowHeader>
-                                        <TableRowCell>@match.AssociationName</TableRowCell>
-                                        <TableRowCell>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")<br/>@match.PlaceName</TableRowCell>
-                                        <TableRowCell>
-                                            @if (!string.IsNullOrEmpty(match.GroupName))
-                                            {
-                                                <span>@match.GroupName</span>
-                                            }
-                                            else
-                                            {
-                                                <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger"/>
-                                            }
-                                        </TableRowCell>
-                                        <TableRowCell>
-                                            <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new { id = match.MatchId }))"><Icon Name="IconName.Search"/></Button>
-                                        </TableRowCell>
+                                        <TableRowCell ColumnSpan="5" TextAlignment="@TextAlignment.Center">@L["NoMatches"]</TableRowCell>
                                     </TableRow>
-                                </Virtualize>
+                                }
+                                else
+                                {
+                                    <Virtualize Items="@UserState.Value.Info.ShooterMatchInfos" Context="match">
+                                        <TableRow>
+                                            <TableRowHeader><NavLink href="@(RouteHelper.GetUrl<MatchDetail>(new { id = match.MatchId }))">@match.Name</NavLink></TableRowHeader>
+                                            <TableRowCell>@match.AssociationName</TableRowCell>
+                                            <TableRowCell>@match.MatchDateTimeStart.ToString("d") ~ @match.MatchDateTimeEnd.ToString("d")<br/>@match.PlaceName</TableRowCell>
+                                            <TableRowCell>
+                                                @if (!string.IsNullOrEmpty(match.GroupName))
+                                                {
+                                                    <span>@match.GroupName</span>
+                                                }
+                                                else
+                                                {
+                                                    <Icon Name="FontAwesomeIcons.ExclamationTriangle" TextColor="TextColor.Danger"/>
+                                                }
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<MatchDetail>(new { id = match.MatchId }))"><Icon Name="IconName.Search"/></Button>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </Virtualize>
+                                }
                             }
-                        }
-                    </TableBody>
-                </Table>
-            </CardBody>
-        </Card>
-    </Column>
-</Row>
+                        </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</FeatureFlag>
 <Row>
     <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
         <Card Margin="Margin.Is4.OnY">
@@ -100,7 +102,7 @@
                     <Virtualize Items="@UserPlaces" Context="place">
                         <TableRow>
                             <TableRowHeader>@place.Name</TableRowHeader>
-                            <TableRowCell>
+                            <TableRowCell Class="text-end">
                                 <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new { id = place.PlaceId }))"><Icon Name="IconName.Search" /></Button>
                             </TableRowCell>
                         </TableRow>
@@ -122,13 +124,15 @@
     {
         if (!SettingState.Value.Offline)
         {
-            var matchAvailable = Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
+            if (await _featureManager.IsEnabledAsync(MyFeatureFlags.MatchHandling)){
+
+                AvailableMatches = await Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
+            }
 
             var userPlaces = Call<List<PlaceContract>>(Models.RequestType.Get,$"api/v2/users/{UserState.Value.User?.UserId}/places-managed");
 
-            await Task.WhenAll(matchAvailable, userPlaces);
+            await Task.WhenAll(userPlaces);
 
-            AvailableMatches = matchAvailable.Result;
             UserPlaces = userPlaces.Result.Data;
         }
         await base.OnInitializedAsync();

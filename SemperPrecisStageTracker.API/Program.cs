@@ -35,6 +35,7 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data;
 using ZenProgramming.Chakra.Core.Mocks.Data;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 
 namespace SemperPrecisStageTracker.API;
 
@@ -84,8 +85,18 @@ public class Program
                              $".{assembly.Version?.Build ?? 0}";
 
         var builder = WebApplication.CreateBuilder(args);
-        var isDev = builder.Environment.IsDevelopment();
-        if (isDev)
+        
+        builder.Services.AddFeatureManagement()
+            .UseDisabledFeaturesHandler(new DisabledFeaturesHandler());
+
+        var mockKeyVault = builder.Configuration.IsFeatureEnabled(MyFeatureFlags.MockKeyVault);
+        var fakeEmail = builder.Configuration.IsFeatureEnabled(MyFeatureFlags.FakeEmail);
+        var enableSwagger = builder.Configuration.IsFeatureEnabled(MyFeatureFlags.EnableSwagger);
+        var requestTimer = builder.Configuration.IsFeatureEnabled(MyFeatureFlags.RequestTimer);
+        var enableDev = builder.Configuration.IsFeatureEnabled(MyFeatureFlags.EnableDev);
+
+
+        if (mockKeyVault)
         {
             builder.Services.AddScoped<IKeyVaultService, KeyVaultServiceMock>();
         }
@@ -158,7 +169,7 @@ public class Program
             }
         });
 
-        if (builder.Environment.IsDevelopment())
+        if (fakeEmail)
         {
             builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
         }
@@ -172,8 +183,6 @@ public class Program
             builder.Services.AddScoped<IEmailSender, EmailSender>();
         }
         
-
-
         //Aggiungo l'autentications basic e il default di schema
         builder.Services
             .AddAuthentication(o => o.DefaultScheme = BasicAuthenticationOptions.Scheme)
@@ -196,48 +205,55 @@ public class Program
         });
 
         builder.Services.AddHealthChecks();
-        builder.Services.AddSwaggerGen(c =>
+        if (enableSwagger)
         {
-            c.OperationFilter<SwaggerDefaultValues>();
-            //c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
-
-            c.OperationFilter<PermissionsFilter>();
-
-            c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
+            builder.Services.AddSwaggerGen(c =>
             {
-                Type = SecuritySchemeType.Http,
-                Scheme = "basic",
-                Description = "Input your username and password to access this API",
-                In = ParameterLocation.Header,
-            });
+                c.OperationFilter<SwaggerDefaultValues>();
+                //c.SwaggerDoc("v1", new OpenApiInfo { Title = "SemperPrecisStageTracker", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
 
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+                c.OperationFilter<PermissionsFilter>();
+
+                c.AddSecurityDefinition("basicAuth", new OpenApiSecurityScheme()
                 {
-                    new OpenApiSecurityScheme
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "basic",
+                    Description = "Input your username and password to access this API",
+                    In = ParameterLocation.Header,
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "basicAuth"
-                        }
-                    },
-                    new List<string>()
-                }
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "basicAuth"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
-        });
-        builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        }
+            
 
         var app = builder.Build();
 
-        var enableDev = bool.Parse(builder.Configuration["enableDev"] ?? "false");
-        if (app.Environment.IsDevelopment())
-        {
+        if (enableDev)
             app.UseDeveloperExceptionPage();
 
+        if (requestTimer)
+            app.UseTimer();
+
+        if (enableSwagger)
+        {
             app.UseSwagger();
             app.UseSwaggerUI(options => {
                 var descriptions = app.DescribeApiVersions();
@@ -250,13 +266,6 @@ public class Program
                     options.SwaggerEndpoint(url, name);
                 }
             });
-        }
-        else
-        {
-            if (enableDev)
-            {
-                app.UseDeveloperExceptionPage();
-            }
         }
 
         app.UseHttpsRedirection();
@@ -271,7 +280,7 @@ public class Program
 
         app.UseAuthorization();
 
-        if (app.Environment.IsDevelopment() || enableDev)
+        if (enableDev)
         {
             app.UseExceptionHandler(c => c.Run(async context =>
             {
@@ -286,6 +295,7 @@ public class Program
                 await context.Response.WriteAsJsonAsync(response);
             }));
         }
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHealthChecks("/healthz");

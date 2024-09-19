@@ -9,7 +9,7 @@
     <base href="/app/" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link href="css/bootstrap.css" rel="stylesheet" />
-    <link href="css/fontawesome.css" rel="stylesheet" />
+    <link href="_content/Blazorise.Icons.FontAwesome/v6/css/all.min.css" rel="stylesheet">
     <link href="css/app.min.css" rel="stylesheet" />
 
     <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
@@ -211,7 +211,7 @@
                         DotNet.invokeMethodAsync("SemperPrecisStageTracker.Blazor", "BlazorInstallHandler")
                             .catch((e) => {
                                 // timeout
-                                if(e)
+                                if (e)
                                     console.error(e);
                             });
                     });

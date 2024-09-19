@@ -11,9 +11,9 @@ using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2
 {
-    public partial class BaysController : ApiControllerBase
+    public partial class PlacesController : ApiControllerBase
     {
-        [HttpGet("{id}/reservations")]
+        [HttpGet("{placeId}/bays/{id}/reservations")]
         [ProducesResponseType(typeof(BayContract), 200)]
         public IActionResult FetchReservations(BaseRequestId request)
         {
@@ -23,7 +23,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             if (entity == null)
                 return NotFound();
 
-            var entities = BasicLayer.FetchAllReservations(request.Id);
+            var entities = BasicLayer.FetchAllReservations(request.Id, DateTime.Now);
 
             var userIds = entities.Select(x => x.UserId).ToList();
             var users = BasicLayer.FetchUsersByIds(userIds);
@@ -42,17 +42,17 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpPost("{id}/reservations")]
+        [HttpPost("{placeId}/bays/{id}/reservations")]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody]ReservationCreateRequest request)
+        public async Task<IActionResult> Create(BaseRequestId<ReservationCreateRequest> request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
             
             var userId = PlatformUtils.GetIdentityUserId(User);
 
-            var existingBay = BasicLayer.GetBay(request.BayId);
+            var existingBay = BasicLayer.GetBay(request.Id);
             if (existingBay == null)
-                validations.Add(new ValidationResult($"Bay {request.BayId} not found"));
+                validations.Add(new ValidationResult($"Bay {request.Id} not found"));
 
             if(validations.Count>0)
                 return BadRequest(validations);
@@ -60,11 +60,11 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Creazione modello richiesto da admin
             var model = new Reservation
             {
-                UserId = string.IsNullOrEmpty(request.UserId) ? request.UserId : userId,
-                BayId = request.BayId,
-                From = request.From,
-                To = request.To,
-                Day = request.Day
+                UserId = string.IsNullOrEmpty(request.Body.UserId) ? request.Body.UserId : userId,
+                BayId = request.Id,
+                From = request.Body.From,
+                To = request.Body.To,
+                Day = request.Body.Day
             };
 
             //Invocazione del service layer
@@ -74,10 +74,10 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
                 return BadRequest(validations);
 
             //Return contract
-            return CreatedAtAction(nameof(FetchReservations), new { id = request.BayId }, new BaseResponse<ReservationContract>(ContractUtils.GenerateContract(model)));
+            return CreatedAtAction(nameof(FetchReservations), new { placeId = existingBay.PlaceId,id = request.Id }, new BaseResponse<ReservationContract>(ContractUtils.GenerateContract(model)));
         }
 
-        [HttpPut("{id}/reservations/{reservationId}")]
+        [HttpPut("{placeId}/bays/{id}/reservations/{reservationId}")]
         [ProducesResponseType(201)]
         public async Task<IActionResult> UpdateReservation(ReservationUpdateRequest request)
         {
@@ -111,7 +111,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpDelete("{id}/reservations/{reservationId}")]
+        [HttpDelete("{placeId}/bays/{id}/reservations/{reservationId}")]
         [ProducesResponseType(201)]
         public async Task<IActionResult> DeleteBayReservation(ReservationDeleteRequest request)
         {

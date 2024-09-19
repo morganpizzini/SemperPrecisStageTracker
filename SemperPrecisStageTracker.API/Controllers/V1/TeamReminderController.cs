@@ -9,7 +9,6 @@ using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
 
-
 namespace SemperPrecisStageTracker.API.Controllers
 {
     /// <summary>

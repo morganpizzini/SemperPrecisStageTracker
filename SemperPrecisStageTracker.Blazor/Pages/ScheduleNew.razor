@@ -3,8 +3,9 @@
 @inject IStringLocalizer<ScheduleNew> L
 @inject NavigationManager UriHelper
 
-<Heading Size="HeadingSize.Is1">@L["NewSchedule"]</Heading>
-<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToManage"]</NavLink>
+<Heading Size="HeadingSize.Is1">
+    <Button Class="me-1" Color="Color.Primary" Size="Size.Small" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))"><Icon Name="IconName.ArrowLeft" /></Button>
+    @L["NewSchedule"]</Heading>
 <Divider />
 <AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
     <Authorizing>

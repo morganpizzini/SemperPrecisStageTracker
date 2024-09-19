@@ -4,22 +4,29 @@ using SemperPrecisStageTracker.Shared.Permissions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Domain.Services;
 public partial class MainServiceLayer
 {
-    /// <summary>
-    /// Fetch list of all places
-    /// </summary>
-    /// <param name="userId"> user identifier </param>
-    /// <returns>Returns list of places</returns>
-    public IList<Reservation> FetchAllReservations(string bayId) => FetchAllReservations(new List<string> { bayId});
+    
+    public IList<Reservation> FetchAllReservations(string bayId,DateTime? fromDate = null) => FetchAllReservations(new List<string> { bayId},fromDate);
 
-    public IList<Reservation> FetchAllReservations(IList<string> bayIds)
+    public IList<Reservation> FetchAllReservations(IList<string> bayIds, DateTime? fromDate = null)
     {
         //Utilizzo il metodo base
-        return FetchEntities(x=>bayIds.Contains(x.BayId), null, null, s => s.Day, false, _reservationRepository);
+        return FetchEntities(x=>bayIds.Contains(x.BayId) && (!fromDate.HasValue || x.Day >= DateOnly.FromDateTime(fromDate.Value)), null, null, s => s.Day, false, _reservationRepository);
+    }
+
+    
+
+    public IList<Reservation> FetchAllReservationsByPlace(string placeId, DateTime fromDate, DateTime toDate)
+    {
+        var bayIds = FetchAllBays(placeId).Select(x => x.Id).ToList();
+        //Utilizzo il metodo base
+        return FetchEntities(x => bayIds.Contains(x.BayId) && x.Day >= DateOnly.FromDateTime(fromDate)
+                                                            && x.Day <= DateOnly.FromDateTime(toDate), null, null, s => s.Day, false, _reservationRepository);
     }
 
     /// <summary>

@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Blazor.Shared", "SemperPrecisStageTracker.Blazor.Shared\SemperPrecisStageTracker.Blazor.Shared.csproj", "{C26BF091-517B-46B9-8F8B-A9451E44A8DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemperPrecisStageTracker.Contracts.Mvc", "SemperPrecisStageTracker.Contracts.Mvc\SemperPrecisStageTracker.Contracts.Mvc.csproj", "{1FB51D68-5E5E-4E68-A017-CD0FF294E99E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SemperPrecisStageTracker.Contracts.Mvc", "SemperPrecisStageTracker.Contracts.Mvc\SemperPrecisStageTracker.Contracts.Mvc.csproj", "{1FB51D68-5E5E-4E68-A017-CD0FF294E99E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

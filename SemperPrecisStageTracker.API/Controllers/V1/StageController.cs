@@ -9,6 +9,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.Threading.Tasks;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -16,6 +17,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for stage
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public class StageController : ApiControllerBase
     {
         /// <summary>

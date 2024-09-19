@@ -37,7 +37,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
                     entities.As(ContractUtils.GenerateContract),
                     total,
                     request.Take.HasValue ?
-                        Url.Action(action: nameof(FetchSchedules), controller: "Schedules", new { take = request.Take, refId = request.Id, skip = request.Take + (request?.Skip ?? 0) }) :
+                        Url.Action(action: nameof(FetchSchedules), controller: "Places", new { take = request.Take, refId = request.Id, skip = request.Take + (request?.Skip ?? 0) }) :
                         string.Empty
                 ));
         }

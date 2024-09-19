@@ -363,70 +363,131 @@
       "name": "Team 03"
     }
   ],
-  "shooterTeams": [
+  "teamHolders": [
+    {
+      "id": "1",
+      "userId": "1",
+      "teamId": "1",
+      "description": "amministratore (shooter 1 - team 1)"
+    },
+    {
+      "id": "2",
+      "userId": "2",
+      "teamId": "2",
+      "description": "amministratore (shooter 2 - team 2)"
+    }
+  ],
+  "shooterTeamPayments": [
     {
       "id": "1",
       "shooterId": "1",
       "teamId": "1",
-      "shooterApprove": true,
+      "amount": 10.0,
+      "paymentType": "Entrata cassa",
+      "reason": "Pay XYZ",
+      "paymentDateTime": "2021-05-23T18:25:43.511Z"
+    },
+    {
+      "id": "2",
+      "shooterId": "2",
+      "teamId": "2",
+      "paymentType": "Standard",
+      "amount": 20.0,
+      "reason": "Pay ABC",
+      "paymentDateTime": "2021-06-20T18:25:43.511Z"
+    }
+  ],
+  "paymentTypes": [
+    {
+      "id": "1",
+      "teamId": "1",
+      "name": "Entrata cassa"
+    },
+    {
+      "id": "2",
+      "teamId": "1",
+      "name": "Uscita cassa"
+    },
+    {
+      "id": "3",
+      "teamId": "1",
+      "name": "Entrata banca"
+    },
+    {
+      "id": "4",
+      "teamId": "1",
+      "name": "Uscita banca"
+    },
+    {
+      "id": "5",
+      "teamId": "2",
+      "name": "Standard"
+    }
+  ],
+  "shooterTeams": [
+    {
+      "id": "1",
+      "userId": "1",
+      "teamId": "1",
+      "userApprove": true,
       "teamApprove": true,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "2",
-      "shooterId": "1",
+      "userId": "1",
       "teamId": "2",
-      "shooterApprove": true,
+      "userApprove": true,
       "teamApprove": true,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "3",
-      "shooterId": "2",
+      "userId": "2",
       "teamId": "1",
-      "shooterApprove": false,
+      "userApprove": false,
       "teamApprove": true,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "4",
-      "shooterId": "3",
+      "userId": "3",
       "teamId": "2",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "5",
-      "shooterId": "4",
+      "userId": "4",
       "teamId": "3",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "6",
-      "shooterId": "5",
+      "userId": "5",
       "teamId": "2",
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "61",
-      "shooterId": "5",
+      "userId": "5",
       "teamId": "1",
-      "shooterApprove": true,
+      "userApprove": true,
       "teamApprove": false,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "7",
-      "shooterId": "6",
+      "userId": "6",
       "teamId": "1",
-      "shooterApprove": true,
+      "userApprove": true,
       "teamApprove": true,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     },
     {
       "id": "8",
-      "shooterId": "3",
+      "userId": "3",
       "teamId": "1",
-      "shooterApprove": false,
+      "userApprove": false,
       "teamApprove": true,
       "registrationDate": "2021-05-23T18:25:43.511Z"
     }
@@ -1078,67 +1139,6 @@
       ]
     }
   ],
-  "teamHolders": [
-    {
-      "id": "1",
-      "shooterId": "1",
-      "teamId": "1",
-      "description": "amministratore (shooter 1 - team 1)"
-    },
-    {
-      "id": "2",
-      "shooterId": "2",
-      "teamId": "2",
-      "description": "amministratore (shooter 2 - team 2)"
-    }
-  ],
-  "shooterTeamPayments": [
-    {
-      "id": "1",
-      "shooterId": "1",
-      "teamId": "1",
-      "amount": 10.0,
-      "paymentType": "Entrata cassa",
-      "reason": "Pay XYZ",
-      "paymentDateTime": "2021-05-23T18:25:43.511Z"
-    },
-    {
-      "id": "2",
-      "shooterId": "2",
-      "teamId": "2",
-      "paymentType": "Standard",
-      "amount": 20.0,
-      "reason": "Pay ABC",
-      "paymentDateTime": "2021-06-20T18:25:43.511Z"
-    }
-  ],
-  "paymentTypes": [
-    {
-      "id": "1",
-      "teamId": "1",
-      "name": "Entrata cassa"
-    },
-    {
-      "id": "2",
-      "teamId": "1",
-      "name": "Uscita cassa"
-    },
-    {
-      "id": "3",
-      "teamId": "1",
-      "name": "Entrata banca"
-    },
-    {
-      "id": "4",
-      "teamId": "1",
-      "name": "Uscita banca"
-    },
-    {
-      "id": "5",
-      "teamId": "2",
-      "name": "Standard"
-    }
-  ],
   "permissions": [
     {
       "id": "1",
@@ -1490,7 +1490,7 @@
       "id": "1",
       "userId": "2",
       "bayId": "1",
-      "day": "2024-09-12",
+      "day": "2024-10-12",
       "from": "16:00:13.0433432",
       "to": "18:00:13.0434081"
     },
@@ -1498,7 +1498,7 @@
       "id": "2",
       "userId": "2",
       "bayId": "1",
-      "day": "2024-09-12",
+      "day": "2024-10-12",
       "from": "16:00:13.0433432",
       "to": "18:00:13.0434081"
     }

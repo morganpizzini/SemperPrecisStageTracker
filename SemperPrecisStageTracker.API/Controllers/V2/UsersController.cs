@@ -19,7 +19,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2;
 /// Controller for Users
 /// </summary>
 [ApiVersion("2.0")]
-public class UsersController : ApiControllerBase
+public partial class UsersController : ApiControllerBase
 {
     //spostare in un servizio
     //private readonly IEmailSender _emailSender;

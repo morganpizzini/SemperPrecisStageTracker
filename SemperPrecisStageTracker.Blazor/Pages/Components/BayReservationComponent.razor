@@ -2,11 +2,17 @@
 @using Microsoft.AspNetCore.Components
 
 <Card Margin="Margin.Is4.OnY">
-    <CardBody>
-        <CardTitle>
-            @L["Reservations"]
-        </CardTitle>
-        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => modalRefAddSchedule.Show())"><Icon Name="IconName.PlusSquare" /> @L["NewSchedule"]</Button>
+    <CardBody> 
+        <Row Class="mb-1">
+            <Column ColumnSize="ColumnSize.Is8">
+                <CardTitle>
+                    @L["Reservations"]
+                </CardTitle>
+            </Column>
+            <Column Class="text-end">
+                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => modalRefAddSchedule.Show())"><Icon Name="IconName.PlusSquare" /> @L["NewReservation"]</Button>
+            </Column>
+        </Row>
         <Table Striped="true" Hoverable="true">
             <TableHeader ThemeContrast="ThemeContrast.Dark">
                 <TableRow>
@@ -37,13 +43,36 @@
         </ModalHeader>
         <ModalBody>
             <Field>
-                <FieldLabel>@L["AddReservationDescription"]</FieldLabel>
+                <FieldLabel>@L["Users"]</FieldLabel>
+                <select class="form-control" @bind="model.UserId">
+                    <option disabled value="">@L["SelectUser"]</option>
+                    @foreach (var user in Users)
+                    {
+                        <option value="@user.UserId">@user.CompleteName</option>
+                    })
+                </select>
+            </Field>
+            <Field>
+                <FieldLabel >@L["Date"]</FieldLabel>
+                <FieldBody>
+                    <input name="from" class="form-control" type="date" value="@model.Day.ToString("yyyy-MM-dd")"
+                           @onchange="@((ChangeEventArgs __e) => 
+                                    {
+                                        Console.WriteLine(__e?.Value?.ToString());
+                                        var day = DateOnly.FromDateTime(DateTime.Parse(__e?.Value?.ToString()));
+                                        if(model.Day != day){
+                                            model.Day = day;
+                                            addScheduleId = string.Empty;
+                                        }
+                                        
+                                    })" />
+                </FieldBody>
             </Field>
             <Field>
                 <FieldLabel>@L["Schedule"]</FieldLabel>
                 <select class="form-control" @bind="addScheduleId">
                     <option disabled value="">@L["SelectSchedule"]</option>
-                    @foreach (var schedule in BaySchedules)
+                    @foreach (var schedule in BaySchedules.Where(x=>x.Day == model.Day.DayOfWeek))
                     {
                         <option value="@schedule.ScheduleId">@schedule.Name [@schedule.Day.ToString() @schedule.From.ToString("HH:mm") ~ @schedule.To.ToString("HH:mm")]</option>
                     })
@@ -93,14 +122,20 @@
     private Modal modalRefAddSchedule = default!;
     ReservationContract entityReservationToDelete = new();
 
+    ReservationCreateRequest model = new();
     string addScheduleId = string.Empty;
+    // string addUserId = string.Empty;
+    // DateOnly addDate = DateOnly.FromDateTime(DateTime.Now.Date);
+
     [Parameter, EditorRequired]
     public IList<ReservationContract> BayReservations { get; set; } = new List<ReservationContract>();
     [Parameter, EditorRequired]
     public IList<ScheduleContract> BaySchedules { get; set; } = new List<ScheduleContract>();
+    [Parameter, EditorRequired]
+    public IList<UserContract> Users { get; set; } = new List<UserContract>();
 
     [Parameter, EditorRequired]
-    public EventCallback<string> AddCallback { get; set; }
+    public EventCallback<ReservationCreateRequest> AddCallback { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<string> DeleteCallback { get; set; }
 
@@ -124,11 +159,19 @@
 
     private async Task HideModalModalRefAddReservation(bool choice)
     {
-        if (choice && !string.IsNullOrEmpty(addScheduleId))
+        if (choice && !string.IsNullOrEmpty(addScheduleId)
+        && !string.IsNullOrEmpty(model.UserId))
         {
-            await AddCallback.InvokeAsync(addScheduleId);
-            addScheduleId = string.Empty;
+            var schedule = BaySchedules.FirstOrDefault(x => x.ScheduleId == addScheduleId);
+            if(schedule != null)
+            {
+                model.From = schedule.From;
+                model.To = schedule.To;
+                await AddCallback.InvokeAsync(model);
+            }
         }
+        addScheduleId = string.Empty;
+        model = new();
         await modalRefAddSchedule.Hide();
     }
 }

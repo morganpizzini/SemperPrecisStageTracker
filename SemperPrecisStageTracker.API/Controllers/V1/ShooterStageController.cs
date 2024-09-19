@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts.Requests;
@@ -14,6 +15,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for shooterStage
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public class ShooterStageController : ApiControllerBase
     {
         /// <summary>

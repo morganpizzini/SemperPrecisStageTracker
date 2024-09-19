@@ -12,9 +12,9 @@ using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2
 {
-    public partial class BaysController : ApiControllerBase
+    public partial class PlacesController : ApiControllerBase
     {
-        [HttpGet("{id}/schedules")]
+        [HttpGet("{placeId}/bays/{id}/schedules")]
         [ProducesResponseType(typeof(BayContract), 200)]
         public IActionResult FetchSchedules(BaseRequestId request)
         {
@@ -24,10 +24,26 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             if (entity == null)
                 return NotFound();
 
-            var entities = BasicLayer.FetchAllBaySchedules(request.Id);
+            var entities = BasicLayer.FetchAllSchedulesAssignedToBay(request.Id);
 
             //Serializzazione e conferma
             //Ritorno i contratti
+            return Ok(
+                new BaseResponse<IList<ScheduleContract>>(
+                    entities.As(ContractUtils.GenerateContract),
+                    entities.Count,
+                    string.Empty
+                ));
+        }
+
+        [HttpGet("{id}/bays-schedules")]
+        [ProducesResponseType(typeof(BayContract), 200)]
+        public IActionResult FetchBaySchedules(BaseRequestId request)
+        {
+            var entityIds = BasicLayer.FetchAllBays(request.Id).Select(x=>x.Id).ToList();
+
+            var entities = BasicLayer.FetchAllSchedulesAssignedToBay(entityIds);
+
             return Ok(
                 new BaseResponse<IList<ScheduleContract>>(
                     entities.As(ContractUtils.GenerateContract),
@@ -41,23 +57,23 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpPost("{id}/schedules")]
+        [HttpPost("{id}/bays/{bayId}/schedules")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.EditPlace)]
         [ProducesResponseType(201)]
-        public async Task<IActionResult> Create([FromBody]ScheduleBayCreateRequest request)
+        public async Task<IActionResult> Create(BayEntityBaseRequestId<ScheduleBayCreateRequest> request)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
-            var existingPlace = BasicLayer.GetPlace(request.PlaceId);
+            var existingPlace = BasicLayer.GetPlace(request.Id);
             if (existingPlace == null)
-                validations.Add(new ValidationResult($"Place {request.PlaceId} not found"));
+                validations.Add(new ValidationResult($"Place {request.Id} not found"));
 
             var existingBay = BasicLayer.GetBay(request.BayId);
             if (existingBay == null)
                 validations.Add(new ValidationResult($"Bay {request.BayId} not found"));
 
-            var existingSchedule = BasicLayer.GetSchedule(request.ScheduleId);
+            var existingSchedule = BasicLayer.GetSchedule(request.Body.ScheduleId);
             if (existingSchedule == null)
-                validations.Add(new ValidationResult($"Schedule {request.ScheduleId} not found"));
+                validations.Add(new ValidationResult($"Schedule {request.Body.ScheduleId} not found"));
 
             if(validations.Count>0)
                 return BadRequest(validations);
@@ -66,11 +82,11 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             var model = new BaySchedule
             {
                 BayId = request.BayId,
-                ScheduleId = request.ScheduleId
+                ScheduleId = request.Body.ScheduleId
             };
 
             //Invocazione del service layer
-            validations = await BasicLayer.CreateBaySchedule(model,request.PlaceId, PlatformUtils.GetIdentityUserId(User));
+            validations = await BasicLayer.CreateBaySchedule(model,request.Id, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);
@@ -78,13 +94,14 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Return contract
             return NoContent();
         }
+
         
         /// <summary>
         /// Deletes existing place on platform
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpDelete("{id}/schedules/{scheduleId}")]
+        [HttpDelete("{placeId}/bays/{id}/schedules/{scheduleId}")]
         [ApiAuthorizationFilter(Permissions.ManagePlaces,Permissions.EditPlace)]
         [ProducesResponseType(204)]
         public async Task<IActionResult> DeleteBaySchedule(BayScheduleDeleteRequest request)
@@ -97,7 +114,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
                 return NotFound();
 
             //Invocazione del service layer
-            var validations = await BasicLayer.DeleteBaySchedule(entity, request.RefId, PlatformUtils.GetIdentityUserId(User));
+            var validations = await BasicLayer.DeleteBaySchedule(entity, request.PlaceId, PlatformUtils.GetIdentityUserId(User));
 
             if (validations.Count > 0)
                 return BadRequest(validations);

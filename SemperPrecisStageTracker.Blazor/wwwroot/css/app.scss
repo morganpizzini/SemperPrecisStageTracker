@@ -101,3 +101,11 @@ a, .btn-link {
 .form-group label, .card-body .card-title{
     font-weight: bold;
 }
+
+.test .row:nth-child(odd) {
+    background-color: rgba(0,0,0,.05);
+}
+
+/*.test .row:nth-child(even) {
+    background-color: darkgrey;
+}*/

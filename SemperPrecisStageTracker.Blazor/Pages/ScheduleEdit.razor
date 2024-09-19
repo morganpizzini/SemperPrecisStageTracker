@@ -3,8 +3,9 @@
 @inject IStringLocalizer<ScheduleEdit> L
 @inject NavigationManager UriHelper
 
-<Heading Size="HeadingSize.Is1">@L["EditSchedule"]</Heading>
-<NavLink href="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))">@L["BackToList"]</NavLink>
+<Heading Size="HeadingSize.Is1">
+    <Button Class="me-1" Color="Color.Primary" Size="Size.Small" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new{id = Id}))"><Icon Name="IconName.ArrowLeft" /></Button>
+    @L["EditSchedule"]</Heading>
 <Divider />
 <AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
     <Authorizing>
@@ -45,12 +46,11 @@
             return;
         }
 
-        var result = await Call<ScheduleContract>(Models.RequestType.Get, $"/api/v2/Schedules/{ScheduleId}", new Dictionary<string, string> { { "RefId", Id } });
+        var result = await Call<ScheduleContract>(Models.RequestType.Get, $"/api/v2/places/{Id}/Schedules/{ScheduleId}");
         
         if (result != null)
         {
             model = result.Data;
-            Console.WriteLine(model.Name);
         }
 
         await base.OnInitializedAsync();
@@ -68,7 +68,7 @@
             To = model.To,
             Day = model.Day
         };
-        await Call(Models.RequestType.Put,$"/api/v2/Schedules/{ScheduleId}", null, request);
+        await Call(Models.RequestType.Put, $"/api/v2/places/{Id}/Schedules/{ScheduleId}", null, request);
         // if (response != null)
             UriHelper.NavigateTo(RouteHelper.GetUrl<PlaceManage>(new { id = Id }));
     }

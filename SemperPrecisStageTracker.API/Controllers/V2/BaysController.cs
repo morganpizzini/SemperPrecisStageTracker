@@ -17,7 +17,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
     /// muovere bays sotto place
     /// </summary>
     [ApiVersion("2.0")]
-    public partial class BaysController : ApiControllerBase
+    public partial class PlacesController : ApiControllerBase
     {
         [HttpGet("{id}/bays")]
         [ProducesResponseType(typeof(IList<BayContract>), 200)]
@@ -54,11 +54,11 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
-        [HttpGet("{placeId}/bays/{id}")]
+        [HttpGet("{id}/bays/{bayId}")]
         [ProducesResponseType(typeof(BayContract), 200)]
-        public IActionResult Get(BaseRequestId request)
+        public IActionResult Get(BayEntityBaseRequestId request)
         {
-            var entity = BasicLayer.GetBay(request.Id);
+            var entity = BasicLayer.GetBay(request.BayId);
 
             //verifico validità dell'entità
             if (entity == null || entity.PlaceId != request.Id)
@@ -86,7 +86,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             var model = new Bay
             {
                 Name = request.Body.Name,
-                PlaceId = request.Body.PlaceId,
+                PlaceId = request.Id,
                 Description = request.Body.Description
             };
 

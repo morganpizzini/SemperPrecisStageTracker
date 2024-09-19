@@ -4121,6 +4121,19 @@ namespace SemperPrecisStageTracker.Domain.Services
             return this._teamHolderRepository.GetSingle(x => x.TeamId == TeamId && x.UserId == ShooterId);
         }
 
+        public IList<User> FetchUsersOnTeamBasedOnTeamHolder(string userId)
+        {
+            var teamIds = this._teamHolderRepository.Fetch(x => x.UserId == userId).Select(x=>x.TeamId);
+
+            var userIds =  this._shooterTeamRepository.Fetch(x => 
+                teamIds.Contains(x.TeamId)
+                && x.TeamApprove
+                && x.UserApprove)
+                .Select(x=>x.UserId).ToList();
+
+            return this.FetchUsersByIds(userIds);
+        }
+
         /// <summary>
         /// Get place by commissionDrawingId
         /// </summary>
