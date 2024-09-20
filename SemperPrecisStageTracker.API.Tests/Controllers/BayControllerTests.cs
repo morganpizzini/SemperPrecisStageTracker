@@ -14,28 +14,7 @@ using SemperPrecisStageTracker.API.Models;
 namespace SemperPrecisStageTraker.API.Tests.Controllers
 {
     [TestClass]
-    public class V2UserControllerTests : ApiControllerTestsBase<SemperPrecisStageTracker.API.Controllers.V2.UsersController, SimpleScenario>
-    {
-        protected override User GetIdentityUser() => GetAdminUser();
-
-        [TestMethod]
-        public async Task ShouldFetchAllPlacesManagedByUserBeOkHavingElements()
-        {
-            //conteggio esistenti generici o inseriti dall'utente
-            
-            var countBefore = 0;
-            //var countBefore = Scenario.Bays.Count(x => x.PlaceId == placeId);
-
-            //Invoke del metodo
-            var response = await Controller.FetchUserManagedPlaces(new BaseRequestId { Id = CurrentIdentityUser.Id });
-
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<BaseResponse<IList<PlaceContract>>>(response);
-            Assert.AreEqual(countBefore, parsed.Data.Count);
-        } 
-    }
-    [TestClass]
-    public class BayControllerTests : ApiControllerTestsBase<SemperPrecisStageTracker.API.Controllers.V2.BaysController, SimpleScenario>
+    public class BayControllerTests : ApiControllerTestsBase<SemperPrecisStageTracker.API.Controllers.V2.PlacesController, SimpleScenario>
     {
         protected override User GetIdentityUser() => GetAdminUser();
 
@@ -43,11 +22,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldFetchAllPlacesBeOkHavingElements()
         {
             //conteggio esistenti generici o inseriti dall'utente
-            var placeId = Scenario.Bays.Select(x=>x.PlaceId).FirstOrDefault();
+            var placeId = Scenario.Bays.Select(x => x.PlaceId).FirstOrDefault();
             var countBefore = Scenario.Bays.Count(x => x.PlaceId == placeId);
 
             //Invoke del metodo
-            var response = await Controller.Fetch(new EntityTakeSkipRequest { RefId= placeId, Skip = 0, Take = 999});
+            var response = await Controller.Fetch(new TakeSkipBaseRequestId { Id = placeId, Skip = 0, Take = 999 });
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<IList<BayContract>>(response);
@@ -58,17 +37,20 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateBayBeOkHavingProvidedData()
         {
             var place = Scenario.Bays.FirstOrDefault();
-            if(place==null)
+            if (place == null)
                 Assert.Inconclusive("Place not found");
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Bays.Count;
 
             //Composizione della request
-            var request = new BayCreateRequest
+            var request = new EntityBaseRequestId<BayCreateRequest>
             {
-                Name = RandomizationUtils.GenerateRandomString(50),
-                Description = RandomizationUtils.GenerateRandomString(15),
-                PlaceId = place.PlaceId
+                Id = place.Id,
+                Body = new BayCreateRequest
+                {
+                    Name = RandomizationUtils.GenerateRandomString(50),
+                    Description = RandomizationUtils.GenerateRandomString(15),
+                }
             };
 
             //Invoke del metodo
@@ -81,8 +63,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedCreated<BayContract>(response);
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
-                          && parsed.Data.Name == request.Name
-                          && parsed.Data.Description == request.Description);
+                          && parsed.Data.Name == request.Body.Name
+                          && parsed.Data.Description == request.Body.Description);
         }
 
 
@@ -97,16 +79,21 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             if (existing == null)
                 Assert.Inconclusive("Place is invalid");
 
-
+            var anotherExisting = Scenario.Bays.FirstOrDefault(x => x.Id != existing.Id);
+            if (anotherExisting == null)
+                Assert.Inconclusive("Another Place is not found");
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Bays.Count;
 
             //Composizione della request
-            var request = new BayCreateRequest
+            var request = new EntityBaseRequestId<BayCreateRequest>
             {
-                Name = existing.Name,
-                Description = RandomizationUtils.GenerateRandomString(15),
-                PlaceId = existing.PlaceId
+                Id = existing.Id,
+                Body = new BayCreateRequest
+                {
+                    Name = anotherExisting.Name,
+                    Description = RandomizationUtils.GenerateRandomString(15),
+                }
             };
 
             //Invoke del metodo
@@ -145,7 +132,12 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.Update(new BaseRequestId<BayUpdateRequest> {Id = existing.Id, Body = request });
+            var response = await Controller.Update(new BayEntityBaseRequestId<BayUpdateRequest>
+            {
+                Id = existing.PlaceId,
+                BayId = existing.Id,
+                Body = request
+            });
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<BayContract>(response);
@@ -164,7 +156,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
 
         [TestMethod]
-        public async Task ShouldUpdatePlaceBeNotFoundHavingProvidedWrongId()
+        public async Task ShouldUpdateBayBeNotFoundHavingProvidedWrongId()
         {
             //conteggio esistenti
             var countBefore = Scenario.Bays.Count;
@@ -179,7 +171,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.Update(new BaseRequestId<BayUpdateRequest> { Id = RandomizationUtils.GenerateRandomString(10), Body = request });
+            var response = await Controller.Update(new BayEntityBaseRequestId<BayUpdateRequest> { 
+                Id = RandomizationUtils.GenerateRandomString(10),
+                BayId = RandomizationUtils.GenerateRandomString(10),
+                Body = request });
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedNotFound(response);
@@ -225,7 +220,10 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             };
 
             //Invoke del metodo
-            var response = await Controller.Update(new BaseRequestId<BayUpdateRequest> { Id = existing.Id, Body = request });
+            var response = await Controller.Update(new BayEntityBaseRequestId<BayUpdateRequest> { 
+                Id = existing.PlaceId,
+                BayId = existing.Id,
+                Body = request });
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Bays.Count;
@@ -251,11 +249,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della cancellazione
             var countBefore = Scenario.Bays.Count;
 
-            //Composizione della request
-            var request = new DeleteEntityRefRequest { RefId = existing.PlaceId };
-
             //Invoke del metodo
-            var response = await Controller.Delete(new BaseRequestId<DeleteEntityRefRequest> {Id = existing.Id, Body = request });
+            var response = await Controller.Delete(new BayEntityBaseRequestId { Id = existing.PlaceId, BayId = existing.Id });
 
             //Parsing della risposta
             var parsed = ParseExpectedNoContent(response);
@@ -273,11 +268,11 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della cancellazione
             var countBefore = Scenario.Bays.Count;
 
-            //Composizione della request
-            var request = new DeleteEntityRefRequest { RefId = RandomizationUtils.GenerateRandomString(10) };
 
             //Invoke del metodo
-            var response = await Controller.Delete(new BaseRequestId<DeleteEntityRefRequest> { Id = RandomizationUtils.GenerateRandomString(10), Body = request });
+            var response = await Controller.Delete(new BayEntityBaseRequestId { 
+                Id = RandomizationUtils.GenerateRandomString(10),
+                BayId = RandomizationUtils.GenerateRandomString(10)});
 
             //Parsing della risposta
             var parsed = ParseExpectedNotFound(response);

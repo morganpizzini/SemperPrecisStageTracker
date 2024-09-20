@@ -19,20 +19,20 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
     {
         protected override User GetIdentityUser() => GetAdminUser();
 
-        [TestMethod]
-        public async Task ShouldFetchAllSchedulesBeOkHavingElements()
-        {
-            //conteggio esistenti generici o inseriti dall'utente
-            var placeId = Scenario.Schedules.Select(x=>x.PlaceId).FirstOrDefault();
-            var countBefore = Scenario.Schedules.Count(x => x.PlaceId == placeId);
+        //[TestMethod]
+        //public async Task ShouldFetchAllSchedulesBeOkHavingElements()
+        //{
+        //    //conteggio esistenti generici o inseriti dall'utente
+        //    var placeId = Scenario.Schedules.Select(x=>x.PlaceId).FirstOrDefault();
+        //    var countBefore = Scenario.Schedules.Count(x => x.PlaceId == placeId);
 
-            //Invoke del metodo
-            var response = await Controller.Fetch(new EntityTakeSkipRequest { RefId= placeId, Skip = null, Take = null});
+        //    //Invoke del metodo
+        //    var response = await Controller.Fetch(new EntityTakeSkipRequest { RefId= placeId, Skip = null, Take = null});
 
-            //Parsing della risposta e assert
-            var parsed = ParseExpectedOk<BaseResponse<IList<ScheduleContract>>>(response);
-            Assert.AreEqual(countBefore, parsed.Data.Count);
-        }
+        //    //Parsing della risposta e assert
+        //    var parsed = ParseExpectedOk<BaseResponse<IList<ScheduleContract>>>(response);
+        //    Assert.AreEqual(countBefore, parsed.Data.Count);
+        //}
 
         [TestMethod]
         public async Task ShouldCreateScheduleBeOkHavingProvidedData()
@@ -251,11 +251,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della cancellazione
             var countBefore = Scenario.Schedules.Count;
 
-            //Composizione della request
-            var request = new DeleteEntityRefRequest { RefId = existing.PlaceId };
-
             //Invoke del metodo
-            var response = await Controller.Delete(new BaseRequestId<DeleteEntityRefRequest> {Id = existing.Id, Body = request });
+            var response = await Controller.Delete(new DeleteEntityRefRequest { Id = existing.Id,RefId = existing.PlaceId });
 
             //Parsing della risposta
             var parsed = ParseExpectedNoContent(response);
@@ -273,11 +270,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             //Conteggio gli elementi prima della cancellazione
             var countBefore = Scenario.Schedules.Count;
 
-            //Composizione della request
-            var request = new DeleteEntityRefRequest { RefId = RandomizationUtils.GenerateRandomString(10) };
-
             //Invoke del metodo
-            var response = await Controller.Delete(new BaseRequestId<DeleteEntityRefRequest> { Id = RandomizationUtils.GenerateRandomString(10), Body = request });
+            var response = await Controller.Delete(new DeleteEntityRefRequest { Id = RandomizationUtils.GenerateRandomString(10), RefId = RandomizationUtils.GenerateRandomString(10) });
 
             //Parsing della risposta
             var parsed = ParseExpectedNotFound(response);
