@@ -26,7 +26,7 @@
                                         @shooterTeam.User.BirthDate.ToString("d")
                                     </TableRowHeader>
                                     <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
-                                    <TableRowCell>
+                                    <TableRowCell Class="text-end">
                                         <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditShooter(shooterTeam))"><Icon Name="IconName.Check" /></Button>
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
@@ -69,7 +69,7 @@
                                         @shooterTeam.User.BirthDate.ToString("d")
                                     </TableRowHeader>
                                     <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
-                                    <TableRowCell>
+                                    <TableRowCell Class="text-end">
                                         <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
                                     </TableRowCell>
                                 </TableRow>

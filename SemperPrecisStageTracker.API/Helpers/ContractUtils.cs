@@ -57,7 +57,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static TeamContract GenerateContract(Team entity)
+        public static TeamContract GenerateContract(Team entity,IList<User> teamHolder = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -66,7 +66,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             return new TeamContract()
             {
                 TeamId = entity.Id,
-                Name = entity.Name
+                Name = entity.Name,
+                TeamHolders = teamHolder != null ? teamHolder.As(x=>GenerateContract(x)) : new List<UserContract>()
             };
         }
 
@@ -366,7 +367,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Username = entity.Username,
                 IsActive = entity.IsActive,
                 Classifications = userClassifications != null ? userClassifications.As(s => GenerateContract(s)) : new List<UserAssociationContract>(),
-                Teams = userTeams != null ? userTeams.As(GenerateContract) : new List<TeamContract>()
+                Teams = userTeams != null ? userTeams.As(x => GenerateContract(x)) : new List<TeamContract>()
             };
             if(data != null)
             {

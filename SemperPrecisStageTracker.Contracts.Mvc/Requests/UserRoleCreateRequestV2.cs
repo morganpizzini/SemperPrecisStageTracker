@@ -90,6 +90,13 @@ public class BayScheduleDeleteRequest : BaseRequestId, EntityFilterValidation
     [FromRoute]
     public string PlaceId { get; set; } = string.Empty;
 }
+public class TeamHolderV2DeleteRequest : BaseRequestId, EntityFilterValidation
+{
+    public string EntityId => Id;
+    [Required]
+    [FromRoute]
+    public string UserId { get; set; } = string.Empty;
+}
 
 public class ReservationUpdateRequest : BaseRequestId<ReservationUpdateDataRequest>
 {

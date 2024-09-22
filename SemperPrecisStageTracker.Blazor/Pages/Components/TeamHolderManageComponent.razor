@@ -1,0 +1,150 @@
+﻿@inherits SemperPrecisBasePresentationalComponent
+@inject IStringLocalizer<SemperPrecisBasePresentationalComponent> L
+
+<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewShooter"><Icon Name="IconName.PlusSquare" /> @L["NewTeamHolder"]</Button>
+<Card Margin="Margin.Is4.OnY">
+    <CardBody>
+        <CardTitle>@L["TeamHolders"]</CardTitle>
+        <Table Striped="true" Hoverable="true">
+            <TableHeader ThemeContrast="ThemeContrast.Dark">
+                <TableRow>
+                    <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                <Virtualize Items="@Team.TeamHolders" Context="user">
+                    <TableRow>
+                        <TableRowHeader>@user.CompleteName</TableRowHeader>
+                        <TableRowCell Class="text-end">
+                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteShooter(user))"><Icon Name="IconName.Delete" /></Button>
+                        </TableRowCell>
+                    </TableRow>
+                </Virtualize>
+            </TableBody>
+        </Table>
+    </CardBody>
+</Card>
+
+<Modal @ref="modalRefShooterToEdit">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AddUserHolder"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="shooterValidations" Mode="ValidationMode.Manual" Model="@shooterToEdit">
+                <Validation Validator="@ValidationRule.IsSelected">
+                    <Field Horizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Shooter"] / @L["Birthdate"]</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
+                            <Select TValue="string" @bind-SelectedValue="@shooterToEdit.UserId">
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var shooter in Shooters.Where(s => Team.TeamHolders.All(t => t.UserId != s.UserId)))
+                                    {
+                                        <SelectItem Value="@shooter.UserId">@shooter.CompleteName @shooter.BirthDate.ToString("d")</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>@L["WrongShooter"]</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </FieldBody>
+                    </Field>
+                </Validation>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalTeamToEdit(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalTeamToEdit(true))">@L["Submit"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="modalRefShooterToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteUserHolder"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (shooterToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@shooterToDelete.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["BirthDate"]</FieldLabel>
+                    <Text>@shooterToDelete.BirthDate.ToString("d")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalShooterToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalShooterToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
+@code {
+    [Parameter, EditorRequired]
+    public virtual TeamContract Team { get; set; } = new();
+
+    [Parameter, EditorRequired]
+    public virtual IList<UserContract> Shooters { get; set; } = new List<UserContract>();
+
+    [Parameter, EditorRequired]
+    public EventCallback<TeamHolderCreateV2Request> AddTeamHolderCallback { get; set; }
+
+
+    [Parameter, EditorRequired]
+    public EventCallback<string> DeleteShooterTeamCallback { get; set; }
+
+    Validations shooterValidations = default!;
+    private Modal modalRefShooterToDelete = default!;
+    private Modal modalRefShooterToEdit = default!;
+    UserContract shooterToDelete = new();
+    TeamHolderCreateV2Request shooterToEdit = new();
+
+
+    void NewShooter()
+    {
+        shooterToEdit = new TeamHolderCreateV2Request();
+        modalRefShooterToEdit.Show();
+    }
+
+    private async Task HideModalTeamToEdit(bool choice)
+    {
+        if (choice)
+        {
+            if (!(await shooterValidations.ValidateAll()))
+                return;
+            await shooterValidations.ClearAll();
+            await AddTeamHolderCallback.InvokeAsync(shooterToEdit);
+
+        }
+        shooterToEdit = new TeamHolderCreateV2Request();
+        await modalRefShooterToEdit.Hide();
+    }
+    async Task DeleteShooter(UserContract shooter)
+    {
+        shooterToDelete = shooter;
+        await modalRefShooterToDelete.Show();
+    }
+
+    private async Task HideModalShooterToDelete(bool choice)
+    {
+        if (choice && shooterToDelete != null)
+        {
+            await DeleteShooterTeamCallback.InvokeAsync(shooterToDelete.UserId);
+        }
+        shooterToDelete = new UserContract();
+        await modalRefShooterToDelete.Hide();
+    }
+}

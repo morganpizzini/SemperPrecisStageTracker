@@ -11,4 +11,10 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string ShooterId { get; set; }
         public string Description { get; set; } = string.Empty;
     }
+    public class TeamHolderCreateV2Request
+    {
+        [Required]
+        public string UserId { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
 }

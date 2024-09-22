@@ -7,7 +7,7 @@
 @if (SettingsState.Value.Ready)
 {
     <CascadingAuthenticationState>
-        <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+        <Router AppAssembly="@typeof(Program).Assembly">
             <Found Context="routeData">
                 <AuthorizeRouteView RouteData="@routeData"
                                 DefaultLayout="@typeof(MainLayout)">
@@ -36,7 +36,7 @@
                 </LayoutView>
             </NotFound>
         </Router>
-        <NotificationAlert />
+        <NotificationProvider />
     </CascadingAuthenticationState>
 }
 @code {

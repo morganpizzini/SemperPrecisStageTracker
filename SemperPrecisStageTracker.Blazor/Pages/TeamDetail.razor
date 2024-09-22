@@ -4,8 +4,10 @@
 @inject IStringLocalizer<TeamDetail> L
 @inject NavigationManager UriHelper
 @inject IState<UserState> UserState
-<Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
-<NavLink href="@(RouteHelper.GetUrl<Teams>())">@L["BackToList"]</NavLink>
+<Heading Size="HeadingSize.Is1">
+    <Button Class="me-1" Color="Color.Primary" Size="Size.Small" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<Teams>())"><Icon Name="IconName.ArrowLeft" /></Button>
+    @L["Detail"]
+</Heading>
 @if (PageCondition)
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
@@ -25,31 +27,41 @@
 else
 {
 
-    <Card Margin="Margin.Is4.OnY">
-        <CardBody>
-            <CardTitle>@L["Team"]</CardTitle>
-            <CardText>@team.Name</CardText>
-        </CardBody>
-    </Card>
-    @if(canEditTeamShooters){
+    <Row>
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>@L["Team"]</CardTitle>
+                    <CardText>@team.Name</CardText>
+                </CardBody>
+            </Card>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
+            <TeamHolderManageComponent Team="team" AddTeamHolderCallback="AddUserHolderCallback"
+                                       Shooters="teamShooters.Where(x=>x.UserApprove && x.TeamApprove).Select(x=>x.User).ToList()"
+                                        DeleteShooterTeamCallback="DeleteUserHolderCallback"
+                                        ></TeamHolderManageComponent>
+        </Column>
+    </Row>
+    
+    @if (canEditTeamShooters)
+    {
 
         <TeamShooterManageComponent Team="team" UpsertShooterCallback="UpsertShooterCallback"
-                          Shooters="shooters"
-                          DeleteShooterTeamCallback="DeleteShooterTeamCallback" 
-                          TeamShooters="teamShooters"
-        ></TeamShooterManageComponent>
+                                    Shooters="shooters"
+                                    DeleteShooterTeamCallback="DeleteShooterTeamCallback"
+                                    TeamShooters="teamShooters"></TeamShooterManageComponent>
     }
     @if (canSeeTeamShooters)
     {
         <TeamShooterComponent Team="team"
-                          ResetPasswordCallback="ResetPasswordCallback"
-                          CanEditTeamShooters="canEditTeamShooters"
-                          DeleteShooterTeamCallback="DeleteShooterTeamCallback" 
-                          TeamShooters="teamShooters"
-                            CanEditTeamShooterPayment="canEditTeamShooterPayment"
-        ></TeamShooterComponent>
+                              ResetPasswordCallback="ResetPasswordCallback"
+                              CanEditTeamShooters="canEditTeamShooters"
+                              DeleteShooterTeamCallback="DeleteShooterTeamCallback"
+                              TeamShooters="teamShooters"
+                              CanEditTeamShooterPayment="canEditTeamShooterPayment"></TeamShooterComponent>
     }
-   
+
 }
 
 <Modal @ref="modalRefAskToJoin">
@@ -61,7 +73,7 @@ else
         <ModalBody>
             <Field>
                 <FieldLabel>@L["ConfirmApproval"]</FieldLabel>
-                <FieldBody>@L["WantToJoin",team.Name]</FieldBody>
+                <FieldBody>@L["WantToJoin", team.Name]</FieldBody>
             </Field>
         </ModalBody>
         <ModalFooter>
@@ -103,7 +115,6 @@ else
 
     private bool PageCondition => pageCondition ??= AuthService.CheckPermissions(PermissionCtor.ManageTeams.EditTeam, Id);
 
-
     private Modal modalRefEntityToDelete = default!;
 
     IList<UserContract> shooters = new List<UserContract>();
@@ -118,7 +129,7 @@ else
     bool canSeeTeamShooters;
     protected override async Task OnInitializedAsync()
     {
-        team = await Post<TeamContract>("api/Team/GetTeam", new TeamRequest() { TeamId = Id });
+        team = (await LoadTeam()).Data;
         shooters = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
 
         canEditTeamShooters = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
@@ -149,6 +160,9 @@ else
         }
         await modalRefEntityToDelete.Hide();
     }
+
+    Task<BaseResponse<TeamContract>> LoadTeam() =>
+        Call<TeamContract>(Models.RequestType.Get, $"api/v2/Teams/{Id}");
 
     async Task LoadShooterTeams()
     {
@@ -187,6 +201,18 @@ else
         await LoadShooterTeams();
     }
 
+    async Task AddUserHolderCallback(TeamHolderCreateV2Request model)
+    {
+        await Call(Models.RequestType.Post, $"api/v2/Teams/{Id}/team-holder",null, model);
+        team = (await LoadTeam()).Data;
+    }
+
+    async Task DeleteUserHolderCallback(string userId)
+    {
+        await Call(Models.RequestType.Delete, $"api/v2/Teams/{Id}/team-holder/{userId}", L["TeamHolderDeleteSuccess"], null);
+        team = (await LoadTeam()).Data;
+    }
+    
     async Task ResetPasswordCallback(ShooterRequest model)
     {
         var response = await Post<OkResponse>("/api/Authorization/ResetUserPassword", model);

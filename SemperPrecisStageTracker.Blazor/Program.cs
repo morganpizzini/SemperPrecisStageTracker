@@ -42,7 +42,7 @@ builder.Services.AddBlazorise(options =>
                 message = message.Substring(0, trimSpace);
             }
             return stringLocalizer != null
-                ? string.Format(stringLocalizer[message], arguments?.ToArray() ?? new string[0])
+                ? string.Format(stringLocalizer[message], arguments?.ToArray() ?? [])
                 : message;
         };
     })
@@ -119,7 +119,8 @@ builder.Services.AddScoped(sp =>
 {
     var config = sp.GetService<IConfiguration>();
     var result = new ClientConfiguration();
-    config.Bind(result);
+    if(config != null)
+        config.Bind(result);
     return result;
 });
 

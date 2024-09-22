@@ -12,6 +12,7 @@ using ZenProgramming.Chakra.Core.ServicesLayers;
 using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.Shared.StageResults;
+using ZenProgramming.Chakra.Core.Entities;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -1224,6 +1225,19 @@ namespace SemperPrecisStageTracker.Domain.Services
             return FetchEntities(null, null, null, s => s.Name, false, _teamRepository);
         }
 
+        public async Task<IList<Team>> FetchAllTeams(string userId)
+        {
+            if(await authenticationService.ValidateUserPermissions(userId, PermissionCtor.ManageTeams))
+            {
+                //can fetch all entities
+                return FetchEntities(null, null, null, s => s.Name, false, _teamRepository);
+            }
+            
+            var teamIdOwners = _teamHolderRepository.FetchWithProjection(x=>x.TeamId,x=>x.UserId == userId, null, null, null, null,false);
+
+            //Utilizzo il metodo base
+            return FetchEntities(x=>teamIdOwners.Contains(x.Id), null, null, s => s.Name, false, _teamRepository);
+        }
         /// <summary>
         /// Fetch list of teams by provided ids
         /// </summary>
@@ -4111,6 +4125,12 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         #region teamHolder
 
+        public IList<User> FetchTeamHolderUsersByTeam(string TeamId)
+        {
+            var userIds = this._teamHolderRepository.FetchWithProjection(x=>x.UserId,x => x.TeamId == TeamId);
+            return this.FetchUsersByIds(userIds);
+        }
+
         /// <summary>
         /// Fetch list of shooters by provided ids
         /// </summary>
@@ -4123,8 +4143,8 @@ namespace SemperPrecisStageTracker.Domain.Services
 
         public IList<User> FetchUsersOnTeamBasedOnTeamHolder(string userId)
         {
-            var teamIds = this._teamHolderRepository.Fetch(x => x.UserId == userId).Select(x=>x.TeamId);
-
+            var teamIds = this._teamHolderRepository.FetchWithProjection(x => x.TeamId, x => x.UserId == userId);
+                
             var userIds =  this._shooterTeamRepository.Fetch(x => 
                 teamIds.Contains(x.TeamId)
                 && x.TeamApprove

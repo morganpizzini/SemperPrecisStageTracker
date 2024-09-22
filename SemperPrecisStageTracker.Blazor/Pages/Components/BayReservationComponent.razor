@@ -59,7 +59,7 @@
                            @onchange="@((ChangeEventArgs __e) => 
                                     {
                                         Console.WriteLine(__e?.Value?.ToString());
-                                        var day = DateOnly.FromDateTime(DateTime.Parse(__e?.Value?.ToString()));
+                                        var day = DateOnly.FromDateTime(DateTime.Parse(__e?.Value?.ToString() ?? string.Empty));
                                         if(model.Day != day){
                                             model.Day = day;
                                             addScheduleId = string.Empty;

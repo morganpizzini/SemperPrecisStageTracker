@@ -2,6 +2,7 @@
 @inherits SemperPrecisBaseMainComponent
 @inject IStringLocalizer<ShooterDetail> L
 @inject NavigationManager UriHelper
+@inject IFeatureManager _featureManager
 
 <Heading Size="HeadingSize.Is1">@L["Detail"]</Heading>
 <NavLink href="@(RouteHelper.GetUrl<Shooters>())">@L["BackToList"]</NavLink>
@@ -186,13 +187,13 @@
                                                 <TableRowCell>@shooterTeam.RegistrationDate.ToString("d")</TableRowCell>
                                                 <TableRowCell>
                                                     @if (PageCondition)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
+                                                    {
+                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditTeam(shooterTeam))"><Icon Name="IconName.Pen" /></Button>
+                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteTeam(shooterTeam))"><Icon Name="IconName.Delete" /></Button>
+                                                    }
+                                                </TableRowCell>
+                                            </TableRow>
+                                        </Virtualize>
                                     }
                                     else
                                     {
@@ -207,146 +208,149 @@
                         </CardBody>
                     </Card>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is5">
-                    @if (PageCondition && associationNotAssigned.Count > 0)
-                    {
-                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
-                    }
-                    <Card Margin="Margin.Is4.OnY">
-                        <CardBody>
-                            <CardTitle>@L["Associations"]</CardTitle>
-
-                            <Table Striped="true" Hoverable="true">
-                                <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                    <TableRow>
-                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["CardNumber"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["Categories"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                        <TableHeaderCell></TableHeaderCell>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    @if (shooterAssociationInfos.Count > 0)
-                                    {
-                                        <Virtualize Items="@shooterAssociationInfos" Context="classification">
-                                            <TableRow>
-                                                <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SO"]})")</TableRowHeader>
-                                                <TableRowCell>@classification.CardNumber</TableRowCell>
-                                                <TableRowCell>@string.Join(", ", classification.Categories)</TableRowCell>
-                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
-                                                <TableRowCell>
-                                                    @if (PageCondition)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen" /></Button>
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
-                                    }
-                                    else
-                                    {
-                                        <TableRow>
-                                            <TableRowCell ColumnSpan="5" TextAlignment="TextAlignment.Center">
-                                                @L["NoAssociations"]
-                                            </TableRowCell>
-                                        </TableRow>
-                                    }
-                                </TableBody>
-                            </Table>
-
-                        </CardBody>
-                    </Card>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is7">
-                    @if (PageCondition)
-                    {
-                        <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
-                    }
-                    <Card Margin="Margin.Is4.OnY">
-                        <CardBody>
-                            <CardTitle>@L["Classifications"]</CardTitle>
-
-                            <Table Striped="true" Hoverable="true">
-                                <TableHeader ThemeContrast="ThemeContrast.Dark">
-                                    <TableRow>
-                                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["Classification"]</TableHeaderCell>
-                                        <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                        <TableHeaderCell></TableHeaderCell>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    @if (activeShooterClassifications.Count > 0)
-                                    {
-                                        <Virtualize Items="@activeShooterClassifications" Context="classification">
-                                            <TableRow>
-                                                <TableRowHeader>@classification.Association.Name</TableRowHeader>
-                                                <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
-                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
-                                                <TableRowCell>
-                                                    @if (PageCondition)
-                                                    {
-                                                        <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
-                                                        <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
-                                                    }
-                                                </TableRowCell>
-                                            </TableRow>
-                                        </Virtualize>
-                                    }
-                                    else
-                                    {
-                                        <TableRow>
-                                            <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
-                                                @L["NoAssociations"]
-                                            </TableRowCell>
-                                        </TableRow>
-                                    }
-                                </TableBody>
-                            </Table>
-
-                        </CardBody>
-                    </Card>
-                </Column>
-                @if (expiredShooterClassifications.Count > 0)
-                {
-                    <Column ColumnSize="ColumnSize.IsFull">
+                <FeatureFlag FlagName="@MyFeatureFlags.MatchHandling">
+                    <Column ColumnSize="ColumnSize.Is5">
+                        @if (PageCondition && associationNotAssigned.Count > 0)
+                        {
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewAssociationInfo())"><Icon Name="IconName.PlusSquare" /> @L["NewAssociation"]</Button>
+                        }
                         <Card Margin="Margin.Is4.OnY">
                             <CardBody>
-                                <CardTitle>@L["ExpiredAssociations"]</CardTitle>
+                                <CardTitle>@L["Associations"]</CardTitle>
+
+                                <Table Striped="true" Hoverable="true">
+                                    <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                        <TableRow>
+                                            <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["CardNumber"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["Categories"]</TableHeaderCell>
+                                            <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                            <TableHeaderCell></TableHeaderCell>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        @if (shooterAssociationInfos.Count > 0)
+                                        {
+                                            <Virtualize Items="@shooterAssociationInfos" Context="classification">
+                                                <TableRow>
+                                                    <TableRowHeader>@classification.Association.Name @classification.SafetyOfficier.ParseBoolean($"({L["SO"]})")</TableRowHeader>
+                                                    <TableRowCell>@classification.CardNumber</TableRowCell>
+                                                    <TableRowCell>@string.Join(", ", classification.Categories)</TableRowCell>
+                                                    <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                    <TableRowCell>
+                                                        @if (PageCondition)
+                                                        {
+                                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditAssociationInfo(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteAssociationInfo(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                        }
+                                                    </TableRowCell>
+                                                </TableRow>
+                                            </Virtualize>
+                                        }
+                                        else
+                                        {
+                                            <TableRow>
+                                                <TableRowCell ColumnSpan="5" TextAlignment="TextAlignment.Center">
+                                                    @L["NoAssociations"]
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+
+                            </CardBody>
+                        </Card>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is7">
+                        @if (PageCondition)
+                        {
+                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="@(() => NewClassification())"><Icon Name="IconName.PlusSquare" /> @L["NewClassification"]</Button>
+                        }
+                        <Card Margin="Margin.Is4.OnY">
+                            <CardBody>
+                                <CardTitle>@L["Classifications"]</CardTitle>
+
                                 <Table Striped="true" Hoverable="true">
                                     <TableHeader ThemeContrast="ThemeContrast.Dark">
                                         <TableRow>
                                             <TableHeaderCell>@L["Name"]</TableHeaderCell>
                                             <TableHeaderCell>@L["Classification"]</TableHeaderCell>
                                             <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
-                                            <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
                                             <TableHeaderCell></TableHeaderCell>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        <Virtualize Items="@expiredShooterClassifications" Context="classification">
+                                        @if (activeShooterClassifications.Count > 0)
+                                        {
+                                            <Virtualize Items="@activeShooterClassifications" Context="classification">
+                                                <TableRow>
+                                                    <TableRowHeader>@classification.Association.Name</TableRowHeader>
+                                                    <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
+                                                    <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                    <TableRowCell>
+                                                        @if (PageCondition)
+                                                        {
+                                                            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => EditClassification(classification))"><Icon Name="IconName.Pen" /></Button>
+                                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                        }
+                                                    </TableRowCell>
+                                                </TableRow>
+                                            </Virtualize>
+                                        }
+                                        else
+                                        {
                                             <TableRow>
-                                                <TableRowHeader>@classification.Association.Name</TableRowHeader>
-                                                <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
-                                                <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
-                                                <TableRowCell>@(classification.ExpireDate?.ToString("d") ?? L["NoExpiration"])</TableRowCell>
-                                                <TableRowCell>
-                                                    @if (PageCondition)
-                                            {
-                                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
-                                            }
-                                        </TableRowCell>
-                                    </TableRow>
-                                </Virtualize>
-                            </TableBody>
-                        </Table>
+                                                <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.Center">
+                                                    @L["NoAssociations"]
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
 
-                    </CardBody>
-                </Card>
-            </Column>
-                }
+                            </CardBody>
+                        </Card>
+                    </Column>
+
+                    @if (expiredShooterClassifications.Count > 0)
+                    {
+                        <Column ColumnSize="ColumnSize.IsFull">
+                            <Card Margin="Margin.Is4.OnY">
+                                <CardBody>
+                                    <CardTitle>@L["ExpiredAssociations"]</CardTitle>
+                                    <Table Striped="true" Hoverable="true">
+                                        <TableHeader ThemeContrast="ThemeContrast.Dark">
+                                            <TableRow>
+                                                <TableHeaderCell>@L["Name"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["Classification"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["RegistrationDate"]</TableHeaderCell>
+                                                <TableHeaderCell>@L["ExpireDate"]</TableHeaderCell>
+                                                <TableHeaderCell></TableHeaderCell>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            <Virtualize Items="@expiredShooterClassifications" Context="classification">
+                                                <TableRow>
+                                                    <TableRowHeader>@classification.Association.Name</TableRowHeader>
+                                                    <TableRowCell>@classification.Division @classification.Classification</TableRowCell>
+                                                    <TableRowCell>@classification.RegistrationDate.ToString("d")</TableRowCell>
+                                                    <TableRowCell>@(classification.ExpireDate?.ToString("d") ?? L["NoExpiration"])</TableRowCell>
+                                                    <TableRowCell>
+                                                        @if (PageCondition)
+                                                        {
+                                                            <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteClassification(classification))"><Icon Name="IconName.Delete" /></Button>
+                                                        }
+                                                    </TableRowCell>
+                                                </TableRow>
+                                            </Virtualize>
+                                        </TableBody>
+                                    </Table>
+
+                                </CardBody>
+                            </Card>
+                        </Column>
+                    }
+                </FeatureFlag>
             </Row>
 
         }
@@ -371,23 +375,23 @@
                                     <ChildContent>
                                         <SelectItem Value="@("")"></SelectItem>
                                         @foreach (var association in associationNotAssigned)
-                                    {
-                                        <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                                    }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>@L["WrongAssociation"]</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </FieldBody>
-                    </Field>
-                </Validation>
+                                        {
+                                            <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                                        }
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>@L["WrongAssociation"]</ValidationError>
+                                    </Feedback>
+                                </Select>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
                 }
                 else
                 {
                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Association"]</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                        @(associations.FirstOrDefault(x=>x.AssociationId == associationInfoToEdit.AssociationId)?.Name ?? string.Empty)
+                        @(associations.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Name ?? string.Empty)
                     </FieldBody>
                 }
                 <Validation Validator="@ValidationRule.IsNotEmpty">
@@ -409,19 +413,19 @@
                             <Select TValue="string" @bind-SelectedValues="@categoriesEdit" Multiple>
                                 <ChildContent>
                                     @if (string.IsNullOrEmpty(associationInfoToEdit.ShooterAssociationInfoId))
-                                            {
-                                    @foreach (var category in associationNotAssigned.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
                                     {
-                                        <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                        @foreach (var category in associationNotAssigned.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
+                                        {
+                                            <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                        }
                                     }
-                                            }
-                                            else
-                                            {
-                                    @foreach (var category in associations.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
+                                    else
                                     {
-                                        <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                        @foreach (var category in associations.FirstOrDefault(x => x.AssociationId == associationInfoToEdit.AssociationId)?.Categories ?? new List<string>())
+                                        {
+                                            <SelectItem TValue="string" Value="@category" @key="@category">@category</SelectItem>
+                                        }
                                     }
-                                            }
 
                                 </ChildContent>
                                 <Feedback>
@@ -476,9 +480,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var association in associations)
-                                            {
-                                    <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
-                                            }
+                                    {
+                                        <SelectItem Value="@association.AssociationId">@association.Name</SelectItem>
+                                    }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongAssociation"]</ValidationError>
@@ -495,9 +499,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var division in divisions)
-                                            {
-                                    <SelectItem Value="@division">@division</SelectItem>
-                                            }
+                                    {
+                                        <SelectItem Value="@division">@division</SelectItem>
+                                    }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongdivision"]</ValidationError>
@@ -514,9 +518,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var classification in classifications)
-                                            {
-                                    <SelectItem Value="@classification">@classification</SelectItem>
-                                            }
+                                    {
+                                        <SelectItem Value="@classification">@classification</SelectItem>
+                                    }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["Wrongclassification"]</ValidationError>
@@ -648,9 +652,9 @@
                                 <ChildContent>
                                     <SelectItem Value="@("")"></SelectItem>
                                     @foreach (var team in teams)
-                                            {
-                                    <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
-                                            }
+                                    {
+                                        <SelectItem Value="@team.TeamId">@team.Name</SelectItem>
+                                    }
                                 </ChildContent>
                                 <Feedback>
                                     <ValidationError>@L["WrongTeam"]</ValidationError>
@@ -825,9 +829,14 @@
         }
 
         shooter = await Post<UserContract>("api/Shooter/GetShooter", new ShooterRequest() { ShooterId = Id });
+        if (await _featureManager.IsEnabledAsync(MyFeatureFlags.MatchHandling))
+        {
+            await LoadShooterAssociationInfo();
+            await LoadShooterClassifications();
+        }
+
         teams = await Post<List<TeamContract>>("api/Team/FetchAllTeams");
-        await LoadShooterAssociationInfo();
-        await LoadShooterClassifications();
+
         await LoadShooterTeams();
         await base.OnInitializedAsync();
     }

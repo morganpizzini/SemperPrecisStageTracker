@@ -57,7 +57,7 @@ public partial class UsersController : ApiControllerBase
                 entities.As(x => ContractUtils.GenerateContract(x, userDatas.FirstOrDefault(y => y.UserId == x.Id), null, null, false)),
                 total,
                 request.Take.HasValue ? 
-                    Url.Action(action: nameof(FetchUsers), controller: "User", new { take = request.Take, skip = request.Take + (request?.Skip ?? 0)}) : 
+                    Url.Action(action: nameof(FetchUsers), controller: "Users", new { take = request.Take, skip = request.Take + (request?.Skip ?? 0)}) : 
                     string.Empty
             ));
     }

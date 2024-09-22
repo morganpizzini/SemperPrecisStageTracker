@@ -13,7 +13,6 @@ using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
-
     /// <summary>
     /// Controller for team
     /// </summary>
@@ -33,7 +32,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var entities = BasicLayer.FetchAllTeams();
 
             //Ritorno i contratti
-            return Reply(entities.As(ContractUtils.GenerateContract));
+            return Reply(entities.As(x=>ContractUtils.GenerateContract(x)));
         }
         /// <summary>
         /// Get specific placet ype using provided identifier

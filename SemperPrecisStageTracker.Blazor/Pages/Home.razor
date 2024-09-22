@@ -91,27 +91,55 @@
                 <CardTitle>
                     @L["Places"]
                 </CardTitle>
-                <Table Striped="true" Hoverable="true">
-                <TableHeader ThemeContrast="ThemeContrast.Dark">
-                    <TableRow>
-                        <TableHeaderCell>@L["Name"]</TableHeaderCell>
-                        <TableHeaderCell></TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <Virtualize Items="@UserPlaces" Context="place">
-                        <TableRow>
-                            <TableRowHeader>@place.Name</TableRowHeader>
-                            <TableRowCell Class="text-end">
-                                <Button class="me-2" Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new { id = place.PlaceId }))"><Icon Name="IconName.Search" /></Button>
-                            </TableRowCell>
-                        </TableRow>
-                    </Virtualize>
-                </TableBody>
-                </Table>
-            </CardBody>
+                    <Row>
+                        @foreach(var place in UserPlaces)
+                        {
+                            <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop" Class="mb-2">
+                                <Card Background="Background.Secondary" WhiteText>
+                                    <CardBody>
+                                        <CardTitle Size="3">
+                                            @place.Name
+                                        </CardTitle>
+                                        <CardText>
+                                            @place.CompleteAddress
+                                        </CardText>
+                                        <Button Color="Color.Primary" Margin="Margin.Is2.FromTop" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new { id = place.PlaceId }))">
+                                            @L["Details"] <Icon Name="IconName.ArrowRight" />
+                                        </Button>
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                        }
+                    </Row>
+                </CardBody>
         </Card>
     </Column>
+        <Column ColumnSize="ColumnSize.Is6.OnDesktop.IsFull.OnTablet">
+            <Card Margin="Margin.Is4.OnY">
+                <CardBody>
+                    <CardTitle>
+                        @L["Teams"]
+                    </CardTitle>
+                    <Row>
+                        @foreach (var team in teams)
+                        {
+                            <Column ColumnSize="ColumnSize.IsFull.OnMobile.Is6.OnDesktop" Class="mb-2">
+                                <Card Background="Background.Secondary" WhiteText>
+                                    <CardBody>
+                                        <CardTitle Size="3">
+                                            @team.Name
+                                        </CardTitle>
+                                        <Button Color="Color.Primary" Margin="Margin.Is2.FromTop" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<TeamDetail>(new { id = team.TeamId}))">
+                                            @L["Details"] <Icon Name="IconName.ArrowRight" />
+                                        </Button>
+                                    </CardBody>
+                                </Card>
+                            </Column>
+                        }
+                    </Row>
+                </CardBody>
+            </Card>
+        </Column>
 </Row>
 }
 
@@ -119,6 +147,7 @@
 {
     IList<MatchContract> AvailableMatches = new List<MatchContract>();
     IList<PlaceContract> UserPlaces = new List<PlaceContract>();
+    IList<TeamContract> teams = new List<TeamContract>();
     BaseShooterInMatchCreateRequest model = new();
     protected override async Task OnInitializedAsync()
     {
@@ -129,11 +158,13 @@
                 AvailableMatches = await Post<List<MatchContract>>("api/Match/FetchAvailableMatches");
             }
 
-            var userPlaces = Call<List<PlaceContract>>(Models.RequestType.Get,$"api/v2/users/{UserState.Value.User?.UserId}/places-managed");
+            var userPlaces = Call<List<PlaceContract>>(Models.RequestType.Get, $"api/v2/users/{UserState.Value.User?.UserId}/places-managed");
+            var userTeams = Call<List<TeamContract>>(Models.RequestType.Get, $"api/v2/teams");
 
-            await Task.WhenAll(userPlaces);
+            await Task.WhenAll(userPlaces, userTeams);
 
             UserPlaces = userPlaces.Result.Data;
+            teams = userTeams.Result.Data;
         }
         await base.OnInitializedAsync();
     }

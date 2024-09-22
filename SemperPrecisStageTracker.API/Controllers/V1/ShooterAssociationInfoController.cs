@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -14,6 +15,7 @@ namespace SemperPrecisStageTracker.API.Controllers
     /// Controller for shooterassociation
     /// </summary>
     [ApiVersion("1.0")]
+    [FeatureGate(MyFeatureFlags.MatchHandling)]
     public class ShooterAssociationInfoController : ApiControllerBase
     {
         /// <summary>
