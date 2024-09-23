@@ -24,26 +24,7 @@
     async Task Submit()
     {
         // create request
-        var request = new UserCreateRequest()
-        {
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            BirthDate = model.BirthDate,
-            Username = model.Username,
-            Email = model.Email,
-            FirearmsLicenceExpireDate = model.FirearmsLicenceExpireDate,
-            FirearmsLicence = model.FirearmsLicence,
-            MedicalExaminationExpireDate = model.MedicalExaminationExpireDate,
-            FirearmsLicenceReleaseDate = model.FirearmsLicenceReleaseDate,
-            BirthLocation = model.BirthLocation,
-            Address = model.Address,
-            City = model.City,
-            PostalCode = model.PostalCode,
-            Province = model.Region,
-            Country = model.Country,
-            Phone = model.Phone,
-            FiscalCode = model.FiscalCode
-        };
+        var request = ContractUtils.Convert(model);
 
         var response = await Post<UserContract>("/api/Shooter/CreateShooter", request);
         if (response != null)

@@ -16,7 +16,7 @@
             <TableBody>
                 @if (TeamShooters.Count(x => x.UserApprove && x.TeamApprove) > 0)
                 {
-                    <Virtualize Items="@TeamShooters.Where(x => x.UserApprove && x.TeamApprove).ToList()" Context="shooterTeam">
+                    <Virtualize Items="@TeamShooters" Context="shooterTeam">
                         <TableRow>
                             <TableRowHeader>
                                 @if (CanEditTeamShooters && shooterTeam.User.HasWarning)

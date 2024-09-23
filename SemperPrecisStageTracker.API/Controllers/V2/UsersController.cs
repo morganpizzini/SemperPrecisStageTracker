@@ -100,6 +100,7 @@ public partial class UsersController : ApiControllerBase
             BirthDate = request.BirthDate,
             Email = request.Email,
             Username = request.Username,
+            Gender = request.Gender,
             IsActive = request.IsActive
         };
         var data = new UserData

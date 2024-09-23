@@ -13,7 +13,7 @@
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@modalRef.Hide">Close</Button>
-            <Button Color="Color.Primary" Clicked="(_)=>OnCallBack?.Invoke()">Approve</Button>
+            <Button Color="Color.Primary" Clicked="(_)=>OnCallBack?.Invoke() ?? Task.CompletedTask">Approve</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

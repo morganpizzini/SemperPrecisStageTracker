@@ -11,7 +11,7 @@
 @if (PageCondition)
 {
     <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" to="@(RouteHelper.GetUrl<TeamEdit>(new{ id = Id}))"><Icon Name="IconName.Pen" /> @L["EditTeam"]</Button>
-    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())"><Icon Name="IconName.Delete" /></Button>
+    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity())" Class="me-1"><Icon Name="IconName.Delete" /></Button>
 }
 
 @if (UserState.Value.User?.Teams.All(x => x.TeamId != team.TeamId) ?? false && teamShooters.All(x => x.User.UserId != UserState.Value.User?.UserId))
@@ -26,7 +26,11 @@
 }
 else
 {
+    @if (canEditTeamShooters)
+    {
+        <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Button" Clicked="modalRefNewUser.Show"><Icon Name="IconName.PlusSquare" /> @L["NewUser"]</Button>
 
+    }
     <Row>
         <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">
             <Card Margin="Margin.Is4.OnY">
@@ -46,11 +50,10 @@ else
     
     @if (canEditTeamShooters)
     {
-
         <TeamShooterManageComponent Team="team" UpsertShooterCallback="UpsertShooterCallback"
-                                    Shooters="shooters"
+                                    Shooters="shooters.Where(x=> teamShooters.All(team=>team.User.UserId!=x.UserId)).ToList()"
                                     DeleteShooterTeamCallback="DeleteShooterTeamCallback"
-                                    TeamShooters="teamShooters"></TeamShooterManageComponent>
+                                    TeamShooters="teamShooters.Where(x => !x.UserApprove || !x.TeamApprove).ToList()"></TeamShooterManageComponent>
     }
     @if (canSeeTeamShooters)
     {
@@ -58,12 +61,25 @@ else
                               ResetPasswordCallback="ResetPasswordCallback"
                               CanEditTeamShooters="canEditTeamShooters"
                               DeleteShooterTeamCallback="DeleteShooterTeamCallback"
-                              TeamShooters="teamShooters"
+                              TeamShooters="teamShooters.Where(x => x.UserApprove && x.TeamApprove).ToList()"
                               CanEditTeamShooterPayment="canEditTeamShooterPayment"></TeamShooterComponent>
     }
 
 }
-
+<Modal @ref="modalRefNewUser">
+    <ModalContent Size="ModalSize.Fullscreen">
+        <ModalHeader>
+            <ModalTitle>@L["NewUser"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <ShooterComponent Model="newUser" SubmitCallback="NewUserCallback"></ShooterComponent>
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="HideModalNewUser">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 <Modal @ref="modalRefAskToJoin">
     <ModalContent Centered="true">
         <ModalHeader>
@@ -119,10 +135,12 @@ else
 
     IList<UserContract> shooters = new List<UserContract>();
     TeamContract team = new();
+    private Modal modalRefNewUser = default!;
     private Modal modalRefAskToJoin = default!;
     private ShooterTeamCreateRequest shooterToJoin = new();
     IList<UserTeamContract> teamShooters = new List<UserTeamContract>();
 
+    private UserContract newUser = new();
 
     bool canEditTeamShooters;
     bool canEditTeamShooterPayment;
@@ -130,13 +148,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         team = (await LoadTeam()).Data;
-        shooters = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
+
 
         canEditTeamShooters = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditShooters, Id);
         canEditTeamShooterPayment = PageCondition || AuthService.CheckPermissions(Permissions.TeamEditPayment, Id);
 
         // faccio parte del team e vedo gli altri
         canSeeTeamShooters = (UserState.Value.User?.Teams.Any(x => x.TeamId == team.TeamId) ?? false) || canEditTeamShooters || canEditTeamShooterPayment;
+
+        await LoadAvailableShooters();
 
         await LoadShooterTeams();
 
@@ -167,9 +187,13 @@ else
     async Task LoadShooterTeams()
     {
         if (canSeeTeamShooters)
-        {
             teamShooters = await Post<List<UserTeamContract>>("/api/ShooterTeam/FetchShooterTeamByTeam", new TeamRequest() { TeamId = Id });
-        }
+    }
+
+    async Task LoadAvailableShooters()
+    {
+        if (canEditTeamShooters)
+            shooters = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
     }
 
     void AskToJoin()
@@ -194,6 +218,23 @@ else
         shooterToJoin = new ShooterTeamCreateRequest();
         await modalRefAskToJoin.Hide();
     }
+
+    private async Task NewUserCallback()
+    {
+        // create request
+        var request = ContractUtils.Convert(newUser);
+        await Call(Models.RequestType.Post, $"api/v2/users", null, request,L["UserAddSuccess"]);
+        await LoadShooterTeams();
+        await LoadAvailableShooters();
+        await HideModalNewUser();
+    }
+
+    private Task HideModalNewUser()
+    {
+        newUser= new();
+        return modalRefNewUser.Hide();
+    }
+
 
     async Task UpsertShooterCallback(ShooterTeamCreateRequest model)
     {

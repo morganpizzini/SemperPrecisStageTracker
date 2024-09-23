@@ -16,7 +16,7 @@ namespace SemperPrecisStageTracker.Contracts
             (new[] { FirstName?.ToLower() ?? "", LastName?.ToLower() ?? "", Username?.ToLower() ?? "" })
             .Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-        public DateTime BirthDate { get; set; }
+        public DateTime BirthDate { get; set; } = DateTime.Now;
         public string Gender { get; set; }
         public string AuthData { get; set; }
         public bool IsActive { get;set;} = false;
@@ -24,8 +24,8 @@ namespace SemperPrecisStageTracker.Contracts
         public string Username { get; set; }
         public string Email { get; set; }
         public string FirearmsLicence { get; set; }
-        public DateTime FirearmsLicenceExpireDate { get; set; }
-        public DateTime FirearmsLicenceReleaseDate { get; set; }
+        public DateTime FirearmsLicenceExpireDate { get; set; } = DateTime.Now;
+        public DateTime FirearmsLicenceReleaseDate { get; set; } = DateTime.Now;
         public DateTime? MedicalExaminationExpireDate { get; set; }
         public string BirthLocation { get; set; }
         public string Address { get; set; } = string.Empty;

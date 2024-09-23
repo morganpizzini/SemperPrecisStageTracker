@@ -28,6 +28,23 @@
                     </FieldBody>
                 </Field>
             </Validation>
+            <Validation Validator="@ValidationRule.IsSelected">
+                <Field>
+                    <FieldLabel>@L["Gender"]</FieldLabel>
+                    <FieldBody >
+                        <Select TValue="string" @bind-SelectedValue="@Model.Gender">
+                            <ChildContent>
+                                <SelectItem Value="@("")"></SelectItem>
+                                <SelectItem Value="@("male")">@L["Male"]</SelectItem>
+                                <SelectItem Value="@("female")">@L["Female"]</SelectItem>
+                            </ChildContent>
+                            <Feedback>
+                                <ValidationError>@L["WrongGender"]</ValidationError>
+                            </Feedback>
+                        </Select>
+                    </FieldBody>
+                </Field>
+            </Validation>
             <Validation Validator="@ValidationRule.IsNotEmpty">
                 <Field Horizontal="true">
                     <FieldLabel>@L["Username"]</FieldLabel>

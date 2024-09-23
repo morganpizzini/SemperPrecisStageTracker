@@ -1,10 +1,16 @@
 ﻿@inherits SemperPrecisBasePresentationalComponent
 @inject IStringLocalizer<SemperPrecisBasePresentationalComponent> L
 
-<Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewShooter"><Icon Name="IconName.PlusSquare" /> @L["NewTeamHolder"]</Button>
 <Card Margin="Margin.Is4.OnY">
     <CardBody>
-        <CardTitle>@L["TeamHolders"]</CardTitle>
+        <Row>
+            <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is7.OnDesktop">
+                <CardTitle>@L["TeamHolders"]</CardTitle>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsFull.OnTablet.Is5.OnDesktop" class="text-end">
+                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Button" Clicked="NewTeamHolder"><Icon Name="IconName.PlusSquare" /> @L["NewTeamHolder"]</Button>
+            </Column>
+        </Row>
         <Table Striped="true" Hoverable="true">
             <TableHeader ThemeContrast="ThemeContrast.Dark">
                 <TableRow>
@@ -113,7 +119,7 @@
     TeamHolderCreateV2Request shooterToEdit = new();
 
 
-    void NewShooter()
+    void NewTeamHolder()
     {
         shooterToEdit = new TeamHolderCreateV2Request();
         modalRefShooterToEdit.Show();

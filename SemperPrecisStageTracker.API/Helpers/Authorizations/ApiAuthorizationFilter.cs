@@ -48,7 +48,8 @@ namespace SemperPrecisStageTracker.API.Helpers
                 if (argument is EntityFilterValidation entity)
                     return entity.EntityId;
                 else
-                    throw new ArgumentException($"Parameter {parameterName} must inherit from {nameof(EntityFilterValidation)}");
+                    return string.Empty;
+                    //throw new ArgumentException($"Parameter {parameterName} must inherit from {nameof(EntityFilterValidation)}");
             }
             return string.Empty;
         }
