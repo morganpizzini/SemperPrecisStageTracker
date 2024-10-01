@@ -15,6 +15,7 @@ namespace SemperPrecisStageTracker.Models
         public TimeOnly To { get; set; }
         [Required]
         public DateOnly Day { get; set; }
+        public string Demands { get; set; } = string.Empty;
         public bool IsAccepted { get; set; } = false;
         // whenever is true, the bay is blocked for the time of the reservation, and cannot be reserved by anyone else
         public bool IsBayBlocked { get; set; } = false;

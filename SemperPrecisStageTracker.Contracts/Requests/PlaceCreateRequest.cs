@@ -14,6 +14,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string PlaceId { get; set; }
 
         public string Description { get; set; }
+        public bool HasPrivateReservation { get; set; }
     }
     public class ReservationUpdateDataRequest
     {
@@ -23,6 +24,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public TimeOnly To { get; set; }
         [Required]
         public DateOnly Day { get; set; }
+        public string Demands { get; set; } = string.Empty;
     }
 
     public class ScheduleUpdateRequest : EntityFilterValidation
@@ -45,6 +47,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string Name { get; set; }
 
         public string Description { get; set; }
+        public bool HasPrivateReservation { get; set; }
     }
 
     public class ScheduleBayCreateRequest : EntityFilterValidation
@@ -75,6 +78,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public TimeOnly To { get; set; }
         [Required]
         public DateOnly Day { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+        public string Demands { get; set; } = string.Empty;
     }
 
     public class ReservationBlockRequest

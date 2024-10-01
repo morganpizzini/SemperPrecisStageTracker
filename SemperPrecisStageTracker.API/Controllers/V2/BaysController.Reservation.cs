@@ -62,6 +62,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             {
                 UserId = string.IsNullOrEmpty(request.Body.UserId) ? request.Body.UserId : userId,
                 BayId = request.Id,
+                Demands = request.Body.Demands,
                 From = request.Body.From,
                 To = request.Body.To,
                 Day = request.Body.Day
@@ -96,6 +97,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             entity.From = request.Body.From;
             entity.To = request.Body.To;
             entity.Day = request.Body.Day;
+            entity.Demands = request.Body.Demands;
 
             //Salvataggio
             var validations = await BasicLayer.UpdateReservation(entity, userId);

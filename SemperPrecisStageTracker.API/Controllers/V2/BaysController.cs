@@ -32,13 +32,8 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
 
             if (request.Take.HasValue)
                 entities = entities.Take(request.Take.Value);
-
-            var userIds = entities.Select(x => x.Id).ToList();
-
-            var userDatas = BasicLayer.FetchUserDataByUserIds(userIds);
-
-            var datas = BasicLayer.FetchAllMinimunPlacesData();
-
+            
+            
             //Ritorno i contratti
             return Reply(
                 new BaseResponse<IList<BayContract>>(
@@ -87,7 +82,8 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             {
                 Name = request.Body.Name,
                 PlaceId = request.Id,
-                Description = request.Body.Description
+                Description = request.Body.Description,
+                HasPrivateReservation = request.Body.HasPrivateReservation
             };
 
             //Invocazione del service layer
@@ -120,7 +116,8 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Aggiornamento dell'entità
             entity.Name = request.Body.Name;
             entity.Description = request.Body.Description;
-            
+            entity.HasPrivateReservation = request.Body.HasPrivateReservation;
+
             //Salvataggio
             var validations = await BasicLayer.UpdateBay(entity, PlatformUtils.GetIdentityUserId(User));
             if (validations.Count > 0)

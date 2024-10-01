@@ -1434,7 +1434,7 @@
       "day": 0,
       "from": "21:46:13.0433432",
       "to": "21:46:13.0434081",
-      "CreationDateTime": "2024-08-12T21:46:13.0432711+02:00"
+      "creationDateTime": "2024-08-12T21:46:13.0432711+02:00"
     },
     {
       "id": "2",
@@ -1444,7 +1444,7 @@
       "day": 3,
       "from": "16:00:13.0433432",
       "to": "18:00:13.0434081",
-      "CreationDateTime": "2024-09-12T21:46:13.0432711+02:00"
+      "creationDateTime": "2024-09-12T21:46:13.0432711+02:00"
     },
     {
       "id": "3",
@@ -1454,7 +1454,7 @@
       "day": 2,
       "from": "16:00:13.0433432",
       "to": "18:00:13.0434081",
-      "CreationDateTime": "2024-09-11T21:46:13.0432711+02:00"
+      "creationDateTime": "2024-09-11T21:46:13.0432711+02:00"
     }
   ],
   "bays": [
@@ -1463,14 +1463,24 @@
       "placeId": "1",
       "name": "first bay",
       "description": "first description",
-      "CreationDateTime": "2024-08-12T21:46:13.0432711+02:00"
+      "hasPrivateReservation": false,
+      "creationDateTime": "2024-08-12T21:46:13.0432711+02:00"
     },
     {
       "id": "2",
       "placeId": "1",
       "name": "second bay",
       "description": "second description",
-      "CreationDateTime": "2024-09-12T21:46:13.0432711+02:00"
+      "hasPrivateReservation": false,
+      "creationDateTime": "2024-09-12T21:46:13.0432711+02:00"
+    },
+    {
+      "id": "3",
+      "placeId": "1",
+      "name": "private bay",
+      "description": "private description",
+      "hasPrivateReservation": true,
+      "creationDateTime": "2024-09-12T21:46:13.0432711+02:00"
     }
   ],
   "baySchedules": [
@@ -1492,7 +1502,8 @@
       "bayId": "1",
       "day": "2024-10-12",
       "from": "16:00:13.0433432",
-      "to": "18:00:13.0434081"
+      "to": "18:00:13.0434081",
+      "demands": "demands 1"
     },
     {
       "id": "2",
@@ -1500,7 +1511,8 @@
       "bayId": "1",
       "day": "2024-10-12",
       "from": "16:00:13.0433432",
-      "to": "18:00:13.0434081"
+      "to": "18:00:13.0434081",
+      "demands": ""
     }
   ],
   "userRoles": [

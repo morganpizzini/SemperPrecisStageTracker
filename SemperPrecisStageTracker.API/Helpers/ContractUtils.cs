@@ -236,7 +236,8 @@ namespace SemperPrecisStageTracker.API.Helpers
             {
                 BayId = entity.Id,
                 Name = entity.Name,
-                Description = entity.Description
+                Description = entity.Description,
+                HasPrivateReservation = entity.HasPrivateReservation
             };
         }
 
