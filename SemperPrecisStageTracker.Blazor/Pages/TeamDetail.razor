@@ -26,10 +26,9 @@
 }
 else
 {
-    @if (canEditTeamShooters)
+    @if (canEditTeamShooters && AuthService.CheckPermissions(PermissionCtor.ManageUsers.CreateUser))
     {
         <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Button" Clicked="modalRefNewUser.Show"><Icon Name="IconName.PlusSquare" /> @L["NewUser"]</Button>
-
     }
     <Row>
         <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnDesktop">

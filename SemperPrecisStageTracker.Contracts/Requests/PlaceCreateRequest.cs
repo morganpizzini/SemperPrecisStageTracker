@@ -15,6 +15,11 @@ namespace SemperPrecisStageTracker.Contracts.Requests
 
         public string Description { get; set; }
     }
+    public class StatusUpdateRequest
+    {
+        [Required]
+        public bool Status { get; set; }
+    }
     public class ReservationUpdateDataRequest
     {
         [Required]
@@ -70,9 +75,9 @@ namespace SemperPrecisStageTracker.Contracts.Requests
     {
         public string UserId { get; set; } = string.Empty;
         [Required]
-        public TimeOnly From { get; set; }
+        public TimeOnly From { get; set; } = TimeOnly.MinValue;
         [Required]
-        public TimeOnly To { get; set; }
+        public TimeOnly To { get; set; } = TimeOnly.MinValue;
         [Required]
         public DateOnly Day { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     }

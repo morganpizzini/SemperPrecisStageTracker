@@ -26,10 +26,13 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             var total = entities.Count;
 
 
+            var bays = BasicLayer.FetchAllBays(request.Id);
+            var users = BasicLayer.FetchUsersByIds(entities.Select(x => x.UserId).ToList());
+
             //Ritorno i contratti
             return Reply(
                 new BaseResponse<IList<ReservationContract>>(
-                    entities.As(x=>ContractUtils.GenerateContract(x))
+                    entities.As(x=>ContractUtils.GenerateContract(x,bays.FirstOrDefault(b=>b.Id == x.BayId),users.FirstOrDefault(u=>u.Id == x.UserId)))
                 ));
         }
     }

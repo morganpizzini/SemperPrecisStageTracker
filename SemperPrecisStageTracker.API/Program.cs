@@ -36,6 +36,7 @@ using ZenProgramming.Chakra.Core.Mocks.Data;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
+using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTracker.API;
 

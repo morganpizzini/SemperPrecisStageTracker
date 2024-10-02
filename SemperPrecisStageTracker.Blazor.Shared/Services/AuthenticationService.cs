@@ -10,8 +10,8 @@ using SemperPrecisStageTracker.Shared.Permissions;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Store;
-using SemperPrecisStageTracker.Blazor.Components.Utils;
 using SemperPrecisStageTracker.Blazor.Components;
+using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -21,7 +21,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
         private readonly NavigationManager _navigationManager;
         private readonly IState<UserState> _userState;
         private readonly IDispatcher _dispatcher;
-
+        private readonly ISemperPrecisMemoryCache _cache;
         private readonly CustomAuthStateProvider _customAuthenticationStateProvider;
 
         public AuthenticationService(
@@ -29,7 +29,8 @@ namespace SemperPrecisStageTracker.Blazor.Services
             NavigationManager navigationManager,
             AuthenticationStateProvider authenticationStateProvider,
             IState<UserState> UserState,
-            IDispatcher Dispatcher
+            IDispatcher Dispatcher,
+            ISemperPrecisMemoryCache cache
         )
         {
             _dispatcher = Dispatcher;
@@ -37,6 +38,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
             _navigationManager = navigationManager;
             _customAuthenticationStateProvider = authenticationStateProvider as CustomAuthStateProvider ?? new CustomAuthStateProvider();
             _userState = UserState;
+            _cache = cache;
         }
 
         public void Login(string username, string password, string returnUrl)
@@ -100,13 +102,22 @@ namespace SemperPrecisStageTracker.Blazor.Services
             if (permissions.Count==0)
                 return false;
 
+            var key = permissions.Aggregate("", (current, p) => current + p.ToString())+entityId;
+
+            if(_cache.GetValue<bool>(key, out bool result))
+                return result;
+
             // AuthenticationServiceLayer.ValidateUserPermissions
             // se ho permessi generici
-            return _userState.Value.Permissions.GenericPermissions.Any(permissions.Contains) ||
+            bool value = _userState.Value.Permissions.GenericPermissions.Any(permissions.Contains) ||
                    // permessi sull'entità, ma solo nel caso in cui non ho specificato l'id
                    _userState.Value.Permissions.EntityPermissions.Any(x =>
                        (string.IsNullOrEmpty(entityId) || x.EntityId == entityId) &&
                        permissions.Any(p => x.Permissions.Contains(p)));
+
+            _cache.SetValue(key, value);
+
+            return value;
         }
     }
 }

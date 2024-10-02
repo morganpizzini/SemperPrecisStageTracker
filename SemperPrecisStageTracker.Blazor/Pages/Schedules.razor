@@ -2,7 +2,9 @@
 @using SemperPrecisStageTracker.Blazor.Models
 @inherits SemperPrecisBaseMainComponent
 @inject IStringLocalizer<Schedules> L
+@inject IState<UserState> UserState
 @inject NavigationManager UriHelper
+@inject IMessageService MessageService
 
 <Heading Size="HeadingSize.Is1">@L["Schedule"]</Heading>
 <Divider />
@@ -58,17 +60,57 @@
             @foreach (var bay in bays.Items)
             {
                 <div class="col">
-                    @foreach (var split in splits.Where(x=>x.BayId == bay.BayId && x.Date == date.Date))
+                    <Button Color="Color.Info" Outline Class="w-100 py-0 mb-1" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date);})">
+                        <Icon Name="IconName.PlusSquare" />
+                    </Button>
+                    @foreach (var split in splits.Where(x => x.BayId == bay.BayId && x.Date == date.Date))
                     {
-                        <div class="border border-primary rounded p-1">
-                            @split.From.ToString("HH:mm")
-                        </div>
                         var dayReservation = reservations.Where(x => x.Day.ToDateTime(TimeOnly.Parse("00:00 PM")).Date == split.Date && x.From == split.From && x.Bay.BayId == split.BayId);
-                        foreach (var r in dayReservation)
+                        var isBlockedId = dayReservation.FirstOrDefault(x => x.IsBayBlocked)?.ReservationId ?? string.Empty;
+                        if(string.IsNullOrEmpty(isBlockedId))
                         {
-                            <p>
-                                @r.User.CompleteName
-                            </p>
+                            <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date,split.From,split.To);})">
+                                <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm")</Span><Icon Name="IconName.PlusSquare" />
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>ShowRemoveBlockMessage(bay.BayId,isBlockedId))">
+                                <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm") - @L["blocked"]</Span>
+                            </Button>
+                        }
+                        foreach (var r in dayReservation.Where(x=>!x.IsBayBlocked))
+                        {
+                            <div class="d-flex justify-content-between border border-warning align-items-center p-1 mt-1">
+                                <AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+                                    <NotAuthorized>
+                                        <span>
+                                            @r.User.CompleteName
+                                        </span>
+                                    </NotAuthorized>
+                                    <Authorized>
+                                        <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() =>{ refBayId = r.Bay.BayId; bayReservationModals.DeleteScheduleEntity(r);})">
+                                            <Icon Name="IconName.Times" />
+                                        </Button>
+                                        <span>
+                                            @r.User.CompleteName
+                                        </span>
+                                        @if (r.IsAccepted)
+                                        {
+                                            <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
+                                                <Icon Name="IconName.Ban" />
+                                            </Button>
+                                        }
+                                        else
+                                        {
+                                            <Button Color="Color.Success" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
+                                                <Icon Name="IconName.Check" />
+                                            </Button>
+                                        }
+                                        
+                                    </Authorized>
+                                </AuthorizeView>
+                            </div>
                         }
                     }
                 </div>
@@ -76,7 +118,16 @@
         </div>
     }
 </div>
+<BayReservationModalsComponent @ref="bayReservationModals"
+        AddCallback="AddCallback"
+        DeleteCallback="DeleteCallback"
+        BaySchedules="baySchedules"
+        Model="reservationModel"
+        EnableDate="false"
+        Users="users"></BayReservationModalsComponent>
+
 @code {
+    private BayReservationModalsComponent bayReservationModals = default!;
     DateTime dateRange = DateTime.Now;
     [Parameter]
     public string Id { get; set; } = string.Empty;
@@ -85,14 +136,17 @@
     List<ScheduleContract> baySchedules = new List<ScheduleContract>();
     MultiSelectItemList<BayContract> bays = new MultiSelectItemList<BayContract>();
     IList<ScheduleTimeGroup> splits = new List<ScheduleTimeGroup>();
+    IList<UserContract> users = new List<UserContract>();
 
+    string refBayId= string.Empty;
+    ReservationCreateRequest reservationModel { get; set; } = new();
 
     override protected async Task OnInitializedAsync()
     {
         await ReloadReservation();
 
         baySchedules = (await LoadBaySchedules()).Data;
-
+        users = (await Call<List<UserContract>>(Models.RequestType.Get, $"/api/v2/Users/{UserState.Value.User?.UserId}/users-in-team")).Data;
         bays = new MultiSelectItemList<BayContract>((await LoadBays()).Data
                     .Select(x =>
                         new MultiSelectItem<BayContract>()
@@ -103,78 +157,29 @@
 
 
         await base.OnInitializedAsync();
-        // await LoadData();
     }
 
     async Task ReloadReservation()
     {
         dates = GetWeekRange(dateRange);
-        Console.WriteLine(dates.FirstOrDefault());
         reservations = (await LoadBayReservations()).Data;
 
-        reservations = new List<ReservationContract>
-        {
-            new ReservationContract
-            {
-                Bay= new BayContract
-                {
-                    BayId = "1"
-                },
-                Day = DateOnly.FromDateTime(DateTime.Now),
-                From = new TimeOnly(8, 0),
-                To = new TimeOnly(12, 0),
-                User = new UserContract
-                {
-                    Username = "User 1",
-                    FirstName = "Tizio"
-                }
-            },
-            new ReservationContract
-            {
-                Bay= new BayContract
-                {
-                    BayId = "1"
-                },
-                Day = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
-                From = new TimeOnly(8, 0),
-                To = new TimeOnly(12, 0),
-                User = new UserContract
-                {
-                    Username = "User 1",
-                    FirstName = "Caio"
-                }
-            },
-            new ReservationContract
-            {
-                Bay= new BayContract
-                {
-                    BayId = "2"
-                },
-                Day = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
-                From = new TimeOnly(14, 0),
-                To = new TimeOnly(18, 0),
-                User = new UserContract
-                {
-                    Username = "User 1",
-                    FirstName = "Sempronio"
-                }
-            }
-        };
         splits = reservations
-                    .GroupBy(x => new { d = x.Day, f = x.From, b = x.Bay.BayId })
+                    .GroupBy(x => new { d = x.Day, f = x.From, t = x.To, b = x.Bay.BayId })
                     .Select(x => new ScheduleTimeGroup
                         {
                             BayId = x.Key.b,
                             Date = x.Key.d.ToDateTime(TimeOnly.Parse("00:00 PM")).Date,
                             From = x.Key.f,
+                            To = x.Key.t,
                         })
                     .ToList();
     }
+
     Task<BaseResponse<List<ReservationContract>>> LoadBayReservations() => Call<List<ReservationContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/Reservations", 
                                                                             new Dictionary<string, string> { { "fromDate", dates.FirstOrDefault().ToString("u") }, { "toDate", dates.LastOrDefault().ToString("u") } });
     Task<BaseResponse<List<ScheduleContract>>> LoadBaySchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/bays-schedules");
     Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, $"api/v2/places/{Id}/Bays");
-
 
 
     public List<DateTime> GetWeekRange(DateTime day)
@@ -193,9 +198,71 @@
         List<DateTime> weekDays = new List<DateTime>();
         for (DateTime dt = startOfWeek; dt <= endOfWeek; dt = dt.AddDays(1))
         {
-            weekDays.Add(dt);
+            weekDays.Add(dt.Date);
         }
 
         return weekDays;
+    }
+
+    Task NewSchedule(string bayId,DateTime date, TimeOnly? from = null, TimeOnly? to = null)
+    {
+        refBayId = bayId;
+        reservationModel.Day = DateOnly.FromDateTime(date);
+        if(from.HasValue)
+            reservationModel.From = from.Value;
+        else
+            reservationModel.From = TimeOnly.MinValue;
+
+        if (to.HasValue)
+            reservationModel.To = to.Value;
+        else
+            reservationModel.To = TimeOnly.MinValue;
+
+        return bayReservationModals.ShowAddScheduleModal();
+    }
+
+
+    async Task AddCallback(ReservationCreateRequest reservation)
+    {
+        await MainServiceLayer.AddReservation(Id, refBayId, reservation);
+        reservationModel = new();
+        refBayId = string.Empty;
+        await ReloadReservation();
+    }
+    async Task DeleteCallback(string reservationId)
+    {
+        await MainServiceLayer.DeleteReservation(Id, refBayId, reservationId, L["ReservationDeleteSuccess"]);
+        refBayId = string.Empty;
+        await ReloadReservation();
+    }
+    async Task ShowRemoveBlockMessage(string bayId,string reservationId)
+    {
+        if (await MessageService.Confirm(L["ConfirmBlockRemove"], L["Confirmation"]))
+        {
+            await Call<List<BayContract>>(Models.RequestType.Delete, $"api/v2/places/{Id}/Bays/{bayId}/reservations/{reservationId}/block",null,null,L["DeleteBlockSuccess"]);
+            
+            await ReloadReservation();
+        }
+    }
+
+    async Task ShowChangeStatusMessage(string username,string bayId, string reservationId,bool currentStatus)
+    {
+        if (currentStatus)
+        {
+            if (await MessageService.Confirm(L["ConfirmNotApprove", username], L["Confirmation"]))
+            {
+                await MainServiceLayer.ChangeReservationStatus(Id, bayId, reservationId, new StatusUpdateRequest { Status = !currentStatus });
+                await ReloadReservation();
+            }
+        }
+        else
+        {
+            if (await MessageService.Confirm(L["ConfirmApprove", username], L["Confirmation"]))
+            {
+                await MainServiceLayer.ChangeReservationStatus(Id, bayId, reservationId, new StatusUpdateRequest { Status = !currentStatus });
+                await ReloadReservation();
+            }
+        }
+        
     }
 }

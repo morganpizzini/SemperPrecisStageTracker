@@ -1,0 +1,165 @@
+﻿@inject IStringLocalizer<BayReservationModalsComponent> L
+@using Microsoft.AspNetCore.Components
+
+<Modal @ref="modalRefAddSchedule">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AddReservation"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["Users"]</FieldLabel>
+                <select class="form-control" @bind="Model.UserId">
+                    <option disabled value="">@L["SelectUser"]</option>
+                    @foreach (var user in Users)
+                    {
+                        <option value="@user.UserId">@user.CompleteName</option>
+                    })
+                </select>
+            </Field>
+            <Field>
+                <FieldLabel >@L["Date"]</FieldLabel>
+                <FieldBody>
+                    <input name="from" class="form-control" type="date" value="@Model.Day.ToString("yyyy-MM-dd")"
+                           @onchange="@((ChangeEventArgs __e) => 
+                                    {
+                                        var day = DateOnly.FromDateTime(DateTime.Parse(__e?.Value?.ToString() ?? string.Empty));
+                                        if(Model.Day != day){
+                                            Model.Day = day;
+                                            addScheduleId = string.Empty;
+                                        }
+                                        
+                                    })" disabled="@(EnableDate ? "disabled" : "")" />
+                </FieldBody>
+            </Field>
+            @if (Model.From != TimeOnly.MinValue)
+            {
+                <Field>
+                    <FieldLabel>@L["From"]</FieldLabel>
+                    <FieldBody>
+                        <input name="from" class="form-control" type="time" value="@Model.From.ToString("HH:mm")" disabled="disabled" />
+                    </FieldBody>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["To"]</FieldLabel>
+                    <FieldBody>
+                        <input class="form-control" type="time" value="@Model.To.ToString("HH:mm")" disabled="disabled" />
+                    </FieldBody>
+                </Field>
+            }
+            else
+            {
+                <Field>
+                    <FieldLabel>@L["Schedule"]</FieldLabel>
+                    <select class="form-control" @bind="addScheduleId">
+                        <option disabled value="">@L["SelectSchedule"]</option>
+                        @foreach (var schedule in BaySchedules.Where(x=>x.Day == Model.Day.DayOfWeek))
+                        {
+                            <option value="@schedule.ScheduleId">@schedule.Name [@schedule.Day.ToString() @schedule.From.ToString("HH:mm") ~ @schedule.To.ToString("HH:mm")]</option>
+                        })
+                    </select>
+                </Field>
+            }
+            
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalModalRefAddReservation(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalModalRefAddReservation(true))">@L["Save"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="modalRefEntityReservationToDelete">
+    <ModalContent Centered="true">
+        <ModalHeader>
+            <ModalTitle>@L["DeleteReservation"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Field>
+                <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
+            </Field>
+            @if (entityReservationToDelete != null)
+            {
+                <Field>
+                    <FieldLabel>@L["Name"]</FieldLabel>
+                    <Text>@entityReservationToDelete.User.CompleteName</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["Day"]</FieldLabel>
+                    <Text>@entityReservationToDelete.Day</Text>
+                </Field>
+                <Field>
+                    <FieldLabel>@L["From/To"]</FieldLabel>
+                    <Text>@entityReservationToDelete.From.ToString("HH:mm") ~ @entityReservationToDelete.To.ToString("HH:mm")</Text>
+                </Field>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalEntityReservationToDelete(false))">@L["Close"]</Button>
+            <Button Size="Size.Small" Color="Color.Primary" Clicked="@(() => HideModalEntityReservationToDelete(true))">@L["Yes"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+@code{
+    private Modal modalRefEntityReservationToDelete = default!;
+    private Modal modalRefAddSchedule = default!;
+    ReservationContract entityReservationToDelete = new();
+
+    [Parameter]
+    public ReservationCreateRequest Model { get; set; } = new();
+
+    string addScheduleId = string.Empty;
+
+    [Parameter]
+    public bool EnableDate { get; set; } = true;
+
+    [Parameter, EditorRequired]
+    public IList<ScheduleContract> BaySchedules { get; set; } = new List<ScheduleContract>();
+    [Parameter, EditorRequired]
+    public IList<UserContract> Users { get; set; } = new List<UserContract>();
+
+    [Parameter, EditorRequired]
+    public EventCallback<ReservationCreateRequest> AddCallback { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<string> DeleteCallback { get; set; }
+
+    public Task ShowAddScheduleModal() =>
+        modalRefAddSchedule.Show();
+
+    public Task DeleteScheduleEntity(ReservationContract entity)
+    {
+        if (entity == null)
+            return Task.CompletedTask;
+        entityReservationToDelete = entity;
+        return modalRefEntityReservationToDelete.Show();
+    }
+
+    private async Task HideModalEntityReservationToDelete(bool choice)
+    {
+        if (choice && entityReservationToDelete != null)
+        {
+            await DeleteCallback.InvokeAsync(entityReservationToDelete.ReservationId);
+            entityReservationToDelete = new();
+        }
+        await modalRefEntityReservationToDelete.Hide();
+    }
+
+    private async Task HideModalModalRefAddReservation(bool choice)
+    {
+        var isFromModel = Model.From != TimeOnly.MinValue;
+        if (choice && !string.IsNullOrEmpty(Model.UserId) && (!string.IsNullOrEmpty(addScheduleId) || isFromModel))
+        {
+            var schedule = BaySchedules.FirstOrDefault(x => x.ScheduleId == addScheduleId);
+            if (isFromModel || schedule != null)
+            {
+                Model.From = schedule?.From ?? Model.From;
+                Model.To = schedule?.To ?? Model.To;
+                await AddCallback.InvokeAsync(Model);
+            }
+        }
+        addScheduleId = string.Empty;
+        // Model = new();
+        await modalRefAddSchedule.Hide();
+    }
+}

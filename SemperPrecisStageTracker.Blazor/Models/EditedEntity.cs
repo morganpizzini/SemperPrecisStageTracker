@@ -19,6 +19,7 @@ namespace SemperPrecisStageTracker.Blazor.Models
         public string BayId { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public TimeOnly From { get; set; }
+        public TimeOnly To { get; set; }
     }
 
     public class  MultiSelectItemList<T> : List<MultiSelectItem<T>> where T : new()

@@ -114,13 +114,13 @@
 
     private async Task AddReservation(ReservationCreateRequest reservation)
     {
-        await Call(Models.RequestType.Post, $"/api/v2/Places/{Id}/Bays/{BayId}/reservations", null, reservation);
+        await MainServiceLayer.AddReservation(Id,BayId, reservation);
         bayReservations = (await LoadBayReservations()).Data;
     }
 
     private async Task DeleteReservation(string reservationId)
     {
-        await Call(Models.RequestType.Delete, $"/api/v2/Places/{Id}/Bays/{BayId}/Reservations/{reservationId}", L["ReservationDeleteSuccess"]);
+        await MainServiceLayer.DeleteReservation(Id, BayId, reservationId, L["ReservationDeleteSuccess"]);
         bayReservations = (await LoadBayReservations()).Data;
     }
 }

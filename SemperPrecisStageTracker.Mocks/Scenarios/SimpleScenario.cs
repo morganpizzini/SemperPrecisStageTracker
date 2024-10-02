@@ -93,6 +93,13 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Schedules = scenarioClone.Schedules;
             BaySchedules = scenarioClone.BaySchedules;
             Reservations = scenarioClone.Reservations;
+
+            //Post merge operations
+            var dayIndex = -1;
+            foreach (var reservation in Reservations)
+            {
+                reservation.Day = DateOnly.FromDateTime(DateTime.Now.AddDays(++dayIndex));
+            }
         }
     }
 }

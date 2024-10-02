@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Blazor.Store;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
+using System;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {
@@ -346,5 +347,12 @@ namespace SemperPrecisStageTracker.Blazor.Services
             return !string.IsNullOrEmpty(response.Error) ? new OkResponse() { Errors = new List<string> { response.Error ?? "Generic error" }, Status = false } : response.Result;
         }
 
+        public Task AddReservation(string placeId, string bayId,ReservationCreateRequest body) =>
+            _presentationalServiceLayer.CallRestfull<object>(RequestType.Post, $"/api/v2/Places/{placeId}/Bays/{bayId}/reservations", null, body);
+        public Task ChangeReservationStatus(string placeId, string bayId, string reservationId, StatusUpdateRequest body) =>
+            _presentationalServiceLayer.CallRestfull<object>(RequestType.Put, $"/api/v2/Places/{placeId}/Bays/{bayId}/reservations/{reservationId}/status", null, body);
+
+        public Task DeleteReservation(string placeId, string bayId, string reservationId,string successMessage = "") =>
+            _presentationalServiceLayer.CallRestfull<object>(RequestType.Delete, $"/api/v2/Places/{placeId}/Bays/{bayId}/Reservations/{reservationId}",null,null, successMessage);
     }
 }

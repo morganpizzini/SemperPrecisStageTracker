@@ -7,6 +7,7 @@ using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2
@@ -60,7 +61,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Creazione modello richiesto da admin
             var model = new Reservation
             {
-                UserId = string.IsNullOrEmpty(request.Body.UserId) ? request.Body.UserId : userId,
+                UserId = string.IsNullOrEmpty(request.Body.UserId) ? userId : request.Body.UserId,
                 BayId = request.Id,
                 From = request.Body.From,
                 To = request.Body.To,
@@ -106,12 +107,39 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             return NoContent();
         }
 
+        [HttpPut("{placeId}/bays/{id}/reservations/{reservationId}/status")]
+        [ApiAuthorizationFilter(Permissions.ManagePlaces, Permissions.EditPlace)]
+        [ProducesResponseType(201)]
+        public async Task<IActionResult> UpdateReservationStatus(ReservationStatusUpdateRequest request)
+        {
+            //Recupero l'elemento dal business layer
+            var entity = BasicLayer.GetReservation(request.ReservationId);
+
+            //modifica solo se admin o se utente richiedente è lo stesso che ha creato
+            if (entity == null)
+                return NotFound();
+
+            var userId = PlatformUtils.GetIdentityUserId(User);
+            
+            //Aggiornamento dell'entità
+            entity.IsAccepted = request.Body.Status;
+
+            //Salvataggio
+            var validations = await BasicLayer.UpdateReservation(entity, userId);
+            if (validations.Count > 0)
+                return BadRequest(validations);
+
+            //Confermo
+            return NoContent();
+        }
+
         /// <summary>
         /// Deletes existing place on platform
         /// </summary>
         /// <param name="request">Request</param>
         /// <returns>Returns action result</returns>
         [HttpDelete("{placeId}/bays/{id}/reservations/{reservationId}")]
+        [HttpDelete("{placeId}/bays/{id}/reservations/{reservationId}/block")]
         [ProducesResponseType(201)]
         public async Task<IActionResult> DeleteBayReservation(ReservationDeleteRequest request)
         {

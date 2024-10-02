@@ -41,15 +41,18 @@
                         <TableRowCell>@place.Holder</TableRowCell>
                         <TableRowCell>@place.City</TableRowCell>
                         <TableRowCell>
-                            @if (AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, place.PlaceId))
-                            {
-                                <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new {id = place.PlaceId}))"><Icon Name="IconName.Pen"/></Button>
-                            }
-                            <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new {id = place.PlaceId}))"><Icon Name="IconName.Search"/></Button>
-                            @if (AuthService.CheckPermissions(Permissions.ManagePlaces, place.PlaceId))
-                            {
-                                <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(place))"><Icon Name="IconName.Delete" /></Button>
-                            }
+                            <Buttons>
+                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceManage>(new { id = place.PlaceId }))"><Icon Name="IconName.Dashboard" /></Button>
+                                @if (AuthService.CheckPermissions(PermissionCtor.ManagePlaces.EditPlace, place.PlaceId))
+                                {
+                                    <Button Size="Size.Small" Color="Color.Secondary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceEdit>(new {id = place.PlaceId}))"><Icon Name="IconName.Pen"/></Button>
+                                }
+                                <Button Size="Size.Small" Color="Color.Primary" Type="ButtonType.Link" To="@(RouteHelper.GetUrl<PlaceDetail>(new {id = place.PlaceId}))"><Icon Name="IconName.Search"/></Button>
+                                @if (AuthService.CheckPermissions(Permissions.ManagePlaces, place.PlaceId))
+                                {
+                                    <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeleteEntity(place))"><Icon Name="IconName.Delete" /></Button>
+                                }
+                            </Buttons>
                         </TableRowCell>
                     </TableRow>
                 </Virtualize>

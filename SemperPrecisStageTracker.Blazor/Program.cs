@@ -19,6 +19,7 @@ using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Components;
 using Fluxor.Blazor.Web.ReduxDevTools;
 using Microsoft.FeatureManagement;
+using SemperPrecisStageTracker.Shared.Cache;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -52,7 +53,9 @@ builder.Services.AddBlazorise(options =>
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
+builder.Services
+    .AddSingleton<ISemperPrecisMemoryCache, BlazorMemoryCache>()
+    .AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
                 .AddScoped<IAuthorizationHandler, PermissionServiceHandler>();
 
 var currentAssembly = typeof(UserState).Assembly;

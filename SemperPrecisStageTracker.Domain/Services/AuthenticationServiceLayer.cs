@@ -16,6 +16,7 @@ using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
 using ZenProgramming.Chakra.Core.ServicesLayers;
+using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -270,8 +271,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            var cached = _cache.GetValue<UserPermissionDto>($"perm:{userId}");
-            if (cached != null)
+            if (_cache.GetValue<UserPermissionDto>($"perm:{userId}", out var cached))
                 return Task.FromResult(cached);
             // user group TODO to be implemented
             // var permissionGroupIds = _userPermissionGroupRepository.FetchWithProjection(x=>x.PermissionGroupId,x => x.UserId == userId);

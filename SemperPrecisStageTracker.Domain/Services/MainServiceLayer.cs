@@ -13,6 +13,7 @@ using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.Shared.StageResults;
 using ZenProgramming.Chakra.Core.Entities;
+using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTracker.Domain.Services
 {
@@ -795,8 +796,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <returns>Returns stats</returns>
         public MatchResultData GetMatchStats(string id, string userId = null)
         {
-            var cached = _cache.GetValue<MatchResultData>(CacheKeys.ComposeKey(CacheKeys.Stats, id));
-            if (cached != null)
+            if (_cache.GetValue<MatchResultData>(CacheKeys.ComposeKey(CacheKeys.Stats, id), out var cached))
             {
                 return cached;
             }

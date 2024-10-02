@@ -19,8 +19,6 @@ public partial class MainServiceLayer
         return FetchEntities(x=>bayIds.Contains(x.BayId) && (!fromDate.HasValue || x.Day >= DateOnly.FromDateTime(fromDate.Value)), null, null, s => s.Day, false, _reservationRepository);
     }
 
-    
-
     public IList<Reservation> FetchAllReservationsByPlace(string placeId, DateTime fromDate, DateTime toDate)
     {
         var bayIds = FetchAllBays(placeId).Select(x => x.Id).ToList();
@@ -182,12 +180,13 @@ public partial class MainServiceLayer
                                                           string.IsNullOrEmpty(x.UserId)
                                                           && x.From <= entity.From
                                                           && x.To >= entity.To
-                                                          && x.Day == entity.Day);
+                                                          && x.Day == entity.Day
+                                                          && x.IsBayBlocked);
 
         if (existing.Count > 0)
             validations.Add(new ValidationResult($"Reservation has been locked for day {entity.Day:g}, from {entity.From} to {entity.To}"));
 
-        // controllo esistenza place con stesso nome / PEC / SDI
+        // controllo esistenza stessa prenotazione
         existing = _reservationRepository.Fetch(x => x.Id != entity.Id
                                                 && x.UserId == entity.UserId      
                                                           && x.From <= entity.From

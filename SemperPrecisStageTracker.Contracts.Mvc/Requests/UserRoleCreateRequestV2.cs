@@ -105,6 +105,17 @@ public class ReservationUpdateRequest : BaseRequestId<ReservationUpdateDataReque
     public string ReservationId { get; set; } = string.Empty;
 }
 
+public class ReservationStatusUpdateRequest : BaseRequestId<StatusUpdateRequest>, EntityFilterValidation
+{
+    public string EntityId => PlaceId;
+    [FromRoute]
+    [Required]
+    public string PlaceId { get; set; } = string.Empty;
+    [FromRoute]
+    [Required]
+    public string ReservationId { get; set; } = string.Empty;
+}
+
 public class ReservationDeleteRequest : BaseRequestId
 {
     [FromRoute]

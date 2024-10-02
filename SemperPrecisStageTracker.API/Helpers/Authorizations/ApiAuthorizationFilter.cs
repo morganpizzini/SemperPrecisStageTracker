@@ -12,7 +12,6 @@ namespace SemperPrecisStageTracker.API.Helpers
     {
         private readonly IPermissionInterface _permissions;
 
-
         public string PermissionsString => _permissions.ToString();
 
         public ApiAuthorizationFilter(params Permissions[] entityPermissions)
