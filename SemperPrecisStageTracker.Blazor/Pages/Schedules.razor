@@ -5,6 +5,7 @@
 @inject IState<UserState> UserState
 @inject NavigationManager UriHelper
 @inject IMessageService MessageService
+@inject IModalService ModalService
 
 <Heading Size="HeadingSize.Is1">@L["Schedule"]</Heading>
 <Divider />
@@ -94,6 +95,12 @@
                                         </Button>
                                         <span>
                                             @r.User.CompleteName
+                                            @if (!string.IsNullOrEmpty(r.Demands))
+                                            {
+                                                <Button Size="Size.Small" Clicked="@(()=>ShowRenderFragment(r.Demands))">
+                                                    <Icon Name="FontAwesomeIcons.Question" />
+                                                </Button>
+                                            }
                                         </span>
                                         @if (r.IsAccepted)
                                         {
@@ -262,7 +269,15 @@
                 await MainServiceLayer.ChangeReservationStatus(Id, bayId, reservationId, new StatusUpdateRequest { Status = !currentStatus });
                 await ReloadReservation();
             }
-        }
-        
+        }   
+    }
+    private RenderFragment customFragment(string text) => __builder =>
+    {
+        <p style="white-space: pre-line">@text</p>
+    };
+
+    public Task ShowRenderFragment(string text)
+    {
+        return ModalService.Show(L["Demands"], customFragment(text));
     }
 }

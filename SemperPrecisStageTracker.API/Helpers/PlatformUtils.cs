@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Principal;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using SemperPrecisStageTracker.Models.Commons;
 
 namespace SemperPrecisStageTracker.API.Helpers
 {

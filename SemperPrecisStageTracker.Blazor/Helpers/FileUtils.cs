@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using System;
+﻿using Microsoft.JSInterop;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Helpers
 {

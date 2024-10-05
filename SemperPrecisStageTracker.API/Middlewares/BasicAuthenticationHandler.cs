@@ -1,11 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using SemperPrecisStageTracker.Domain.Identities;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;

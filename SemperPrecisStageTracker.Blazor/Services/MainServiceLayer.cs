@@ -1,4 +1,3 @@
-using Blazorise;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Components.Utils;
 using SemperPrecisStageTracker.Blazor.Models;
@@ -7,7 +6,6 @@ using SemperPrecisStageTracker.Blazor.Store;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using System;
 
 namespace SemperPrecisStageTracker.Blazor.Services
 {

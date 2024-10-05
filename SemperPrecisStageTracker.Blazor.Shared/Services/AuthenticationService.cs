@@ -1,11 +1,8 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using SemperPrecisStageTracker.Blazor.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Blazor.Pages;
-using SemperPrecisStageTracker.Blazor.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using Fluxor;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;

@@ -1,14 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using SemperPrecisStageTracker.API.Controllers.Common;
+﻿using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Helpers;
-using System.Threading.Tasks;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Models;
 using ZenProgramming.Chakra.Core.Extensions;
-using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Shared.Permissions;
 
 namespace SemperPrecisStageTracker.API.Controllers

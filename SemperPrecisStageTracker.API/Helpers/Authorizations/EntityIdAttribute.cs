@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-
-namespace SemperPrecisStageTracker.API.Helpers
+﻿namespace SemperPrecisStageTracker.API.Helpers
 {
     //[AttributeUsage(AttributeTargets.Parameter,Inherited = true)]
     //public class EntityIdAttribute : FromBodyAttribute

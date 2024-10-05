@@ -81,6 +81,9 @@ namespace SemperPrecisStageTracker.API.Controllers
             }
             else
             {
+                // if the user has no team, user is automatically approved
+                if(BasicLayer.FetchTeamsFromShooterId(request.ShooterId).Count == 0)
+                    entity.UserApprove = true;
                 entity.TeamApprove = true;
             }
 

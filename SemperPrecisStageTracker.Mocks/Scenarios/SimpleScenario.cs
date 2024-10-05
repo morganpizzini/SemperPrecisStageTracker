@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text.Json;
 using SemperPrecisStageTracker.Mocks.Scenarios.Common;
-using SemperPrecisStageTracker.Models;
 
 namespace SemperPrecisStageTracker.Mocks.Scenarios
 {

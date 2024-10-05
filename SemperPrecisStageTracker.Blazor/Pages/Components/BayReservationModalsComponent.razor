@@ -10,13 +10,20 @@
         <ModalBody>
             <Field>
                 <FieldLabel>@L["Users"]</FieldLabel>
-                <select class="form-control" @bind="Model.UserId">
+                <select class="form-control" @bind="Model.UserId" disabled="@Model.IsBayBlocked">
                     <option disabled value="">@L["SelectUser"]</option>
                     @foreach (var user in Users)
                     {
                         <option value="@user.UserId">@user.CompleteName</option>
                     })
                 </select>
+            </Field>
+            <Field Horizontal="true">
+                <FieldBody>
+                    <Tooltip Text="@L["IsForBayBlocked"]">
+                        <Check TValue="bool" @bind-Checked="@Model.IsBayBlocked">@L["BayBlocked"]</Check>
+                    </Tooltip>
+                </FieldBody>
             </Field>
             <Field>
                 <FieldLabel >@L["Date"]</FieldLabel>
@@ -31,6 +38,13 @@
                                         }
                                         
                                     })" disabled="@(EnableDate ? "disabled" : "")" />
+                </FieldBody>
+            </Field>
+            <Field>
+                <FieldLabel>@L["Demands"]</FieldLabel>
+                <FieldBody>
+                    <MemoEdit Rows="5" Placeholder="@L["WriteDemands"]" @bind-Text="@Model.Demands">
+                    </MemoEdit>
                 </FieldBody>
             </Field>
             @if (Model.From != TimeOnly.MinValue)
@@ -148,13 +162,15 @@
     private async Task HideModalModalRefAddReservation(bool choice)
     {
         var isFromModel = Model.From != TimeOnly.MinValue;
-        if (choice && !string.IsNullOrEmpty(Model.UserId) && (!string.IsNullOrEmpty(addScheduleId) || isFromModel))
+        if (choice && (!string.IsNullOrEmpty(Model.UserId) || Model.IsBayBlocked) && (!string.IsNullOrEmpty(addScheduleId) || isFromModel))
         {
             var schedule = BaySchedules.FirstOrDefault(x => x.ScheduleId == addScheduleId);
             if (isFromModel || schedule != null)
             {
                 Model.From = schedule?.From ?? Model.From;
                 Model.To = schedule?.To ?? Model.To;
+                if(Model.IsBayBlocked)
+                    Model.UserId = string.Empty;
                 await AddCallback.InvokeAsync(Model);
             }
         }

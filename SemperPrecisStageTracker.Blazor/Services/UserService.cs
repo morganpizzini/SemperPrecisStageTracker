@@ -1,7 +1,3 @@
-using SemperPrecisStageTracker.Contracts;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace SemperPrecisStageTracker.Blazor.Services
 {
     //public interface IUserService

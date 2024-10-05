@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SemperPrecisStageTracker.API.Controllers;
 using SemperPrecisStageTracker.Contracts;
-using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Mocks.Scenarios;
 using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Shared.Permissions;

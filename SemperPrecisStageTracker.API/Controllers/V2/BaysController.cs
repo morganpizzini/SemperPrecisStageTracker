@@ -3,7 +3,6 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
-using SemperPrecisStageTracker.API.Models;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 using SemperPrecisStageTracker.Contracts.Requests;

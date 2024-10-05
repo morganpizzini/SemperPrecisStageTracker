@@ -1,6 +1,5 @@
 ﻿using System;
 using Ninject;
-using Ninject.Activation;
 
 namespace SemperPrecisStageTracker.Domain.Containers
 {

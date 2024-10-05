@@ -84,6 +84,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public DateOnly Day { get; set; } = DateOnly.FromDateTime(DateTime.Now);
         public string Demands { get; set; } = string.Empty;
+        public bool IsBayBlocked { get; set; }
     }
 
     public class ReservationBlockRequest

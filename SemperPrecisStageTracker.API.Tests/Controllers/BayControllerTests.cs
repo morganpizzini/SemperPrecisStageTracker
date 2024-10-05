@@ -9,7 +9,6 @@ using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 using SemperPrecisStageTraker.API.Tests.Controllers.Common;
 using ZenProgramming.Chakra.Core.Utilities.Data;
-using SemperPrecisStageTracker.API.Models;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers
 {

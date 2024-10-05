@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Blazorise;
+﻿using Blazorise;
 using Fluxor.Blazor.Web.Components;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 

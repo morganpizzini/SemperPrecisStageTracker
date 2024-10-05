@@ -24,7 +24,7 @@
             <TableBody>
                 <Virtualize Items="@BayReservations" Context="entity">
                     <TableRow>
-                        <TableRowHeader>@entity.User.CompleteName</TableRowHeader>
+                        <TableRowHeader>@(entity.IsBayBlocked ? $"-- {L["bayBlocked"]} --" : entity.User.CompleteName)</TableRowHeader>
                         <TableRowHeader>@entity.Day.ToString() - @entity.From.ToString("HH:mm") ~ @entity.To.ToString("HH:mm")</TableRowHeader>
                         <TableRowCell>
                             <Button Size="Size.Small" Color="Color.Danger" Clicked="@(() => bayReservationModals.DeleteScheduleEntity(entity))"><Icon Name="IconName.Delete" /></Button>

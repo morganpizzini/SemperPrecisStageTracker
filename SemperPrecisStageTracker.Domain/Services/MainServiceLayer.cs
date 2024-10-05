@@ -12,7 +12,6 @@ using ZenProgramming.Chakra.Core.ServicesLayers;
 using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.Shared.StageResults;
-using ZenProgramming.Chakra.Core.Entities;
 using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTracker.Domain.Services
@@ -733,7 +732,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// <returns>Returns list of matchs</returns>
         public async Task<IList<Match>> FetchAllSoMdMatches(string userId)
         {
-            var permissions = await authenticationService.GetUserPermissionById(userId);
+            var permissions = await authenticationService.GetUserPermissionByUserId(userId);
 
             if (permissions.GenericPermissions.Contains(Permissions.ManageMatches))
                 //Utilizzo il metodo base
@@ -4771,7 +4770,7 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             IList<UserPermission> newPermissions = new List<UserPermission>();
 
-            var userPermissions = await authenticationService.GetUserPermissionById(userId);
+            var userPermissions = await authenticationService.GetUserPermissionByUserId(userId);
             foreach (var permission in permissions.List)
             {
                 // check entity permission

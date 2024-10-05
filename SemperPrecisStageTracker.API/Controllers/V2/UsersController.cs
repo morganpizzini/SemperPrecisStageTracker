@@ -9,7 +9,6 @@ using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.API.Models;
 using ZenProgramming.Chakra.Core.Extensions;
 using System.ComponentModel.DataAnnotations;
-using SemperPrecisStageTracker.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 
@@ -92,7 +91,6 @@ public partial class UsersController : ApiControllerBase
     [ProducesResponseType(201)]
     public async Task<IActionResult> CreateUser([FromBody]UserCreateRequest request)
     {
-        //Creazione modello richiesto da admin
         var model = new User
         {
             FirstName = request.FirstName,
@@ -103,6 +101,7 @@ public partial class UsersController : ApiControllerBase
             Gender = request.Gender,
             IsActive = request.IsActive
         };
+
         var data = new UserData
         {
             FirearmsLicence = request.FirearmsLicence,
@@ -119,13 +118,11 @@ public partial class UsersController : ApiControllerBase
             FiscalCode = request.FiscalCode
         };
 
-        //Invocazione del service layer
         var validations = await BasicLayer.CreateUser(model, data, PlatformUtils.GetIdentityUserId(User));
 
         if (validations.Count > 0)
             return BadRequest(validations);
 
-        //Return contract
         return CreatedAtAction(nameof(GetUser), model.GetRouteIdentifier(), ContractUtils.GenerateContract(model, data));
     }
 
@@ -336,16 +333,16 @@ public partial class UsersController : ApiControllerBase
     /// </summary>
     /// <returns>Returns action result</returns>
     [HttpGet("{id}/permissions")]
-    [ProducesResponseType(typeof(UserPermissionContract), 200)]
-    public async Task<IActionResult> FetchAllPermissionsOnUser(BaseRequestId request) =>
-        OkBaseResponse(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(request.Id)));
+    [ProducesResponseType(typeof(BaseResponse<UserPermissionContract>), 200)]
+    public async Task<IActionResult> FetchAllPermissionsOnUser(PermissionOnUserRequestV2 request) =>
+        OkBaseResponse(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionByUserId(request.Id,request.AppliedOnUserOnly)));
 
     /// <summary>
     /// Fetch all roles on user
     /// </summary>
     /// <returns>Returns action result</returns>
     [HttpGet("{id}/roles")]
-    [ProducesResponseType(typeof(UserPermissionContract), 200)]
+    [ProducesResponseType(typeof(BaseResponse<IList<RoleContract>>), 200)]
     public IActionResult FetchUserRoles(BaseRequestId request)
     {
         var entities = AuthorizationLayer.GetUserRolesByUserId(request.Id).As(x => ContractUtils.GenerateContract(x));
@@ -355,7 +352,7 @@ public partial class UsersController : ApiControllerBase
     }
 
     [HttpGet("{id}/places-managed")]
-    [ProducesResponseType(typeof(UserPermissionContract), 200)]
+    [ProducesResponseType(typeof(BaseResponse<IList<PlaceContract>>), 200)]
     public async Task<IActionResult> FetchUserManagedPlaces(BaseRequestId request)
     {
         var entities = await BasicLayer.FetchUserPlaces(request.Id);

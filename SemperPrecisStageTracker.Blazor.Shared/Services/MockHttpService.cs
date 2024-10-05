@@ -1,6 +1,7 @@
 ﻿using SemperPrecisStageTracker.Blazor.Services.Models;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
+using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.Shared.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Services
@@ -220,6 +221,20 @@ namespace SemperPrecisStageTracker.Blazor.Services
                         Result = (T)(object)new BaseResponse<List<RoleContract>>(
                             roles.Take(3).ToList(),
                             3,
+                            string.Empty)
+                    }),
+                string s when s.MatchesRegexPattern("api/Users/.+/Permissions") =>
+                    Task.FromResult(new ApiResponse<T>
+                    {
+                        Result = (T)(object)new BaseResponse<UserPermissionContract>(
+                            new UserPermissionContract
+                            {
+                                EntityPermissions = new List<EntityPermissionContract> {
+                                    new EntityPermissionContract { EntityId = "1",
+                                    Permissions = new List<Permissions>{ Permissions.EditUser } } },
+                                GenericPermissions = new List<Permissions> { Permissions.ManageAssociations }
+                            },
+                            1,
                             string.Empty)
                     }),
                 string s when s.MatchesRegexPattern("api/Users/.+") =>

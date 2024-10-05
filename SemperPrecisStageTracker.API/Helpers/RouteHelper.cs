@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.AspNetCore.Components;
 
 namespace SemperPrecisStageTracker.API.Helpers

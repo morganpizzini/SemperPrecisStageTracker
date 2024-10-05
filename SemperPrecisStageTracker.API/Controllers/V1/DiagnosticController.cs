@@ -2,13 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.Domain.Configurations;
 using ZenProgramming.Chakra.Core.Configurations;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using SemperPrecisStageTracker.Contracts.Requests;
-using Microsoft.Extensions.Configuration;
-using SemperPrecisStageTracker.API.Services.Interfaces;
 using Asp.Versioning;
-using SemperPrecisStageTracker.API.Models;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {

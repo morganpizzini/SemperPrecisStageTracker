@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using SemperPrecisStageTracker.Contracts;
-using SemperPrecisStageTracker.Contracts.Requests;
-
 namespace SemperPrecisStageTracker.Blazor.Services
 {
     //public class StateService
@@ -17,7 +12,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
     //    /// The event that will be raised for state changed
     //    /// </summary>
     //    public event Action<StateService> OnStateChange;
- 
+
     //    /// <summary>
     //    /// The state change event notification
     //    /// </summary>
@@ -29,7 +24,7 @@ namespace SemperPrecisStageTracker.Blazor.Services
     //    //    //User = user;
     //    //    NotifyStateChanged();
     //    //}
- 
+
     //    /// <summary>
     //    /// The method that will be accessed by the sender component 
     //    /// to update the state

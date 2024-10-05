@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System;
+﻿using System;
 
 namespace SemperPrecisStageTracker.Contracts
 {
@@ -29,6 +28,8 @@ namespace SemperPrecisStageTracker.Contracts
         public TimeOnly To { get; set; }
         public DateOnly Day { get; set; }
         public bool IsAccepted { get; set; } = false;
+        public string Demands { get; set; } = string.Empty;
+
         // whenever is true, the bay is blocked for the time of the reservation, and cannot be reserved by anyone else
         public bool IsBayBlocked { get; set; } = false;
     }

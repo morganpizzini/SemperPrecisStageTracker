@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
-using SemperPrecisStageTracker.API.Helpers;
-using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Containers;
 using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Models;
 using Asp.Versioning;
-using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {

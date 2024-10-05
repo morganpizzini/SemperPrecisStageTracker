@@ -6,9 +6,6 @@ using SemperPrecisStageTracker.API.Models;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Models;
-using SemperPrecisStageTracker.Shared.Permissions;
-using System.ComponentModel.DataAnnotations;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2

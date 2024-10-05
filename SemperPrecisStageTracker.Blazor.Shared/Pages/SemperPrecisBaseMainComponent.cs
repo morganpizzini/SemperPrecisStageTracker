@@ -2,7 +2,6 @@
 using SemperPrecisStageTracker.Contracts.Requests;
 using SemperPrecisStageTracker.Blazor.Models;
 using Microsoft.AspNetCore.Components;
-using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Blazor.Components.Utils;
 
 namespace SemperPrecisStageTracker.Blazor.Pages;

@@ -1,10 +1,3 @@
-using SemperPrecisStageTracker.Blazor.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using System;
-using System.Net;
-
 namespace SemperPrecisStageTracker.Blazor.Helpers
 {
     //public class AppRouteView : RouteView

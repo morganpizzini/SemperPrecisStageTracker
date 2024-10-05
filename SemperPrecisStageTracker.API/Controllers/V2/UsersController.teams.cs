@@ -1,17 +1,9 @@
-﻿using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts;
-using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Models;
-using SemperPrecisStageTracker.Shared.Permissions;
 using SemperPrecisStageTracker.API.Models;
 using ZenProgramming.Chakra.Core.Extensions;
-using System.ComponentModel.DataAnnotations;
-using SemperPrecisStageTracker.API.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using SemperPrecisStageTracker.Contracts.Mvc.Requests;
 
 namespace SemperPrecisStageTracker.API.Controllers.V2;
 

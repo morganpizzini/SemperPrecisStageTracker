@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Asp.Versioning;
-using System.Threading.Tasks;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
 using SemperPrecisStageTracker.API.Helpers;
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Models;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
@@ -35,7 +31,7 @@ namespace SemperPrecisStageTracker.API.Controllers
         [Route("FetchAllPermissionsOnUser")]
         [ProducesResponseType(typeof(UserPermissionContract), 200)]
         public async Task<IActionResult> FetchAllPermissionsOnUser() =>
-            Ok(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(PlatformUtils.GetIdentityUserId(User))));
+            Ok(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionByUserId(PlatformUtils.GetIdentityUserId(User))));
         
         /// <summary>
         /// Fetch list of all associations

@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.API.Controllers.Common;
@@ -13,7 +11,6 @@ using SemperPrecisStageTracker.Domain.Containers;
 using SemperPrecisStageTracker.Domain.Services;
 using SemperPrecisStageTracker.Models;
 using Asp.Versioning;
-using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Controllers
 {
@@ -64,7 +61,7 @@ namespace SemperPrecisStageTracker.API.Controllers
                 new SignInResponse
                 {
                     User = ContractUtils.GenerateContract(result, null, shooterAssociation, teams),
-                    Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionById(result.Id))
+                    Permissions = ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionByUserId(result.Id))
                 });
         }
 

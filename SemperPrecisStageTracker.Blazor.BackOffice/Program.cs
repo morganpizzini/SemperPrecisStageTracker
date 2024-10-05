@@ -13,6 +13,7 @@ using SemperPrecisStageTracker.Blazor.Components;
 using SemperPrecisStageTracker.Blazor.Services;
 using SemperPrecisStageTracker.Blazor.Store.AppUseCase;
 using SemperPrecisStageTracker.Blazor.Utils;
+using SemperPrecisStageTracker.Shared.Cache;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -30,7 +31,8 @@ builder.Services
 
 builder.Services.AddAuthorizationCore();
 
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
+builder.Services.AddSingleton<ISemperPrecisMemoryCache, BlazorMemoryCache>()
+                .AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>()
                 .AddScoped<IAuthorizationHandler, PermissionServiceHandler>();
 
 var currentAssembly = typeof(UserState).Assembly;

@@ -61,12 +61,13 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Creazione modello richiesto da admin
             var model = new Reservation
             {
-                UserId = string.IsNullOrEmpty(request.Body.UserId) ? userId : request.Body.UserId,
+                UserId = request.Body.IsBayBlocked ? string.Empty : string.IsNullOrEmpty(request.Body.UserId) ? userId : request.Body.UserId,
                 BayId = request.Id,
                 Demands = request.Body.Demands,
                 From = request.Body.From,
                 To = request.Body.To,
-                Day = request.Body.Day
+                Day = request.Body.Day,
+                IsBayBlocked = request.Body.IsBayBlocked
             };
 
             //Invocazione del service layer

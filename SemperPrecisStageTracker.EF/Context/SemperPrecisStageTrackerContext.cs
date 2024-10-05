@@ -82,6 +82,14 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<Reservation>()
+               .HasKey(f => f.Id);
+            modelBuilder.Entity<Reservation>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Reservation>().Property(f => f.Demands).HasMaxLength(1000);
+
+
             modelBuilder.Entity<Schedule>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<Schedule>()

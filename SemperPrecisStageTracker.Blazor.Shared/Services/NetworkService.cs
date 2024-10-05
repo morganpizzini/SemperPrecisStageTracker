@@ -1,8 +1,6 @@
 using Fluxor;
 using Microsoft.JSInterop;
 using SemperPrecisStageTracker.Blazor.Store;
-using System;
-using System.Threading.Tasks;
 
 namespace SemperPrecisStageTracker.Blazor.Utils
 {

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SemperPrecisStageTracker.Contracts.Requests;
-using SemperPrecisStageTracker.Domain.Cache;
 using SemperPrecisStageTracker.Domain.Services;
 using ZenProgramming.Chakra.Core.Data;
 

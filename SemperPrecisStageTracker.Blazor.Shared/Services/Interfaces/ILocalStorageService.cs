@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace SemperPrecisStageTracker.Blazor.Services
 {
     public interface ILocalStorageService

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SemperPrecisStageTracker.API.Helpers
+﻿namespace SemperPrecisStageTracker.API.Helpers
 {
 
     /// <summary>

@@ -8,10 +8,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using log4net.Util;
-using Microsoft.Extensions.Caching.Memory;
-using SemperPrecisStageTracker.Domain.Cache;
-using SemperPrecisStageTracker.Domain.Models;
 using SemperPrecisStageTracker.Domain.Utils;
 using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Data;
@@ -266,12 +262,12 @@ namespace SemperPrecisStageTracker.Domain.Services
             /// </summary>
             /// <param name="userId">User identifier</param>
             /// <returns>Return user permissions list</returns>
-        public Task<UserPermissionDto> GetUserPermissionById(string userId)
+        public Task<UserPermissionDto> GetUserPermissionByUserId(string userId,bool appliedOnUserOnly = false)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
 
-            if (_cache.GetValue<UserPermissionDto>($"perm:{userId}", out var cached))
+            if (_cache.GetValue<UserPermissionDto>(appliedOnUserOnly ? $"perm-user:{userId}" : $"perm-general:{userId}", out var cached))
                 return Task.FromResult(cached);
             // user group TODO to be implemented
             // var permissionGroupIds = _userPermissionGroupRepository.FetchWithProjection(x=>x.PermissionGroupId,x => x.UserId == userId);
@@ -280,25 +276,32 @@ namespace SemperPrecisStageTracker.Domain.Services
             var userPermissions = _userPermissionRepository.Fetch(x => x.UserId == userId);
             // extract permission
             var permissionIds = userPermissions.Select(x => x.PermissionId).ToList();
-            
+
+            var permissionsFromRole = new List<string>();
+            IList<UserRole> userRoles = new List<UserRole>();
+            IList<PermissionRole> permissionRoles = new List<PermissionRole>();
             // user roles
-            var userRoles = _userRoleRepository.Fetch(x => x.UserId == userId);
-            var rolesIds = userRoles.Select(x => x.RoleId).ToList();
-            var permissionRoles = _permissionRoleRepository.Fetch(x => rolesIds.Contains(x.RoleId));
-            permissionIds.AddRange(permissionRoles.Select(x=>x.PermissionId));
+            if (!appliedOnUserOnly) {
+                userRoles = _userRoleRepository.Fetch(x => x.UserId == userId);
+                var rolesIds = userRoles.Select(x => x.RoleId).ToList();
+                permissionRoles = _permissionRoleRepository.Fetch(x => rolesIds.Contains(x.RoleId));
+                permissionIds.AddRange(permissionRoles.Select(x=>x.PermissionId));
+
+                // split permission between entities and general
+                // general
+                // - roles
+                var generalRoleIds = userRoles.Where(x => string.IsNullOrEmpty(x.EntityId))
+                                            .Select(x => x.RoleId).ToList();
+                permissionsFromRole = permissionRoles.Where(x => generalRoleIds.Contains(x.RoleId))
+                    .Select(x => x.PermissionId).ToList();
+            }
 
             // permission applied
             var permissions = _permissionRepository.Fetch(x => permissionIds.Contains(x.Id));
 
             var genericPermissionsDto = new List<string>();
+            
 
-            // split permission between entities and general
-            // general
-            // - roles
-            var generalRoles = userRoles.Where(x => string.IsNullOrEmpty(x.EntityId));
-            var generalRolesId = generalRoles.Select(x => x.RoleId).ToList();
-            var permissionsFromRole = permissionRoles.Where(x => generalRolesId.Contains(x.RoleId))
-                .Select(x => x.PermissionId).ToList();
 
             // - permissions
             var generalPermissionIds = userPermissions.Where(x => string.IsNullOrEmpty(x.EntityId)).Select(x=>x.PermissionId).ToList();
@@ -1050,7 +1053,7 @@ namespace SemperPrecisStageTracker.Domain.Services
             {
                 return false;
             }
-            var userPermissions = await GetUserPermissionById(userId);
+            var userPermissions = await GetUserPermissionByUserId(userId);
             
             if (userPermissions == null)
                 return false;

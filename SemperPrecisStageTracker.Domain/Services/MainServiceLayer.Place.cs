@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using ZenProgramming.Chakra.Core.Entities;
 
 namespace SemperPrecisStageTracker.Domain.Services;
 
@@ -141,7 +140,7 @@ public partial class MainServiceLayer
 
         IList<UserPermission> newPermissions = new List<UserPermission>();
 
-        var userPermissions = await authenticationService.GetUserPermissionById(userId);
+        var userPermissions = await authenticationService.GetUserPermissionByUserId(userId);
         var placeIds = userPermissions.EntityPermissions
                     .Where(x =>
                         !string.IsNullOrEmpty(x.EntityId) && x.Permissions.Contains(Permissions.EditPlace))

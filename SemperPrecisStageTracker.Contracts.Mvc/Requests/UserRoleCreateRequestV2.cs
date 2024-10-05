@@ -4,6 +4,11 @@ using SemperPrecisStageTracker.Contracts.Requests;
 using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts.Mvc.Requests;
+public class PermissionOnUserRequestV2 : BaseRequestId
+{
+    [FromRoute]
+    public bool AppliedOnUserOnly { get; set; }
+}
 public class UserRoleCreateRequestV2 : BaseRequestId
 {
     [Required]

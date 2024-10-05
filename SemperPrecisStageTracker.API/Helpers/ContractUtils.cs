@@ -104,7 +104,8 @@ namespace SemperPrecisStageTracker.API.Helpers
                 To = entity.To,
                 Day = entity.Day,
                 IsAccepted = entity.IsAccepted,
-                IsBayBlocked = entity.IsBayBlocked
+                IsBayBlocked = entity.IsBayBlocked,
+                Demands = entity.Demands
             };
         }
 

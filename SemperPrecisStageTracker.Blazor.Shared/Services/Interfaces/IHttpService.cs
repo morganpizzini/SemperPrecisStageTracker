@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using SemperPrecisStageTracker.Blazor.Services.Models;
 
 namespace SemperPrecisStageTracker.Blazor.Services
