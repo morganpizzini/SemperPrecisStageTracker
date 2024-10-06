@@ -17,12 +17,6 @@ namespace SemperPrecisStageTracker.API.Controllers
     [Obsolete]
     public class PermissionController : ApiControllerBase
     {
-        [HttpPost]
-        [Route("FetchPermissions")]
-        [ProducesResponseType(typeof(PermissionContract), 200)]
-        public IActionResult FetchPermissions() =>
-            Ok((AuthorizationLayer.FetchPermission()).As(ContractUtils.GenerateContract));
-
         /// <summary>
         /// Fetch list of all associations
         /// </summary>
@@ -143,16 +137,11 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("CreatePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
         public async Task<IActionResult> CreatePermissionOnRole([FromBody]RolePermissionCreateRequest request)
         {
             //Recupero l'elemento dal business layer
-            var permission = AuthorizationLayer.GetPermission(request.PermissionId);
+            var permission = request.PermissionId.CastIntoPermission();
 
-            if (permission == null)
-            {
-                return NotFound($"Permission with {request.PermissionId} not found");
-            }
 
             //Recupero l'elemento dal business layer
             var role = AuthorizationLayer.GetRole(request.RoleId);
@@ -164,7 +153,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             
             var entity = new PermissionRole()
             {
-                PermissionId = permission.Id,
+                PermissionId = (int)permission,
                 RoleId = role.Id
             };
             //Invocazione del service layer
@@ -176,7 +165,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var permissions = AuthorizationLayer.FetchPermissionsOnRole(role.Id);
 
             //Return contract
-            return Ok(permissions.As(ContractUtils.GenerateContract));
+            return Ok();
         }
 
         /// <summary>
@@ -187,7 +176,6 @@ namespace SemperPrecisStageTracker.API.Controllers
         [HttpPost]
         [Route("DeletePermissionOnRole")]
         [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-        [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
         public async Task<IActionResult> DeletePermissionOnRole([FromBody]RolePermissionRequest request)
         {
             //Recupero l'elemento dal business layer
@@ -207,7 +195,7 @@ namespace SemperPrecisStageTracker.API.Controllers
             var permissions = AuthorizationLayer.FetchPermissionsOnRole(entity.RoleId);
 
             //Return contract
-            return Ok(permissions.As(ContractUtils.GenerateContract));
+            return Ok();
         }
 
         /// <summary>

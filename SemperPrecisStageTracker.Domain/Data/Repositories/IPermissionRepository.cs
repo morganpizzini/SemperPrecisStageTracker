@@ -4,12 +4,6 @@ using ZenProgramming.Chakra.Core.Data.Repositories;
 namespace SemperPrecisStageTracker.Domain.Data.Repositories
 {
     /// <summary>
-    /// Repository interface for "Permission"
-    /// </summary>
-    public interface IPermissionRepository : IRepository<Permission>
-    {
-    }
-    /// <summary>
     /// Repository interface for "PermissionRole"
     /// </summary>
     public interface IPermissionsRoleRepository : IRepository<PermissionRole>

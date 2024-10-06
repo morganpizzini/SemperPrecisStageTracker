@@ -318,13 +318,6 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
-            modelBuilder.Entity<Permission>().ToTable("ShooterPermissions")
-                .HasKey(f => f.Id);
-
-            modelBuilder.Entity<Permission>().Property(f => f.Id)
-                .ValueGeneratedOnAdd();
-
-            
             modelBuilder.Entity<PermissionRole>()
                 .HasKey(f => f.Id);
             modelBuilder.Entity<PermissionRole>()
@@ -475,10 +468,6 @@ namespace SemperPrecisStageTracker.EF.Context
         /// </summary>
         public DbSet<Contact> Contacts { get; set; }
 
-        /// <summary>
-        /// List of entity permission
-        /// </summary>
-        public DbSet<Permission> Permissions { get; set; }
         
         /// <summary>
         /// List of entity permission

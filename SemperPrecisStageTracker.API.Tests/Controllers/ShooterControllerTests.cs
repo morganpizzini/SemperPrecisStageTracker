@@ -98,7 +98,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldCreateShooterBeOkAndNotCreatePermissions()
         {
             //Conteggio gli elementi prima della creazione
-            var countBefore = Scenario.Permissions.Count;
+            var countBefore = Scenario.UserPermissions.Count;
 
             //Composizione della request
             var request = new UserCreateRequest
@@ -114,7 +114,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var response = await Controller.CreateShooter(request);
 
             //Conteggio gli elementi dopo la creazione
-            var countAfter = Scenario.Permissions.Count;
+            var countAfter = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<UserContract>(response);
@@ -129,7 +129,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Users.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             //Composizione della request
             var request = new UserCreateRequest
@@ -146,7 +146,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Users.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -414,7 +414,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
         public async Task ShouldDeleteShooterBeOkAndDeletePermissions()
         {
             var permission =
-                Scenario.Permissions.FirstOrDefault(x => x.Name == nameof(Permissions.EditUser));
+                Scenario.UserPermissions.FirstOrDefault(x => x.PermissionId == (int)Permissions.EditUser);
 
             if (permission == null)
                 Assert.Inconclusive("Permissions not found");
@@ -437,9 +437,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             var parsed = ParseExpectedOk<UserContract>(response);
 
             //Conteggio gli elementi dopo la cancellazione
-            var countPermissionAfter = Scenario.Permissions.Count(x =>
+            var countPermissionAfter = Scenario.UserPermissions.Count(x =>
                 //x.EntityId == permission.EntityId &&
-                x.Name == nameof(Permissions.EditUser));
+                x.PermissionId == (int)Permissions.EditUser);
 
             Assert.IsTrue(
                 parsed.Data.UserId == existing.Id);

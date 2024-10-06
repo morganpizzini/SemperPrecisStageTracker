@@ -1,4 +1,5 @@
 ﻿@page "/users/{id}"
+@using SemperPrecisStageTracker.Shared.Permissions
 @inherits SemperPrecisBaseComponent<UserContract>
 @inject NavigationManager UriHelper
 <PageTitle>Users</PageTitle>
@@ -13,8 +14,6 @@
         <Paragraph>
             This is the personal data of the user.
         </Paragraph>
-    </CardBody>
-    <CardBody>
         <Row>
             <Column>
                 <Field>
@@ -114,45 +113,43 @@
         </Div>
     </CardBody>
 </Card>
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>Actions</CardTitle>
-    </CardHeader>
-    <CardBody>
-        <Paragraph>
-            User settings action
-        </Paragraph>
-    </CardBody>
-    <CardBody>
-        <Button Color="Color.Warning" Clicked="dialogRef.Show">Reset password</Button>
-    </CardBody>
-</Card>
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>User roles</CardTitle>
-    </CardHeader>
-    <CardBody>
-        <Paragraph>
-            Roles assigned to user
-        </Paragraph>
-    </CardBody>
-    <CardBody>
-        <DataGrid TItem="RoleContract"
-                  Data="userRoles"
-                  Sortable="false"
-                  Responsive
-                  Editable
-                  ShowPager
-                   ShowPageSizes="false"
-                   EditMode="DataGridEditMode.Form"
-                   CommandMode="DataGridCommandMode.ButtonRow"
-                   @bind-SelectedRow="@selectedEntity"
-                   RowInserting="@OnRowInsertingAsync"
-                   ShowCaptions="false">
-             <DataGridColumns>
-                 <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
-                    <SaveCommandTemplate>
-                        <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+@if (!string.IsNullOrEmpty(Model.UserId))
+{
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>Actions</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Paragraph>
+                User settings action
+            </Paragraph>
+            <Button Color="Color.Warning" Clicked="dialogRef.Show">Reset password</Button>
+        </CardBody>
+    </Card>
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>User roles</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Paragraph>
+                Roles assigned to user
+            </Paragraph>
+            <DataGrid TItem="RoleContract"
+                      Data="userRoles"
+                      Sortable="false"
+                      Responsive
+                      Editable
+                      ShowPager
+                      ShowPageSizes="false"
+                      EditMode="DataGridEditMode.Form"
+                      CommandMode="DataGridCommandMode.ButtonRow"
+                      @bind-SelectedRow="@selectedEntity"
+                      RowInserting="@OnRowInsertingAsync"
+                      ShowCaptions="false">
+                <DataGridColumns>
+                    <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
+                        <SaveCommandTemplate>
+                            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
                         </SaveCommandTemplate>
                         <CancelCommandTemplate>
                             <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
@@ -160,95 +157,104 @@
                     </DataGridCommandColumn>
                     <DataGridColumn Field="@nameof(RoleContract.RoleId)" Displayable="false" />
                     <DataGridColumn Field="@nameof(RoleContract.Name)" Caption="Name" Editable>
-                    <EditTemplate>
-                        <Select TValue="string" SelectedValueChanged="@(v => {
+                        <EditTemplate>
+                            <Select TValue="string" SelectedValueChanged="@(v => {
                                         context.CellValue = availableRoles.FirstOrDefault(x=>x.RoleId == v)?.Name ?? string.Empty;
                                         context.UpdateCell( nameof( RoleContract.RoleId ), v);
                                     })">
-                            <ChildContent>
-                                <SelectItem Value="@("")"></SelectItem>
-                                @foreach (var role in availableRoles)
-                                {
-                                    <SelectItem Value="@role.RoleId">@role.Name</SelectItem>
-                                }
-                            </ChildContent>
-                            <Feedback>
-                                <ValidationError>Select a role</ValidationError>
-                            </Feedback>
-                        </Select>
-                    </EditTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-            <ButtonRowTemplate>
-                <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-                <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Edit</Button>
-                <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeleteEntity(context)">Delete</Button>
-            </ButtonRowTemplate>
-        </DataGrid>
-    </CardBody>
-</Card>
-<Card Margin="Margin.Is4.OnY">
-    <CardHeader>
-        <CardTitle>User permissions</CardTitle>
-    </CardHeader>
-    <CardBody>
-        <Paragraph>
-            Permissions assigned to user
-        </Paragraph>
-    </CardBody>
-    <CardBody>
-        <DataGrid TItem="EntityPermissionContract"
-                  Data="userPermissions.EntityPermissions"
-                  Sortable="false"
-                  Responsive
-                  Editable
-                  ShowPager
-                  ShowPageSizes="false"
-                  EditMode="DataGridEditMode.Form"
-                  CommandMode="DataGridCommandMode.ButtonRow"
-                  @bind-SelectedRow="@selectedPermissionEntity"
-                  RowInserting="@OnPermissionRowInsertingAsync"
-                  ShowCaptions="false">
-            <DataGridColumns>
-                <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
-                    <SaveCommandTemplate>
-                        <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                    </SaveCommandTemplate>
-                    <CancelCommandTemplate>
-                        <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                    </CancelCommandTemplate>
-                </DataGridCommandColumn>
-                <DataGridColumn Field="@nameof(RoleContract.RoleId)" Displayable="false" />
-                <DataGridColumn Field="@nameof(RoleContract.Name)" Caption="Name" Editable>
-                    <EditTemplate>
-                        <Select TValue="string" SelectedValueChanged="@(v => {
-                                        context.CellValue = availableRoles.FirstOrDefault(x=>x.RoleId == v)?.Name ?? string.Empty;
-                                        context.UpdateCell( nameof( RoleContract.RoleId ), v);
+                                <ChildContent>
+                                    <SelectItem Value="@("")"></SelectItem>
+                                    @foreach (var role in availableRoles)
+                                    {
+                                        <SelectItem Value="@role.RoleId">@role.Name</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>Select a role</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </EditTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <ButtonRowTemplate>
+                    <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+                    <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Edit</Button>
+                    <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeleteEntity(context)">Delete</Button>
+                </ButtonRowTemplate>
+            </DataGrid>
+        </CardBody>
+    </Card>
+    <Card Margin="Margin.Is4.OnY">
+        <CardHeader>
+            <CardTitle>User permissions</CardTitle>
+        </CardHeader>
+        <CardBody>
+            <Paragraph>
+                Permissions assigned to user
+            </Paragraph>
+            <DataGrid TItem="EntityPermissionContract"
+                      Data="userPermissions.EntityPermissions"
+                      Sortable="false"
+                      Responsive
+                      Editable
+                      ShowPager
+                      ShowPageSizes="false"
+                      EditMode="DataGridEditMode.Form"
+                      CommandMode="DataGridCommandMode.ButtonRow"
+                      @bind-SelectedRow="@selectedPermissionEntity"
+                      RowInserting="@OnPermissionRowInsertingAsync"
+                      ShowCaptions="false">
+                <DataGridColumns>
+                    <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
+                        <SaveCommandTemplate>
+                            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                        </SaveCommandTemplate>
+                        <CancelCommandTemplate>
+                            <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                        </CancelCommandTemplate>
+                    </DataGridCommandColumn>
+                    <DataGridColumn Field="@nameof(EntityPermissionContract.EntityId)" Caption="EntityId" Editable/>
+                    <DataGridColumn Field="@nameof(EntityPermissionContract.Permissions)" Caption="Permissions" Editable>
+                        <DisplayTemplate>
+                            @{
+                                var permissions = (context as EntityPermissionContract).Permissions;
+                                <Div>
+                                    @foreach (var permission in permissions)
+                                    {
+                                        <Badge Color="Color.Secondary" class="me-2">@permission.ToDescriptionString()</Badge>
+                                    }
+                                </Div>
+                            }
+                        </DisplayTemplate>
+                        <EditTemplate>
+                            <Select TValue="int" SelectedValueChanged="@(v => {
+                                        //var selected =  PermissionsEnumViewModel.List.FirstOrDefault(x=>x.IntValue == v);
+                                        //if(selected == null) return;
+                                        context.CellValue = new List<Permissions>{v.CastIntoPermission()};
                                     })">
-                            <ChildContent>
-                                <SelectItem Value="@("")"></SelectItem>
-                                @foreach (var role in availableRoles)
-                                {
-                                    <SelectItem Value="@role.RoleId">@role.Name</SelectItem>
-                                }
-                            </ChildContent>
-                            <Feedback>
-                                <ValidationError>Select a role</ValidationError>
-                            </Feedback>
-                        </Select>
-                    </EditTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-            <ButtonRowTemplate>
-                <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-                <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Edit</Button>
-                <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="()=>DeletePermissionEntity(context)">Delete</Button>
-            </ButtonRowTemplate>
-        </DataGrid>
-    </CardBody>
-</Card>
-<DialogComponent @ref="dialogRef" OnCallBack="CallBackResetPassword" Message="If approve, the password will be reset" Title="Reset user password"></DialogComponent>
-
+                                <ChildContent>
+                                    <SelectItem Value="@(0)" Disabled="true"></SelectItem>
+                                    @foreach (var permission in PermissionsEnumViewModel.List)
+                                    {
+                                        <SelectItem Value="@permission.IntValue">@permission.StringValue</SelectItem>
+                                    }
+                                </ChildContent>
+                                <Feedback>
+                                    <ValidationError>Select a permission</ValidationError>
+                                </Feedback>
+                            </Select>
+                        </EditTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <ButtonRowTemplate>
+                    <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+                    <Button Color="Color.Danger" Disabled="(selectedPermissionEntity is null)" Clicked="()=>DeletePermissionEntity(context)">Delete</Button>
+                </ButtonRowTemplate>
+            </DataGrid>
+        </CardBody>
+    </Card>
+    <DialogComponent @ref="dialogRef" OnCallBack="CallBackResetPassword" Message="If approve, the password will be reset" Title="Reset user password"></DialogComponent>
+}
 @code {
     private DialogComponent dialogRef;
     private UserPermissionContract userPermissions = new UserPermissionContract();

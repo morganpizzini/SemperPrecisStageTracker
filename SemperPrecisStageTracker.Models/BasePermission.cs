@@ -2,19 +2,9 @@
 
 namespace SemperPrecisStageTracker.Models
 {
-    /// <summary>
-    /// edit-match
-    /// edit-shooter
-    /// view-shooter
-    /// </summary>
-    public class Permission : SemperPrecisEntity
-    {
-        public string Name { get; set; }
-    }
-
     public class PermissionRole : SemperPrecisEntity
     {
-        public string PermissionId { get; set; } = string.Empty;
+        public int PermissionId { get; set; }
         public string RoleId { get; set; } = string.Empty;
     }
 
@@ -47,7 +37,7 @@ namespace SemperPrecisStageTracker.Models
     public class UserPermission : SemperPrecisEntity
     {
         public string UserId { get; set; } = string.Empty;
-        public string PermissionId { get; set; } = string.Empty;
+        public int PermissionId { get; set; }
         public string EntityId { get; set; } = string.Empty;
     }
     

@@ -1,4 +1,5 @@
 ﻿@page "/roles/{id}"
+@using SemperPrecisStageTracker.Shared.Permissions
 @inherits SemperPrecisBaseComponent<RoleContract>
 @inject NavigationManager UriHelper
 <PageTitle>Roles</PageTitle>
@@ -13,8 +14,6 @@
         <Paragraph>
             This is the detail for the role
         </Paragraph>
-    </CardBody>
-    <CardBody>
         <Row>
             <Column>
                 <Field>
@@ -27,40 +26,42 @@
                  </Field>
              </Column>
              <Column>
-                 <Label>Permissions</Label>
-                 <DataGrid TItem="PermissionContract"
-                           Data="Model.Permissions"
-                           Sortable="false"
-                          Responsive
-                          Editable
-                          ShowPager
-                           ShowPageSizes="false"
-                           EditMode="DataGridEditMode.Form"
-                           CommandMode="DataGridCommandMode.ButtonRow"
-                           @bind-SelectedRow="@selectedEntity"
-                           RowInserting="@OnRowInsertingAsync"
-                           ShowCaptions="false">
+                <Label>Permissions</Label>
+                <DataGrid TItem="PermissionsEnumViewModel"
+                            Data="currentPermissionViewModel"
+                            Sortable="false"
+                            Responsive
+                            Editable
+                            ShowPager
+                            ShowPageSizes="false"
+                            EditMode="DataGridEditMode.Form"
+                            CommandMode="DataGridCommandMode.ButtonRow"
+                            @bind-SelectedRow="@selectedEntity"
+                            RowInserting="@OnRowInsertingAsync"
+                            ShowCaptions="false">
                      <DataGridColumns>
                          <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
                             <SaveCommandTemplate>
                                 <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                                </SaveCommandTemplate>
-                                <CancelCommandTemplate>
-                                    <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                                </CancelCommandTemplate>
-                            </DataGridCommandColumn>
-                            <DataGridColumn Field="@nameof(PermissionContract.PermissionId)" Displayable="false"/>
-                            <DataGridColumn Field="@nameof(PermissionContract.Name)" Caption="Name" Editable>
+                            </SaveCommandTemplate>
+                            <CancelCommandTemplate>
+                                <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
+                            </CancelCommandTemplate>
+                        </DataGridCommandColumn>
+                        <DataGridColumn Field="@(nameof(PermissionsEnumViewModel.IntValue))" Displayable="false"></DataGridColumn>
+                        <DataGridColumn Caption="Name" Field="@(nameof(PermissionsEnumViewModel.StringValue))" Editable>
                             <EditTemplate>
-                                <Select TValue="string" SelectedValueChanged="@(v => {
-                                        context.CellValue = availablePermissions.FirstOrDefault(x=>x.PermissionId == v)?.Name ?? string.Empty;
-                                        context.UpdateCell( nameof( PermissionContract.PermissionId ), v);
+                                <Select TValue="int" SelectedValueChanged="@(v => {
+                                        var selected =  PermissionsEnumViewModel.List.FirstOrDefault(x=>x.IntValue == v);
+                                        if(selected == null) return;
+                                        context.UpdateCell(nameof(PermissionsEnumViewModel.IntValue), v);
+                                        context.CellValue = selected.StringValue;
                                     })">
                                     <ChildContent>
-                                        <SelectItem Value="@("")"></SelectItem>
-                                        @foreach (var permission in availablePermissions)
+                                        <SelectItem Value="@(0)" Disabled="true"></SelectItem>
+                                        @foreach (var permission in PermissionsEnumViewModel.List)
                                         {
-                                            <SelectItem Value="@permission.PermissionId">@permission.Name</SelectItem>
+                                            <SelectItem Value="@permission.IntValue">@permission.StringValue</SelectItem>
                                         }
                                     </ChildContent>
                                     <Feedback>
@@ -81,13 +82,13 @@
 </Card>
 
 @code {
-    private IList<PermissionContract> availablePermissions;
-    private PermissionContract selectedEntity;
+    private PermissionsEnumViewModel selectedEntity;
+    private IList<PermissionsEnumViewModel> currentPermissionViewModel = new List<PermissionsEnumViewModel>();
 
     override protected async Task LoadModel()
     {
         Model = (await Call<RoleContract>(RequestType.Get, $"api/Roles/{Id}")).Data;
-        availablePermissions = (await Call<List<PermissionContract>>(RequestType.Get, $"api/Permissions")).Data;
+        currentPermissionViewModel = Model.Permissions.Select(p => new PermissionsEnumViewModel((int)p,p.ToDescriptionString())).ToList();
     }
 
     private void GoBackClick()
@@ -95,24 +96,24 @@
         UriHelper.NavigateTo("/roles");
     }
 
-    protected async Task OnRowInsertingAsync(CancellableRowChange<PermissionContract, Dictionary<string, object>> e)
+    protected async Task OnRowInsertingAsync(CancellableRowChange<PermissionsEnumViewModel, Dictionary<string, object>> e)
     {
-        var currentEntity = availablePermissions.FirstOrDefault(x => x.Name == e.NewItem.Name);
-        if(currentEntity is null)
+        var currentEntity = PermissionsEnumViewModel.List.FirstOrDefault(x => x.StringValue == e.NewItem.StringValue);
+        if (currentEntity is null)
         {
             e.Cancel = true;
             return;
         }
-
-        if ((await Call<PermissionContract>(RequestType.Post, $"api/permissions/{currentEntity.PermissionId}/role/{Model.RoleId}", null, null, "Permission added correctly")).Errors.Any())
+        if ((await Call<object>(RequestType.Post, $"api/permissions/{currentEntity.IntValue}/role/{Model.RoleId}", null, null, "Permission added correctly")).Errors.Any())
         {
             e.Cancel = true;
+            return;
         }
     }
 
-    private async Task DeleteEntity(ButtonRowContext<PermissionContract> context)
+    private async Task DeleteEntity(ButtonRowContext<PermissionsEnumViewModel> context)
     {
-        if (!(await Call<object>(RequestType.Delete, $"api/permissions/{selectedEntity.PermissionId}/role/{Model.RoleId}", null, null, "Permission deleted correctly")).Errors.Any())
+        if (!(await Call<object>(RequestType.Delete, $"api/permissions/{selectedEntity.IntValue}/role/{Model.RoleId}", null, null, "Permission deleted correctly")).Errors.Any())
         {
             await context.DeleteCommand.Clicked.InvokeAsync();
         }

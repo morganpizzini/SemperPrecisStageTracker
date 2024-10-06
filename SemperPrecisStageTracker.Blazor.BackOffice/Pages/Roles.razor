@@ -1,4 +1,5 @@
 ﻿@page "/roles"
+@using SemperPrecisStageTracker.Shared.Permissions
 @inherits SemperPrecisBaseComponent
 @inject NavigationManager UriHelper
 <PageTitle>Roles</PageTitle>
@@ -14,10 +15,10 @@
           CommandMode="DataGridCommandMode.ButtonRow"
           @bind-SelectedRow="@selectedEntity"
           @bind-PageSize="@pageSize"
-           RowUpdated="@OnRowUpdatedAsync"
-           RowInserting="@OnRowInsertingAsync"
+          RowUpdated="@OnRowUpdatedAsync"
+          RowInserting="@OnRowInsertingAsync"
           ShowPager
-           DetailRowTrigger="@((e) => e.Item.Permissions?.Count > 0 && e.Item.RoleId == selectedEntity?.RoleId)"
+          DetailRowTrigger="@((e) => e.Item.Permissions?.Count > 0 && e.Item.RoleId == selectedEntity?.RoleId)"
           ShowPageSizes>
     <DataGridColumns>
         <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
@@ -29,51 +30,51 @@
             </CancelCommandTemplate>
         </DataGridCommandColumn>
         <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof( RoleContract.RoleId)" Caption="#" Width="60px" />
-        <DataGridColumn Field="@nameof( RoleContract.Name)" Caption="Name" Editable/>
+        <DataGridColumn Field="@nameof( RoleContract.Name)" Caption="Name" Editable />
         <DataGridColumn Field="@nameof(RoleContract.Description)" Caption="Description" Editable />
-         <DataGridNumericColumn Field="@nameof(RoleContract.Permissions)" Caption="Permission">
+        <DataGridNumericColumn Field="@nameof(RoleContract.Permissions)" Caption="Permissions">
             <DisplayTemplate>
                 @((context as RoleContract)?.Permissions?.Count ?? 0)
             </DisplayTemplate>
         </DataGridNumericColumn>
 
-     </DataGridColumns>
-     <DetailRowTemplate>
-         @{
+    </DataGridColumns>
+    <DetailRowTemplate>
+        @{
             var permissions = (context as RoleContract).Permissions;
-            <Label>Permissions</Label>
-            <DataGrid TItem="PermissionContract"
-                      Data="permissions"
-                      Sortable="false"
-                      ShowCaptions="false">
-                <DataGridColumn TItem="PermissionContract" Field="@nameof(PermissionContract.Name)" Caption="Name" />
-            </DataGrid>
+            <Label>Permissions:</Label>
+            <Div>
+            @foreach(var permission in permissions)
+            {
+                <Badge Color="Color.Secondary" class="me-2">@permission.ToDescriptionString()</Badge>
+            }
+            </Div>
         }
     </DetailRowTemplate>
-     <ButtonRowTemplate>
-         <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-         <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="context.EditCommand.Clicked">Edit</Button>
-         <Button Color="Color.Secondary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Manage</Button>
-         <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="modalRef.Show">Delete</Button>
-     </ButtonRowTemplate>
- </DataGrid>
- <Modal @ref="modalRef">
-     <ModalContent Centered>
+    <ButtonRowTemplate>
+        <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
+        <Button Color="Color.Primary" Disabled="(selectedEntity is null)" Clicked="context.EditCommand.Clicked">Edit</Button>
+        <Button Color="Color.Secondary" Disabled="(selectedEntity is null)" Clicked="(_) => GoToDetail(selectedEntity.RoleId)">Manage</Button>
+        <Button Color="Color.Danger" Disabled="(selectedEntity is null)" Clicked="modalRef.Show">Delete</Button>
+    </ButtonRowTemplate>
+</DataGrid>
+<Modal @ref="modalRef">
+    <ModalContent Centered>
         <ModalHeader>
             <ModalTitle>Delete role</ModalTitle>
             <CloseButton />
         </ModalHeader>
-        @if(selectedEntity is not null)
+        @if (selectedEntity is not null)
         {
             <ModalBody>
-                    <Field>
-                        <FieldLabel>Name</FieldLabel>
-                        <TextEdit Text="@selectedEntity.Name" Disabled />
-                     </Field>
-                    <Field>
-                        <FieldLabel>Username</FieldLabel>
-                        <TextEdit Text="@selectedEntity.Description" Disabled />
-                     </Field>
+                <Field>
+                    <FieldLabel>Name</FieldLabel>
+                    <TextEdit Text="@selectedEntity.Name" Disabled />
+                </Field>
+                <Field>
+                    <FieldLabel>Username</FieldLabel>
+                    <TextEdit Text="@selectedEntity.Description" Disabled />
+                </Field>
             </ModalBody>
             <ModalFooter>
                 <Button Color="Color.Secondary" Clicked="@modalRef.Hide">Close</Button>
@@ -92,9 +93,9 @@
 
     private RoleContract selectedEntity;
 
-    private Task<BaseResponse<List<RoleContract>>> LoadData() => 
+    private Task<BaseResponse<List<RoleContract>>> LoadData() =>
                     Call<List<RoleContract>>(RequestType.Get, "api/Roles", new Dictionary<string, string>
-                                {{ "take", pageSize.ToString() }, {"skip", ((pagePosition - 1) * pageSize).ToString() } });
+                                    {{ "take", pageSize.ToString() }, {"skip", ((pagePosition - 1) * pageSize).ToString() } });
 
     /// <summary>
     /// Standard pattern for handling Datagrid data on demand according to pagination.
@@ -116,7 +117,7 @@
             }
         }
     }
-    protected Task OnRowUpdatedAsync(SavedRowItem<RoleContract, Dictionary<string, object>> e)=>
+    protected Task OnRowUpdatedAsync(SavedRowItem<RoleContract, Dictionary<string, object>> e) =>
         Call(RequestType.Put, $"api/Roles/{e.OldItem.RoleId}", null, new RoleUpdateRequestV2
             {
                 Name = e.NewItem.Name,

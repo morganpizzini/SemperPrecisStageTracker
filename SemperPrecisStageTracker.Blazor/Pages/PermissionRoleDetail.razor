@@ -32,14 +32,14 @@
     public string Id { get; set; } = string.Empty;
 
     RoleContract role = new();
-    IList<PermissionContract> permissions= new List<PermissionContract>();
+    IList<Permissions> permissions = new List<Permissions>();
     IList<UserContract> users= new List<UserContract>();
 
 
     protected override async Task OnInitializedAsync()
     {
         role = await Post<RoleContract>("api/Permission/GetRole", new RoleRequest() { RoleId = Id });
-        permissions = await Post<List<PermissionContract>>("api/Permission/FetchPermissions");
+        permissions = Enum.GetValues(typeof(Permissions)).Cast<Permissions>().ToList();
         users = await Post<List<UserContract>>("api/Shooter/FetchAllShooters");
         await base.OnInitializedAsync();
     }
@@ -47,18 +47,18 @@
     async Task CreatePermission(RolePermissionCreateRequest request)
     {
 
-        var response = await Post<List<PermissionContract>>("/api/Permission/CreatePermissionOnRole", request);
+        var response = await Post<object>("/api/Permission/CreatePermissionOnRole", request);
         if (response == null)
             return;
-        role.Permissions = response;
+        // role.Permissions = response;
     }
 
     private async Task DeletePermission(RolePermissionRequest request)
     {
-        var response = await Post<List<PermissionContract>>("/api/Permission/DeletePermissionOnRole", request);
+        var response = await Post<object>("/api/Permission/DeletePermissionOnRole", request);
         if (response == null)
             return;
-        role.Permissions = response;
+        // role.Permissions = response;
     }
 
     async Task CreateUser(UserRoleCreateRequest request)

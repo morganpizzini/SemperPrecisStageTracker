@@ -117,197 +117,6 @@ namespace SemperPrecisStageTracker.Domain.Services
                 _userRepository.Save(user);
             }
 
-            // create permissions
-
-
-            var managePlacesPerm = authenticationService.GetPermissionByName(Permissions.ManagePlaces);
-            if (managePlacesPerm == null)
-            {
-                managePlacesPerm = new Permission()
-                {
-                    Name = Permissions.ManagePlaces.ToDescriptionString()
-                };
-                authenticationService.SavePermission(managePlacesPerm);
-            }
-
-            var manageMatchesPerm = authenticationService.GetPermissionByName(Permissions.ManageMatches);
-            if (manageMatchesPerm == null)
-            {
-                manageMatchesPerm = new Permission()
-                {
-                    Name = Permissions.ManageMatches.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageMatchesPerm);
-            }
-
-            var manageAssociationsPerm = authenticationService.GetPermissionByName(Permissions.ManageAssociations);
-            if (manageAssociationsPerm == null)
-            {
-                manageAssociationsPerm = new Permission()
-                {
-                    Name = Permissions.ManageAssociations.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageAssociationsPerm);
-            }
-
-            var manageShootersPerm = authenticationService.GetPermissionByName(Permissions.ManageUsers);
-            if (manageShootersPerm == null)
-            {
-                manageShootersPerm = new Permission()
-                {
-                    Name = Permissions.ManageUsers.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageShootersPerm);
-            }
-            var teamDeletePerm = authenticationService.GetPermissionByName(Permissions.TeamDelete);
-            if (teamDeletePerm == null)
-            {
-                teamDeletePerm = new Permission()
-                {
-                    Name = Permissions.TeamDelete.ToDescriptionString()
-                };
-                authenticationService.SavePermission(teamDeletePerm);
-            }
-            var placeDeletePerm = authenticationService.GetPermissionByName(Permissions.PlaceDelete);
-            if (placeDeletePerm == null)
-            {
-                placeDeletePerm = new Permission()
-                {
-                    Name = Permissions.PlaceDelete.ToDescriptionString()
-                };
-                authenticationService.SavePermission(placeDeletePerm);
-            }
-
-            var manageTeamsPerm = authenticationService.GetPermissionByName(Permissions.ManageTeams);
-            if (manageTeamsPerm == null)
-            {
-                manageTeamsPerm = new Permission()
-                {
-                    Name = Permissions.ManageTeams.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageTeamsPerm);
-            }
-
-            var managePermissionPerm = authenticationService.GetPermissionByName(Permissions.ManagePermissions);
-            if (managePermissionPerm == null)
-            {
-                managePermissionPerm = new Permission()
-                {
-                    Name = Permissions.ManagePermissions.ToDescriptionString()
-                };
-                authenticationService.SavePermission(managePermissionPerm);
-            }
-
-            var manageStagesPerm = authenticationService.GetPermissionByName(Permissions.ManageStages);
-            if (manageStagesPerm == null)
-            {
-                manageStagesPerm = new Permission()
-                {
-                    Name = Permissions.ManageStages.ToDescriptionString()
-                };
-                authenticationService.SavePermission(manageStagesPerm);
-            }
-            var teamEditPerm = authenticationService.GetPermissionByName(Permissions.EditTeam);
-            if (teamEditPerm == null)
-            {
-                teamEditPerm = new Permission()
-                {
-                    Name = Permissions.EditTeam.ToDescriptionString()
-                };
-                authenticationService.SavePermission(teamEditPerm);
-            }
-            var associationEditPerm = authenticationService.GetPermissionByName(Permissions.AssociationEdit);
-            if (associationEditPerm == null)
-            {
-                associationEditPerm = new Permission()
-                {
-                    Name = Permissions.AssociationEdit.ToDescriptionString()
-                };
-                authenticationService.SavePermission(teamEditPerm);
-            }
-            var teamEditShootersPerm = authenticationService.GetPermissionByName(Permissions.TeamEditShooters);
-            if (teamEditShootersPerm == null)
-            {
-                teamEditShootersPerm = new Permission()
-                {
-                    Name = Permissions.TeamEditShooters.ToDescriptionString()
-                };
-                authenticationService.SavePermission(teamEditShootersPerm);
-            }
-            var teamEditPaymentPerm = authenticationService.GetPermissionByName(Permissions.TeamEditPayment);
-            if (teamEditPaymentPerm == null)
-            {
-                teamEditPaymentPerm = new Permission()
-                {
-                    Name = Permissions.TeamEditPayment.ToDescriptionString()
-                };
-                authenticationService.SavePermission(teamEditPaymentPerm);
-            }
-            var matchManageGroupsPerm = authenticationService.GetPermissionByName(Permissions.MatchManageGroups);
-            if (matchManageGroupsPerm == null)
-            {
-                matchManageGroupsPerm = new Permission()
-                {
-                    Name = Permissions.MatchManageGroups.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchManageGroupsPerm);
-            }
-            var matchManageStageSOPerm = authenticationService.GetPermissionByName(Permissions.MatchManageStageSO);
-            if (matchManageStageSOPerm == null)
-            {
-                matchManageStageSOPerm = new Permission()
-                {
-                    Name = Permissions.MatchManageStageSO.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchManageStageSOPerm);
-            }
-            var matchInsertScorePerm = authenticationService.GetPermissionByName(Permissions.MatchInsertScore);
-            if (matchInsertScorePerm == null)
-            {
-                matchInsertScorePerm = new Permission()
-                {
-                    Name = Permissions.MatchInsertScore.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchInsertScorePerm);
-            }
-            var matchManageMDPerm = authenticationService.GetPermissionByName(Permissions.MatchManageMD);
-            if (matchManageMDPerm == null)
-            {
-                matchManageMDPerm = new Permission()
-                {
-                    Name = Permissions.MatchManageMD.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchManageMDPerm);
-            }
-            var matchManageStagesPerm = authenticationService.GetPermissionByName(Permissions.MatchManageStages);
-            if (matchManageStagesPerm == null)
-            {
-                matchManageStagesPerm = new Permission()
-                {
-                    Name = Permissions.MatchManageStages.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchManageStagesPerm);
-            }
-            var matchHandlingPerm = authenticationService.GetPermissionByName(Permissions.MatchHandling);
-            if (matchHandlingPerm == null)
-            {
-                matchHandlingPerm = new Permission()
-                {
-                    Name = Permissions.MatchHandling.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchHandlingPerm);
-            }
-
-            var matchDeletePerm = authenticationService.GetPermissionByName(Permissions.MatchDelete);
-            if (matchDeletePerm == null)
-            {
-                matchDeletePerm = new Permission()
-                {
-                    Name = Permissions.MatchDelete.ToDescriptionString()
-                };
-                authenticationService.SavePermission(matchDeletePerm);
-            }
-
             // create admin role
             var role = authenticationService.GetRoleByName(KnownRoles.Admin);
             if (role == null)
@@ -388,200 +197,190 @@ namespace SemperPrecisStageTracker.Domain.Services
 
             // attach permissions to admin role
 
-            var rolePermission = authenticationService.GetPermissionRole(manageAssociationsPerm.Id, role.Id);
+            var rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManageAssociations, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageAssociationsPerm.Id
+                    PermissionId = (int)Permissions.ManageAssociations
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(managePlacesPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManagePlaces, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = managePlacesPerm.Id
+                    PermissionId = (int)Permissions.ManagePlaces
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(managePermissionPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManagePermissions, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = managePermissionPerm.Id
+                    PermissionId = (int)Permissions.ManagePermissions
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(manageMatchesPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManageMatches, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageMatchesPerm.Id
+                    PermissionId = (int)Permissions.ManageMatches
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(manageAssociationsPerm.Id, role.Id);
+
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManageUsers, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageAssociationsPerm.Id
+                    PermissionId = (int)Permissions.ManageUsers
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(manageShootersPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManageTeams, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageShootersPerm.Id
+                    PermissionId = (int)Permissions.ManageTeams
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(manageTeamsPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.ManageStages, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = role.Id,
-                    PermissionId = manageTeamsPerm.Id
+                    PermissionId = (int)Permissions.ManageStages
                 };
                 authenticationService.SavePermissionRole(rolePermission);
             }
 
-            rolePermission = authenticationService.GetPermissionRole(manageStagesPerm.Id, role.Id);
-            if (rolePermission == null)
-            {
-                rolePermission = new PermissionRole()
-                {
-                    RoleId = role.Id,
-                    PermissionId = manageStagesPerm.Id
-                };
-                authenticationService.SavePermissionRole(rolePermission);
-            }
-
-            rolePermission = authenticationService.GetPermissionRole(teamEditPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.EditTeam, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = teamHolder.Id,
-                    PermissionId = teamEditPerm.Id
+                    PermissionId = (int)Permissions.EditTeam
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(teamEditShootersPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.EditUser, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = teamHolder.Id,
-                    PermissionId = teamEditShootersPerm.Id
+                    PermissionId = (int)Permissions.EditUser
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(teamEditPaymentPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.TeamEditPayment, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = teamHolder.Id,
-                    PermissionId = teamEditPaymentPerm.Id
+                    PermissionId = (int)Permissions.TeamEditPayment
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(teamEditShootersPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.EditUser, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = teamSecretary.Id,
-                    PermissionId = teamEditShootersPerm.Id
+                    PermissionId = (int)Permissions.EditUser
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(teamEditPaymentPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.TeamEditPayment, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = teamContributor.Id,
-                    PermissionId = teamEditPaymentPerm.Id
+                    PermissionId = (int)Permissions.TeamEditPayment
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchManageGroupsPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchManageGroups, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchManageGroupsPerm.Id
+                    PermissionId = (int)Permissions.MatchManageGroups
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchManageStageSOPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchManageStageSO, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchManageStageSOPerm.Id
+                    PermissionId = (int)Permissions.MatchManageStageSO
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchInsertScorePerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchInsertScore, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchInsertScorePerm.Id
+                    PermissionId = (int)Permissions.MatchInsertScore
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchManageMDPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchManageMD, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchManageMDPerm.Id
+                    PermissionId = (int)Permissions.MatchManageMD
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchManageStagesPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchManageStages, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchManageStagesPerm.Id
+                    PermissionId = (int)Permissions.MatchManageStages
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchHandlingPerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchHandling, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchContributor.Id,
-                    PermissionId = matchHandlingPerm.Id
+                    PermissionId = (int)Permissions.MatchHandling
                 };
             }
-            rolePermission = authenticationService.GetPermissionRole(matchInsertScorePerm.Id, role.Id);
+            rolePermission = authenticationService.GetPermissionRole((int)Permissions.MatchInsertScore, role.Id);
             if (rolePermission == null)
             {
                 rolePermission = new PermissionRole()
                 {
                     RoleId = matchSO.Id,
-                    PermissionId = matchInsertScorePerm.Id
+                    PermissionId = (int)Permissions.MatchInsertScore
                 };
             }
             // add user to admin role
@@ -4784,13 +4583,13 @@ namespace SemperPrecisStageTracker.Domain.Services
                             break;
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = permission.ToDescriptionString(),
+                            PermissionId = (int)permission,
                             UserId = userId,
                             EntityId = entityId
                         });
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = Permissions.MatchDelete.ToDescriptionString(),
+                            PermissionId = (int)Permissions.MatchDelete,
                             UserId = userId,
                             EntityId = entityId
                         });
@@ -4801,13 +4600,13 @@ namespace SemperPrecisStageTracker.Domain.Services
                             break;
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = permission.ToDescriptionString(),
+                            PermissionId = (int)permission,
                             UserId = userId,
                             EntityId = entityId
                         });
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = Permissions.UserDelete.ToDescriptionString(),
+                            PermissionId = (int)Permissions.UserDelete,
                             UserId = userId,
                             EntityId = entityId
                         });
@@ -4817,13 +4616,13 @@ namespace SemperPrecisStageTracker.Domain.Services
                             break;
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = permission.ToDescriptionString(),
+                            PermissionId = (int)permission,
                             UserId = userId,
                             EntityId = entityId
                         });
                         newPermissions.Add(new UserPermission
                         {
-                            PermissionId = Permissions.AssociationDelete.ToDescriptionString(),
+                            PermissionId = (int)Permissions.AssociationDelete,
                             UserId = userId,
                             EntityId = entityId
                         });
@@ -4840,13 +4639,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             // convert permissionId to permission 
             var permissionIds = newPermissions.Select(permission => permission.PermissionId).ToList();
 
-            var existingPermissions = authenticationService.FetchPermissionByNames(permissionIds);
-
             foreach (var userPermission in newPermissions)
             {
-                var exi = existingPermissions.FirstOrDefault(x => x.Name == userPermission.PermissionId);
-                if (exi != null)
-                    userPermission.PermissionId = exi.Id;
+                userPermission.PermissionId = permissionIds.FirstOrDefault(x => x == userPermission.PermissionId);
             }
 
             return authenticationService.SaveUserPermissions(newPermissions);

@@ -202,7 +202,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 GetUserWithPermission(PermissionCtor.ManageMatches));
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -227,7 +227,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedOk<MatchContract>(response);
@@ -244,7 +244,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -268,7 +268,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -285,7 +285,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -310,7 +310,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -327,7 +327,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
 
@@ -350,7 +350,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);
@@ -368,7 +368,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi prima della creazione
             var countBefore = Scenario.Matches.Count;
-            var countBeforePermission = Scenario.Permissions.Count;
+            var countBeforePermission = Scenario.UserPermissions.Count;
 
             var existingAssociation = Scenario.Associations.FirstOrDefault();
             var existingPlace = Scenario.Places.FirstOrDefault();
@@ -392,7 +392,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
 
             //Conteggio gli elementi dopo la creazione
             var countAfter = Scenario.Matches.Count;
-            var countAfterPermission = Scenario.Permissions.Count;
+            var countAfterPermission = Scenario.UserPermissions.Count;
 
             //Parsing della risposta e assert
             var parsed = ParseExpectedBadRequest(response);

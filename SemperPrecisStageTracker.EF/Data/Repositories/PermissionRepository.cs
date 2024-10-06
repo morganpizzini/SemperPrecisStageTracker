@@ -7,14 +7,6 @@ using ZenProgramming.Chakra.Core.EntityFramework.Data.Repositories;
 
 namespace SemperPrecisStageTracker.EF.Data.Repositories
 {
-    [Repository]
-    public class PermissionRepository : EntityFrameworkRepositoryBase<Permission, SemperPrecisStageTrackerContext>, IPermissionRepository
-    {
-        public PermissionRepository(IDataSession dataSession)
-            : base(dataSession, c => c.Permissions)
-        {
-        }
-    }
     
     [Repository]
     public class PermissionsRoleRepository : EntityFrameworkRepositoryBase<PermissionRole, SemperPrecisStageTrackerContext>, IPermissionsRoleRepository

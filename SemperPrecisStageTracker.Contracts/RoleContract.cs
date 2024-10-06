@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SemperPrecisStageTracker.Shared.Permissions;
+using System.Collections.Generic;
 
 namespace SemperPrecisStageTracker.Contracts;
 
@@ -10,6 +11,6 @@ public class RoleContract
     public string PermissionsString => Permissions.Count > 0 ? string.Join(", ", Permissions) : string.Empty;
     public string UserString => Permissions.Count > 0 ? string.Join(", ", Permissions) : string.Empty;
 
-    public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
+    public IList<Permissions> Permissions { get; set; } = new List<Permissions>();
     public IList<UserRoleContract> UserRoles { get; set; } = new List<UserRoleContract>();
 }

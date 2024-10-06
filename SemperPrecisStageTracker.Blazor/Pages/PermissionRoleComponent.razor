@@ -47,12 +47,12 @@
                                 <Field Horizontal="true" JustifyContent="JustifyContent.End" class="mt-2">
                                     <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is2.OnDesktop">@L["Permission"]</FieldLabel>
                                     <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is10.OnDesktop">
-                                        <Select TValue="string" @bind-SelectedValue="@formModel.PermissionId">
+                                        <Select TValue="int" @bind-SelectedValue="@formModel.PermissionId">
                                             <ChildContent>
                                                 <SelectItem Value="@("")" Disabled></SelectItem>
-                                                @foreach (var entity in Permissions)
+                                                @foreach (var entity in permissions)
                                                 {
-                                                    <SelectItem Value="@entity.PermissionId">@entity.Name</SelectItem>
+                                                    <SelectItem Value="@entity">@entity</SelectItem>
                                                 }
                                             </ChildContent>
                                             <Feedback>
@@ -89,7 +89,7 @@
                                 {
                                     <Virtualize Items="@Role.Permissions" Context="entity">
                                         <TableRow>
-                                            <TableRowCell>@entity.Name</TableRowCell>
+                                            <TableRowCell>@entity</TableRowCell>
                                             <TableRowCell>
                                                 <Button class="me-2" Size="Size.Small" Color="Color.Danger" Clicked="@(() => DeletePermission(entity))"><Icon Name="IconName.Delete"/></Button>
                                             </TableRowCell>
@@ -225,13 +225,10 @@
             <Field>
                 <FieldLabel>@L["ConfirmDelete"]</FieldLabel>
             </Field>
-            @if (permissionToDelete != null)
-            {
-                <Field>
-                    <FieldLabel>@L["Name"]</FieldLabel>
-                    <Text>@permissionToDelete.Name</Text>
-                </Field>
-            }
+            <Field>
+                <FieldLabel>@L["Name"]</FieldLabel>
+                <Text>@permissionToDelete</Text>
+            </Field>
         </ModalBody>
         <ModalFooter>
             <Button Size="Size.Small" Color="Color.Secondary" Clicked="@(() => HideModalPermissionToDelete(false))">@L["Close"]</Button>
@@ -274,8 +271,7 @@
 
 @code {
 
-    [Parameter]
-    public IList<PermissionContract> Permissions { get; set; } = new List<PermissionContract>();
+    IList<Permissions> permissions = new List<Permissions>();
 
     [Parameter]
     public IList<UserContract> Users { get; set; } = new List<UserContract>();
@@ -297,18 +293,18 @@
     Validations modelValidations = default!;
     RolePermissionCreateRequest formModel = new();
     UserRoleCreateRequest userModel = new();
-    PermissionContract permissionToDelete = new();
+    Permissions permissionToDelete = new();
     UserRoleContract userToDelete = new();
 
     private Modal modalRefEntityToDelete = default!;
     private Modal modalRefPermissionToDelete = default!;
     private Modal modalRefUserToDelete = default!;
-    
+
     [Parameter]
     public EventCallback<RolePermissionCreateRequest> SubmitCallbackNewPermission { get; set; }
     [Parameter]
     public EventCallback<RolePermissionRequest> SubmitCallbackDeletePermission { get; set; }
-    
+
     [Parameter]
     public EventCallback<UserRoleCreateRequest> SubmitCallbackNewUser { get; set; }
     [Parameter]
@@ -319,6 +315,11 @@
     [Parameter]
     public EventCallback<string> SubmitCallbackDeleteEntity { get; set; }
 
+    protected override void OnInitialized()
+    {
+        permissions = Enum.GetValues(typeof(Permissions)).Cast<Permissions>().ToList();
+        base.OnInitialized();
+    }
 
     async Task SaveSubmit()
     {
@@ -335,17 +336,16 @@
             return;
         await SubmitCallbackNewPermission.InvokeAsync(formModel);
         
-        formModel.PermissionId = string.Empty;
+        formModel.PermissionId = 0;
     }
 
     
-    void DeletePermission(PermissionContract entity)
+    void DeletePermission(Permissions entity)
     {
-        if (entity == null)
-            return;
         permissionToDelete = entity;
         modalRefPermissionToDelete.Show();
     }
+
     private async Task HideModalPermissionToDelete(bool choice)
     {
         if (choice && Role != null)
@@ -353,7 +353,7 @@
             await SubmitCallbackDeletePermission.InvokeAsync(new RolePermissionRequest
             {
                 RoleId = Role.RoleId,
-                PermissionId = permissionToDelete.PermissionId
+                PermissionId = (int)permissionToDelete
             });
         }
         await modalRefPermissionToDelete.Hide();

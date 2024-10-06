@@ -1,4 +1,7 @@
-﻿namespace SemperPrecisStageTracker.Blazor.BackOffice.Models;
+﻿using SemperPrecisStageTracker.Shared.Permissions;
+using System.Security.Principal;
+
+namespace SemperPrecisStageTracker.Blazor.BackOffice.Models;
 
 public class Gender
 {
@@ -28,4 +31,22 @@ public class Gender
             Description = "Diverse"
         }
     };
+}
+public class PermissionsEnumViewModel
+{
+    public PermissionsEnumViewModel()
+    {
+        
+    }
+    public PermissionsEnumViewModel(int intValue, string stringValue)
+    {
+        IntValue = intValue;
+        StringValue = stringValue;
+    }
+    public int IntValue { get; set; }
+    public string StringValue { get; set; } = string.Empty;
+
+    public static IEnumerable<PermissionsEnumViewModel> List =
+        Enum.GetValues(typeof(Permissions)).Cast<Permissions>()
+        .Select(x=>new PermissionsEnumViewModel((int)x,x.ToDescriptionString())).ToList();
 }

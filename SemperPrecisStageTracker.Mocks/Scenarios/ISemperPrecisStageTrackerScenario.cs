@@ -118,12 +118,6 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         /// <summary>
         /// List of entity permissions
         /// </summary>
-        IList<Permission> Permissions { get; set; }
-
-        
-        /// <summary>
-        /// List of entity permissions
-        /// </summary>
         IList<PermissionRole> PermissionRoles { get; set; }
 
         /// <summary>

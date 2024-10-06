@@ -17,16 +17,6 @@ namespace SemperPrecisStageTracker.API.Controllers.V2;
 [ApiVersion("2.0")]
 public class PermissionsController : ApiControllerBase
 {
-    [HttpGet]
-    [ProducesResponseType(typeof(BaseResponse<IList<PermissionContract>>), 200)]
-    public IActionResult FetchPermissions()
-    {
-        var entities = AuthorizationLayer.FetchPermission().As(x => ContractUtils.GenerateContract(x));
-        return Ok(new BaseResponse<IList<PermissionContract>>(
-            entities,
-            entities.Count));
-    }
-
     /// <summary>
     /// Link permission to role
     /// </summary>
@@ -38,12 +28,7 @@ public class PermissionsController : ApiControllerBase
     public async Task<IActionResult> AddPermissionToRole(RolePermissionCreateRequestV2 request)
     {
         //Recupero l'elemento dal business layer
-        var permission = AuthorizationLayer.GetPermission(request.Id);
-
-        if (permission == null)
-        {
-            return NotFound($"Permission with {request.Id} not found");
-        }
+        var permission = request.Id.CastIntoPermission();
 
         //Recupero l'elemento dal business layer
         var role = AuthorizationLayer.GetRole(request.RoleId);
@@ -55,7 +40,7 @@ public class PermissionsController : ApiControllerBase
 
         var entity = new PermissionRole()
         {
-            PermissionId = permission.Id,
+            PermissionId = (int)permission,
             RoleId = role.Id
         };
         //Invocazione del service layer
@@ -65,7 +50,7 @@ public class PermissionsController : ApiControllerBase
             return BadRequest(validations);
 
         //Return contract
-        return CreatedAtAction("GetRole", nameof(RolesController), new { id = entity.RoleId }, ContractUtils.GenerateContract(permission));
+        return CreatedAtAction("GetRole", nameof(RolesController), new { id = entity.RoleId });
     }
 
     /// <summary>
@@ -75,11 +60,11 @@ public class PermissionsController : ApiControllerBase
     /// <returns>Returns action result</returns>
     [HttpDelete("{id}/role/{roleId}")]
     [ApiAuthorizationFilter(Permissions.ManagePermissions)]
-    [ProducesResponseType(typeof(IList<PermissionContract>), 200)]
     public async Task<IActionResult> DeletePermissionOnRole(RolePermissionCreateRequestV2 request)
     {
         //Recupero l'elemento dal business layer
-        var entity = AuthorizationLayer.GetPermissionRole(request.Id, request.RoleId);
+        var permission = request.Id.CastIntoPermission();
+        var entity = AuthorizationLayer.GetPermissionRole((int)permission, request.RoleId);
 
         //Se l'utente non hai i permessi non posso rimuovere entità con userId nullo
         if (entity == null)

@@ -1,5 +1,6 @@
 using SemperPrecisStageTracker.Contracts;
 using SemperPrecisStageTracker.Models;
+using SemperPrecisStageTracker.Shared.Permissions;
 using ZenProgramming.Chakra.Core.Extensions;
 
 namespace SemperPrecisStageTracker.API.Helpers
@@ -690,7 +691,7 @@ namespace SemperPrecisStageTracker.API.Helpers
         /// </summary>
         /// <param name="entity">Source entity</param>
         /// <returns>Returns contract</returns>
-        public static RoleContract GenerateContract(Role entity,IList<Permission> permission = null,IList<UserRole> userRoles= null, IList<User> users = null)
+        public static RoleContract GenerateContract(Role entity,IList<Permissions> permissions = null,IList<UserRole> userRoles= null, IList<User> users = null)
         {
             //Validazione argomenti
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -701,7 +702,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 RoleId = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
-                Permissions = permission != null ? permission.As(GenerateContract) : new List<PermissionContract>(),
+                Permissions = permissions,
                 UserRoles = userRoles != null ? userRoles.As(x=>GenerateContract(x,users?.FirstOrDefault(s=>s.Id==x.UserId))) : new List<UserRoleContract>()
             };
         }
@@ -724,24 +725,6 @@ namespace SemperPrecisStageTracker.API.Helpers
                 Role = null,
                 User = GenerateContract(users),
                 EntityId = entity.EntityId
-            };
-        }
-
-        /// <summary>
-        /// Generate contract using entity
-        /// </summary>
-        /// <param name="entity">Source entity</param>
-        /// <returns>Returns contract</returns>
-        public static PermissionContract GenerateContract(Permission entity)
-        {
-            //Validazione argomenti
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-            //Ritorno il contratto
-            return new PermissionContract()
-            {
-                PermissionId = entity.Id,
-                Name = entity.Name,
             };
         }
 

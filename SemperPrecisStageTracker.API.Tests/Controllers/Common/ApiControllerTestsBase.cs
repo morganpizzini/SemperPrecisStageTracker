@@ -19,6 +19,8 @@ using ZenProgramming.Chakra.Core.Mocks.Data;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Extensions;
 using ZenProgramming.Chakra.Core.Mocks.Scenarios.Options;
 using Microsoft.Extensions.Configuration;
+using SemperPrecisStageTracker.EF.Migrations;
+using SemperPrecisStageTracker.Shared.Cache;
 
 namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
 {
@@ -118,11 +120,8 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
                 Assert.Inconclusive("No permission provided");
                 return null;
             }
-            var permissionIds =Scenario.Permissions
-                .Where(x => permissions.Find(x.Name.ParseEnum<Permissions>()))
-                .Select(x=>x.Id)
-                .ToList();
 
+            var permissionIds = permissions.List.Select(x=>(int)x).ToList();
 
             var userPermissionIds = Scenario.UserPermissions.Where(x => permissionIds.Contains(x.PermissionId))
                     .Select(x => x.UserId).ToList();
@@ -151,30 +150,9 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers.Common
             }
         }
 
-        protected UserPermission GetUserPermission(IPermissionInterface permissions)
-        {
-            var permission = Scenario.Permissions
-                .FirstOrDefault(x => permissions.Find(x.Name.ParseEnum<Permissions>()));
-            
-            if (permission == null) {
-                Assert.Inconclusive("Permission not found");
-                return default; 
-            }
-
-            var userPermission = Scenario.UserPermissions.FirstOrDefault(x=>x.PermissionId == permission.Id);
-
-            if (userPermission == null) {
-                Assert.Inconclusive("User permission not found");
-                return default; 
-            }
-            return userPermission;
-        }
         protected IList<string> FindEntityWithPermission(string userId,IPermissionInterface permissions)
         {
-            var permissionIds =Scenario.Permissions
-                .Where(x => permissions.Find(x.Name.ParseEnum<Permissions>()))
-                .Select(x=>x.Id)
-                .ToList();
+            var permissionIds = permissions.List.Select(x => (int)x).ToList();
 
             var entityIds = Scenario.UserPermissions.Where(x => (string.IsNullOrEmpty(userId) || x.UserId==userId) && permissionIds.Contains(x.PermissionId))
                     .Select(x => x.EntityId).ToList();
