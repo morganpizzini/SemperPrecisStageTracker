@@ -20,9 +20,21 @@
             <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
                 <TextEdit Placeholder="@L["Description"]" @bind-Text="@Model.Description">
                     <Feedback>
-                        <ValidationError>@L["Description"]</ValidationError>
+                        <ValidationError>@L["WrongDescription"]</ValidationError>
                     </Feedback>
                 </TextEdit>
+            </FieldBody>
+        </Field>
+    </Validation>
+    <Validation Validator="@ValidationRule.None">
+        <Field Horizontal="true">
+            <FieldLabel ColumnSize="ColumnSize.IsFull.OnTablet.Is4.OnDesktop">@L["Order"]</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.IsFull.OnTablet.Is8.OnDesktop">
+                <NumericEdit Placeholder="@L["Order"]" TValue="int" @bind-Value="@Model.Order">
+                    <Feedback>
+                        <ValidationError>@L["WrongOrder"]</ValidationError>
+                    </Feedback>
+                </NumericEdit>
             </FieldBody>
         </Field>
     </Validation>

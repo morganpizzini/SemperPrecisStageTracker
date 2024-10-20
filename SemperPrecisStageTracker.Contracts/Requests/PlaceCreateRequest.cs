@@ -14,6 +14,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public string PlaceId { get; set; }
 
         public string Description { get; set; }
+        public int Order { get; set; }
         public bool HasPrivateReservation { get; set; }
     }
     public class StatusUpdateRequest
@@ -51,6 +52,7 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         [Required]
         public string Name { get; set; }
 
+        public int Order { get; set; }
         public string Description { get; set; }
         public bool HasPrivateReservation { get; set; }
     }

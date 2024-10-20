@@ -210,7 +210,9 @@ namespace SemperPrecisStageTracker.Blazor.Services
                             {
                                 EntityPermissions = new List<EntityPermissionContract> {
                                     new EntityPermissionContract { EntityId = "1",
-                                    Permissions = new List<Permissions>{ Permissions.EditUser } } },
+                                    Permissions = new HashSet<Permissions>{ Permissions.EditUser } },
+                                    new EntityPermissionContract { EntityId = "1",
+                                    Permissions = new HashSet<Permissions>{ Permissions.EditPlace } }},
                                 GenericPermissions = new List<Permissions> { Permissions.ManageAssociations }
                             },
                             1,

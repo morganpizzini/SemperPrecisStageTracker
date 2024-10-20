@@ -239,6 +239,7 @@ namespace SemperPrecisStageTracker.API.Helpers
                 BayId = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
+                Order = entity.Order,
                 HasPrivateReservation = entity.HasPrivateReservation
             };
         }
@@ -759,7 +760,7 @@ namespace SemperPrecisStageTracker.API.Helpers
             //Ritorno il contratto
             return new EntityPermissionContract()
             {
-                Permissions = entity.Permissions,
+                Permissions = new HashSet<Permissions>(entity.Permissions),
                 EntityId = entity.EntityId
             };
         }

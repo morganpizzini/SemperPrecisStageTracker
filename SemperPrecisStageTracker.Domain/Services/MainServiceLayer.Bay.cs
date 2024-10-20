@@ -31,7 +31,7 @@ public partial class MainServiceLayer
     public IList<Bay> FetchAllBays(IList<string> placeIds)
     {
         //Utilizzo il metodo base
-        return FetchEntities(x=>placeIds.Contains(x.PlaceId), null, null, s => s.Name, false, _bayRepository);
+        return FetchEntities(x=>placeIds.Contains(x.PlaceId), null, null, s => s.Order, false, _bayRepository);
     }
 
     /// <summary>

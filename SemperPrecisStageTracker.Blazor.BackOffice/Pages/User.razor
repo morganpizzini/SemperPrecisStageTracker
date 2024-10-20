@@ -2,6 +2,7 @@
 @using SemperPrecisStageTracker.Shared.Permissions
 @inherits SemperPrecisBaseComponent<UserContract>
 @inject NavigationManager UriHelper
+@inject IMessageService MessageService
 <PageTitle>Users</PageTitle>
 
 <h1><Icon class="me-2 pointer" Name="IconName.ArrowLeft" IconSize="IconSize.ExtraSmall" @onclick="GoBackClick" />User detail</h1>
@@ -22,83 +23,89 @@
                 </Field>
                 <Field>
                     <FieldLabel>Last Name</FieldLabel>
-                     <TextEdit @bind-Text="@Model.LastName" Disabled="_disableEdit" />
+                    <TextEdit @bind-Text="@Model.LastName" Disabled="_disableEdit" />
                 </Field>
-                 <Field>
-                     <FieldLabel>Birth date</FieldLabel>
+                <Field>
+                    <FieldLabel>Birth date</FieldLabel>
                     <DatePicker TValue="DateTime" @bind-Date="@Model.BirthDate" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Birth date</FieldLabel>
+                </Field>
+                <Field>
+                    <FieldLabel>Birth date</FieldLabel>
                     <Select TValue="string" @bind-SelectedValue="@Model.Gender" Disabled="_disableEdit">
-                         @foreach (var gen in Gender.Genders){
-                             <SelectItem Value="@gen.Code">@gen.Description</SelectItem>
-                         }
-                     </Select>
-                 </Field>
+                        @foreach (var gen in Gender.Genders)
+                        {
+                            <SelectItem Value="@gen.Code">@gen.Description</SelectItem>
+                        }
+                    </Select>
+                </Field>
                 <Field>
                     <FieldLabel>Is active</FieldLabel>
                     <Check TValue="bool" Checked="Model.IsActive" Disabled="_disableEdit" />
                 </Field>
             </Column>
             <Column>
-                 <Field>
-                     <FieldLabel>Username</FieldLabel>
-                     <TextEdit @bind-Text="@Model.Username" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Email</FieldLabel>
-                     <TextEdit @bind-Text="@Model.Email" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Full address</FieldLabel>
-                     <TextEdit Text="@Model.CompleteAddress" Disabled/>
-                 </Field>
-                 <CollapseComponent class="ps-3">
-                     <ChildContent>
-                         <Field>
-                             <FieldLabel>Address</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Address" Disabled="_disableEdit" />
-                         </Field>
-                         <Field>
-                             <FieldLabel>City</FieldLabel>
-                             <TextEdit @bind-Text="@Model.City" Disabled="_disableEdit" />
-                         </Field>
-                         <Field>
-                             <FieldLabel>Province</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Region" Disabled="_disableEdit" />
-                         </Field>
-                         <Field>
-                             <FieldLabel>Postal code</FieldLabel>
-                             <TextEdit @bind-Text="@Model.PostalCode" Disabled="_disableEdit" />
-                         </Field>
-                         <Field>
-                             <FieldLabel>Country</FieldLabel>
-                             <TextEdit @bind-Text="@Model.Country" Disabled="_disableEdit" />
-                         </Field>
-                     </ChildContent>
-                 </CollapseComponent>
-                 <Field>
-                     <FieldLabel>Phone</FieldLabel>
-                     <TextEdit Text="@Model.Phone" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Fiscal code</FieldLabel>
-                     <TextEdit Text="@Model.FiscalCode" Disabled="_disableEdit" />
-                 </Field>
-                 <Field>
-                     <FieldLabel>Firearms Licence</FieldLabel>
-                     <TextEdit @bind-Text="@Model.FirearmsLicence" Disabled="_disableEdit" />
-                 </Field>
+                <Field>
+                    <FieldLabel>Username</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Username" Disabled="_disableEdit" />
+                </Field>
+                <Field>
+                    <FieldLabel>Email</FieldLabel>
+                    <TextEdit @bind-Text="@Model.Email" Disabled="_disableEdit" />
+                </Field>
+                <Field>
+                    <FieldLabel>Full address</FieldLabel>
+                    <TextEdit Text="@Model.CompleteAddress" Disabled />
+                </Field>
+                <CollapseComponent class="ps-3">
+                    <ChildContent>
+                        <Field>
+                            <FieldLabel>Address</FieldLabel>
+                            <TextEdit @bind-Text="@Model.Address" Disabled="_disableEdit" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>City</FieldLabel>
+                            <TextEdit @bind-Text="@Model.City" Disabled="_disableEdit" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Province</FieldLabel>
+                            <TextEdit @bind-Text="@Model.Region" Disabled="_disableEdit" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Postal code</FieldLabel>
+                            <TextEdit @bind-Text="@Model.PostalCode" Disabled="_disableEdit" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Country</FieldLabel>
+                            <TextEdit @bind-Text="@Model.Country" Disabled="_disableEdit" />
+                        </Field>
+                    </ChildContent>
+                </CollapseComponent>
+                <Field>
+                    <FieldLabel>Phone</FieldLabel>
+                    <TextEdit Text="@Model.Phone" Disabled="_disableEdit" />
+                </Field>
+                <Field>
+                    <FieldLabel>Fiscal code</FieldLabel>
+                    <TextEdit Text="@Model.FiscalCode" Disabled="_disableEdit" />
+                </Field>
+                <Field>
+                    <FieldLabel>Firearms Licence</FieldLabel>
+                    <TextEdit @bind-Text="@Model.FirearmsLicence" Disabled="_disableEdit" />
+                </Field>
             </Column>
         </Row>
         <Div Class="text-end">
-            @if (_disableEdit) {
+            @if (_disableEdit)
+            {
                 <Button Color="Color.Primary" Clicked="()=>{
                         CloneModel = Model.Clone();
                         _disableEdit = !_disableEdit;
-                    }">Edit</Button>
-            } else {
+                    }">
+                    Edit
+                </Button>
+            }
+            else
+            {
                 if (IsNewElement)
                 {
                     <Button Color="Color.Default" Clicked="()=>{
@@ -189,68 +196,102 @@
             <CardTitle>User permissions</CardTitle>
         </CardHeader>
         <CardBody>
-            <Paragraph>
-                Permissions assigned to user
-            </Paragraph>
-            <DataGrid TItem="EntityPermissionContract"
-                      Data="userPermissions.EntityPermissions"
-                      Sortable="false"
-                      Responsive
-                      Editable
-                      ShowPager
-                      ShowPageSizes="false"
-                      EditMode="DataGridEditMode.Form"
-                      CommandMode="DataGridCommandMode.ButtonRow"
-                      @bind-SelectedRow="@selectedPermissionEntity"
-                      RowInserting="@OnPermissionRowInsertingAsync"
-                      ShowCaptions="false">
-                <DataGridColumns>
-                    <DataGridCommandColumn NewCommandAllowed="false" EditCommandAllowed="false" DeleteCommandAllowed="false" CancelCommandAllowed>
-                        <SaveCommandTemplate>
-                            <Button ElementId="btnSave" Type="ButtonType.Submit" PreventDefaultOnSubmit Color="Color.Primary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                        </SaveCommandTemplate>
-                        <CancelCommandTemplate>
-                            <Button ElementId="btnCancel" Color="Color.Secondary" Clicked="@context.Clicked">@context.LocalizationString</Button>
-                        </CancelCommandTemplate>
-                    </DataGridCommandColumn>
-                    <DataGridColumn Field="@nameof(EntityPermissionContract.EntityId)" Caption="EntityId" Editable/>
-                    <DataGridColumn Field="@nameof(EntityPermissionContract.Permissions)" Caption="Permissions" Editable>
-                        <DisplayTemplate>
-                            @{
-                                var permissions = (context as EntityPermissionContract).Permissions;
-                                <Div>
-                                    @foreach (var permission in permissions)
-                                    {
-                                        <Badge Color="Color.Secondary" class="me-2">@permission.ToDescriptionString()</Badge>
-                                    }
-                                </Div>
-                            }
-                        </DisplayTemplate>
-                        <EditTemplate>
-                            <Select TValue="int" SelectedValueChanged="@(v => {
-                                        //var selected =  PermissionsEnumViewModel.List.FirstOrDefault(x=>x.IntValue == v);
-                                        //if(selected == null) return;
-                                        context.CellValue = new List<Permissions>{v.CastIntoPermission()};
+            <Row>
+                <Column ColumnSize="ColumnSize.Is10">
+                    Permissions assigned to user
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Button Color="Color.Primary" Clicked="@(()=>{
+                        isNewPermission = true;
+                        selectedPermissionEntityIndex = 0;
+                        userPermissions.EntityPermissions.Insert(0,new EntityPermissionContract());})">Add</Button>
+                </Column>
+            </Row>
+            <Div Class="row">
+                <Div Class="col-5">
+                    <b>EntityId</b>
+                </Div>
+                <Div Class="col-5">
+                    <b>Permission</b>
+                </Div>
+                <Div Class="col-2">
+                </Div>
+            </Div>
+            @for (int tmp = 0; tmp < userPermissions.EntityPermissions.Count; tmp++)
+            {
+                var i = tmp;
+                var item = userPermissions.EntityPermissions[i];
+                <Div Class="row mb-2">
+                    <Div Class="col-5">
+                        @if (selectedPermissionEntityIndex == i)
+                        {
+                            <TextEdit @bind-Text="@item.EntityId" />
+                        }
+                        else
+                        {
+                            @item.EntityId
+                        }
+                    </Div>
+                    <Div Class="col-5">
+                        @if (selectedPermissionEntityIndex == i)
+                        {
+                            <Row Class="mb-2">
+                                <Column ColumnSize="ColumnSize.Is9">
+                                    <Select TValue="int" SelectedValueChanged="@(v => {
+                                        newPermission= v.CastIntoPermission();
                                     })">
-                                <ChildContent>
-                                    <SelectItem Value="@(0)" Disabled="true"></SelectItem>
-                                    @foreach (var permission in PermissionsEnumViewModel.List)
-                                    {
-                                        <SelectItem Value="@permission.IntValue">@permission.StringValue</SelectItem>
+                                        <ChildContent>
+                                            <SelectItem Value="@(0)" Disabled="true"></SelectItem>
+                                            @foreach (var permission in PermissionsEnumViewModel.List)
+                                            {
+                                                <SelectItem Value="@permission.IntValue">@permission.StringValue</SelectItem>
+                                            }
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError>Select a permission</ValidationError>
+                                        </Feedback>
+                                    </Select>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is3">
+                                    <Button Color="Color.Primary" Clicked="@(()=>{item.Permissions.Add(newPermission);})">Add</Button>
+                                </Column>
+                            </Row>
+                        }
+                        @foreach (var permission in item.Permissions)
+                        {
+                            <Badge Color="Color.Secondary" class="me-2 d-inline-flex align-items-center justify-content-center">
+                                @permission.ToDescriptionString()
+                                @if (selectedPermissionEntityIndex == i)
+                                {
+                                    <Icon class="ms-2 pointer" Name="IconName.Times" TextColor="TextColor.Danger" IconSize="IconSize.ExtraSmall" @onclick="()=>{item.Permissions.Remove(permission);}" />
+                                }
+                            </Badge>
+                        }
+                    </Div>
+                    <Div Class="col-2">
+                        @if (selectedPermissionEntityIndex != i)
+                        {
+                            <Button Type="ButtonType.Button" Color="Color.Primary" Clicked="@(()=>{selectedPermissionEntityIndex = i; oldPermissionEntity = item.Clone();})">Edit</Button>
+                            <Button Type="ButtonType.Button" Color="Color.Danger" Clicked="@(()=>DeletePermissionEntity(i))">Delete</Button>
+                        }
+                        else
+                        {
+                            <Button Type="ButtonType.Button" Color="Color.Success" Clicked="SavePermissionEntity">Save</Button>
+                            <Button Type="ButtonType.Button" Color="Color.Danger" Clicked="()=>{
+                                    if(isNewPermission){
+                                        userPermissions.EntityPermissions.RemoveAt(0);
+                                    }else{
+                                        userPermissions.EntityPermissions[i] = oldPermissionEntity;
                                     }
-                                </ChildContent>
-                                <Feedback>
-                                    <ValidationError>Select a permission</ValidationError>
-                                </Feedback>
-                            </Select>
-                        </EditTemplate>
-                    </DataGridColumn>
-                </DataGridColumns>
-                <ButtonRowTemplate>
-                    <Button Color="Color.Success" Clicked="context.NewCommand.Clicked">New</Button>
-                    <Button Color="Color.Danger" Disabled="(selectedPermissionEntity is null)" Clicked="()=>DeletePermissionEntity(context)">Delete</Button>
-                </ButtonRowTemplate>
-            </DataGrid>
+                                    selectedPermissionEntityIndex = -1;
+                                    isNewPermission = false;
+                                    oldPermissionEntity = default; }">
+                                Abort
+                            </Button>
+                        }
+                    </Div>
+                </Div>
+            }
         </CardBody>
     </Card>
     <DialogComponent @ref="dialogRef" OnCallBack="CallBackResetPassword" Message="If approve, the password will be reset" Title="Reset user password"></DialogComponent>
@@ -262,7 +303,10 @@
     private IList<RoleContract> availableRoles = new List<RoleContract>();
     private RoleContract selectedEntity;
     private EntityPermissionContract selectedPermissionEntity;
-
+    private int selectedPermissionEntityIndex = -1;
+    private bool isNewPermission = false;
+    private EntityPermissionContract? oldPermissionEntity;
+    Permissions newPermission = default;
 
     override protected async Task LoadModel()
     {
@@ -275,7 +319,7 @@
         var baseAddress = $"api/Users/{Id}";
         Model = (await Call<UserContract>(RequestType.Get, baseAddress)).Data;
         userRoles = (await Call<List<RoleContract>>(RequestType.Get, $"{baseAddress}/Roles")).Data;
-        userPermissions = (await Call<UserPermissionContract>(RequestType.Get, $"{baseAddress}/Permissions")).Data;
+        userPermissions = (await Call<UserPermissionContract>(RequestType.Get, $"{baseAddress}/Permissions", new Dictionary<string, string> { { "appliedOnUserOnly", "true" } })).Data;
         availableRoles = (await Call<List<RoleContract>>(RequestType.Get, $"api/Roles")).Data;
     }
 
@@ -344,21 +388,6 @@
             await LoadModel();
         }
     }
-
-    private async Task OnPermissionRowInsertingAsync(CancellableRowChange<EntityPermissionContract, Dictionary<string, object>> e)
-    {
-        RoleContract? currentEntity = null;// availableRoles.FirstOrDefault(x => x.Name == e.NewItem.Name);
-        if (currentEntity is null)
-        {
-            e.Cancel = true;
-            return;
-        }
-
-        if ((await Call<RoleContract>(RequestType.Post, $"api/users/{Model.UserId}/roles/{currentEntity.RoleId}", null, null, "Role assigned correctly")).Errors.Any())
-        {
-            e.Cancel = true;
-        }
-    }
     private async Task OnRowInsertingAsync(CancellableRowChange<RoleContract, Dictionary<string, object>> e)
     {
         var currentEntity = availableRoles.FirstOrDefault(x => x.Name == e.NewItem.Name);
@@ -373,13 +402,6 @@
             e.Cancel = true;
         }
     }
-    private async Task DeletePermissionEntity(ButtonRowContext<EntityPermissionContract> context)
-    {
-        if (!(await Call<object>(RequestType.Delete, $"api/users/{Model.UserId}/roles/{selectedEntity.RoleId}", null, null, "Role deleted correctly")).Errors.Any())
-        {
-            await context.DeleteCommand.Clicked.InvokeAsync();
-        }
-    }
     private async Task DeleteEntity(ButtonRowContext<RoleContract> context)
     {
         if (!(await Call<object>(RequestType.Delete, $"api/users/{Model.UserId}/roles/{selectedEntity.RoleId}", null, null, "Role deleted correctly")).Errors.Any())
@@ -391,5 +413,41 @@
     {
         await Call(RequestType.Post, $"api/Users/{Model.UserId}/reset-password", "User password reset");
         dialogRef.Hide();
+    }
+
+
+    private async Task SavePermissionEntity()
+    {
+        var itemToSave = userPermissions.EntityPermissions[selectedPermissionEntityIndex];
+        if (string.IsNullOrEmpty(itemToSave.EntityId) || itemToSave.Permissions.Count == 0)
+        {
+            return;
+        }
+        if (isNewPermission)
+        {
+            await Call(RequestType.Post, $"api/Users/{Model.UserId}/solo-permissions/{itemToSave.EntityId}", null, new SoloPermissionCreateBodyRequest
+                {
+                    Permissions = itemToSave.Permissions
+                }, "Permission added correctly");
+        }
+        else
+        {
+            await Call(RequestType.Post, $"api/Users/{Model.UserId}/solo-permissions/{itemToSave.EntityId}", null, new SoloPermissionCreateBodyRequest
+                {
+                    Permissions = itemToSave.Permissions
+                }, "Permission updated correctly");
+        }
+        // Console.WriteLine(itemToSave.EntityId);
+        isNewPermission = false;
+        selectedPermissionEntityIndex = -1;
+        oldPermissionEntity = default;
+    }
+    private async Task DeletePermissionEntity(int index)
+    {
+        var item = userPermissions.EntityPermissions[index];
+        if (await MessageService.Confirm($"Confirm {item.EntityId} permission deletion", "Deletion"))
+        {
+            userPermissions.EntityPermissions.RemoveAt(index);
+        }
     }
 } 

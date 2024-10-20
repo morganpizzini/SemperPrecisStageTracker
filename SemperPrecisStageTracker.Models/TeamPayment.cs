@@ -33,6 +33,7 @@ namespace SemperPrecisStageTracker.Models
         public string PlaceId { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
+        public int Order { get; set; }
         public string Description { get; set; } = string.Empty;
         public bool HasPrivateReservation { get; set; }
     }

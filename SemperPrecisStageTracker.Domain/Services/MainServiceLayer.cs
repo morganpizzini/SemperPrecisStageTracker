@@ -4644,7 +4644,7 @@ namespace SemperPrecisStageTracker.Domain.Services
                 userPermission.PermissionId = permissionIds.FirstOrDefault(x => x == userPermission.PermissionId);
             }
 
-            return authenticationService.SaveUserPermissions(newPermissions);
+            return authenticationService.SaveSoloUserPermissions(userId,newPermissions);
         }
 
         private Task<IList<ValidationResult>> RemoveUserValidation(string entityId,

@@ -49,6 +49,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
                 {
                     Name = RandomizationUtils.GenerateRandomString(50),
                     Description = RandomizationUtils.GenerateRandomString(15),
+                    Order = 999
                 }
             };
 
@@ -63,6 +64,7 @@ namespace SemperPrecisStageTraker.API.Tests.Controllers
             Assert.IsTrue(parsed != null
                           && countAfter == countBefore + 1
                           && parsed.Data.Name == request.Body.Name
+                          && parsed.Data.Order == request.Body.Order
                           && parsed.Data.Description == request.Body.Description);
         }
 

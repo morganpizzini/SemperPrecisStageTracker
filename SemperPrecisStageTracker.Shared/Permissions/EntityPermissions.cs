@@ -68,7 +68,7 @@ namespace SemperPrecisStageTracker.Shared.Permissions
         [Description("ShowShooters")]
         ShowShooters = 913,
         [Description("ManagePermissions")]
-        ManagePermissions = 912,
+        ManagePermissions = 914,
 
         // entity
         [Description("EditUser")]

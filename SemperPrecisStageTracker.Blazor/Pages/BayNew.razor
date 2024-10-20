@@ -31,7 +31,9 @@
         var request = new BayCreateRequest()
         {
             Name = model.Name,
-            Description = model.Description
+            Description = model.Description,
+            HasPrivateReservation = model.HasPrivateReservation,
+            Order = model.Order
         };
 
         var response = await Post<AssociationContract>($"/api/v2/places/{Id}/Bays", request);

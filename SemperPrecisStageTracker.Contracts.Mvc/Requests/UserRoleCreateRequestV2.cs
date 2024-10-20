@@ -9,6 +9,18 @@ public class PermissionOnUserRequestV2 : BaseRequestId
     [FromRoute]
     public bool AppliedOnUserOnly { get; set; }
 }
+public class SoloPermissionDeleteRequest : BaseRequestId
+{
+    [Required]
+    [FromRoute]
+    public string EntityId { get; set; } = string.Empty;
+}
+public class SoloPermissionCreateRequest : BaseRequestId<SoloPermissionCreateBodyRequest>
+{
+    [Required]
+    [FromRoute]
+    public string EntityId { get; set; } = string.Empty;
+}
 public class UserRoleCreateRequestV2 : BaseRequestId
 {
     [Required]

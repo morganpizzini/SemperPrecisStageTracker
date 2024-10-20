@@ -255,17 +255,19 @@ namespace SemperPrecisStageTracker.Domain.Services
             return _roleRepository.Fetch(x => rolesIds.Contains(x.Id));
         }
 
-            /// <summary>
-            /// Get user permissions
-            /// </summary>
-            /// <param name="userId">User identifier</param>
-            /// <returns>Return user permissions list</returns>
+        private string GetCacheKey(string userId, bool appliedOnUserOnly) => appliedOnUserOnly ? $"perm-user:{userId}" : $"perm-general:{userId}";
+
+        /// <summary>
+        /// Get user permissions
+        /// </summary>
+        /// <param name="userId">User identifier</param>
+        /// <returns>Return user permissions list</returns>
         public Task<UserPermissionDto> GetUserPermissionByUserId(string userId,bool appliedOnUserOnly = false)
         {
             //Validazione argomenti
             if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
-
-            if (_cache.GetValue<UserPermissionDto>(appliedOnUserOnly ? $"perm-user:{userId}" : $"perm-general:{userId}", out var cached))
+            var cacheKey = GetCacheKey(userId, appliedOnUserOnly);
+            if (_cache.GetValue<UserPermissionDto>(cacheKey, out var cached))
                 return Task.FromResult(cached);
             // user group TODO to be implemented
             // var permissionGroupIds = _userPermissionGroupRepository.FetchWithProjection(x=>x.PermissionGroupId,x => x.UserId == userId);
@@ -348,9 +350,31 @@ namespace SemperPrecisStageTracker.Domain.Services
                 EntityPermissions = entityPermissionList
             };
 
-            _cache.SetValue(userId,result);
+            _cache.SetValue(cacheKey, result);
             //Recupero i dati, commit ed uscita
             return Task.FromResult(result);
+        }
+
+        /// <summary>
+        /// Get user permissions
+        /// </summary>
+        /// <param name="userId">User identifier</param>
+        /// <returns>Return user permissions list</returns>
+        public IList<ValidationResult> DeleteUserSoloPermissionByUserId(string userId, string entityId)
+        {
+            //Validazione argomenti
+            if (string.IsNullOrEmpty(userId)) throw new ArgumentNullException(nameof(userId));
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            // user permission
+            var userPermissions = _userPermissionRepository.Fetch(x => x.UserId == userId && x.EntityId == entityId);
+            
+            foreach(var userPermission in userPermissions)
+            {
+                _userPermissionRepository.Delete(userPermission);
+            }
+            _cache.RemoveValue(GetCacheKey(userId,true));
+            _cache.RemoveValue(GetCacheKey(userId,false));
+            return validations;
         }
 
         private class EntityPermissionTmp
@@ -415,7 +439,7 @@ namespace SemperPrecisStageTracker.Domain.Services
         /// </summary>
         /// <param name="newPermissions"></param>
         /// <returns></returns>
-        public IList<ValidationResult> SaveUserPermissions(IList<UserPermission> newPermissions)
+        public IList<ValidationResult> SaveSoloUserPermissions(string userId,IList<UserPermission> newPermissions)
         {
             IList<ValidationResult> validations = new List<ValidationResult>();
             foreach (var newPermission in newPermissions)
@@ -426,6 +450,27 @@ namespace SemperPrecisStageTracker.Domain.Services
 
                 _userPermissionRepository.Save(newPermission);
             }
+            _cache.RemoveValue(GetCacheKey(userId, true));
+            _cache.RemoveValue(GetCacheKey(userId, false));
+            return validations;
+        }
+        /// <summary>
+        /// Operation without transaction
+        /// </summary>
+        /// <param name="newPermissions"></param>
+        /// <returns></returns>
+        public IList<ValidationResult> DeleteSoloUserPermissions(string userId,string entityId, IList<int> newPermissions)
+        {
+            IList<ValidationResult> validations = new List<ValidationResult>();
+            foreach (var newPermission in newPermissions)
+            {
+                var userPermission = _userPermissionRepository.GetSingle(x => x.UserId == userId && x.PermissionId == newPermission && x.EntityId == entityId);
+                if (userPermission == null)
+                    continue;
+                _userPermissionRepository.Delete(userPermission);
+            }
+            _cache.RemoveValue(GetCacheKey(userId, true));
+            _cache.RemoveValue(GetCacheKey(userId, false));
             return validations;
         }
 

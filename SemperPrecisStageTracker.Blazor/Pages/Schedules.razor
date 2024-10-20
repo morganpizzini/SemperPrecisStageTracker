@@ -37,101 +37,98 @@
 
 <Divider />
 
-<div class="row text-center fw-bold">
-    <div class="col-2">
-        @L["Dates"]
-    </div>
-    @foreach (var bay in bays.Items)
-    {
-        <div class="col">
-            @bay.Name
-        </div>
-    }
-</div>
-<Divider />
-<div class="test">
-    @foreach (var date in dates)
-    {
-        <div class="row text-center py-2">
-            <div class="col-2">
-                <p class="fw-bold">
-                    @date.ToString("ddd dd/MM")
-                </p>
-            </div>
+<table class="table table-responsive table-striped table-bordered">
+    <thead class="sticky-top">
+        <tr>
+            <th>@L["Dates"]</th>
             @foreach (var bay in bays.Items)
             {
-                <div class="col">
-                    <Button Color="Color.Info" Outline Class="w-100 py-0 mb-1" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date);})">
-                        <Icon Name="IconName.PlusSquare" />
-                    </Button>
-                    @foreach (var split in splits.Where(x => x.BayId == bay.BayId && x.Date == date.Date))
-                    {
-                        var dayReservation = reservations.Where(x => x.Day.ToDateTime(TimeOnly.Parse("00:00 PM")).Date == split.Date && x.From == split.From && x.Bay.BayId == split.BayId);
-                        var isBlockedId = dayReservation.FirstOrDefault(x => x.IsBayBlocked)?.ReservationId ?? string.Empty;
-                        if(string.IsNullOrEmpty(isBlockedId))
+                <th class="text-center">@bay.Name</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var date in dates)
+        {
+            <tr>
+                <th style="white-space: pre-wrap;">
+                    @date.ToString("dd/MM ddd").Replace(" ", "\r\n")
+                </th>
+                @foreach (var bay in bays.Items)
+                {
+                    <td>
+                        <Button Color="Color.Info" Outline Class="w-100 py-0 mb-1" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date);})">
+                            <Icon Name="IconName.PlusSquare" />
+                        </Button>
+                        @foreach (var split in splits.Where(x => x.BayId == bay.BayId && x.Date == date.Date))
                         {
-                            <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date,split.From,split.To);})">
-                                <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm")</Span><Icon Name="IconName.PlusSquare" />
-                            </Button>
-                        }
-                        else
-                        {
-                            <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>ShowRemoveBlockMessage(bay.BayId,isBlockedId))">
-                                <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm") - @L["blocked"]</Span>
-                            </Button>
-                        }
-                        foreach (var r in dayReservation.Where(x=>!x.IsBayBlocked))
-                        {
-                            <div class="d-flex justify-content-between border border-warning align-items-center p-1 mt-1">
-                                <AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
-                                    <NotAuthorized>
-                                        <span>
-                                            @r.User.CompleteName
-                                        </span>
-                                    </NotAuthorized>
-                                    <Authorized>
-                                        <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() =>{ refBayId = r.Bay.BayId; bayReservationModals.DeleteScheduleEntity(r);})">
-                                            <Icon Name="IconName.Times" />
-                                        </Button>
-                                        <span>
-                                            @r.User.CompleteName
-                                            @if (!string.IsNullOrEmpty(r.Demands))
+                            var dayReservation = reservations.Where(x => x.Day.ToDateTime(TimeOnly.Parse("00:00 PM")).Date == split.Date && x.From == split.From && x.Bay.BayId == split.BayId);
+                            var isBlockedId = dayReservation.FirstOrDefault(x => x.IsBayBlocked)?.ReservationId ?? string.Empty;
+                            if (string.IsNullOrEmpty(isBlockedId))
+                            {
+                                <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>{NewSchedule(bay.BayId,date,split.From,split.To);})">
+                                    <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm")</Span><Icon Name="IconName.PlusSquare" />
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button Color="Color.Secondary" Outline Class="w-100 py-0" Size="Size.Small" Clicked="@(()=>ShowRemoveBlockMessage(bay.BayId,isBlockedId))">
+                                    <Span TextSize="TextSize.Medium" TextColor="TextColor.Black50" Margin="Margin.Is2.FromEnd">@split.From.ToString("HH:mm") - @L["blocked"]</Span>
+                                </Button>
+                            }
+                            foreach (var r in dayReservation.Where(x => !x.IsBayBlocked))
+                            {
+                                <div class="d-flex justify-content-between border border-warning align-items-center p-1 mt-1">
+                                    <AuthorizeView Roles="@(PermissionCtor.ManagePlaces.EditPlace.ToString())" Resource="@Id">
+                                        <NotAuthorized>
+                                            <span>
+                                                @r.User.CompleteName
+                                            </span>
+                                        </NotAuthorized>
+                                        <Authorized>
+                                            <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() =>{ refBayId = r.Bay.BayId; bayReservationModals.DeleteScheduleEntity(r);})">
+                                                <Icon Name="IconName.Times" />
+                                            </Button>
+                                            <span>
+                                                @r.User.CompleteName
+                                                @if (!string.IsNullOrEmpty(r.Demands))
+                                                {
+                                                    <Button Size="Size.Small" Clicked="@(()=>ShowRenderFragment(r.Demands))">
+                                                        <Icon Name="FontAwesomeIcons.Question" />
+                                                    </Button>
+                                                }
+                                            </span>
+                                            @if (r.IsAccepted)
                                             {
-                                                <Button Size="Size.Small" Clicked="@(()=>ShowRenderFragment(r.Demands))">
-                                                    <Icon Name="FontAwesomeIcons.Question" />
+                                                <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
+                                                    <Icon Name="IconName.Ban" />
                                                 </Button>
                                             }
-                                        </span>
-                                        @if (r.IsAccepted)
-                                        {
-                                            <Button Color="Color.Danger" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
-                                                <Icon Name="IconName.Ban" />
-                                            </Button>
-                                        }
-                                        else
-                                        {
-                                            <Button Color="Color.Success" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
-                                                <Icon Name="IconName.Check" />
-                                            </Button>
-                                        }
-                                        
-                                    </Authorized>
-                                </AuthorizeView>
-                            </div>
+                                            else
+                                            {
+                                                <Button Color="Color.Success" Outline Size="Size.Small" Clicked="@(() => ShowChangeStatusMessage(r.User.CompleteName,r.Bay.BayId,r.ReservationId, r.IsAccepted))">
+                                                    <Icon Name="IconName.Check" />
+                                                </Button>
+                                            }
+
+                                        </Authorized>
+                                    </AuthorizeView>
+                                </div>
+                            }
                         }
-                    }
-                </div>
-            }
-        </div>
-    }
-</div>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 <BayReservationModalsComponent @ref="bayReservationModals"
-        AddCallback="AddCallback"
-        DeleteCallback="DeleteCallback"
-        BaySchedules="baySchedules"
-        Model="reservationModel"
-        EnableDate="false"
-        Users="users"></BayReservationModalsComponent>
+                               AddCallback="AddCallback"
+                               DeleteCallback="DeleteCallback"
+                               BaySchedules="baySchedules"
+                               Model="reservationModel"
+                               EnableDate="false"
+                               Users="users"></BayReservationModalsComponent>
 
 @code {
     private BayReservationModalsComponent bayReservationModals = default!;
@@ -145,7 +142,7 @@
     IList<ScheduleTimeGroup> splits = new List<ScheduleTimeGroup>();
     IList<UserContract> users = new List<UserContract>();
 
-    string refBayId= string.Empty;
+    string refBayId = string.Empty;
     ReservationCreateRequest reservationModel { get; set; } = new();
 
     override protected async Task OnInitializedAsync()
@@ -183,7 +180,7 @@
                     .ToList();
     }
 
-    Task<BaseResponse<List<ReservationContract>>> LoadBayReservations() => Call<List<ReservationContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/Reservations", 
+    Task<BaseResponse<List<ReservationContract>>> LoadBayReservations() => Call<List<ReservationContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/Reservations",
                                                                             new Dictionary<string, string> { { "fromDate", dates.FirstOrDefault().ToString("u") }, { "toDate", dates.LastOrDefault().ToString("u") } });
     Task<BaseResponse<List<ScheduleContract>>> LoadBaySchedules() => Call<List<ScheduleContract>>(Models.RequestType.Get, $"/api/v2/Places/{Id}/bays-schedules");
     Task<BaseResponse<List<BayContract>>> LoadBays() => Call<List<BayContract>>(Models.RequestType.Get, $"api/v2/places/{Id}/Bays");
@@ -211,11 +208,11 @@
         return weekDays;
     }
 
-    Task NewSchedule(string bayId,DateTime date, TimeOnly? from = null, TimeOnly? to = null)
+    Task NewSchedule(string bayId, DateTime date, TimeOnly? from = null, TimeOnly? to = null)
     {
         refBayId = bayId;
         reservationModel.Day = DateOnly.FromDateTime(date);
-        if(from.HasValue)
+        if (from.HasValue)
             reservationModel.From = from.Value;
         else
             reservationModel.From = TimeOnly.MinValue;
@@ -242,17 +239,17 @@
         refBayId = string.Empty;
         await ReloadReservation();
     }
-    async Task ShowRemoveBlockMessage(string bayId,string reservationId)
+    async Task ShowRemoveBlockMessage(string bayId, string reservationId)
     {
         if (await MessageService.Confirm(L["ConfirmBlockRemove"], L["Confirmation"]))
         {
-            await Call<List<BayContract>>(Models.RequestType.Delete, $"api/v2/places/{Id}/Bays/{bayId}/reservations/{reservationId}/block",null,null,L["DeleteBlockSuccess"]);
-            
+            await Call<List<BayContract>>(Models.RequestType.Delete, $"api/v2/places/{Id}/Bays/{bayId}/reservations/{reservationId}/block", null, null, L["DeleteBlockSuccess"]);
+
             await ReloadReservation();
         }
     }
 
-    async Task ShowChangeStatusMessage(string username,string bayId, string reservationId,bool currentStatus)
+    async Task ShowChangeStatusMessage(string username, string bayId, string reservationId, bool currentStatus)
     {
         if (currentStatus)
         {
@@ -269,7 +266,7 @@
                 await MainServiceLayer.ChangeReservationStatus(Id, bayId, reservationId, new StatusUpdateRequest { Status = !currentStatus });
                 await ReloadReservation();
             }
-        }   
+        }
     }
     private RenderFragment customFragment(string text) => __builder =>
     {

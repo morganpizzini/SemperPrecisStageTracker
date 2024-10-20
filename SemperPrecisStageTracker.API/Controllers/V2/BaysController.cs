@@ -82,6 +82,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
                 Name = request.Body.Name,
                 PlaceId = request.Id,
                 Description = request.Body.Description,
+                Order = request.Body.Order,
                 HasPrivateReservation = request.Body.HasPrivateReservation
             };
 
@@ -115,6 +116,7 @@ namespace SemperPrecisStageTracker.API.Controllers.V2
             //Aggiornamento dell'entità
             entity.Name = request.Body.Name;
             entity.Description = request.Body.Description;
+            entity.Order = request.Body.Order;
             entity.HasPrivateReservation = request.Body.HasPrivateReservation;
 
             //Salvataggio

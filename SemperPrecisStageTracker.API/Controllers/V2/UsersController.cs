@@ -337,6 +337,79 @@ public partial class UsersController : ApiControllerBase
     public async Task<IActionResult> FetchAllPermissionsOnUser(PermissionOnUserRequestV2 request) =>
         OkBaseResponse(ContractUtils.GenerateContract(await AuthorizationLayer.GetUserPermissionByUserId(request.Id,request.AppliedOnUserOnly)));
 
+    [HttpPost("{id}/solo-permissions/{entityId}")]
+    [ApiAuthorizationFilter(Permissions.ManagePermissions)]
+    public async Task<IActionResult> SaveSoloPermission(SoloPermissionCreateRequest request)
+    {
+        var permissions = await AuthorizationLayer.GetUserPermissionByUserId(request.Id, true);
+
+        if (!permissions.EntityPermissions.Any(x => x.EntityId == request.EntityId))
+            return NotFound();
+
+        //Invocazione del service layer
+        var validations = AuthorizationLayer.SaveSoloUserPermissions(request.Id, request.Body.Permissions.Select(x=> new UserPermission { 
+            EntityId = request.EntityId,
+            PermissionId = (int)x,
+            UserId = request.Id
+            }).ToList());
+        if (validations.Count > 0)
+            return BadRequest(validations);
+
+        return NoContent();
+    }
+
+    [HttpPut("{id}/solo-permissions/{entityId}")]
+    [ApiAuthorizationFilter(Permissions.ManagePermissions)]
+    public async Task<IActionResult> UpdateSoloPermission(SoloPermissionCreateRequest request)
+    {
+        var permissions = await AuthorizationLayer.GetUserPermissionByUserId(request.Id, true);
+
+        var singlePermissions = permissions.EntityPermissions.FirstOrDefault(x => x.EntityId == request.EntityId);
+        if (singlePermissions == null)
+            return NotFound();
+        var toDelete = singlePermissions.Permissions.Where(x => !request.Body.Permissions.Contains(x)).ToList();
+        var toAdd = request.Body.Permissions.Where(x => !singlePermissions.Permissions.Contains(x)).ToList();
+
+        var validations = AuthorizationLayer.SaveSoloUserPermissions(request.Id, toAdd.Select(x => new UserPermission
+        {
+            EntityId = request.EntityId,
+            PermissionId = (int)x,
+            UserId = request.Id
+        }).ToList());
+
+        if (validations.Count > 0)
+            return BadRequest(validations);
+
+        //Invocazione del service layer
+        validations = AuthorizationLayer.DeleteSoloUserPermissions(request.Id,request.EntityId, toDelete.Select(x=>(int)x).ToList());
+        if (validations.Count > 0)
+            return BadRequest(validations);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Deletes existing link between user and role
+    /// </summary>
+    /// <param name="request">Request</param>
+    /// <returns>Returns action result</returns>
+    [HttpDelete("{id}/solo-permissions/{entityId}")]
+    [ApiAuthorizationFilter(Permissions.ManagePermissions)]
+    public async Task<IActionResult> DeleteSoloPermission(SoloPermissionDeleteRequest request)
+    {
+        var permissions = await AuthorizationLayer.GetUserPermissionByUserId(request.Id, true);
+
+        if(!permissions.EntityPermissions.Any(x=>x.EntityId == request.EntityId))
+            return NotFound();
+
+        //Invocazione del service layer
+        var validations = AuthorizationLayer.DeleteUserSoloPermissionByUserId(request.Id,request.EntityId);
+        if (validations.Count > 0)
+            return BadRequest(validations);
+
+        return NoContent();
+    }
+
     /// <summary>
     /// Fetch all roles on user
     /// </summary>

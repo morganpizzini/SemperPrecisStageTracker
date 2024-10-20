@@ -63,7 +63,9 @@
         {
             PlaceId = Id,
             Name = model.Name,
-            Description = model.Description
+            Description = model.Description,
+            Order = model.Order,
+            HasPrivateReservation = model.HasPrivateReservation
         };
         await Call(Models.RequestType.Put, $"/api/v2/places/{Id}/Bays/{BayId}", null, request);
         // if (response != null)
