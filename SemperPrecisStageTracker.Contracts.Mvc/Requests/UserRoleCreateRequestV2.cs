@@ -76,6 +76,18 @@ public class BayEntityBaseRequestId : EntityBaseRequestId
     [Required]
     public string BayId { get; set; } = string.Empty;
 }
+public class FidelityCardTypeEntityBaseRequestId : EntityBaseRequestId
+{
+    [FromRoute]
+    [Required]
+    public string FidelityCardTypeId { get; set; } = string.Empty;
+}
+public class FidelityCardTypeEntityBaseRequestId<T> : EntityBaseRequestId<T> where T : class, new()
+{
+    [FromRoute]
+    [Required]
+    public string FidelityCardTypeId { get; set; } = string.Empty;
+}
 public class BayEntityBaseRequestId<T> : EntityBaseRequestId<T> where T : class, new()
 {
     [FromRoute]

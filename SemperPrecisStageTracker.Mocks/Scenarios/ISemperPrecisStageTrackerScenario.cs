@@ -163,6 +163,9 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
         IList<Schedule> Schedules { get; set; }
         IList<BaySchedule> BaySchedules { get; set; }
         IList<Reservation> Reservations { get; set; }
+        IList<FidelityCardType> FidelityCardTypes { get; set; }
+        IList<UserFidelityCard> UserFidelityCards { get; set; }
+        IList<UserFidelityCardAccess> UserFidelityCardAccesses { get; set; }
 
     }
 }

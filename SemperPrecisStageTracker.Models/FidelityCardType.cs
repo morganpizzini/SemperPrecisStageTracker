@@ -9,7 +9,7 @@ namespace SemperPrecisStageTracker.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public int AccessNumber { get; set; }
+        public int MaxAccessNumber { get; set; }
         [Required]
         public string PlaceId { get; set; }
     }
@@ -19,6 +19,11 @@ namespace SemperPrecisStageTracker.Models
         public string UserId { get; set; }
         [Required]
         public string FidelityCardTypeId { get; set; }
+        /// <summary>
+        /// copy for avoid any change on main property
+        /// </summary>
+        [Required]
+        public int MaxAccessNumber { get; set; }
         public bool IsExpired { get; set; }
     }
     public class UserFidelityCardAccess : SemperPrecisEntity

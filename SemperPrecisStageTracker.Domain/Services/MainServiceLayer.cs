@@ -45,6 +45,9 @@ namespace SemperPrecisStageTracker.Domain.Services
         private readonly IScheduleRepository _scheduleRepository;
         private readonly IBayScheduleRepository _bayScheduleRepository;
         private readonly IReservationRepository _reservationRepository;
+        private readonly IFidelityCardTypeRepository _fidelityCardTypeRepository;
+        private readonly IUserFidelityCardRepository _userFidelityCardRepository;
+        private readonly IUserFidelityCardAccessRepository _userFidelityCardAccessRepository;
 
         private readonly ISemperPrecisMemoryCache _cache;
         private readonly AuthenticationServiceLayer authenticationService;
@@ -79,6 +82,9 @@ namespace SemperPrecisStageTracker.Domain.Services
             _scheduleRepository = dataSession.ResolveRepository<IScheduleRepository>();
             _bayScheduleRepository = dataSession.ResolveRepository<IBayScheduleRepository>();
             _reservationRepository = dataSession.ResolveRepository<IReservationRepository>();
+            _userFidelityCardRepository = dataSession.ResolveRepository<IUserFidelityCardRepository>();
+            _fidelityCardTypeRepository = dataSession.ResolveRepository<IFidelityCardTypeRepository>();
+            _userFidelityCardAccessRepository = dataSession.ResolveRepository<IUserFidelityCardAccessRepository>();
 
             _cache = ServiceResolver.Resolve<ISemperPrecisMemoryCache>();
 

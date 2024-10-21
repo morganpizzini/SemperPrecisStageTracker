@@ -4,7 +4,18 @@ using ZenProgramming.Chakra.Core.Data.Repositories;
 namespace SemperPrecisStageTracker.Domain.Data.Repositories
 {
 
+    public interface IFidelityCardTypeRepository : IRepository<FidelityCardType>
+    {
 
+    }
+    public interface IUserFidelityCardRepository : IRepository<UserFidelityCard>
+    {
+
+    }
+    public interface IUserFidelityCardAccessRepository : IRepository<UserFidelityCardAccess>
+    {
+
+    }
     /// <summary>
     /// Repository interface for "ShooterTeamPayment"
     /// </summary>

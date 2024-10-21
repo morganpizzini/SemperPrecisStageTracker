@@ -91,6 +91,9 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios
             Schedules = scenarioClone.Schedules;
             BaySchedules = scenarioClone.BaySchedules;
             Reservations = scenarioClone.Reservations;
+            FidelityCardTypes = scenarioClone.FidelityCardTypes;
+            UserFidelityCards = scenarioClone.UserFidelityCards;
+            UserFidelityCardAccesses = scenarioClone.UserFidelityCardAccesses;
 
             //Post merge operations
             var dayIndex = -1;

@@ -52,7 +52,25 @@ namespace SemperPrecisStageTracker.API.Helpers
         }
 
 
+        /// <summary>
+        /// Generate contract using entity
+        /// </summary>
+        /// <param name="entity">Source entity</param>
+        /// <returns>Returns contract</returns>
+        public static FidelityCardTypeContract GenerateContract(FidelityCardType entity, Place place = null)
+        {
+            //Validazione argomenti
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
 
+            //Ritorno il contratto
+            return new FidelityCardTypeContract()
+            {
+                FidelityCardTypeId = entity.Id,
+                Name = entity.Name,
+                MaxAccessNumber = entity.MaxAccessNumber,
+                Place = place != null ? GenerateContract(place) : new PlaceContract()
+            };
+        }
         /// <summary>
         /// Generate contract using entity
         /// </summary>

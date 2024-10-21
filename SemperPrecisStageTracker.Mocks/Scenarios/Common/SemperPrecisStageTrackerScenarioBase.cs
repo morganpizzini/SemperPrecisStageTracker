@@ -134,6 +134,9 @@ namespace SemperPrecisStageTracker.Mocks.Scenarios.Common
         public IList<Schedule> Schedules { get; set; } = new List<Schedule>();
         public IList<BaySchedule> BaySchedules { get; set; } = new List<BaySchedule>();
         public IList<Reservation> Reservations { get; set; } = new List<Reservation>();
+        public IList<FidelityCardType> FidelityCardTypes { get; set; } = new List<FidelityCardType>();
+        public IList<UserFidelityCard> UserFidelityCards { get; set; } = new List<UserFidelityCard>();
+        public IList<UserFidelityCardAccess> UserFidelityCardAccesses { get; set; } = new List<UserFidelityCardAccess>();
 
         /// <summary>
         /// Executes initialization of entities

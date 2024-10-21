@@ -47,6 +47,23 @@ namespace SemperPrecisStageTracker.Contracts.Requests
         public DayOfWeek Day { get; set; }
 
     }
+    public class FidelityCardTypeCreateRequest
+    {
+        [Required]
+        public string Name { get; set; } = string.Empty;
+        [Required]
+        public int MaxAccessNumber { get; set; }
+    }
+    public class FidelityCardTypeUpdateRequest : EntityFilterValidation
+    {
+        public string EntityId => PlaceId;
+        [Required]
+        public string Name { get; set; } = string.Empty;
+        [Required]
+        public string PlaceId { get; set; }
+        [Required]
+        public int MaxAccessNumber { get; set; }
+    }
     public class BayCreateRequest
     {
         [Required]

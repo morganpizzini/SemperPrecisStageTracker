@@ -1,7 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace SemperPrecisStageTracker.Contracts
 {
+    public class FidelityCardTypeContract
+    {
+        public string FidelityCardTypeId { get; set; }
+        public string Name { get; set; }
+        public int MaxAccessNumber { get; set; }
+        public PlaceContract Place { get; set; }
+    }
     public class BayContract
     {
         public string BayId { get; set; } = string.Empty;

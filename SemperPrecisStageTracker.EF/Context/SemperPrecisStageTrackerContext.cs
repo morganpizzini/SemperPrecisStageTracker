@@ -360,6 +360,22 @@ namespace SemperPrecisStageTracker.EF.Context
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<FidelityCardType>()
+               .HasKey(f => f.Id);
+            modelBuilder.Entity<FidelityCardType>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserFidelityCard>()
+               .HasKey(f => f.Id);
+            modelBuilder.Entity<UserFidelityCard>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<UserFidelityCardAccess>()
+               .HasKey(f => f.Id);
+            modelBuilder.Entity<UserFidelityCardAccess>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
+
         }
 
         /// <summary>
@@ -517,6 +533,9 @@ namespace SemperPrecisStageTracker.EF.Context
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<BaySchedule> BaySchedules { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
+        public DbSet<FidelityCardType> FidelityCardTypes { get; set; }
+        public DbSet<UserFidelityCard> UserFidelityCards { get; set; }
+        public DbSet<UserFidelityCardAccess> UserFidelityCardAccesses { get; set; }
 
     }
 }
